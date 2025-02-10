@@ -378,7 +378,7 @@ export class WindowManager
 
     public bindCollectorContainer(container: HTMLElement) {
         if (WindowManager.isCreated && this.boxManager) {
-            this.boxManager.setCollectorContainer(container);
+            // this.boxManager.setCollectorContainer(container);
         } else {
             if (WindowManager.params) {
                 WindowManager.params.collectorContainer = container;

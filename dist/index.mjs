@@ -6055,7 +6055,7 @@ class BoxManager {
     let { minwidth = MIN_WIDTH, minheight = MIN_HEIGHT } = (_a = params.app.config) != null ? _a : {};
     const { width, height } = (_b = params.app.config) != null ? _b : {};
     const title = ((_c = params.options) == null ? void 0 : _c.title) || params.appId;
-    const rect = this.teleBoxManager.containerRect;
+    const rect = this.teleBoxManager.$container.getBoundingClientRect();
     if (minwidth > 1) {
       minwidth = minwidth / rect.width;
     }
@@ -6079,8 +6079,8 @@ class BoxManager {
       if (box.state === TELE_BOX_STATE.Maximized) {
         this.context.boxEmitter.emit("resize", {
           appId,
-          x: box.x,
-          y: box.y,
+          x: box.intrinsicCoord.x,
+          y: box.intrinsicCoord.y,
           width: box.intrinsicWidth,
           height: box.intrinsicHeight
         });
@@ -6089,15 +6089,8 @@ class BoxManager {
   }
   setupBoxManager(createTeleBoxManagerConfig) {
     const root = WindowManager.wrapper ? WindowManager.wrapper : document.body;
-    const rect = root.getBoundingClientRect();
     const initManagerState = {
       root,
-      containerRect: {
-        x: 0,
-        y: 0,
-        width: rect.width,
-        height: rect.height
-      },
       fence: false,
       prefersColorScheme: createTeleBoxManagerConfig == null ? void 0 : createTeleBoxManagerConfig.prefersColorScheme
     };
@@ -6106,18 +6099,7 @@ class BoxManager {
       this.teleBoxManager.destroy();
     }
     this.teleBoxManager = manager;
-    const container = (createTeleBoxManagerConfig == null ? void 0 : createTeleBoxManagerConfig.collectorContainer) || WindowManager.wrapper;
-    if (container) {
-      this.setCollectorContainer(container);
-    }
     return manager;
-  }
-  setCollectorContainer(container) {
-    var _a;
-    const collector = new TeleBoxCollector({
-      styles: (_a = this.createTeleBoxManagerConfig) == null ? void 0 : _a.collectorStyles
-    }).mount(container);
-    this.teleBoxManager.setCollector(collector);
   }
   getBox(appId) {
     return this.teleBoxManager.queryOne({ id: appId });
@@ -6171,8 +6153,7 @@ class BoxManager {
     const rect = (_a = this.mainView.divElement) == null ? void 0 : _a.getBoundingClientRect();
     if (rect && rect.width > 0 && rect.height > 0) {
       const containerRect = { x: 0, y: 0, width: rect.width, height: rect.height };
-      this.teleBoxManager.setContainerRect(containerRect);
-      this.context.notifyContainerRectUpdate(this.teleBoxManager.containerRect);
+      this.context.notifyContainerRectUpdate(containerRect);
     }
   }
   moveBox({ appId, x: x2, y: y2 }) {
@@ -18189,9 +18170,9 @@ const _WindowManager = class extends InvisiblePlugin {
     _WindowManager.container = container;
   }
   bindCollectorContainer(container) {
-    if (_WindowManager.isCreated && this.boxManager) {
-      this.boxManager.setCollectorContainer(container);
-    } else {
+    if (_WindowManager.isCreated && this.boxManager)
+      ;
+    else {
       if (_WindowManager.params) {
         _WindowManager.params.collectorContainer = container;
       }

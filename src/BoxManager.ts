@@ -1,6 +1,6 @@
 import { AppAttributes, Events, MIN_HEIGHT, MIN_WIDTH } from "./constants";
 import { debounce } from "lodash";
-import { TELE_BOX_STATE, TeleBoxCollector, TeleBoxManager } from "@netless/telebox-insider";
+import { TELE_BOX_STATE, TeleBoxManager } from "@netless/telebox-insider";
 import { WindowManager } from "./index";
 import type { BoxEmitterType } from "./BoxEmitter";
 import type { AddAppOptions, AppInitState } from "./index";
@@ -211,7 +211,7 @@ export class BoxManager {
         let { minwidth = MIN_WIDTH, minheight = MIN_HEIGHT } = params.app.config ?? {};
         const { width, height } = params.app.config ?? {};
         const title = params.options?.title || params.appId;
-        const rect = this.teleBoxManager.containerRect;
+        const rect = this.teleBoxManager.$container.getBoundingClientRect();
 
         if (minwidth > 1) {
             minwidth = minwidth / rect.width;
@@ -239,8 +239,8 @@ export class BoxManager {
             if (box.state === TELE_BOX_STATE.Maximized) {
                 this.context.boxEmitter.emit("resize", {
                     appId: appId,
-                    x: box.x,
-                    y: box.y,
+                    x: box.intrinsicCoord.x,
+                    y: box.intrinsicCoord.y,
                     width: box.intrinsicWidth,
                     height: box.intrinsicHeight,
                 });
@@ -252,15 +252,15 @@ export class BoxManager {
         createTeleBoxManagerConfig?: CreateTeleBoxManagerConfig
     ): TeleBoxManager {
         const root = WindowManager.wrapper ? WindowManager.wrapper : document.body;
-        const rect = root.getBoundingClientRect();
+        // const rect = root.getBoundingClientRect();
         const initManagerState: TeleBoxManagerConfig = {
             root: root,
-            containerRect: {
-                x: 0,
-                y: 0,
-                width: rect.width,
-                height: rect.height,
-            },
+            // containerRect: {
+            //     x: 0,
+            //     y: 0,
+            //     width: rect.width,
+            //     height: rect.height,
+            // },
             fence: false,
             prefersColorScheme: createTeleBoxManagerConfig?.prefersColorScheme,
         };
@@ -270,19 +270,19 @@ export class BoxManager {
             this.teleBoxManager.destroy();
         }
         this.teleBoxManager = manager;
-        const container = createTeleBoxManagerConfig?.collectorContainer || WindowManager.wrapper;
-        if (container) {
-            this.setCollectorContainer(container);
-        }
+        // const container = createTeleBoxManagerConfig?.collectorContainer || WindowManager.wrapper;
+        // if (container) {
+        //     this.setCollectorContainer(container);
+        // }
         return manager;
     }
 
-    public setCollectorContainer(container: HTMLElement) {
-        const collector = new TeleBoxCollector({
-            styles: this.createTeleBoxManagerConfig?.collectorStyles,
-        }).mount(container);
-        this.teleBoxManager.setCollector(collector);
-    }
+    // public setCollectorContainer(container: HTMLElement) {
+    //     const collector = new TeleBoxCollector({
+    //         styles: this.createTeleBoxManagerConfig?.collectorStyles,
+    //     }).mount(container);
+    //     this.teleBoxManager.setCollector(collector);
+    // }
 
     public getBox(appId: string): ReadonlyTeleBox | undefined {
         return this.teleBoxManager.queryOne({ id: appId });
@@ -340,8 +340,8 @@ export class BoxManager {
         const rect = this.mainView.divElement?.getBoundingClientRect();
         if (rect && rect.width > 0 && rect.height > 0) {
             const containerRect = { x: 0, y: 0, width: rect.width, height: rect.height };
-            this.teleBoxManager.setContainerRect(containerRect);
-            this.context.notifyContainerRectUpdate(this.teleBoxManager.containerRect);
+            // this.teleBoxManager.setContainerRect(containerRect);
+            this.context.notifyContainerRectUpdate(containerRect);
         }
     }
 
