@@ -266,6 +266,8 @@ export class BoxManager {
         };
 
         const manager = new TeleBoxManager(initManagerState);
+
+        console.log('boxmanager', manager)
         if (this.teleBoxManager) {
             this.teleBoxManager.destroy();
         }

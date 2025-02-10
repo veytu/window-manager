@@ -6095,6 +6095,7 @@ class BoxManager {
       prefersColorScheme: createTeleBoxManagerConfig == null ? void 0 : createTeleBoxManagerConfig.prefersColorScheme
     };
     const manager = new TeleBoxManager(initManagerState);
+    console.log("boxmanager", manager);
     if (this.teleBoxManager) {
       this.teleBoxManager.destroy();
     }
