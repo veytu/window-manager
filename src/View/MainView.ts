@@ -1,7 +1,7 @@
 import { AnimationMode, reaction, ViewMode } from "white-web-sdk";
 import { callbacks } from "../callback";
 import { createView } from "./ViewManager";
-import { debounce, get, isEmpty, isEqual } from "lodash";
+import { clamp, debounce, get, isEmpty, isEqual } from "lodash";
 import { internalEmitter } from "../InternalEmitter";
 import { Fields } from "../AttributesDelegate";
 import { setViewFocusScenePath } from "../Utils/Common";
@@ -37,6 +37,9 @@ export class MainViewProxy {
         };
         this.sideEffectManager.add(() => {
             return internalEmitter.on("playgroundSizeChange", playgroundSizeChangeListener);
+        });
+        this.sideEffectManager.add(() => {
+            return internalEmitter.on("wrapperSizeChange", playgroundSizeChangeListener);
         });
         this.sideEffectManager.add(() => {
             return internalEmitter.on("containerSizeRatioUpdate", this.onUpdateContainerSizeRatio);
@@ -79,11 +82,11 @@ export class MainViewProxy {
         }
     }
 
-    private get mainViewCamera() {
+    public get mainViewCamera() {
         return this.store.getMainViewCamera();
     }
 
-    private get mainViewSize() {
+    public get mainViewSize() {
         return this.store.getMainViewSize();
     }
 
@@ -112,6 +115,10 @@ export class MainViewProxy {
     public setCameraAndSize(): void {
         const camera = { ...this.mainView.camera, id: this.manager.uid };
         const size = { ...this.mainView.size, id: this.manager.uid };
+        this.store.setMainViewCameraAndSize(camera, size);
+    }
+
+    public setMainViewCameraAndSize (camera: Camera & {id: string}, size: Size & {id: string}) {
         this.store.setMainViewCameraAndSize(camera, size);
     }
 
@@ -287,7 +294,8 @@ export class MainViewProxy {
         if (!isEmpty(camera)) {
             if (isEqual(camera, this.view.camera)) return;
             const { centerX, centerY, scale } = camera;
-            const needScale = scale * (this.scale || 1);
+            const needScale = scale * (this.scale || 1)
+            console.log('window manager scale', needScale)
             this.view.moveCamera({
                 centerX: centerX,
                 centerY: centerY,

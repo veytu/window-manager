@@ -1,5 +1,5 @@
 import Emittery from "emittery";
-import type { TeleBoxColorScheme, TELE_BOX_STATE } from "@netless/telebox-insider";
+import type { TeleBoxColorScheme, TELE_BOX_STATE, ReadonlyTeleBox } from "@netless/telebox-insider";
 import type { CameraState, SceneState, View, ViewVisionMode } from "white-web-sdk";
 import type { LoadAppEvent } from "./Register";
 import type { PageState } from "./Page";
@@ -40,6 +40,9 @@ export type PublicEvent = {
     onAppViewMounted: AppPayload;
     onAppSetup: string;
     onAppScenePathChange: AppPayload;
+    appZIndexChange: {appId: string; box: ReadonlyTeleBox};
+    onMinimized: string;
+    onMaximized: string;
 };
 
 export type CallbacksType = Emittery<PublicEvent>;

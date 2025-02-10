@@ -7,7 +7,7 @@ import { autorun, isPlayer, isRoom, ScenePathType } from "white-web-sdk";
 import { boxEmitter } from "./BoxEmitter";
 import { calculateNextIndex } from "./Page";
 import { callbacks } from "./callback";
-import { debounce, get, isInteger, orderBy } from "lodash";
+import { debounce, get, isEqual, isInteger, isString, orderBy } from "lodash";
 import { internalEmitter } from "./InternalEmitter";
 import { Fields, store } from "./AttributesDelegate";
 import { log } from "./Utils/log";
@@ -283,8 +283,16 @@ export class AppManager {
         return this.windowManger.canOperate;
     }
 
+    public get appReadonly () {
+        return this.windowManger.appReadonly;
+    }
+
     public get room() {
         return isRoom(this.displayer) ? (this.displayer as Room) : undefined;
+    }
+
+    public get isLaserPointerActive () {
+        return this.windowManger.isLaserPointerActive
     }
 
     public get mainView() {
@@ -303,6 +311,10 @@ export class AppManager {
         if (this.store.focus) {
             return this.appProxies.get(this.store.focus);
         }
+    }
+
+    public get extendWrapper () {
+        return this.windowManger.extendWrapper
     }
 
     public get uid() {
@@ -329,15 +341,15 @@ export class AppManager {
 
         this.addAppsChangeListener();
         this.addAppCloseListener();
-        this.refresher.add("maximized", () => {
+        this.refresher.add("maximizedBoxes", () => {
             return autorun(() => {
-                const maximized = this.attributes.maximized;
-                this.boxManager?.setMaximized(Boolean(maximized));
+                const maximized = this.attributes.maximizedBoxes;
+                this.boxManager?.setMaximized(maximized)
             });
         });
-        this.refresher.add("minimized", () => {
+        this.refresher.add("minimizedBoxes", () => {
             return autorun(() => {
-                const minimized = this.attributes.minimized;
+                const minimized = this.attributes.minimizedBoxes;
                 this.onMinimized(minimized);
             });
         });
@@ -546,13 +558,12 @@ export class AppManager {
         });
     };
 
-    private onMinimized = (minimized: boolean | undefined) => {
-        if (this.boxManager?.minimized !== minimized) {
-            if (minimized === true) {
-                this.boxManager?.blurAllBox();
-            }
+    private onMinimized = (minimized: string | undefined) => {
+        if (!isString(minimized) || !minimized) return
+
+        if (!this.boxManager?.minimized || JSON.stringify(this.boxManager?.minimized || []) != minimized) {
             setTimeout(() => {
-                this.boxManager?.setMinimized(Boolean(minimized));
+                this.boxManager?.setMinimized(minimized);
             }, 0);
         }
     };
@@ -566,11 +577,11 @@ export class AppManager {
     }
 
     public resetMaximized() {
-        this.boxManager?.setMaximized(Boolean(this.store.getMaximized()));
+        this.boxManager?.setMaximized(this.store.getMaximized() ? this.store.getMaximized() : []);
     }
 
     public resetMinimized() {
-        this.boxManager?.setMinimized(Boolean(this.store.getMinimized()));
+        this.boxManager?.setMinimized(this.store.getMinimized() ? this.store.getMinimized() : []);
     }
 
     private onAppDelete = async (apps: any) => {
@@ -647,7 +658,7 @@ export class AppManager {
             this.store.updateAppState(appProxy.id, AppAttributes.ZIndex, box.zIndex);
         }
         if (this.boxManager?.minimized) {
-            this.boxManager?.setMinimized(false, false);
+            // this.boxManager?.setMinimized(false, false);
         }
     }
 

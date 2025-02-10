@@ -1,5 +1,5 @@
 import { ApplianceNames } from "white-web-sdk";
-import pencil from "../image/pencil-cursor.png";
+import pencil from "../image/pencil.png";
 import selector from "../image/selector-cursor.png";
 import eraser from "../image/eraser-cursor.png";
 import shape from "../image/shape-cursor.svg";

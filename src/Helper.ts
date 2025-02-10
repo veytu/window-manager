@@ -6,6 +6,7 @@ import { WindowManager } from "./index";
 import { getVersionNumber } from "./Utils/Common";
 import { WhiteWebSDKInvalidError } from "./Utils/error";
 import { log } from "./Utils/log";
+import { isAndroid, isIOS } from "./Utils/environment";
 
 export const setupWrapper = (
     root: HTMLElement
@@ -14,6 +15,10 @@ export const setupWrapper = (
     wrapper: HTMLDivElement;
     sizer: HTMLDivElement;
     mainViewElement: HTMLDivElement;
+    mainViewWrapper: HTMLDivElement;
+    mainViewWrapperShadow: HTMLDivElement;
+    extendWrapper: HTMLDivElement;
+    mainViewScrollWrapper: HTMLDivElement;
 } => {
     const playground = document.createElement("div");
     playground.className = "netless-window-manager-playground";
@@ -24,16 +29,34 @@ export const setupWrapper = (
     const wrapper = document.createElement("div");
     wrapper.className = "netless-window-manager-wrapper";
 
+    const mainViewScrollWrapper = document.createElement("div");
+
+    mainViewScrollWrapper.className = "netless-window-manager-wrapper netless-window-manager-fancy-scrollbar"
+    mainViewScrollWrapper.classList.toggle('netless-window-manager-fancy-scrollbar-readonly', Boolean(isAndroid() || isIOS()))
+    const mainViewWrapperShadow = document.createElement("div");
+    mainViewWrapperShadow.className = "netless-window-manager-main-view-wrapper netless-window-manager-main-view-wrapper-shadow"
+
+    const mainViewWrapper = document.createElement("div");
+    mainViewWrapper.className = "netless-window-manager-main-view-wrapper netless-window-manager-main-view-wrp"
+
     const mainViewElement = document.createElement("div");
     mainViewElement.className = "netless-window-manager-main-view";
 
+    const extendWrapper = document.createElement('div')
+    extendWrapper.style.display = 'none'
+
+    
     playground.appendChild(sizer);
+    playground.appendChild(extendWrapper)
     sizer.appendChild(wrapper);
-    wrapper.appendChild(mainViewElement);
+    mainViewWrapper.appendChild(mainViewElement);
+    mainViewScrollWrapper.appendChild(mainViewWrapperShadow)
+    mainViewScrollWrapper.appendChild(mainViewWrapper);
+    wrapper.appendChild(mainViewScrollWrapper);
     root.appendChild(playground);
     WindowManager.wrapper = wrapper;
 
-    return { playground, wrapper, sizer, mainViewElement };
+    return { playground, wrapper, sizer, mainViewElement, mainViewWrapperShadow, mainViewWrapper, extendWrapper, mainViewScrollWrapper };
 };
 
 export const checkVersion = () => {

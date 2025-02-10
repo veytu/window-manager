@@ -25,6 +25,7 @@ const config = {
                 extendDefaults: true,
             },
         ],
+        "no-extra-boolean-cast": false
     },
     overrides: [
         {

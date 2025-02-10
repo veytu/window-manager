@@ -1,5 +1,5 @@
 import { AppAttributes, Events, MIN_HEIGHT, MIN_WIDTH } from "./constants";
-import { debounce } from "lodash";
+import { debounce, isString } from "lodash";
 import { TELE_BOX_STATE, TeleBoxCollector, TeleBoxManager } from "@netless/telebox-insider";
 import { WindowManager } from "./index";
 import type { BoxEmitterType } from "./BoxEmitter";
@@ -18,6 +18,7 @@ import type { NetlessApp } from "./typings";
 import type { View } from "white-web-sdk";
 import type { CallbacksType } from "./callback";
 import type { EmitterType } from "./InternalEmitter";
+import { isAndroid, isIOS } from "./Utils/environment";
 
 export { TELE_BOX_STATE };
 
@@ -58,6 +59,7 @@ export type BoxManagerContext = {
     notifyContainerRectUpdate: (rect: TeleBoxRect) => void;
     cleanFocus: () => void;
     setAppFocus: (appId: string) => void;
+    manager: WindowManager;
 };
 
 export const createBoxManager = (
@@ -80,6 +82,7 @@ export const createBoxManager = (
             callbacks,
             emitter,
             boxEmitter,
+            manager,
         },
         options
     );
@@ -87,12 +90,14 @@ export const createBoxManager = (
 
 export class BoxManager {
     public teleBoxManager: TeleBoxManager;
+    private readonly manager: WindowManager;
 
     constructor(
         private context: BoxManagerContext,
         private createTeleBoxManagerConfig?: CreateTeleBoxManagerConfig
     ) {
-        const { emitter, callbacks, boxEmitter } = context;
+        const { emitter, callbacks, boxEmitter, manager } = context;
+        this.manager = manager;
         this.teleBoxManager = this.setupBoxManager(createTeleBoxManagerConfig);
 
         // 使用 _xxx$.reaction 订阅修改的值, 不管有没有 skipUpdate, 修改值都会触发回调
@@ -109,33 +114,25 @@ export class BoxManager {
         });
 
         // ppt 在最小化后刷新恢复正常大小，拿不到正确的宽高，需要手动触发一下窗口的 resize
-        this.teleBoxManager._minimized$.reaction(minimized => {
-            if (!minimized) {
-                setTimeout(() => {
-                    const offset = 0.001 * (Math.random() > 0.5 ? 1 : -1);
-                    this.teleBoxManager.boxes.forEach(box => {
+        this.teleBoxManager._minimizedBoxes$.reaction(() => {
+            setTimeout(() => {
+                const offset = 0.0001 * (Math.random() > 0.5 ? 1 : -1);
+                this.teleBoxManager.boxes.forEach(box => {
+                    if (box.id?.toLocaleLowerCase().includes('slide')) {
                         box.resize(box.intrinsicWidth + offset, box.intrinsicHeight + offset, true);
-                    });
-                }, 400);
-            }
+                    } 
+                });
+            }, 400);
         });
 
         // events.on 的值则会根据 skipUpdate 来决定是否触发回调
-        this.teleBoxManager.events.on("minimized", minimized => {
-            this.context.safeSetAttributes({ minimized });
-            if (minimized) {
-                this.context.cleanFocus();
-                this.blurAllBox();
-            } else {
-                const topBox = this.getTopBox();
-                if (topBox) {
-                    this.context.setAppFocus(topBox.id);
-                    this.focusBox({ appId: topBox.id }, false);
-                }
-            }
+        this.teleBoxManager.events.on("minimized", minimizedBoxes => {
+            this.context.safeSetAttributes({ minimizedBoxes: JSON.stringify(minimizedBoxes) });
+            callbacks.emit("onMinimized", JSON.stringify(minimizedBoxes));
         });
-        this.teleBoxManager.events.on("maximized", maximized => {
-            this.context.safeSetAttributes({ maximized });
+        this.teleBoxManager.events.on("maximized", maximizedBoxes => {
+            this.context.safeSetAttributes({ maximizedBoxes: JSON.stringify(maximizedBoxes) });
+            callbacks.emit("onMaximized", JSON.stringify(maximizedBoxes));
         });
         this.teleBoxManager.events.on("removed", boxes => {
             boxes.forEach(box => {
@@ -169,9 +166,13 @@ export class BoxManager {
         });
         this.teleBoxManager.events.on("z_index", box => {
             this.context.updateAppState(box.id, AppAttributes.ZIndex, box.zIndex);
+            callbacks.emit("appZIndexChange", { appId: box.id, box: box });
         });
         emitter.on("playgroundSizeChange", () => this.updateManagerRect());
         emitter.on("updateManagerRect", () => this.updateManagerRect());
+        emitter.on("onScaleChange", ({ appId, scale }: any) => {
+            this.changeScale(appId, scale);
+        });
     }
 
     private get mainView() {
@@ -187,11 +188,11 @@ export class BoxManager {
     }
 
     public get maximized() {
-        return this.teleBoxManager.maximized;
+        return this.teleBoxManager._maximizedBoxes$.value;
     }
 
     public get minimized() {
-        return this.teleBoxManager.minimized;
+        return this.teleBoxManager._minimizedBoxes$.value;
     }
 
     public get darkMode() {
@@ -206,13 +207,16 @@ export class BoxManager {
         return this.teleBoxManager.boxes.length;
     }
 
+    private changeScale(appId: string, scale: number) {
+        this.teleBoxManager.setScaleContent(appId, scale);
+    }
+
     public createBox(params: CreateBoxParams): void {
         if (!this.teleBoxManager) return;
         let { minwidth = MIN_WIDTH, minheight = MIN_HEIGHT } = params.app.config ?? {};
         const { width, height } = params.app.config ?? {};
         const title = params.options?.title || params.appId;
         const rect = this.teleBoxManager.containerRect;
-
         if (minwidth > 1) {
             minwidth = minwidth / rect.width;
         }
@@ -228,9 +232,15 @@ export class BoxManager {
             width,
             height,
             id: params.appId,
+            hasHeader: params.appId?.includes('audio') ? false : (params.options?.hasHeader ?? true)
         };
-        this.teleBoxManager.create(createBoxConfig, params.smartPosition);
+        const box = this.teleBoxManager.create(createBoxConfig, params.smartPosition);
         this.context.emitter.emit(`${params.appId}${Events.WindowCreated}` as any);
+        this.manager.scrollerManager?.add({
+            appId: params.appId!,
+            manager: this.manager,
+            scrollElement: box?.$contentWrap!,
+        });
     }
 
     public setBoxInitState(appId: string): void {
@@ -263,9 +273,11 @@ export class BoxManager {
             },
             fence: false,
             prefersColorScheme: createTeleBoxManagerConfig?.prefersColorScheme,
+            appReadonly: WindowManager.appReadonly,
         };
 
         const manager = new TeleBoxManager(initManagerState);
+
         if (this.teleBoxManager) {
             this.teleBoxManager.destroy();
         }
@@ -280,6 +292,7 @@ export class BoxManager {
     public setCollectorContainer(container: HTMLElement) {
         const collector = new TeleBoxCollector({
             styles: this.createTeleBoxManagerConfig?.collectorStyles,
+            readonly: this.teleBoxManager.readonly,
         }).mount(container);
         this.teleBoxManager.setCollector(collector);
     }
@@ -289,6 +302,7 @@ export class BoxManager {
     }
 
     public closeBox(appId: string, skipUpdate = false): ReadonlyTeleBox | undefined {
+        this.manager.scrollerManager?.remove(appId);
         return this.teleBoxManager.remove(appId, skipUpdate);
     }
 
@@ -307,6 +321,7 @@ export class BoxManager {
     }
 
     public updateBoxState(state?: AppInitState): void {
+        console.log(state);
         if (!state) return;
         const box = this.getBox(state.id);
         if (box) {
@@ -318,30 +333,32 @@ export class BoxManager {
                     width: state.width || 0.5,
                     height: state.height || 0.5,
                     zIndex: state.zIndex,
+                    maximized: state.maximized,
+                    minimized: state.minimized,
                 },
-                true
+                false
             );
             setTimeout(() => {
                 if (state.focus) {
                     this.teleBoxManager.focusBox(box.id, true);
                 }
-                if (state.maximized != null) {
-                    this.teleBoxManager.setMaximized(Boolean(state.maximized), true);
-                }
-                if (state.minimized != null) {
-                    this.teleBoxManager.setMinimized(Boolean(state.minimized), true);
-                }
+                // if (state.maximized != null) {
+                //     this.teleBoxManager.setMaximizedBoxes(isString(state.maximizedBoxes) ? JSON.parse(state.maximizedBoxes) : [], true);
+                // }
+                // if (state.minimized != null) {
+                //     this.teleBoxManager.setMinimizedBoxes(isString(state.minimizedBoxes) ? JSON.parse(state.minimizedBoxes) : [], true);
+                // }
             }, 50);
             this.context.callbacks.emit("boxStateChange", this.teleBoxManager.state);
         }
     }
 
     public updateManagerRect(): void {
-        const rect = this.mainView.divElement?.getBoundingClientRect();
+        const rect = WindowManager.wrapper?.getBoundingClientRect();
         if (rect && rect.width > 0 && rect.height > 0) {
             const containerRect = { x: 0, y: 0, width: rect.width, height: rect.height };
             this.teleBoxManager.setContainerRect(containerRect);
-            this.context.notifyContainerRectUpdate(this.teleBoxManager.containerRect);
+            this.context.notifyContainerRectUpdate(containerRect);
         }
     }
 
@@ -380,14 +397,22 @@ export class BoxManager {
         this.teleBoxManager.updateAll(config);
     }
 
-    public setMaximized(maximized: boolean, skipUpdate = true): void {
-        if (maximized !== this.maximized) {
-            this.teleBoxManager.setMaximized(maximized, skipUpdate);
+    public setMaximized(maximized?: string, skipUpdate = true): void {
+        if (!isString(maximized)) return;
+        try {
+            this.teleBoxManager.setMaximizedBoxes(JSON.parse(maximized), skipUpdate);
+        } catch (e) {
+            console.log(e);
         }
     }
 
-    public setMinimized(minimized: boolean, skipUpdate = true) {
-        this.teleBoxManager.setMinimized(minimized, skipUpdate);
+    public setMinimized(minimized?: string, skipUpdate = true) {
+        if (!isString(minimized)) return;
+        try {
+            this.teleBoxManager.setMinimizedBoxes(JSON.parse(minimized), skipUpdate);
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     public focusTopBox(): void {
@@ -405,7 +430,8 @@ export class BoxManager {
     }
 
     public setReadonly(readonly: boolean) {
-        this.teleBoxManager.setReadonly(readonly);
+        this.teleBoxManager.setReadonly(readonly || isIOS() || isAndroid());
+        this.teleBoxManager._collector$.value?.setReadonly(readonly || isIOS() || isAndroid());
     }
 
     public setPrefersColorScheme(colorScheme: TeleBoxColorScheme) {

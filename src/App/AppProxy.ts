@@ -5,7 +5,7 @@ import { AppPageStateImpl } from "./AppPageStateImpl";
 import { appRegister } from "../Register";
 import { autorun } from "white-web-sdk";
 import { BoxManagerNotFoundError } from "../Utils/error";
-import { debounce, get } from "lodash";
+import { debounce, get, isNumber } from "lodash";
 import { internalEmitter } from "../InternalEmitter";
 import { Fields } from "../AttributesDelegate";
 import { log } from "../Utils/log";
@@ -182,7 +182,16 @@ export class AppProxy implements PageRemoveService {
                 let boxInitState: AppInitState | undefined;
                 if (!skipUpdate) {
                     boxInitState = this.getAppInitState(appId);
+                    const maximized = this.boxManager?.teleBoxManager?.maximizedBoxes?.includes(appId)
+                    const minimized = this.boxManager?.teleBoxManager?.minimizedBoxes?.includes(appId)
+                    Object.assign((boxInitState || {}), { maximized, minimized });
                     this.boxManager?.updateBoxState(boxInitState);
+
+                    const boxes = this.boxManager?.teleBoxManager.maximizedBoxes.filter(box => !this?.boxManager?.teleBoxManager.minimizedBoxes.includes(box))
+                    if (boxes?.length) {
+                        this.boxManager?.teleBoxManager?.makeBoxTopFromMaximized()
+                    }
+                    
                 }
                 this.appEmitter.onAny(this.appListener);
                 this.appAttributesUpdateListener(appId);
@@ -198,10 +207,11 @@ export class AppProxy implements PageRemoveService {
                     callbacks.emit("onAppSetup", appId);
                 }, SETUP_APP_DELAY);
             });
+            const hasHeader = options?.hasHeader === false ? false : (this.appAttributes.options?.hasHeader === false ? false : (this.appAttributes.state?.hasHeader === false ? false : true));
             this.boxManager?.createBox({
                 appId: appId,
                 app,
-                options,
+                options: {...options, hasHeader},
                 canOperate: this.manager.canOperate,
                 smartPosition: this.isAddApp,
             });
@@ -213,6 +223,10 @@ export class AppProxy implements PageRemoveService {
                 });
                 this.boxManager.focusBox({ appId }, false);
             }
+
+            const mainViewBgImg =  this.store.attributes['mainViewBackgroundImg']
+            internalEmitter.emit("onBackgroundImgChange", mainViewBgImg)
+            
         } catch (error: any) {
             console.error(error);
             throw new Error(`[WindowManager]: app setup error: ${error.message}`);
@@ -236,6 +250,8 @@ export class AppProxy implements PageRemoveService {
         if (boxInitState) {
             if (!boxInitState?.x || !boxInitState.y) {
                 this.boxManager?.setBoxInitState(this.id);
+            } else {
+                this.boxManager?.updateBoxState(boxInitState)
             }
         }
     }
@@ -288,8 +304,9 @@ export class AppProxy implements PageRemoveService {
         const focus = this.store.focus;
         const size = attrs?.[AppAttributes.Size];
         const sceneIndex = attrs?.[AppAttributes.SceneIndex];
-        const maximized = this.attributes?.["maximized"];
-        const minimized = this.attributes?.["minimized"];
+        const maximized = this.store.getMaximized()?.includes(id)
+        const minimized = this.store.getMinimized()?.includes(id)
+        
         const zIndex = attrs?.zIndex;
         let payload = { maximized, minimized, zIndex } as AppInitState;
         if (position) {

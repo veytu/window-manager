@@ -58,6 +58,7 @@ export type AppEmitterEvent<T = any> = {
     reconnected: void;
     seek: number;
     pageStateChange: PageState;
+    togglePreview: boolean;
 };
 
 export type RegisterEventData = {

@@ -16,6 +16,7 @@ export type EmitterEvent = {
     observerIdChange: number;
     boxStateChange: string;
     playgroundSizeChange: DOMRect;
+    wrapperSizeChange: DOMRect;
     startReconnect: undefined;
     onReconnected: undefined;
     removeScenes: RemoveSceneParams;
@@ -28,6 +29,9 @@ export type EmitterEvent = {
     changePageState: undefined;
     writableChange: boolean;
     containerSizeRatioUpdate: number;
+    onScaleChange: {appId: string, scale: number};
+    onBackgroundImgChange: string | undefined;
+    windowMananerAppScrolling: {appId: string, x: number, y: number}
 };
 
 export type EmitterType = Emittery<EmitterEvent>;

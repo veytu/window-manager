@@ -10,7 +10,15 @@ import { DEFAULT_CONTAINER_RATIO, Events, INIT_DIR, ROOT_DIR } from "./constants
 import { internalEmitter } from "./InternalEmitter";
 import { Fields } from "./AttributesDelegate";
 import { initDb } from "./Register/storage";
-import { InvisiblePlugin, isPlayer, isRoom, RoomPhase, ViewMode } from "white-web-sdk";
+import {
+    InvisiblePlugin,
+    isPlayer,
+    isRoom,
+    RoomMember,
+    RoomPhase,
+    RoomState,
+    ViewMode,
+} from "white-web-sdk";
 import { isEqual, isNull, isObject, omit, isNumber } from "lodash";
 import { log } from "./Utils/log";
 import { PageStateImpl } from "./PageState";
@@ -31,7 +39,7 @@ import {
 import type { TELE_BOX_STATE, BoxManager } from "./BoxManager";
 import * as Errors from "./Utils/error";
 import type { Apps, Position } from "./AttributesDelegate";
-import type {
+import {
     Displayer,
     SceneDefinition,
     View,
@@ -57,6 +65,8 @@ import type { PageController, AddPageParams, PageState } from "./Page";
 import { boxEmitter } from "./BoxEmitter";
 import { IframeBridge } from "./View/IframeBridge";
 import { setOptions } from "@netless/app-media-player";
+import { ScrollerManager, ScrollerScrollEventType } from "./ScrollerManager";
+import { isAndroid, isIOS } from "./Utils/environment";
 export * from "./View/IframeBridge";
 
 export type WindowMangerAttributes = {
@@ -64,6 +74,10 @@ export type WindowMangerAttributes = {
     boxState: TELE_BOX_STATE;
     maximized?: boolean;
     minimized?: boolean;
+    maximizedBoxes?: string;
+    minimizedBoxes?: string;
+    mainViewBackgroundImg?: string;
+    mainViewBackgroundColor?: string;
     [key: string]: any;
 };
 
@@ -75,6 +89,7 @@ export type AddAppOptions = {
     scenePath?: string;
     title?: string;
     scenes?: SceneDefinition[];
+    hasHeader?: boolean;
 };
 
 export type setAppOptions = AddAppOptions & { appOptions?: any };
@@ -119,6 +134,8 @@ export type AppInitState = {
     focus?: boolean;
     maximized?: boolean;
     minimized?: boolean;
+    maximizedBoxes?: string[];
+    minimizedBoxes?: string[];
     sceneIndex?: number;
     boxState?: TeleBoxState; // 兼容旧版 telebox
     zIndex?: number;
@@ -158,22 +175,32 @@ export type MountParams = {
 
 export const reconnectRefresher = new ReconnectRefresher({ emitter: internalEmitter });
 
+export const mainViewField = "mainView";
+
 export class WindowManager
     extends InvisiblePlugin<WindowMangerAttributes, any>
     implements PageController
 {
     public static kind = "WindowManager";
     public static displayer: Displayer;
+    public static originWrapper?: HTMLElement;
     public static wrapper?: HTMLElement;
+    public static mainViewWrapper?: HTMLElement;
+    public static mainViewWrapperShadow?: HTMLElement;
     public static sizer?: HTMLElement;
     public static playground?: HTMLElement;
     public static container?: HTMLElement;
     public static debug = false;
     public static containerSizeRatio = DEFAULT_CONTAINER_RATIO;
     public static supportAppliancePlugin?: boolean;
-    private static isCreated = false;
+    public static isCreated = false;
+    public static appReadonly: boolean = isAndroid() || isIOS();
     private static _resolve = (_manager: WindowManager) => void 0;
+    private mutationObserver: MutationObserver | null = null;
+    private observerPencil: MutationObserver | null = null
 
+    private static extendWrapper?: HTMLElement;
+    private static mainViewScrollWrapper?: HTMLElement;
     public version = __APP_VERSION__;
     public dependencies = __APP_DEPENDENCIES__;
 
@@ -183,6 +210,7 @@ export class WindowManager
     public emitter: Emittery<PublicEvent> = callbacks;
     public appManager?: AppManager;
     public cursorManager?: CursorManager;
+    public scrollerManager?: ScrollerManager;
     public viewMode = ViewMode.Broadcaster;
     public isReplay = isPlayer(this.displayer);
     private _pageState?: PageStateImpl;
@@ -275,6 +303,7 @@ export class WindowManager
             params.cursorOptions,
             params.applianceIcons
         );
+        manager.scrollerManager = new ScrollerManager({ manager });
         if (containerSizeRatio) {
             manager.containerSizeRatio = containerSizeRatio;
         }
@@ -292,6 +321,43 @@ export class WindowManager
             console.warn("[WindowManager]: indexedDB open failed");
             console.log(error);
         }
+
+        manager?.room?.addMagixEventListener("onScaleChange", data => {
+            manager?._setScale(data.payload);
+        });
+
+        manager?.room?.addMagixEventListener("onMainViewBackgroundImgChange", data => {
+            manager?._setBackgroundImg(data.payload);
+        });
+        manager?.room?.addMagixEventListener("onMainViewBackgroundColorChange", data => {
+            manager?._setBackgroundColor(data.payload);
+        });
+
+        manager?.room?.addMagixEventListener("onLaserPointerActiveChange", data => {
+            manager?._setLaserPointer(data.payload);
+        });
+        manager?.room?.addMagixEventListener("onHidePencil", data => {
+            manager?._setHidePencil(data.payload);
+        });
+
+        manager.room?.addMagixEventListener(ScrollerScrollEventType, data => {
+            internalEmitter.emit(ScrollerScrollEventType, data.payload);
+        });
+
+        internalEmitter.on("playgroundSizeChange", () => {
+            manager?._updateMainViewWrapperSize(
+                manager.getAttributesValue("scale")[mainViewField],
+                true
+            );
+        });
+
+        setTimeout(() => {
+            manager?._initAttribute();
+        });
+
+        setTimeout(() => {
+            manager?.bindHidTeacherCursorListener(room);
+        }, 10000);
         return manager;
     }
 
@@ -312,7 +378,16 @@ export class WindowManager
         if (!WindowManager.container) {
             WindowManager.container = container;
         }
-        const { playground, wrapper, sizer, mainViewElement } = setupWrapper(container);
+        const {
+            playground,
+            wrapper,
+            sizer,
+            mainViewElement,
+            mainViewWrapperShadow,
+            mainViewWrapper,
+            extendWrapper,
+            mainViewScrollWrapper,
+        } = setupWrapper(container);
         WindowManager.playground = playground;
         if (chessboard) {
             sizer.classList.add("netless-window-manager-chess-sizer");
@@ -331,8 +406,18 @@ export class WindowManager
             wrapper,
             internalEmitter
         );
+        WindowManager.originWrapper = wrapper;
         WindowManager.wrapper = wrapper;
         WindowManager.sizer = sizer;
+        WindowManager.mainViewWrapper = mainViewWrapper;
+        WindowManager.extendWrapper = extendWrapper;
+        WindowManager.mainViewScrollWrapper = mainViewScrollWrapper;
+        WindowManager.mainViewWrapperShadow = mainViewWrapperShadow;
+
+        WindowManager.mainViewScrollWrapper?.classList.toggle(
+            "netless-window-manager-fancy-scrollbar-readonly",
+            WindowManager.appReadonly
+        );
         return mainViewElement;
     }
 
@@ -362,6 +447,13 @@ export class WindowManager
                 });
                 this.boxManager = boxManager;
                 this.appManager?.setBoxManager(boxManager);
+                if (WindowManager.mainViewScrollWrapper) {
+                    this.scrollerManager?.add({
+                        appId: mainViewField,
+                        scrollElement: WindowManager.mainViewScrollWrapper,
+                        manager: this,
+                    });
+                }
                 this.bindMainView(mainViewElement, params.disableCameraTransform);
                 if (WindowManager.wrapper) {
                     this.cursorManager?.setupWrapper(WindowManager.wrapper);
@@ -658,30 +750,32 @@ export class WindowManager
 
     public setBoxState(boxState: TeleBoxState): void {
         if (!this.canOperate) return;
-        switch (boxState) {
-            case "normal":
-                this.setMaximized(false);
-                this.setMinimized(false);
-                break;
-            case "maximized":
-                this.setMaximized(true);
-                this.setMinimized(false);
-                break;
-            case "minimized":
-                this.setMinimized(true);
-                break;
-            default:
-                break;
-        }
+        console.log(boxState)
+        // switch (boxState) {
+        //     case "normal":
+        //         this.setMaximized(false);
+        //         this.setMinimized(false);
+        //         break;
+        //     case "maximized":
+        //         this.setMaximized(true);
+        //         this.setMinimized(false);
+        //         break;
+        //     case "minimized":
+        //         this.setMinimized(true);
+        //         break;
+        //     default:
+        //         break;
+        // }
     }
 
-    public setMaximized(maximized: boolean): void {
+    public setMaximized(maximized: any): void {
         if (!this.canOperate) return;
         this.boxManager?.setMaximized(maximized, false);
     }
 
-    public setMinimized(minimized: boolean): void {
+    public setMinimized(minimized: any): void {
         if (!this.canOperate) return;
+        
         this.boxManager?.setMinimized(minimized, false);
     }
 
@@ -712,6 +806,55 @@ export class WindowManager
             }
             this._cursorUIDsStyleDOM.textContent = style;
         }
+    }
+
+    public maximizedBoxNextPage() {
+        const boxId = this.getTopMaxBoxId();
+
+        if (!boxId) return false;
+
+        const box = this.appManager?.appProxies.get(boxId);
+
+        if (!box) return false;
+
+        return box?.appContext?.nextPage();
+    }
+
+    public maximizedBoxPrevPage() {
+        const boxId = this.getTopMaxBoxId();
+
+        if (!boxId) return false;
+
+        const box = this.appManager?.appProxies.get(boxId);
+
+        if (!box) return false;
+
+        return box?.appContext?.prevPage();
+    }
+
+    public getMaximizedBoxPageState() {
+        const boxId = this.getTopMaxBoxId();
+
+        if (!boxId) return undefined;
+
+        const box = this.appManager?.appProxies.get(boxId);
+
+        if (!box) return undefined;
+
+        return box?.appContext?.pageState;
+    }
+
+    public getTopMaxBoxId() {
+        const boxes = this.appManager?.boxManager?.teleBoxManager.maximizedBoxes.filter(
+            box => !this.appManager?.boxManager?.teleBoxManager.minimizedBoxes.includes(box)
+        );
+        if (!boxes?.length) return undefined;
+        return boxes.reduce((a, b) =>
+            Number(this.appManager?.boxManager?.getBox(a)?._zIndex$?.value) >
+            Number(this.appManager?.boxManager?.getBox(b)?._zIndex$?.value)
+                ? a
+                : b
+        );
     }
 
     public get mainView(): View {
@@ -840,6 +983,10 @@ export class WindowManager
         return Boolean(this._fullscreen);
     }
 
+    public get extendWrapper() {
+        return WindowManager.extendWrapper;
+    }
+
     /**
      * 查询所有的 App
      */
@@ -954,14 +1101,24 @@ export class WindowManager
         return this.displayer as Room;
     }
 
+    public get appReadonly() {
+        return WindowManager.appReadonly;
+    }
+
+    public setAppReadonly(readonly: boolean): void {
+        WindowManager.appReadonly = readonly;
+    }
+
     public safeSetAttributes(attributes: any): void {
         if (this.canOperate) {
+            this.room?.dispatchMagixEvent("Windowmanager_custom_attributes", attributes);
             this.setAttributes(attributes);
         }
     }
 
     public safeUpdateAttributes(keys: string[], value: any): void {
         if (this.canOperate) {
+            this.room?.dispatchMagixEvent("Windowmanager_custom_attributes", { keys, value });
             this.updateAttributes(keys, value);
         }
     }
@@ -1044,6 +1201,253 @@ export class WindowManager
         internalEmitter.emit("containerSizeRatioUpdate", ratio);
     }
 
+    public setScale(appId: string, scale: number): void {
+        this.room.dispatchMagixEvent("onScaleChange", { appId, scale });
+    }
+
+    private _updateMainViewWrapperSize(scale?: number, skipEmit?: boolean) {
+        const size = WindowManager.originWrapper?.getBoundingClientRect();
+
+        if (!size) return false;
+        const currentScale = scale ?? this.getAttributesValue("scale")[mainViewField];
+        if (!WindowManager.mainViewWrapper || !WindowManager.mainViewWrapperShadow) return;
+
+        if (!WindowManager.mainViewWrapper || !WindowManager.mainViewWrapperShadow) return;
+
+        WindowManager.mainViewWrapper.style.width = `${size?.width * currentScale}px`;
+        WindowManager.mainViewWrapper.style.height = `${size?.height * currentScale}px`;
+        WindowManager.mainViewWrapperShadow.style.width = `${size?.width * currentScale}px`;
+        WindowManager.mainViewWrapperShadow.style.height = `${size?.height * currentScale}px`;
+
+        const skipUpdate = skipEmit || this.readonly || isIOS() || isAndroid();
+
+        this.room.disableCameraTransform = true;
+
+        internalEmitter.emit(
+            "wrapperSizeChange",
+            WindowManager.mainViewWrapper.getBoundingClientRect()
+        );
+    }
+
+    private _setScale(data: { appId: string; scale: number }, skipEmit?: boolean): boolean {
+        const { appId, scale } = data;
+        if (!isNumber(scale)) return false;
+
+        let newScale = scale;
+
+        if (newScale < 1) {
+            newScale = 1;
+        }
+        const skipUpdate =
+            skipEmit || isAndroid() || isIOS() || WindowManager.appReadonly || this.readonly;
+
+        if (!skipUpdate) {
+            this.safeUpdateAttributes(["scale"], {
+                ...this.getAttributesValue(["scale"]),
+                [appId]: newScale,
+            });
+        }
+
+        if (appId == mainViewField) {
+            this._updateMainViewWrapperSize(newScale, skipEmit);
+        } else {
+            internalEmitter.emit("onScaleChange", { appId, scale: newScale });
+        }
+
+        this.scrollerManager?.moveToCenter(appId);
+
+        return true;
+    }
+
+    public getScale(): Record<string, number> | undefined {
+        return this.getAttributesValue(["scale"]);
+    }
+
+    public setTeacherInfo(data: { uid?: string; name?: string }) {
+        this.safeSetAttributes({ teacher: data });
+    }
+
+    private get teacherInfo() {
+        return this.getAttributesValue(["teacher"]) || {};
+    }
+
+    public setLaserPointer(active: boolean) {
+        this.room.dispatchMagixEvent("onLaserPointerActiveChange", active);
+        this.safeUpdateAttributes([Fields.LaserPointerActive], {
+            active,
+            uid: this.appManager?.uid,
+        });
+    }
+
+    //老师端激光笔是否是激活状态
+    private _currentPointActive = false
+    //修改画笔和激光笔图片，内部不做权限角色判断，只根据是否激活处理
+    private _changePointerIcon() {
+        if (!this.mutationObserver) {
+            // 只替换 远端为老师情况
+            if (!this.teacherInfo?.uid || !this.teacherInfo?.name) return;
+            this.mutationObserver = new MutationObserver(mutationsList => {
+                if (this._currentPointActive) {
+                    for (let mutation of mutationsList) {
+                        if (mutation.type === "childList") {
+                            // get远端动作的uid 
+                            const cursorUid = WindowManager.wrapper?.querySelector('[data-cursor-uid]')?.getAttribute('data-cursor-uid');
+                            // 如果远端动作是老师，icon替换为激光笔
+                            if (cursorUid == this.teacherInfo?.uid) {
+                                // 以下为原有替换逻辑
+                                const cursorImgs = WindowManager.wrapper?.querySelector('[data-cursor-uid]')?.getElementsByClassName("cursor-pencil-offset");
+                                const cursors = Array.prototype.slice.call(cursorImgs);
+                                if (cursors) {
+                                    cursors.forEach((item: HTMLDivElement) => {
+                                        // const nameNode = item.querySelector(".cursor-inner");
+                                        const imgNode: HTMLImageElement | null =
+                                            item.querySelector(".cursor-pencil-image") || item.querySelector('.cursor-arrow-image');
+                                        if (imgNode) {
+                                            imgNode.src =
+                                                "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMjgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGZpbHRlciB4PSItMTIwJSIgeT0iLTEyMCUiIHdpZHRoPSIzNDAlIiBoZWlnaHQ9IjM0MCUiIGZpbHRlclVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgaWQ9ImEiPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjQiIGluPSJTb3VyY2VHcmFwaGljIi8+PC9maWx0ZXI+PC9kZWZzPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkgOSkiIGZpbGw9IiNGRjAxMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PGNpcmNsZSBmaWx0ZXI9InVybCgjYSkiIGN4PSI1IiBjeT0iNSIgcj0iNSIvPjxwYXRoIGQ9Ik01IDhhMyAzIDAgMSAwIDAtNiAzIDMgMCAwIDAgMCA2em0wLTEuNzE0YTEuMjg2IDEuMjg2IDAgMSAxIDAtMi41NzIgMS4yODYgMS4yODYgMCAwIDEgMCAyLjU3MnoiIGZpbGwtcnVsZT0ibm9uemVybyIvPjwvZz48L3N2Zz4=";
+                                        }
+                                    });
+                                }
+                            };
+
+                        }
+                    }
+                }
+            });
+            if (!WindowManager.wrapper) return;
+            this.mutationObserver.observe(WindowManager.wrapper, {
+                subtree: true,
+                childList: true,
+            });
+        }
+    }
+
+    private _setLaserPointer(active: boolean) {
+        this._currentPointActive = active
+        // WindowManager.playground?.classList.toggle("is-cursor-laserPointer", active);
+        if (!active) {
+            this.mutationObserver?.disconnect();
+            this.mutationObserver = null;
+            const cursorNode = document.querySelectorAll(
+                ".netless-window-manager-cursor-mid"
+            );
+            cursorNode?.forEach(i => {
+                i.classList.add("force-none");
+            });
+            return;
+        }
+        this._changePointerIcon()
+       
+    }
+
+    public setHidePencil(active: boolean) {
+        this.room.dispatchMagixEvent("onHidePencil", active);
+        this.safeUpdateAttributes(["hidePencil"], active);
+    }
+
+    private _setHidePencil (active: boolean) {
+        if (!active) {
+            this.observerPencil?.disconnect();
+            this.observerPencil = null;
+            return;
+        }
+        if (!this.observerPencil) {
+            this.observerPencil = new MutationObserver(mutationsList => {
+                for (let mutation of mutationsList) {
+                    if (mutation.type === "childList") {
+                        const cursorImgs = WindowManager.wrapper?.getElementsByClassName("cursor-pencil-offset");
+                        
+                        const cursors = Array.prototype.slice.call(cursorImgs);
+
+                        if (cursors) {
+                            cursors.forEach((item: HTMLDivElement) => {
+                                const nameNode = item.querySelector(".cursor-inner");
+                                if (nameNode) {
+                                    nameNode.classList.add('force-none')
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+            if (!WindowManager.wrapper) return;
+            this.observerPencil.observe(WindowManager.wrapper, {
+                subtree: true,
+                childList: true,
+            });
+        }
+    }
+
+    public get isLaserPointerActive() {
+        return this.getAttributesValue([Fields.LaserPointerActive]).active || false;
+    }
+
+    private bindHidTeacherCursorListener(room: Room | Displayer) {
+
+        room.callbacks.on("onRoomStateChanged", (state: RoomState) => {
+            if (state?.roomMembers) {
+                const cursorNode = document.querySelectorAll(
+                    ".netless-window-manager-cursor-mid"
+                );
+                cursorNode?.forEach(i => {
+                    i.classList.add("force-none");
+                    if (this.isLaserPointerActive) {
+                        if (i.attributes.getNamedItem("data-cursor-uid")?.value === this.teacherInfo?.uid) {
+                            i.classList.remove('force-none')
+                            const img: HTMLImageElement | null = i.querySelector('.netless-window-manager-cursor-clicker-image')
+                            const selector: HTMLImageElement | null = i.querySelector('.netless-window-manager-cursor-selector-image') 
+
+                            if (img) {
+                                img.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMjgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGZpbHRlciB4PSItMTIwJSIgeT0iLTEyMCUiIHdpZHRoPSIzNDAlIiBoZWlnaHQ9IjM0MCUiIGZpbHRlclVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgaWQ9ImEiPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjQiIGluPSJTb3VyY2VHcmFwaGljIi8+PC9maWx0ZXI+PC9kZWZzPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkgOSkiIGZpbGw9IiNGRjAxMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PGNpcmNsZSBmaWx0ZXI9InVybCgjYSkiIGN4PSI1IiBjeT0iNSIgcj0iNSIvPjxwYXRoIGQ9Ik01IDhhMyAzIDAgMSAwIDAtNiAzIDMgMCAwIDAgMCA2em0wLTEuNzE0YTEuMjg2IDEuMjg2IDAgMSAxIDAtMi41NzIgMS4yODYgMS4yODYgMCAwIDEgMCAyLjU3MnoiIGZpbGwtcnVsZT0ibm9uemVybyIvPjwvZz48L3N2Zz4=";
+                            }
+
+                            if (selector) {
+                                selector.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMjgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGZpbHRlciB4PSItMTIwJSIgeT0iLTEyMCUiIHdpZHRoPSIzNDAlIiBoZWlnaHQ9IjM0MCUiIGZpbHRlclVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgaWQ9ImEiPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjQiIGluPSJTb3VyY2VHcmFwaGljIi8+PC9maWx0ZXI+PC9kZWZzPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkgOSkiIGZpbGw9IiNGRjAxMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PGNpcmNsZSBmaWx0ZXI9InVybCgjYSkiIGN4PSI1IiBjeT0iNSIgcj0iNSIvPjxwYXRoIGQ9Ik01IDhhMyAzIDAgMSAwIDAtNiAzIDMgMCAwIDAgMCA2em0wLTEuNzE0YTEuMjg2IDEuMjg2IDAgMSAxIDAtMi41NzIgMS4yODYgMS4yODYgMCAwIDEgMCAyLjU3MnoiIGZpbGwtcnVsZT0ibm9uemVybyIvPjwvZz48L3N2Zz4=";
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+        const targetNode = document.querySelector(".netless-window-manager-wrapper");
+        const config = { childList: true, subtree: true };
+        const callback = (mutationList: any) => {
+            for (const mutation of mutationList) {
+                if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
+                    const cursors = targetNode?.querySelectorAll(
+                        ".netless-window-manager-cursor-mid"
+                    );
+
+                    cursors?.forEach(i => {
+                        i.classList.add("force-none");
+                        if (this.isLaserPointerActive) {
+                            if (i.attributes.getNamedItem("data-cursor-uid")?.value === this.teacherInfo?.uid) {
+                                i.classList.remove('force-none')
+                                const img: HTMLImageElement | null = i.querySelector('.netless-window-manager-cursor-clicker-image')
+                                const selector: HTMLImageElement | null = i.querySelector('.netless-window-manager-cursor-selector-image') 
+
+                                if (img) {
+                                    img.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMjgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGZpbHRlciB4PSItMTIwJSIgeT0iLTEyMCUiIHdpZHRoPSIzNDAlIiBoZWlnaHQ9IjM0MCUiIGZpbHRlclVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgaWQ9ImEiPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjQiIGluPSJTb3VyY2VHcmFwaGljIi8+PC9maWx0ZXI+PC9kZWZzPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkgOSkiIGZpbGw9IiNGRjAxMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PGNpcmNsZSBmaWx0ZXI9InVybCgjYSkiIGN4PSI1IiBjeT0iNSIgcj0iNSIvPjxwYXRoIGQ9Ik01IDhhMyAzIDAgMSAwIDAtNiAzIDMgMCAwIDAgMCA2em0wLTEuNzE0YTEuMjg2IDEuMjg2IDAgMSAxIDAtMi41NzIgMS4yODYgMS4yODYgMCAwIDEgMCAyLjU3MnoiIGZpbGwtcnVsZT0ibm9uemVybyIvPjwvZz48L3N2Zz4=";
+                                }
+
+                                if (selector) {
+                                    selector.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMjgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGZpbHRlciB4PSItMTIwJSIgeT0iLTEyMCUiIHdpZHRoPSIzNDAlIiBoZWlnaHQ9IjM0MCUiIGZpbHRlclVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgaWQ9ImEiPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjQiIGluPSJTb3VyY2VHcmFwaGljIi8+PC9maWx0ZXI+PC9kZWZzPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkgOSkiIGZpbGw9IiNGRjAxMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PGNpcmNsZSBmaWx0ZXI9InVybCgjYSkiIGN4PSI1IiBjeT0iNSIgcj0iNSIvPjxwYXRoIGQ9Ik01IDhhMyAzIDAgMSAwIDAtNiAzIDMgMCAwIDAgMCA2em0wLTEuNzE0YTEuMjg2IDEuMjg2IDAgMSAxIDAtMi41NzIgMS4yODYgMS4yODYgMCAwIDEgMCAyLjU3MnoiIGZpbGwtcnVsZT0ibm9uemVybyIvPjwvZz48L3N2Zz4=";
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        };
+        const observer = new MutationObserver(callback);
+        observer.observe(targetNode as any, config);
+    }
+
+    public getAppScale(appId: string): number {
+        return this.getAttributesValue(["scale"])[appId];
+    }
+
     private isDynamicPPT(scenes: SceneDefinition[]) {
         const sceneSrc = scenes[0]?.ppt?.src;
         return sceneSrc?.startsWith("pptx://");
@@ -1072,6 +1476,30 @@ export class WindowManager
             if (!this.attributes[Fields.IframeBridge]) {
                 this.safeSetAttributes({ [Fields.IframeBridge]: {} });
             }
+            if (!this.attributes["mainViewBackgroundColor"]) {
+                this.safeSetAttributes({ mainViewBackgroundColor: "" });
+            }
+            if (!this.attributes["mainViewBackgroundImg"]) {
+                this.safeSetAttributes({ mainViewBackgroundImg: "" });
+            }
+            if (!this.attributes["scale"]) {
+                if (WindowManager.appReadonly || this.readonly) {
+                    return;
+                }
+                this.safeSetAttributes({
+                    scale: {
+                        [mainViewField]: 1,
+                    },
+                });
+            }
+
+            if (!this.attributes[Fields.LaserPointerActive]) {
+                this.safeSetAttributes({ [Fields.LaserPointerActive]: { active: false, uid: "" } });
+            }
+
+            if (!this.attributes["hidePencil"]) {
+                this.safeSetAttributes({ hidePencil: false });
+            }
         }
     }
 
@@ -1082,6 +1510,70 @@ export class WindowManager
         }
         this._iframeBridge || (this._iframeBridge = new IframeBridge(this, this.appManager));
         return this._iframeBridge;
+    }
+
+    public getBackground(): { type: "img" | "color"; value: string | undefined } | undefined {
+        if (!!this.attributes["mainViewBackgroundColor"]) {
+            return {
+                type: "color",
+                value: this.attributes["mainViewBackgroundColor"],
+            };
+        }
+
+        if (!!this.attributes["mainViewBackgroundImg"]) {
+            return {
+                type: "img",
+                value: this.attributes["mainViewBackgroundImg"],
+            };
+        }
+
+        return undefined;
+    }
+
+    public setBackgroundImg(src: string): void {
+        this.room.dispatchMagixEvent("onMainViewBackgroundColorChange", "");
+        this.room.dispatchMagixEvent("onMainViewBackgroundImgChange", src);
+    }
+    public setBackgroundColor(color: string): void {
+        this.room.dispatchMagixEvent("onMainViewBackgroundImgChange", "");
+        this.room.dispatchMagixEvent("onMainViewBackgroundColorChange", color);
+    }
+    private _setBackgroundColor(color: string): void {
+        if (!WindowManager.mainViewWrapper) return;
+        WindowManager.mainViewWrapper.style.backgroundColor = color;
+        this.safeUpdateAttributes(["mainViewBackgroundColor"], color);
+    }
+    private _setBackgroundImg(src: string): void {
+        if (!WindowManager.mainViewWrapper) return;
+        WindowManager.mainViewWrapper.style.backgroundImage = `url(${src})`;
+        this.safeUpdateAttributes(["mainViewBackgroundImg"], src);
+    }
+
+    private _initAttribute(): void {
+        if (!!this.attributes["mainViewBackgroundImg"]) {
+            this._setBackgroundImg(this.attributes["mainViewBackgroundImg"]);
+        }
+
+        if (!!this.attributes["mainViewBackgroundColor"]) {
+            this._setBackgroundColor(this.attributes["mainViewBackgroundColor"]);
+        }
+
+        if (!!this.attributes["scale"]) {
+            const scaleMap: Record<string, number> = this.attributes["scale"];
+            Object.keys(scaleMap).forEach(item => {
+                this._setScale({ appId: item, scale: scaleMap[item] }, true);
+            });
+        }
+
+        if (!!this.attributes[Fields.LaserPointerActive]) {
+            const { active } = this.attributes[Fields.LaserPointerActive];
+
+            this._setLaserPointer(active);
+        }
+
+        if (!!this.attributes["hidePencil"]) {
+            this._setHidePencil(this.attributes["hidePencil"])
+        }
     }
 }
 
