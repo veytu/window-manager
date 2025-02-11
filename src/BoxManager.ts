@@ -263,6 +263,7 @@ export class BoxManager {
             // },
             fence: false,
             prefersColorScheme: createTeleBoxManagerConfig?.prefersColorScheme,
+            stageRatio: 2/3
         };
 
         const manager = new TeleBoxManager(initManagerState);

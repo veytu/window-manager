@@ -4257,7 +4257,7 @@ class ValManager {
 function destroyVal(val) {
   val.destroy();
 }
-var shadowStyles = /* @__PURE__ */ (() => '.tele-fancy-scrollbar {\n  overscroll-behavior: contain;\n  overflow: auto;\n  overflow-y: scroll;\n  overflow-y: overlay;\n  -webkit-overflow-scrolling: touch;\n  -ms-overflow-style: -ms-autohiding-scrollbar;\n  scrollbar-width: auto;\n}\n.tele-fancy-scrollbar::-webkit-scrollbar {\n  height: 8px;\n  width: 8px;\n}\n.tele-fancy-scrollbar::-webkit-scrollbar-track {\n  background-color: transparent;\n}\n.tele-fancy-scrollbar::-webkit-scrollbar-thumb {\n  background-color: rgba(68, 78, 96, 0.1);\n  background-color: transparent;\n  border-radius: 4px;\n  transition: background-color 0.4s;\n}\n.tele-fancy-scrollbar:hover::-webkit-scrollbar-thumb {\n  background-color: rgba(68, 78, 96, 0.1);\n}\n.tele-fancy-scrollbar::-webkit-scrollbar-thumb:hover {\n  background-color: rgba(68, 78, 96, 0.2);\n}\n.tele-fancy-scrollbar::-webkit-scrollbar-thumb:active {\n  background-color: rgba(68, 78, 96, 0.2);\n}\n.tele-fancy-scrollbar::-webkit-scrollbar-thumb:vertical {\n  min-height: 50px;\n}\n.tele-fancy-scrollbar::-webkit-scrollbar-thumb:horizontal {\n  min-width: 50px;\n}\n.telebox-quarantine {\n  all: initial;\n  position: relative;\n  width: 100%;\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n}\n.telebox-body-wrap {\n  color: #191919;\n  color: var(--tele-boxColor, #191919);\n  flex: 1;\n  width: 100%;\n  overflow: hidden;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  position: relative;\n}\n.telebox-content {\n  width: 100%;\n  height: 100%;\n  position: relative;\n  background-color: #f5f5fc;\n  background-color: var(--tele-boxContainerBackground, #f5f5fc);\n}\n.telebox-box-stage {\n  position: absolute;\n  z-index: 1;\n  overflow: hidden;\n  background-color: #fff;\n  background-color: var(--tele-boxStageBackground, #fff);\n  box-shadow: 0px 0px 16px rgba(0, 0, 0, 0.08);\n  box-shadow: var(--tele-boxStageShadow, 0px 0px 16px rgba(0, 0, 0, 0.08));\n}\n.telebox-footer-wrap {\n  flex-shrink: 0;\n  display: flex;\n  flex-direction: column;\n  color: #191919;\n  color: var(--tele-boxFooterColor, #191919);\n  background-color: #fff;\n  background-color: var(--tele-boxFooterBackground, #fff);\n}\n.telebox-footer-wrap::before {\n  content: "";\n  display: block;\n  flex: 1;\n}\n.telebox-color-scheme-dark {\n  color-scheme: dark;\n}\n.telebox-color-scheme-dark .telebox-body-wrap {\n  color: #e9e9e9;\n  color: var(--tele-boxColor, #e9e9e9);\n}\n.telebox-color-scheme-dark .telebox-content {\n  background-color: #25282e;\n  background-color: var(--tele-boxContainerBackground, #25282e);\n}\n.telebox-color-scheme-dark .telebox-box-stage {\n  background-color: #272a30;\n  background-color: var(--tele-boxStageBackground, #272a30);\n  box-shadow: 0px 0px 16px rgba(0, 0, 0, 0.24);\n  box-shadow: var(--tele-boxStageShadow, 0px 0px 16px rgba(0, 0, 0, 0.24));\n}\n.telebox-color-scheme-dark .telebox-footer-wrap {\n  color: #e9e9e9;\n  color: var(--tele-boxFooterColor, #e9e9e9);\n  background-color: #383b42;\n  background-color: var(--tele-boxFooterBackground, #383b42);\n}')();
+var shadowStyles = /* @__PURE__ */ (() => '.tele-fancy-scrollbar {\n  overscroll-behavior: contain;\n  overflow: auto;\n  overflow-y: scroll;\n  overflow-y: overlay;\n  -webkit-overflow-scrolling: touch;\n  -ms-overflow-style: -ms-autohiding-scrollbar;\n  scrollbar-width: auto;\n}\n.tele-fancy-scrollbar::-webkit-scrollbar {\n  height: 8px;\n  width: 8px;\n}\n.tele-fancy-scrollbar::-webkit-scrollbar-track {\n  background-color: transparent;\n}\n.tele-fancy-scrollbar::-webkit-scrollbar-thumb {\n  background-color: rgba(68, 78, 96, 0.1);\n  background-color: transparent;\n  border-radius: 4px;\n  transition: background-color 0.4s;\n}\n.tele-fancy-scrollbar:hover::-webkit-scrollbar-thumb {\n  background-color: rgba(68, 78, 96, 0.1);\n}\n.tele-fancy-scrollbar::-webkit-scrollbar-thumb:hover {\n  background-color: rgba(68, 78, 96, 0.2);\n}\n.tele-fancy-scrollbar::-webkit-scrollbar-thumb:active {\n  background-color: rgba(68, 78, 96, 0.2);\n}\n.tele-fancy-scrollbar::-webkit-scrollbar-thumb:vertical {\n  min-height: 50px;\n}\n.tele-fancy-scrollbar::-webkit-scrollbar-thumb:horizontal {\n  min-width: 50px;\n}\n.telebox-quarantine {\n  all: initial;\n  position: relative;\n  width: 100%;\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n}\n.telebox-body-wrap {\n  color: #191919;\n  color: var(--tele-boxColor, #191919);\n  flex: 1;\n  width: 100%;\n  overflow: hidden;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  position: relative;\n}\n.telebox-content {\n  width: 100%;\n  height: 100%;\n  position: relative;\n  background-color: #f5f5fc;\n  background-color: var(--tele-boxContainerBackground, #f5f5fc);\n}\n.telebox-box-stage {\n  position: absolute;\n  z-index: 1;\n  overflow: hidden;\n  overflow-y: auto;\n  background-color: #fff;\n  background-color: var(--tele-boxStageBackground, #fff);\n}\n.telebox-footer-wrap {\n  flex-shrink: 0;\n  display: flex;\n  flex-direction: column;\n  color: #191919;\n  color: var(--tele-boxFooterColor, #191919);\n  background-color: #fff;\n  background-color: var(--tele-boxFooterBackground, #fff);\n}\n.telebox-footer-wrap::before {\n  content: "";\n  display: block;\n  flex: 1;\n}\n.telebox-color-scheme-dark {\n  color-scheme: dark;\n}\n.telebox-color-scheme-dark .telebox-body-wrap {\n  color: #e9e9e9;\n  color: var(--tele-boxColor, #e9e9e9);\n}\n.telebox-color-scheme-dark .telebox-content {\n  background-color: #25282e;\n  background-color: var(--tele-boxContainerBackground, #25282e);\n}\n.telebox-color-scheme-dark .telebox-box-stage {\n  background-color: #272a30;\n  background-color: var(--tele-boxStageBackground, #272a30);\n}\n.telebox-color-scheme-dark .telebox-footer-wrap {\n  color: #e9e9e9;\n  color: var(--tele-boxFooterColor, #e9e9e9);\n  background-color: #383b42;\n  background-color: var(--tele-boxFooterBackground, #383b42);\n}')();
 var TELE_BOX_COLOR_SCHEME = /* @__PURE__ */ ((TELE_BOX_COLOR_SCHEME2) => {
   TELE_BOX_COLOR_SCHEME2["Light"] = "light";
   TELE_BOX_COLOR_SCHEME2["Dark"] = "dark";
@@ -4325,7 +4325,8 @@ class DefaultTitleBar {
     buttons,
     onEvent,
     onDragStart,
-    namespace = "telebox"
+    namespace = "telebox",
+    boxId
   }) {
     this.sideEffect = new SideEffectManager$1();
     this.lastTitleBarClick = {
@@ -4349,7 +4350,7 @@ class DefaultTitleBar {
       if (now - this.lastTitleBarClick.timestamp <= 500) {
         if (Math.abs(ev.clientX - this.lastTitleBarClick.clientX) <= 5 && Math.abs(ev.clientY - this.lastTitleBarClick.clientY) <= 5) {
           if (this.onEvent) {
-            this.onEvent({ type: TELE_BOX_DELEGATE_EVENT.Maximize });
+            this.onEvent({ type: TELE_BOX_DELEGATE_EVENT.Maximize, boxId: this.boxId });
           }
         }
       } else if (this.onDragStart) {
@@ -4365,6 +4366,7 @@ class DefaultTitleBar {
     this.onEvent = onEvent;
     this.onDragStart = onDragStart;
     this.namespace = namespace;
+    this.boxId = boxId || "";
     this.buttons = buttons || [
       {
         type: TELE_BOX_DELEGATE_EVENT.Minimize,
@@ -4402,6 +4404,7 @@ class DefaultTitleBar {
         $btn.className = `${this.wrapClassName("titlebar-btn")} ${iconClassName}`;
         $btn.dataset.teleTitleBarBtnIndex = teleTitleBarBtnIndex;
         $btn.dataset.teleTitleBarNoDblClick = "true";
+        $btn.dataset.teleBoxID = this.boxId;
         $buttonsContainer.appendChild($btn);
       });
       this.sideEffect.addDisposer(this.title$.subscribe((title) => {
@@ -4429,7 +4432,9 @@ class DefaultTitleBar {
           if (this.onEvent) {
             this.onEvent({
               type: btn.type,
-              value: btn.value
+              value: btn.value,
+              index: teleTitleBarBtnIndex,
+              boxId: this.boxId
             });
           }
         }
@@ -4548,10 +4553,14 @@ class TeleBox {
     const boxMaximized$ = new Val(null);
     const boxMinimized$ = new Val(null);
     const boxReadonly$ = new Val(null);
-    const maximized$ = combine([boxMaximized$, managerMaximized$], ([boxMaximized, managerMaximized]) => boxMaximized != null ? boxMaximized : managerMaximized);
+    const maximized$ = combine([boxMaximized$, managerMaximized$], ([boxMaximized, managerMaximized]) => {
+      return boxMaximized != null ? boxMaximized : managerMaximized;
+    });
     const minimized$ = combine([boxMinimized$, managerMinimized$], ([boxMinimized, managerMinimized]) => boxMinimized != null ? boxMinimized : managerMinimized);
     const readonly$ = combine([boxReadonly$, managerReadonly$], ([boxReadonly, managerReadonly]) => boxReadonly != null ? boxReadonly : managerReadonly);
-    const state$ = combine([minimized$, maximized$], ([minimized, maximized]) => minimized ? TELE_BOX_STATE.Minimized : maximized ? TELE_BOX_STATE.Maximized : TELE_BOX_STATE.Normal);
+    const state$ = combine([minimized$, maximized$], ([minimized, maximized]) => {
+      return minimized ? TELE_BOX_STATE.Minimized : maximized ? TELE_BOX_STATE.Maximized : TELE_BOX_STATE.Normal;
+    });
     const minSize$ = new Val({
       width: clamp$1(minWidth, 0, 1),
       height: clamp$1(minHeight, 0, 1)
@@ -4639,7 +4648,8 @@ class TeleBox {
         var _a;
         return (_a = this._handleTrackStart) == null ? void 0 : _a.call(this, event);
       },
-      onEvent: (event) => this._delegateEvents.emit(event.type)
+      onEvent: (event) => this._delegateEvents.emit(event.type, this.id),
+      boxId: this.id
     });
     this._sideEffect.addDisposer(combine([boxRatio$, minimized$]).subscribe(([boxRatio2, minimized]) => {
       if (!minimized && boxRatio2 > 0) {
@@ -5152,7 +5162,7 @@ class TeleBoxCollector {
     minimized$,
     readonly$,
     darkMode$,
-    boxCount,
+    boxes$,
     namespace = "telebox",
     styles: styles2 = {},
     root,
@@ -5199,8 +5209,8 @@ class TeleBoxCollector {
           $collector.classList.toggle(this.wrapClassName("collector-visible"), visible);
           wrp$.value.classList.toggle(this.wrapClassName("collector-visible"), visible);
         }),
-        boxCount.subscribe((count) => {
-          count$.value.innerHTML = count.toString();
+        boxes$.subscribe((boxes) => {
+          count$.value.innerHTML = boxes.length.toString();
         }),
         readonly$.subscribe((readonly) => {
           wrp$.value.classList.toggle(this.wrapClassName("collector-readonly"), readonly);
@@ -5262,6 +5272,8 @@ class MaxTitleBar extends DefaultTitleBar {
     this.boxes$ = config.boxes$;
     this.rootRect$ = config.rootRect$;
     this.darkMode$ = config.darkMode$;
+    this.stageRect$ = config.stageRect$;
+    this.normalBoxes$ = config.normalBoxes$;
     config.root.appendChild(this.render());
   }
   focusBox(box) {
@@ -5298,7 +5310,11 @@ class MaxTitleBar extends DefaultTitleBar {
       this.readonly$.subscribe((readonly) => {
         $titleBar.classList.toggle(this.wrapClassName("readonly"), readonly);
       }),
-      combine([this.state$, this.boxes$]).subscribe(([state, titles]) => {
+      this.stageRect$.subscribe((stageRect) => {
+        $titleBar.style.width = stageRect.width + "px";
+        $titleBar.style.left = stageRect.x + 4 + "px";
+      }),
+      combine([this.state$, this.boxes$, this.normalBoxes$]).subscribe(([state, titles]) => {
         if (state === TELE_BOX_STATE.Maximized) {
           $titleBar.classList.toggle(this.wrapClassName("max-titlebar-single-title"), titles.length === 1);
           if (titles.length !== 1) {
@@ -5331,12 +5347,13 @@ class MaxTitleBar extends DefaultTitleBar {
     const $content = document.createElement("div");
     $content.className = this.wrapClassName("titles-content");
     this.$titles.appendChild($content);
-    const disposers = this.boxes$.value.map((box) => {
+    const disposers = this.boxes$.value.filter((box) => !this.normalBoxes$.value.includes(box.id)).map((box) => {
       const $tab = document.createElement("button");
       $tab.className = this.wrapClassName("titles-tab");
       $tab.textContent = box.title;
       $tab.dataset.teleBoxID = box.id;
       $tab.dataset.teleTitleBarNoDblClick = "true";
+      console.log(this.focusedBox);
       if (this.focusedBox && box.id === this.focusedBox.id) {
         $tab.classList.add(this.wrapClassName("titles-tab-focus"));
       }
@@ -5355,6 +5372,7 @@ class TeleBoxManager {
     prefersColorScheme = TELE_BOX_COLOR_SCHEME.Light,
     minimized = false,
     maximized = false,
+    normalBoxes = [],
     fence = true,
     collector,
     namespace = "telebox",
@@ -5382,13 +5400,12 @@ class TeleBoxManager {
     const fullscreen$ = new Val(fullscreen);
     const input_minimized$ = new Val(minimized);
     const input_maximized$ = new Val(maximized);
-    const boxCount = new Val(0);
     const maximized$ = combine([input_maximized$, fullscreen$], ([maximized2, fullscreen2]) => fullscreen2 ? true : maximized2);
     const minimized$ = combine([input_minimized$, fullscreen$], ([minimized2, fullscreen2]) => fullscreen2 ? false : minimized2);
+    this.normalBoxes = new Val(normalBoxes);
     this.setMaximized = (maximized2, skipUpdate) => input_maximized$.setValue(maximized2, skipUpdate);
     this.setMinimized = (minimized2, skipUpdate) => input_minimized$.setValue(minimized2, skipUpdate);
-    this.delBoxCount = (count) => boxCount.setValue(count != null ? count : boxCount.value - 1);
-    this.addBoxCount = (count) => boxCount.setValue(count != null ? count : boxCount.value + 1);
+    this.setNormalboxes = (normalBoxes2) => this.normalBoxes.setValue(normalBoxes2);
     const rootRect$ = new Val({
       x: 0,
       y: 0,
@@ -5557,7 +5574,7 @@ class TeleBoxManager {
       readonly$,
       darkMode$,
       namespace,
-      boxCount,
+      boxes$: this.boxes$,
       root: this.$container,
       onClick: () => input_minimized$.setValue(false)
     });
@@ -5569,11 +5586,48 @@ class TeleBoxManager {
       readonly$,
       state$,
       rootRect$,
+      stageRect$,
       root: this.$container,
+      normalBoxes$: this.normalBoxes,
       onEvent: (event) => {
+        var _a, _b, _c;
         switch (event.type) {
           case TELE_BOX_DELEGATE_EVENT.Maximize: {
-            this.setMaximized(!maximized$.value);
+            if (maximized$.value) {
+              if ((_a = this.titleBar.focusedBox) == null ? void 0 : _a.id) {
+                const oldFocusId = (_b = this.titleBar.focusedBox) == null ? void 0 : _b.id;
+                const newNormalboxes = [
+                  ...this.normalBoxes.value,
+                  (_c = this.titleBar.focusedBox) == null ? void 0 : _c.id
+                ].reduce((acc, item) => {
+                  if (!acc.includes(item))
+                    acc.push(item);
+                  return acc;
+                }, []);
+                const nextFocusBoxes = this.boxes$.value.filter((box) => {
+                  var _a2;
+                  return box.id != ((_a2 = this.titleBar.focusedBox) == null ? void 0 : _a2.id) && !newNormalboxes.includes(box.id);
+                });
+                const maxIndexBox = nextFocusBoxes.reduce((maxItem, current) => {
+                  return current._zIndex$.value > maxItem._zIndex$.value ? current : maxItem;
+                });
+                this.setNormalboxes(newNormalboxes);
+                if (maxIndexBox) {
+                  const oldFocusBox = this.boxes$.value.find((box) => box.id == oldFocusId);
+                  if (oldFocusBox) {
+                    this.makeBoxTop(oldFocusBox);
+                  }
+                  this.titleBar.focusBox(maxIndexBox);
+                } else {
+                  this.setMaximized(!maximized$.value);
+                }
+              } else {
+                this.setMaximized(!maximized$.value);
+              }
+            } else {
+              this.setMaximized(!maximized$.value);
+              this.setNormalboxes([]);
+            }
             break;
           }
           case TELE_BOX_DELEGATE_EVENT.Minimize: {
@@ -5638,10 +5692,16 @@ class TeleBoxManager {
     return this;
   }
   create(config = {}, smartPosition = true) {
+    const id2 = config.id || genUID$1();
+    const managerMaximized$ = combine([this._maximized$, this.normalBoxes], ([maximized, normalBoxes]) => {
+      return maximized && !normalBoxes.includes(id2);
+    });
+    const managerMinimized$ = combine([this._minimized$, this.normalBoxes], ([minimized, normalBoxes]) => minimized && !normalBoxes.includes(id2));
     const box = new TeleBox({
       zIndex: this.topBox ? this.topBox.zIndex + 1 : 100,
       ...config,
       ...smartPosition ? this.smartPosition(config) : {},
+      id: id2,
       namespace: this.namespace,
       root: this.$stage,
       darkMode$: this._darkMode$,
@@ -5649,8 +5709,8 @@ class TeleBoxManager {
       rootRect$: this._rootRect$,
       managerStageRect$: this._stageRect$,
       managerStageRatio$: this._stageRatio$,
-      managerMaximized$: this._maximized$,
-      managerMinimized$: this._minimized$,
+      managerMaximized$,
+      managerMinimized$,
       managerReadonly$: this._readonly$,
       collectorRect$: this.collector._rect$,
       defaultBoxBodyStyle$: this._defaultBoxBodyStyle$,
@@ -5665,7 +5725,15 @@ class TeleBoxManager {
     this.boxes$.setValue([...this.boxes, box]);
     this._sideEffect.addDisposer([
       box._delegateEvents.on(TELE_BOX_DELEGATE_EVENT.Maximize, () => {
-        this.setMaximized(!this.maximized);
+        var _a;
+        if ((_a = this.normalBoxes.value) == null ? void 0 : _a.length) {
+          this.setMaximized(true);
+          this.makeBoxTop(box);
+          this.titleBar.focusBox(box);
+          this.setNormalboxes([]);
+        } else {
+          this.setMaximized(!this.maximized);
+        }
       }),
       box._delegateEvents.on(TELE_BOX_DELEGATE_EVENT.Minimize, () => {
         this.setMinimized(true);
@@ -5695,7 +5763,6 @@ class TeleBoxManager {
       })
     ]);
     this.events.emit(TELE_BOX_MANAGER_EVENT.Created, box);
-    this.addBoxCount();
     return box;
   }
   query(config) {
@@ -5729,7 +5796,6 @@ class TeleBoxManager {
         }
         this.events.emit(TELE_BOX_MANAGER_EVENT.Removed, deletedBoxes);
       }
-      this.delBoxCount();
       return deletedBoxes[0];
     }
     return;
@@ -5751,7 +5817,6 @@ class TeleBoxManager {
       }
       this.events.emit(TELE_BOX_MANAGER_EVENT.Removed, deletedBoxes);
     }
-    this.delBoxCount(0);
     return deletedBoxes;
   }
   mount(root) {
@@ -5787,7 +5852,9 @@ class TeleBoxManager {
           this.blurBox(box, skipUpdate);
         }
       });
-      this.titleBar.focusBox(targetBox);
+      if (!this.normalBoxes.value.includes(targetBox.id)) {
+        this.titleBar.focusBox(targetBox);
+      }
     }
   }
   focusTopBox() {
@@ -5906,7 +5973,16 @@ class TeleBoxManager {
   makeBoxTop(box, skipUpdate = false) {
     if (this.topBox) {
       if (box !== this.topBox) {
-        box._zIndex$.setValue(this.topBox.zIndex + 1, skipUpdate);
+        if (this._maximized$.value && this.normalBoxes.value.length && !this.normalBoxes.value.includes(box.id)) {
+          const newIndex = this.topBox.zIndex + 1;
+          const normalBoxes = this.boxes$.value.filter((box2) => this.normalBoxes.value.includes(box2.id));
+          box._zIndex$.setValue(newIndex, skipUpdate);
+          normalBoxes.sort((a2, b2) => a2._zIndex$.value - b2._zIndex$.value).forEach((box2, index2) => {
+            box2._zIndex$.setValue(newIndex + 1 + index2, skipUpdate);
+          });
+        } else {
+          box._zIndex$.setValue(this.topBox.zIndex + 1, skipUpdate);
+        }
       }
     }
   }
@@ -6092,7 +6168,8 @@ class BoxManager {
     const initManagerState = {
       root,
       fence: false,
-      prefersColorScheme: createTeleBoxManagerConfig == null ? void 0 : createTeleBoxManagerConfig.prefersColorScheme
+      prefersColorScheme: createTeleBoxManagerConfig == null ? void 0 : createTeleBoxManagerConfig.prefersColorScheme,
+      stageRatio: 2 / 3
     };
     const manager = new TeleBoxManager(initManagerState);
     console.log("boxmanager", manager);
