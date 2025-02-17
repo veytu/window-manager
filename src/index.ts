@@ -64,6 +64,8 @@ export type WindowMangerAttributes = {
     boxState: TELE_BOX_STATE;
     maximized?: boolean;
     minimized?: boolean;
+    maximizedBoxes?: string
+    minimizedBoxes?: string
     [key: string]: any;
 };
 
@@ -119,6 +121,8 @@ export type AppInitState = {
     focus?: boolean;
     maximized?: boolean;
     minimized?: boolean;
+    maximizedBoxes?: string[];
+    minimizedBoxes?: string[];
     sceneIndex?: number;
     boxState?: TeleBoxState; // 兼容旧版 telebox
     zIndex?: number;
@@ -378,7 +382,7 @@ export class WindowManager
 
     public bindCollectorContainer(container: HTMLElement) {
         if (WindowManager.isCreated && this.boxManager) {
-            // this.boxManager.setCollectorContainer(container);
+            this.boxManager.setCollectorContainer(container);
         } else {
             if (WindowManager.params) {
                 WindowManager.params.collectorContainer = container;
@@ -675,12 +679,12 @@ export class WindowManager
         }
     }
 
-    public setMaximized(maximized: boolean): void {
+    public setMaximized(maximized: any): void {
         if (!this.canOperate) return;
         this.boxManager?.setMaximized(maximized, false);
     }
 
-    public setMinimized(minimized: boolean): void {
+    public setMinimized(minimized: any): void {
         if (!this.canOperate) return;
         this.boxManager?.setMinimized(minimized, false);
     }

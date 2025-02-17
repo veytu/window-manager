@@ -1,8 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import ReactDom from "react-dom";
 import { PlayerPhase, WhiteWebSdk } from "white-web-sdk";
-import { BuiltinApps, WindowManager } from "../dist";
-import type { WindowManager as WindowManagerType } from "../dist";
 import {
     createStatic,
     createDynamic,
@@ -17,9 +15,13 @@ import "../dist/style.css";
 import "./register";
 import "./index.css";
 import { DefaultHotKeys } from "white-web-sdk";
+import { WindowManager, BuiltinApps } from "../src";
+import type {WindowManager as WindowManagerType} from '../src'
+
+const sdkToken = "NETLESSSDK_YWs9dEtEY055dDliNFZHRTFkeiZub25jZT02NDdkODY5MC1lOWMyLTExZWYtYmQ2OS01Nzc1NjRkMzRmOTcmcm9sZT0wJnNpZz1iY2U5NmJjM2FiMTcyNDJiOTRmMmQ2M2U2Y2I4ZTk4ZDFlZjBiMjYwYzJkYjAwNjMzNjQ1YjcyMGZhZGQ3OWNh"
 
 const sdk = new WhiteWebSdk({
-    appIdentifier: import.meta.env.VITE_APPID,
+    appIdentifier: 'U0vvIOnBEe-MW3XOVZtvLQ/KJdZSKsTjrpcrw',
     useMobXState: true,
 });
 
@@ -41,7 +43,7 @@ const mountManager = async (room, root) => {
     manager = (await WindowManager.mount({
         room,
         // collectorStyles: { bottom: "100px", left: "30px" },
-        containerSizeRatio: 9 / 16,
+        containerSizeRatio: 2 / 3,
         chessboard: true,
         // fullscreen: true,
         debug: true,
@@ -126,10 +128,11 @@ const mountManager = async (room, root) => {
     });
 };
 
-const replay = () => {
+const replay = (info: {room: string; roomToken: string}) => {
+    if (!info) return
     sdk.replayRoom({
-        room: import.meta.env.VITE_ROOM_UUID,
-        roomToken: import.meta.env.VITE_ROOM_TOKEN,
+        room: info.room,
+        roomToken: info.roomToken,
         invisiblePlugins: [WindowManager as any],
         useMultiViews: true,
     }).then(async player => {
@@ -152,15 +155,15 @@ const replay = () => {
     });
 };
 
-const joinRoom = ref => {
+const joinRoom = (ref: any, info: {room: string; roomToken: string}) => {
     const uid = Math.random().toString().substr(3, 8);
     if (isReplay) {
-        replay();
+        replay(info);
     } else {
         return sdk
             .joinRoom({
-                uuid: import.meta.env.VITE_ROOM_UUID,
-                roomToken: import.meta.env.VITE_ROOM_TOKEN,
+                uuid: info.room,
+                roomToken: info.roomToken,
                 invisiblePlugins: [WindowManager as any],
                 useMultiViews: true,
                 userPayload: {
@@ -214,9 +217,56 @@ const cleanCurrentScene = (manager: WindowManager) => {
 const App = () => {
     const [pageState, setPageState] = useState({});
     const ref = useRef();
+    const [roomInfo, setRoomInfo] = useState<{room: string | undefined, roomToken: string | undefined}>({
+        room: undefined,
+        roomToken: undefined,
+    });
+
+
+    const getRoomToken = async () => {
+        const headers = {
+            "content-type": "application/json",
+            "token": sdkToken,
+            "region": "cn-hz",
+        }
+        fetch("https://api.netless.link/v5/rooms", {
+            method: "POST",
+            headers
+        }).then(res => res.json()).then((json) => {
+             // 创建房间成功，获取房间的 uuid
+            const roomUUID = json.uuid;
+
+            // 构造申请 Room Token 的 Request
+            const url = "https://api.netless.link/v5/tokens/rooms/" + roomUUID;
+            const requestInit = {
+                method: "POST",
+                headers,
+                body: JSON.stringify({
+                    "lifespan": 0, // 表明 Room Token 永不失效
+                    "role": "admin", // 表明 Room Token 有 Admin 的权限
+                }),
+            };
+            fetch(url, requestInit).then(function(response) {
+                return response.json();
+
+            }).then(function(roomToken) {
+                setRoomInfo({
+                    room: json.uuid,
+                    roomToken
+                })
+            }).catch(function(err) {
+                console.error(err);
+            });
+        })
+    }
 
     useEffect(() => {
-        joinRoom(ref.current).then(() => {
+        getRoomToken()
+    }, [])
+
+    useEffect(() => {
+        if (!roomInfo.room) return
+        joinRoom(ref.current, roomInfo).then(() => {
             if (manager) {
                 setPageState(manager.pageState);
                 // createIframe(manager);
@@ -225,7 +275,7 @@ const App = () => {
                 });
             }
         });
-    }, [ref]);
+    }, [ref, roomInfo]);
 
     return (
         <div className="app">

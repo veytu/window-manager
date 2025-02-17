@@ -1,5 +1,5 @@
-import type { WindowManager } from "../dist";
-import { BuiltinApps } from "../dist";
+import type { WindowManager } from "../src";
+import { BuiltinApps } from "../src";
 import * as docs from "./docs.json";
 
 export const createHelloWorld = (manager: WindowManager) => {

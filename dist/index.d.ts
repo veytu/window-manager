@@ -526,6 +526,7 @@ declare class BoxManager {
     createBox(params: CreateBoxParams): void;
     setBoxInitState(appId: string): void;
     setupBoxManager(createTeleBoxManagerConfig?: CreateTeleBoxManagerConfig): TeleBoxManager;
+    setCollectorContainer(container: HTMLElement): void;
     getBox(appId: string): ReadonlyTeleBox | undefined;
     closeBox(appId: string, skipUpdate?: boolean): ReadonlyTeleBox | undefined;
     boxIsFocus(appId: string): boolean | undefined;
@@ -540,8 +541,8 @@ declare class BoxManager {
     setBoxTitle(params: SetBoxTitleParams): void;
     blurAllBox(): void;
     updateAll(config: TeleBoxManagerUpdateConfig): void;
-    setMaximized(maximized: boolean, skipUpdate?: boolean): void;
-    setMinimized(minimized: boolean, skipUpdate?: boolean): void;
+    setMaximized(maximized?: string, skipUpdate?: boolean): void;
+    setMinimized(minimized?: string, skipUpdate?: boolean): void;
     focusTopBox(): void;
     updateBox(id: string, payload: TeleBoxConfig, skipUpdate?: boolean): void;
     setReadonly(readonly: boolean): void;
@@ -1071,6 +1072,8 @@ type WindowMangerAttributes = {
     boxState: TELE_BOX_STATE;
     maximized?: boolean;
     minimized?: boolean;
+    maximizedBoxes?: string;
+    minimizedBoxes?: string;
     [key: string]: any;
 };
 type apps = {
@@ -1115,6 +1118,8 @@ type AppInitState = {
     focus?: boolean;
     maximized?: boolean;
     minimized?: boolean;
+    maximizedBoxes?: string[];
+    minimizedBoxes?: string[];
     sceneIndex?: number;
     boxState?: TeleBoxState;
     zIndex?: number;
@@ -1258,8 +1263,8 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
      */
     setViewMode(mode: ViewMode): void;
     setBoxState(boxState: TeleBoxState): void;
-    setMaximized(maximized: boolean): void;
-    setMinimized(minimized: boolean): void;
+    setMaximized(maximized: any): void;
+    setMinimized(minimized: any): void;
     setFullscreen(fullscreen: boolean): void;
     get cursorUIDs(): string[];
     setCursorUIDs(cursorUIDs?: string[] | null): void;

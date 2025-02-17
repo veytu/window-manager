@@ -329,15 +329,15 @@ export class AppManager {
 
         this.addAppsChangeListener();
         this.addAppCloseListener();
-        this.refresher.add("maximized", () => {
+        this.refresher.add("maximizedBoxes", () => {
             return autorun(() => {
-                const maximized = this.attributes.maximized;
-                this.boxManager?.setMaximized(Boolean(maximized));
+                const maximized = this.attributes.maximizedBoxes;
+                this.boxManager?.setMaximized(maximized)
             });
         });
-        this.refresher.add("minimized", () => {
+        this.refresher.add("minimizedBoxes", () => {
             return autorun(() => {
-                const minimized = this.attributes.minimized;
+                const minimized = this.attributes.minimizedBoxes;
                 this.onMinimized(minimized);
             });
         });
@@ -546,13 +546,10 @@ export class AppManager {
         });
     };
 
-    private onMinimized = (minimized: boolean | undefined) => {
+    private onMinimized = (minimized: string | undefined) => {
         if (this.boxManager?.minimized !== minimized) {
-            if (minimized === true) {
-                this.boxManager?.blurAllBox();
-            }
             setTimeout(() => {
-                this.boxManager?.setMinimized(Boolean(minimized));
+                this.boxManager?.setMinimized(minimized);
             }, 0);
         }
     };
@@ -566,11 +563,11 @@ export class AppManager {
     }
 
     public resetMaximized() {
-        this.boxManager?.setMaximized(Boolean(this.store.getMaximized()));
+        this.boxManager?.setMaximized(this.store.getMaximized() ? this.store.getMaximized() : []);
     }
 
     public resetMinimized() {
-        this.boxManager?.setMinimized(Boolean(this.store.getMinimized()));
+        this.boxManager?.setMinimized(this.store.getMinimized() ? this.store.getMinimized() : []);
     }
 
     private onAppDelete = async (apps: any) => {
@@ -647,7 +644,7 @@ export class AppManager {
             this.store.updateAppState(appProxy.id, AppAttributes.ZIndex, box.zIndex);
         }
         if (this.boxManager?.minimized) {
-            this.boxManager?.setMinimized(false, false);
+            // this.boxManager?.setMinimized(false, false);
         }
     }
 

@@ -1,10 +1,10 @@
 import pRetry from "p-retry";
 import Emittery from "emittery";
-import { debounce, isEqual, omit, isObject, has, get, size as size$1, mapValues, noop as noop$1, pick, isEmpty, isInteger, orderBy, isFunction, isNumber, isNull } from "lodash";
+import { debounce, isEqual, omit, isObject, has, get, size as size$1, mapValues, noop as noop$2, pick, isEmpty, isInteger, orderBy, isFunction, isString, isNumber, isNull } from "lodash";
 import { ScenePathType, UpdateEventKind, listenUpdated, unlistenUpdated, reaction, autorun, toJS, listenDisposed, unlistenDisposed, ViewMode, AnimationMode, isPlayer, isRoom, WhiteVersion, ApplianceNames, RoomPhase, PlayerPhase, InvisiblePlugin } from "white-web-sdk";
 import { v4 } from "uuid";
-import { ResizeObserver as ResizeObserver$4 } from "@juggle/resize-observer";
-import u$2 from "video.js";
+import { ResizeObserver as ResizeObserver$3 } from "@juggle/resize-observer";
+import u$3 from "video.js";
 var Events = /* @__PURE__ */ ((Events2) => {
   Events2["AppMove"] = "AppMove";
   Events2["AppFocus"] = "AppFocus";
@@ -608,25 +608,25 @@ class BindContainerRoomPhaseInvalidError extends Error {
     this.message = "[WindowManager]: room phase only Connected can be bindContainer";
   }
 }
-const e$1 = "!#%()*+,-./:;=?@[]^_`{|}~ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", s$1 = e$1.length, t$2 = Array(20), r$3 = () => {
+const e$3 = "!#%()*+,-./:;=?@[]^_`{|}~ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", s$3 = e$3.length, t$3 = Array(20), r$4 = () => {
   for (let r2 = 0; r2 < 20; r2++)
-    t$2[r2] = e$1.charAt(Math.random() * s$1);
-  return t$2.join("");
+    t$3[r2] = e$3.charAt(Math.random() * s$3);
+  return t$3.join("");
 };
-class o$1 {
+class o$2 {
   constructor() {
     this.disposers = /* @__PURE__ */ new Map();
   }
-  add(e2, s2 = r$3()) {
+  add(e2, s2 = r$4()) {
     return this.flush(s2), this.disposers.set(s2, e2()), s2;
   }
-  addDisposer(e2, s2 = r$3()) {
+  addDisposer(e2, s2 = r$4()) {
     return this.flush(s2), this.disposers.set(s2, e2), s2;
   }
-  addEventListener(e2, s2, t2, o2, i2 = r$3()) {
+  addEventListener(e2, s2, t2, o2, i2 = r$4()) {
     return this.add(() => (e2.addEventListener(s2, t2, o2), () => e2.removeEventListener(s2, t2, o2)), i2), i2;
   }
-  setTimeout(e2, s2, t2 = r$3()) {
+  setTimeout(e2, s2, t2 = r$4()) {
     return this.add(() => {
       const r2 = window.setTimeout(() => {
         this.remove(t2), e2();
@@ -634,7 +634,7 @@ class o$1 {
       return () => window.clearTimeout(r2);
     }, t2);
   }
-  setInterval(e2, s2, t2 = r$3()) {
+  setInterval(e2, s2, t2 = r$4()) {
     return this.add(() => {
       const t3 = window.setInterval(e2, s2);
       return () => window.clearInterval(t3);
@@ -738,12 +738,12 @@ function isRef(e2) {
   return Boolean(has(e2, "__isRef"));
 }
 function makeRef(v2) {
-  return { k: r$3(), v: v2, __isRef: true };
+  return { k: r$4(), v: v2, __isRef: true };
 }
 const STORAGE_NS = "_WM-STORAGE_";
 class Storage {
   constructor(context, id2, defaultState) {
-    this._sideEffect = new o$1();
+    this._sideEffect = new o$2();
     this._destroyed = false;
     this._refMap = /* @__PURE__ */ new WeakMap();
     this._lastValue = /* @__PURE__ */ new Map();
@@ -870,7 +870,7 @@ class Storage {
       console.error(new Error(`Cannot empty Storage "${this.id}" without writable access.`));
       return;
     }
-    this.setState(mapValues(this._state, noop$1));
+    this.setState(mapValues(this._state, noop$2));
   }
   deleteStorage() {
     if (this.id === null) {
@@ -1239,10 +1239,10 @@ class AttributesDelegate {
     return get(this.apps(), [id2, "state"]);
   }
   getMaximized() {
-    return get(this.attributes, ["maximized"]);
+    return get(this.attributes, ["maximizedBoxes"]);
   }
   getMinimized() {
-    return get(this.attributes, ["minimized"]);
+    return get(this.attributes, ["minimizedBoxes"]);
   }
   setupAppAttributes(params, id2, isDynamicPPT) {
     const attributes = this.attributes;
@@ -1877,7 +1877,7 @@ class MainViewProxy {
     this.mainViewIsAddListener = false;
     this.store = this.manager.store;
     this.viewMode = this.manager.windowManger.viewMode;
-    this.sideEffectManager = new o$1();
+    this.sideEffectManager = new o$2();
     this.syncCamera = () => {
       if (!this.polling || this.viewMode !== ViewMode.Broadcaster)
         return;
@@ -2211,7 +2211,7 @@ class AppManager {
     this.mainViewScenesLength = 0;
     this.callbacksNode = null;
     this.appCreateQueue = new AppCreateQueue();
-    this.sideEffectManager = new o$1();
+    this.sideEffectManager = new o$2();
     this.sceneState = null;
     this.rootDirRemoving = false;
     this.onRemoveScenes = async (params) => {
@@ -2429,14 +2429,11 @@ class AppManager {
       });
     };
     this.onMinimized = (minimized) => {
-      var _a, _b;
+      var _a;
       if (((_a = this.boxManager) == null ? void 0 : _a.minimized) !== minimized) {
-        if (minimized === true) {
-          (_b = this.boxManager) == null ? void 0 : _b.blurAllBox();
-        }
         setTimeout(() => {
           var _a2;
-          (_a2 = this.boxManager) == null ? void 0 : _a2.setMinimized(Boolean(minimized));
+          (_a2 = this.boxManager) == null ? void 0 : _a2.setMinimized(minimized);
         }, 0);
       }
     };
@@ -2589,16 +2586,16 @@ class AppManager {
     boxEmitter.on("boxStateChange", this.onBoxStateChange);
     this.addAppsChangeListener();
     this.addAppCloseListener();
-    this.refresher.add("maximized", () => {
+    this.refresher.add("maximizedBoxes", () => {
       return autorun(() => {
         var _a2;
-        const maximized = this.attributes.maximized;
-        (_a2 = this.boxManager) == null ? void 0 : _a2.setMaximized(Boolean(maximized));
+        const maximized = this.attributes.maximizedBoxes;
+        (_a2 = this.boxManager) == null ? void 0 : _a2.setMaximized(maximized);
       });
     });
-    this.refresher.add("minimized", () => {
+    this.refresher.add("minimizedBoxes", () => {
       return autorun(() => {
-        const minimized = this.attributes.minimized;
+        const minimized = this.attributes.minimizedBoxes;
         this.onMinimized(minimized);
       });
     });
@@ -2698,11 +2695,11 @@ class AppManager {
   }
   resetMaximized() {
     var _a;
-    (_a = this.boxManager) == null ? void 0 : _a.setMaximized(Boolean(this.store.getMaximized()));
+    (_a = this.boxManager) == null ? void 0 : _a.setMaximized(this.store.getMaximized() ? this.store.getMaximized() : []);
   }
   resetMinimized() {
     var _a;
-    (_a = this.boxManager) == null ? void 0 : _a.setMinimized(Boolean(this.store.getMinimized()));
+    (_a = this.boxManager) == null ? void 0 : _a.setMinimized(this.store.getMinimized() ? this.store.getMinimized() : []);
   }
   bindMainView(divElement, disableCameraTransform) {
     const mainView = this.mainViewProxy.view;
@@ -2749,7 +2746,7 @@ class AppManager {
     return { appId, needFocus };
   }
   afterAddApp(appProxy) {
-    var _a, _b;
+    var _a;
     if (appProxy && appProxy.box) {
       const box = appProxy.box;
       boxEmitter.emit("move", {
@@ -2759,9 +2756,8 @@ class AppManager {
       });
       this.store.updateAppState(appProxy.id, AppAttributes.ZIndex, box.zIndex);
     }
-    if ((_a = this.boxManager) == null ? void 0 : _a.minimized) {
-      (_b = this.boxManager) == null ? void 0 : _b.setMinimized(false, false);
-    }
+    if ((_a = this.boxManager) == null ? void 0 : _a.minimized)
+      ;
   }
   async closeApp(appId, needClose = true) {
     const appProxy = this.appProxies.get(appId);
@@ -2997,7 +2993,7 @@ const isRoomTokenWritable = (room) => {
     return false;
   }
 };
-const ResizeObserver$3 = window.ResizeObserver || ResizeObserver$4;
+const ResizeObserver$2 = window.ResizeObserver || ResizeObserver$3;
 class ContainerResizeObserver {
   constructor(emitter) {
     this.emitter = emitter;
@@ -3009,7 +3005,7 @@ class ContainerResizeObserver {
   }
   observePlaygroundSize(container, sizer, wrapper) {
     this.updateSizer(container.getBoundingClientRect(), sizer, wrapper);
-    this.containerResizeObserver = new ResizeObserver$3((entries) => {
+    this.containerResizeObserver = new ResizeObserver$2((entries) => {
       var _a;
       const containerRect = (_a = entries[0]) == null ? void 0 : _a.contentRect;
       if (containerRect) {
@@ -3046,6 +3042,184 @@ class ContainerResizeObserver {
     }
   }
 }
+var eventemitter3 = { exports: {} };
+(function(module) {
+  var has2 = Object.prototype.hasOwnProperty, prefix = "~";
+  function Events2() {
+  }
+  if (Object.create) {
+    Events2.prototype = /* @__PURE__ */ Object.create(null);
+    if (!new Events2().__proto__)
+      prefix = false;
+  }
+  function EE(fn, context, once) {
+    this.fn = fn;
+    this.context = context;
+    this.once = once || false;
+  }
+  function addListener(emitter, event, fn, context, once) {
+    if (typeof fn !== "function") {
+      throw new TypeError("The listener must be a function");
+    }
+    var listener = new EE(fn, context || emitter, once), evt = prefix ? prefix + event : event;
+    if (!emitter._events[evt])
+      emitter._events[evt] = listener, emitter._eventsCount++;
+    else if (!emitter._events[evt].fn)
+      emitter._events[evt].push(listener);
+    else
+      emitter._events[evt] = [emitter._events[evt], listener];
+    return emitter;
+  }
+  function clearEvent(emitter, evt) {
+    if (--emitter._eventsCount === 0)
+      emitter._events = new Events2();
+    else
+      delete emitter._events[evt];
+  }
+  function EventEmitter2() {
+    this._events = new Events2();
+    this._eventsCount = 0;
+  }
+  EventEmitter2.prototype.eventNames = function eventNames() {
+    var names = [], events2, name;
+    if (this._eventsCount === 0)
+      return names;
+    for (name in events2 = this._events) {
+      if (has2.call(events2, name))
+        names.push(prefix ? name.slice(1) : name);
+    }
+    if (Object.getOwnPropertySymbols) {
+      return names.concat(Object.getOwnPropertySymbols(events2));
+    }
+    return names;
+  };
+  EventEmitter2.prototype.listeners = function listeners(event) {
+    var evt = prefix ? prefix + event : event, handlers = this._events[evt];
+    if (!handlers)
+      return [];
+    if (handlers.fn)
+      return [handlers.fn];
+    for (var i2 = 0, l2 = handlers.length, ee2 = new Array(l2); i2 < l2; i2++) {
+      ee2[i2] = handlers[i2].fn;
+    }
+    return ee2;
+  };
+  EventEmitter2.prototype.listenerCount = function listenerCount(event) {
+    var evt = prefix ? prefix + event : event, listeners = this._events[evt];
+    if (!listeners)
+      return 0;
+    if (listeners.fn)
+      return 1;
+    return listeners.length;
+  };
+  EventEmitter2.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
+    var evt = prefix ? prefix + event : event;
+    if (!this._events[evt])
+      return false;
+    var listeners = this._events[evt], len = arguments.length, args, i2;
+    if (listeners.fn) {
+      if (listeners.once)
+        this.removeListener(event, listeners.fn, void 0, true);
+      switch (len) {
+        case 1:
+          return listeners.fn.call(listeners.context), true;
+        case 2:
+          return listeners.fn.call(listeners.context, a1), true;
+        case 3:
+          return listeners.fn.call(listeners.context, a1, a2), true;
+        case 4:
+          return listeners.fn.call(listeners.context, a1, a2, a3), true;
+        case 5:
+          return listeners.fn.call(listeners.context, a1, a2, a3, a4), true;
+        case 6:
+          return listeners.fn.call(listeners.context, a1, a2, a3, a4, a5), true;
+      }
+      for (i2 = 1, args = new Array(len - 1); i2 < len; i2++) {
+        args[i2 - 1] = arguments[i2];
+      }
+      listeners.fn.apply(listeners.context, args);
+    } else {
+      var length = listeners.length, j2;
+      for (i2 = 0; i2 < length; i2++) {
+        if (listeners[i2].once)
+          this.removeListener(event, listeners[i2].fn, void 0, true);
+        switch (len) {
+          case 1:
+            listeners[i2].fn.call(listeners[i2].context);
+            break;
+          case 2:
+            listeners[i2].fn.call(listeners[i2].context, a1);
+            break;
+          case 3:
+            listeners[i2].fn.call(listeners[i2].context, a1, a2);
+            break;
+          case 4:
+            listeners[i2].fn.call(listeners[i2].context, a1, a2, a3);
+            break;
+          default:
+            if (!args)
+              for (j2 = 1, args = new Array(len - 1); j2 < len; j2++) {
+                args[j2 - 1] = arguments[j2];
+              }
+            listeners[i2].fn.apply(listeners[i2].context, args);
+        }
+      }
+    }
+    return true;
+  };
+  EventEmitter2.prototype.on = function on(event, fn, context) {
+    return addListener(this, event, fn, context, false);
+  };
+  EventEmitter2.prototype.once = function once(event, fn, context) {
+    return addListener(this, event, fn, context, true);
+  };
+  EventEmitter2.prototype.removeListener = function removeListener(event, fn, context, once) {
+    var evt = prefix ? prefix + event : event;
+    if (!this._events[evt])
+      return this;
+    if (!fn) {
+      clearEvent(this, evt);
+      return this;
+    }
+    var listeners = this._events[evt];
+    if (listeners.fn) {
+      if (listeners.fn === fn && (!once || listeners.once) && (!context || listeners.context === context)) {
+        clearEvent(this, evt);
+      }
+    } else {
+      for (var i2 = 0, events2 = [], length = listeners.length; i2 < length; i2++) {
+        if (listeners[i2].fn !== fn || once && !listeners[i2].once || context && listeners[i2].context !== context) {
+          events2.push(listeners[i2]);
+        }
+      }
+      if (events2.length)
+        this._events[evt] = events2.length === 1 ? events2[0] : events2;
+      else
+        clearEvent(this, evt);
+    }
+    return this;
+  };
+  EventEmitter2.prototype.removeAllListeners = function removeAllListeners(event) {
+    var evt;
+    if (event) {
+      evt = prefix ? prefix + event : event;
+      if (this._events[evt])
+        clearEvent(this, evt);
+    } else {
+      this._events = new Events2();
+      this._eventsCount = 0;
+    }
+    return this;
+  };
+  EventEmitter2.prototype.off = EventEmitter2.prototype.removeListener;
+  EventEmitter2.prototype.addListener = EventEmitter2.prototype.on;
+  EventEmitter2.prefixed = prefix;
+  EventEmitter2.EventEmitter = EventEmitter2;
+  {
+    module.exports = EventEmitter2;
+  }
+})(eventemitter3);
+var EventEmitter = eventemitter3.exports;
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation.
 
@@ -3060,8 +3234,8 @@ LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
-var __assign = function() {
-  __assign = Object.assign || function __assign2(t2) {
+var __assign$1 = function() {
+  __assign$1 = Object.assign || function __assign2(t2) {
     for (var s2, i2 = 1, n2 = arguments.length; i2 < n2; i2++) {
       s2 = arguments[i2];
       for (var p2 in s2)
@@ -3070,7 +3244,7 @@ var __assign = function() {
     }
     return t2;
   };
-  return __assign.apply(this, arguments);
+  return __assign$1.apply(this, arguments);
 };
 function __rest(s2, e2) {
   var t2 = {};
@@ -3207,7 +3381,33 @@ var startLoop = function() {
   if (!isProcessing)
     onNextFrame(processFrame);
 };
-var clamp$2 = function(min, max) {
+/*! *****************************************************************************
+Copyright (c) Microsoft Corporation.
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+***************************************************************************** */
+var __assign = function() {
+  __assign = Object.assign || function __assign2(t2) {
+    for (var s2, i2 = 1, n2 = arguments.length; i2 < n2; i2++) {
+      s2 = arguments[i2];
+      for (var p2 in s2)
+        if (Object.prototype.hasOwnProperty.call(s2, p2))
+          t2[p2] = s2[p2];
+    }
+    return t2;
+  };
+  return __assign.apply(this, arguments);
+};
+var clamp$1 = function(min, max) {
   return function(v2) {
     return Math.max(Math.min(v2, max), min);
   };
@@ -3225,7 +3425,7 @@ var number = {
     return v2;
   }
 };
-var alpha = __assign(__assign({}, number), { transform: clamp$2(0, 1) });
+var alpha = __assign(__assign({}, number), { transform: clamp$1(0, 1) });
 var scale = __assign(__assign({}, number), { default: 1 });
 var createUnitType = function(unit) {
   return {
@@ -3249,7 +3449,7 @@ var progressPercentage = __assign(__assign({}, percent), { parse: function(v2) {
 var getValueFromFunctionString = function(value) {
   return value.substring(value.indexOf("(") + 1, value.lastIndexOf(")"));
 };
-var clampRgbUnit = clamp$2(0, 255);
+var clampRgbUnit = clamp$1(0, 255);
 var isRgba = function(v2) {
   return v2.red !== void 0;
 };
@@ -3486,7 +3686,7 @@ var transformOriginProps = /* @__PURE__ */ new Set(["originX", "originY", "origi
 function isTransformOriginProp(key) {
   return transformOriginProps.has(key);
 }
-var int = /* @__PURE__ */ __assign(/* @__PURE__ */ __assign({}, number), { transform: Math.round });
+var int = /* @__PURE__ */ __assign$1(/* @__PURE__ */ __assign$1({}, number), { transform: Math.round });
 var valueTypes = {
   color,
   backgroundColor: color,
@@ -3705,7 +3905,7 @@ function createCssStyler(element2, _a) {
     _a = {};
   }
   var enableHardwareAcceleration = _a.enableHardwareAcceleration, allowTransformNone = _a.allowTransformNone, props = __rest(_a, ["enableHardwareAcceleration", "allowTransformNone"]);
-  return cssStyler(__assign({ element: element2, buildStyles: createStyleBuilder({
+  return cssStyler(__assign$1({ element: element2, buildStyles: createStyleBuilder({
     enableHardwareAcceleration,
     allowTransformNone
   }), preparseOutput: true }, props));
@@ -3888,376 +4088,137 @@ var shallowequal = function shallowEqual(objA, objB, compare, compareContext) {
   }
   return true;
 };
-var SOUP$1 = "!#%()*+,-./:;=?@[]^_`{|}~ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-var SOUP_LEN$1 = 87;
-var ID_LEN$1 = 20;
-var reusedIdCarrier$1 = [];
-var genUID$1 = () => {
-  for (let i2 = 0; i2 < ID_LEN$1; i2++) {
-    reusedIdCarrier$1[i2] = SOUP$1.charAt(Math.random() * SOUP_LEN$1);
-  }
-  return reusedIdCarrier$1.join("");
+const e$1 = "!#%()*+,-./:;=?@[]^_`{|}~ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", s$1 = e$1.length, t$1$1 = Array(20), r$1$1 = () => {
+  for (let r2 = 0; r2 < 20; r2++)
+    t$1$1[r2] = e$1.charAt(Math.random() * s$1);
+  return t$1$1.join("");
 };
-function invoke$1(fn) {
-  try {
-    return fn();
-  } catch (e2) {
-    console.error(e2);
-  }
-}
-var SideEffectManager$1 = class {
+class o$1 {
   constructor() {
-    this.push = this.addDisposer;
     this.disposers = /* @__PURE__ */ new Map();
   }
-  addDisposer(disposer, disposerID = this.genUID()) {
-    this.flush(disposerID);
-    this.disposers.set(
-      disposerID,
-      Array.isArray(disposer) ? joinDisposers$1(disposer) : disposer
-    );
-    return disposerID;
+  add(e2, s2 = r$1$1()) {
+    return this.flush(s2), this.disposers.set(s2, e2()), s2;
   }
-  add(executor, disposerID = this.genUID()) {
-    const disposers = executor();
-    return disposers ? this.addDisposer(disposers, disposerID) : disposerID;
+  addDisposer(e2, s2 = r$1$1()) {
+    return this.flush(s2), this.disposers.set(s2, e2), s2;
   }
-  addEventListener(el, type, listener, options, disposerID = this.genUID()) {
-    el.addEventListener(type, listener, options);
-    this.addDisposer(
-      () => el.removeEventListener(type, listener, options),
-      disposerID
-    );
-    return disposerID;
+  addEventListener(e2, s2, t2, o2, i2 = r$1$1()) {
+    return this.add(() => (e2.addEventListener(s2, t2, o2), () => e2.removeEventListener(s2, t2, o2)), i2), i2;
   }
-  setTimeout(handler, timeout, disposerID = this.genUID()) {
-    const ticket = window.setTimeout(() => {
-      this.remove(disposerID);
-      handler();
-    }, timeout);
-    return this.addDisposer(() => window.clearTimeout(ticket), disposerID);
+  setTimeout(e2, s2, t2 = r$1$1()) {
+    return this.add(() => {
+      const r2 = window.setTimeout(() => {
+        this.remove(t2), e2();
+      }, s2);
+      return () => window.clearTimeout(r2);
+    }, t2);
   }
-  setInterval(handler, timeout, disposerID = this.genUID()) {
-    const ticket = window.setInterval(handler, timeout);
-    return this.addDisposer(() => window.clearInterval(ticket), disposerID);
+  setInterval(e2, s2, t2 = r$1$1()) {
+    return this.add(() => {
+      const t3 = window.setInterval(e2, s2);
+      return () => window.clearInterval(t3);
+    }, t2);
   }
-  remove(disposerID) {
-    const disposer = this.disposers.get(disposerID);
-    this.disposers.delete(disposerID);
-    return disposer;
+  remove(e2) {
+    const s2 = this.disposers.get(e2);
+    return this.disposers.delete(e2), s2;
   }
-  flush(disposerID) {
-    const disposer = this.remove(disposerID);
-    if (disposer) {
-      disposer();
-    }
+  flush(e2) {
+    const s2 = this.remove(e2);
+    if (s2)
+      try {
+        s2();
+      } catch (t2) {
+        console.error(t2);
+      }
   }
   flushAll() {
-    this.disposers.forEach(invoke$1);
-    this.disposers.clear();
-  }
-  genUID() {
-    let uid;
-    do {
-      uid = genUID$1();
-    } while (this.disposers.has(uid));
-    return uid;
-  }
-};
-function joinDisposers$1(disposers) {
-  return () => disposers.forEach(invoke$1);
-}
-var __defProp = Object.defineProperty;
-var __defProps = Object.defineProperties;
-var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
-var __getOwnPropSymbols = Object.getOwnPropertySymbols;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __propIsEnum = Object.prototype.propertyIsEnumerable;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues = (a2, b2) => {
-  for (var prop in b2 || (b2 = {}))
-    if (__hasOwnProp.call(b2, prop))
-      __defNormalProp(a2, prop, b2[prop]);
-  if (__getOwnPropSymbols)
-    for (var prop of __getOwnPropSymbols(b2)) {
-      if (__propIsEnum.call(b2, prop))
-        __defNormalProp(a2, prop, b2[prop]);
-    }
-  return a2;
-};
-var __spreadProps = (a2, b2) => __defProps(a2, __getOwnPropDescs(b2));
-var __publicField = (obj, key, value) => {
-  __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-  return value;
-};
-class Subscribers {
-  constructor(beforeSubscribe) {
-    __publicField(this, "_subscribers");
-    __publicField(this, "_bSub");
-    __publicField(this, "_bSubDisposer");
-    this._bSub = beforeSubscribe;
-  }
-  get size() {
-    return this._subscribers ? this._subscribers.size : 0;
-  }
-  invoke(newValue, meta) {
-    if (this._subscribers) {
-      this._subscribers.forEach((subscriber) => subscriber(newValue, meta));
-    }
-  }
-  add(subscribe) {
-    if (this._bSub && (!this._subscribers || this._subscribers.size <= 0)) {
-      this._bSubDisposer = this._bSub();
-    }
-    if (!this._subscribers) {
-      this._subscribers = /* @__PURE__ */ new Set();
-    }
-    this._subscribers.add(subscribe);
-  }
-  remove(subscriber) {
-    if (this._subscribers) {
-      this._subscribers.delete(subscriber);
-    }
-    if (this._subscribers && this._subscribers.size <= 0) {
-      if (this._bSubDisposer) {
-        const _bSubDisposer = this._bSubDisposer;
-        this._bSubDisposer = null;
-        _bSubDisposer();
+    this.disposers.forEach((e2) => {
+      try {
+        e2();
+      } catch (s2) {
+        console.error(s2);
       }
-    }
-  }
-  clear() {
-    if (this._subscribers) {
-      this._subscribers.clear();
-    }
-    if (this._bSubDisposer) {
-      const _bSubDisposer = this._bSubDisposer;
-      this._bSubDisposer = null;
-      _bSubDisposer();
-    }
-  }
-  destroy() {
-    this.clear();
+    }), this.disposers.clear();
   }
 }
-class ReadonlyVal {
-  constructor(value, config) {
-    __publicField(this, "_subscribers");
-    __publicField(this, "_value");
-    this._value = value;
-    let beforeSubscribe;
-    if (config) {
-      if (config.compare) {
-        this.compare = config.compare;
-      }
-      if (config.beforeSubscribe) {
-        const _beforeSubscribe = config.beforeSubscribe;
-        const _setValue = this._setValue.bind(this);
-        beforeSubscribe = () => _beforeSubscribe(_setValue);
-      }
-    }
-    this._subscribers = new Subscribers(beforeSubscribe);
-  }
-  _setValue(value, meta) {
-    if (!this.compare(value, this._value)) {
-      this._value = value;
-      this._subscribers.invoke(value, meta);
-    }
+var e$2 = Object.defineProperty, s$2 = ("undefined" != typeof require && require, (s2, r2, t2) => (((s3, r3, t3) => {
+  r3 in s3 ? e$2(s3, r3, { enumerable: true, configurable: true, writable: true, value: t3 }) : s3[r3] = t3;
+})(s2, "symbol" != typeof r2 ? r2 + "" : r2, t2), t2));
+class r$3 {
+  constructor(e2, r2) {
+    s$2(this, "_value"), s$2(this, "_beforeDestroys"), s$2(this, "_subscribers"), this._value = e2, r2 && (this.compare = r2);
   }
   get value() {
     return this._value;
   }
-  reaction(subscriber) {
-    this._subscribers.add(subscriber);
-    return () => {
-      this._subscribers.remove(subscriber);
+  setValue(e2, s2) {
+    if (!this.compare(e2, this._value)) {
+      const r2 = this._value;
+      this._value = e2, this._subscribers && this._subscribers.forEach((t2) => t2(e2, r2, s2));
+    }
+  }
+  reaction(e2) {
+    return this._subscribers || (this._subscribers = /* @__PURE__ */ new Set()), this._subscribers.add(e2), () => {
+      this._subscribers && this._subscribers.delete(e2);
     };
   }
-  subscribe(subscriber, meta) {
-    const disposer = this.reaction(subscriber);
-    subscriber(this._value, meta);
-    return disposer;
+  subscribe(e2, s2) {
+    const r2 = this.reaction(e2);
+    return e2(this._value, void 0, s2), r2;
+  }
+  derive(e2, s2, t2) {
+    const i2 = new r$3(e2(this.value, void 0, t2), s2), o2 = this.reaction((s3, r2, t3) => {
+      i2.setValue(e2(s3, r2, t3));
+    });
+    return i2.addBeforeDestroy(o2), i2;
   }
   destroy() {
-    this._subscribers.destroy();
+    this._beforeDestroys && (this._beforeDestroys.forEach((e2) => e2()), this._beforeDestroys.clear()), this._subscribers && this._subscribers.clear();
   }
-  unsubscribe(subscriber) {
-    this._subscribers.remove(subscriber);
+  addBeforeDestroy(e2) {
+    return this._beforeDestroys || (this._beforeDestroys = /* @__PURE__ */ new Set()), this._beforeDestroys.add(e2), () => {
+      this._beforeDestroys && this._beforeDestroys.delete(e2);
+    };
   }
-  get size() {
-    return this._subscribers.size;
-  }
-  compare(newValue, oldValue) {
-    return newValue === oldValue;
-  }
-}
-class Val extends ReadonlyVal {
-  constructor() {
-    super(...arguments);
-    __publicField(this, "setValue", this._setValue);
+  compare(e2, s2) {
+    return e2 === s2;
   }
 }
-class DerivedVal extends ReadonlyVal {
-  constructor(val, transform, config = {}) {
-    super(transform(val.value), __spreadProps(__spreadValues({}, config), {
-      beforeSubscribe: (setValue) => {
-        const disposer = val.subscribe((newValue, meta) => setValue(transform(newValue), meta));
-        if (config.beforeSubscribe) {
-          const beforeSubscribeDisposer = config.beforeSubscribe(setValue);
-          if (beforeSubscribeDisposer) {
-            return () => {
-              disposer();
-              beforeSubscribeDisposer();
-            };
-          }
-        }
-        return disposer;
-      }
-    }));
-    __publicField(this, "_srcValue");
-    this._srcValue = () => transform(val.value);
-  }
-  get value() {
-    if (this.size <= 0) {
-      const value = this._srcValue();
-      return this.compare(value, this._value) ? this._value : value;
-    }
-    return this._value;
-  }
+function t$2(e2, s2, t2, i2) {
+  let o2 = e2.map((e3) => e3.value);
+  const u2 = new r$3(s2(o2, void 0, i2), t2);
+  return e2.forEach((e3, r2) => {
+    const t3 = e3.reaction((e4, t4, i3) => {
+      const c2 = o2.slice();
+      c2[r2] = e4;
+      const n2 = o2;
+      o2 = c2, u2.setValue(s2(c2, n2, i3), i3);
+    });
+    u2.addBeforeDestroy(t3);
+  }), u2;
 }
-function derive(val, transform = (value) => value, config = {}) {
-  return new DerivedVal(val, transform, config);
-}
-class CombinedVal extends ReadonlyVal {
-  constructor(valInputs, transform, config = {}) {
-    super(transform(getValues(valInputs)), __spreadProps(__spreadValues({}, config), {
-      beforeSubscribe: (setValue) => {
-        let lastValueInputs = getValues(valInputs);
-        setValue(transform(lastValueInputs));
-        const disposers = valInputs.map((val, i2) => val.reaction((value, meta) => {
-          lastValueInputs = lastValueInputs.slice();
-          lastValueInputs[i2] = value;
-          setValue(transform(lastValueInputs), meta);
-        }));
-        const disposer = () => disposers.forEach((disposer2) => disposer2());
-        if (config.beforeSubscribe) {
-          const beforeSubscribeDisposer = config.beforeSubscribe(setValue);
-          if (beforeSubscribeDisposer) {
-            return () => {
-              disposer();
-              beforeSubscribeDisposer();
-            };
-          }
-        }
-        return disposer;
-      }
-    }));
-    __publicField(this, "_srcValue");
-    this._srcValue = () => transform(getValues(valInputs));
-  }
-  get value() {
-    if (this.size <= 0) {
-      const value = this._srcValue();
-      return this.compare(value, this._value) ? this._value : value;
-    }
-    return this._value;
-  }
-}
-function getValues(valInputs) {
-  return valInputs.map(getValue);
-}
-function getValue(val) {
-  return val.value;
-}
-function combine(valInputs, transform = (value) => value, config = {}) {
-  return new CombinedVal(valInputs, transform, config);
-}
-function withOnValChanged(instance2) {
-  if (!instance2.onValChanged) {
-    instance2.onValChanged = onValChanged;
-  }
-}
-function onValChanged(key, listener) {
-  const val = this[`_${key}$`] || this[key];
-  if (!(val == null ? void 0 : val.reaction)) {
-    throw new TypeError(`"${key}" is not related to a Val in this instance`);
-  }
-  return val.reaction(listener);
-}
-function withReadonlyValueEnhancer(instance2, config, valManager) {
-  Object.keys(config).forEach((key) => {
-    bindInstance$1(instance2, key, config[key]);
-    if (valManager) {
-      valManager.attach(config[key]);
-    }
+function i$1(e2, s2) {
+  Object.keys(s2).forEach((r2) => {
+    u$2(e2, r2, s2[r2]);
   });
-  withOnValChanged(instance2);
 }
-function bindInstance$1(instance2, key, val) {
-  Object.defineProperties(instance2, {
-    [key]: {
-      get() {
-        return val.value;
-      }
-    },
-    [`_${key}$`]: {
-      value: val
-    }
-  });
-  return instance2;
+function u$2(e2, s2, r2) {
+  var t2;
+  return Object.defineProperties(e2, { [s2]: { get: () => r2.value }, [`_${s2}$`]: { value: r2 }, [`set${t2 = s2, t2[0].toUpperCase() + t2.slice(1)}`]: { value: (e3, s3) => r2.setValue(e3, s3) } }), e2;
 }
-function withValueEnhancer(instance2, config, valManager) {
-  Object.keys(config).forEach((key) => {
-    bindInstance(instance2, key, config[key]);
-    if (valManager) {
-      valManager.attach(config[key]);
-    }
-  });
-  withOnValChanged(instance2);
+function c(e2) {
+  const s2 = (s3) => {
+    const r2 = e2.addDisposer(() => {
+      s3.destroy();
+    });
+    return s3.addBeforeDestroy(() => {
+      e2.remove(r2);
+    }), s3;
+  };
+  return { bindSideEffect: s2, combine: (e3, r2, i2, o2) => s2(t$2(e3, r2, i2, o2)), createVal: (e3, t2) => s2(new r$3(e3, t2)) };
 }
-function bindInstance(instance2, key, val) {
-  Object.defineProperties(instance2, {
-    [key]: {
-      get() {
-        return val.value;
-      },
-      set(value) {
-        val.setValue(value);
-      }
-    },
-    [`_${key}$`]: {
-      value: val
-    },
-    [`set${capitalize(key)}`]: {
-      value: (value, meta) => val.setValue(value, meta)
-    }
-  });
-  return instance2;
-}
-function capitalize(str) {
-  return str[0].toUpperCase() + str.slice(1);
-}
-class ValManager {
-  constructor() {
-    __publicField(this, "vals", /* @__PURE__ */ new Set());
-  }
-  attach(val) {
-    this.vals.add(val);
-    return val;
-  }
-  detach(val) {
-    this.vals.delete(val);
-    return val;
-  }
-  destroy() {
-    this.vals.forEach(destroyVal);
-    this.vals.clear();
-  }
-}
-function destroyVal(val) {
-  val.destroy();
-}
-var shadowStyles = /* @__PURE__ */ (() => '.tele-fancy-scrollbar {\n  overscroll-behavior: contain;\n  overflow: auto;\n  overflow-y: scroll;\n  overflow-y: overlay;\n  -webkit-overflow-scrolling: touch;\n  -ms-overflow-style: -ms-autohiding-scrollbar;\n  scrollbar-width: auto;\n}\n.tele-fancy-scrollbar::-webkit-scrollbar {\n  height: 8px;\n  width: 8px;\n}\n.tele-fancy-scrollbar::-webkit-scrollbar-track {\n  background-color: transparent;\n}\n.tele-fancy-scrollbar::-webkit-scrollbar-thumb {\n  background-color: rgba(68, 78, 96, 0.1);\n  background-color: transparent;\n  border-radius: 4px;\n  transition: background-color 0.4s;\n}\n.tele-fancy-scrollbar:hover::-webkit-scrollbar-thumb {\n  background-color: rgba(68, 78, 96, 0.1);\n}\n.tele-fancy-scrollbar::-webkit-scrollbar-thumb:hover {\n  background-color: rgba(68, 78, 96, 0.2);\n}\n.tele-fancy-scrollbar::-webkit-scrollbar-thumb:active {\n  background-color: rgba(68, 78, 96, 0.2);\n}\n.tele-fancy-scrollbar::-webkit-scrollbar-thumb:vertical {\n  min-height: 50px;\n}\n.tele-fancy-scrollbar::-webkit-scrollbar-thumb:horizontal {\n  min-width: 50px;\n}\n.telebox-quarantine {\n  all: initial;\n  position: relative;\n  width: 100%;\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n}\n.telebox-body-wrap {\n  color: #191919;\n  color: var(--tele-boxColor, #191919);\n  flex: 1;\n  width: 100%;\n  overflow: hidden;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  position: relative;\n}\n.telebox-content {\n  width: 100%;\n  height: 100%;\n  position: relative;\n  background-color: #f5f5fc;\n  background-color: var(--tele-boxContainerBackground, #f5f5fc);\n}\n.telebox-box-stage {\n  position: absolute;\n  z-index: 1;\n  overflow: hidden;\n  overflow-y: auto;\n  background-color: #fff;\n  background-color: var(--tele-boxStageBackground, #fff);\n}\n.telebox-footer-wrap {\n  flex-shrink: 0;\n  display: flex;\n  flex-direction: column;\n  color: #191919;\n  color: var(--tele-boxFooterColor, #191919);\n  background-color: #fff;\n  background-color: var(--tele-boxFooterBackground, #fff);\n}\n.telebox-footer-wrap::before {\n  content: "";\n  display: block;\n  flex: 1;\n}\n.telebox-color-scheme-dark {\n  color-scheme: dark;\n}\n.telebox-color-scheme-dark .telebox-body-wrap {\n  color: #e9e9e9;\n  color: var(--tele-boxColor, #e9e9e9);\n}\n.telebox-color-scheme-dark .telebox-content {\n  background-color: #25282e;\n  background-color: var(--tele-boxContainerBackground, #25282e);\n}\n.telebox-color-scheme-dark .telebox-box-stage {\n  background-color: #272a30;\n  background-color: var(--tele-boxStageBackground, #272a30);\n}\n.telebox-color-scheme-dark .telebox-footer-wrap {\n  color: #e9e9e9;\n  color: var(--tele-boxFooterColor, #e9e9e9);\n  background-color: #383b42;\n  background-color: var(--tele-boxFooterBackground, #383b42);\n}')();
 var TELE_BOX_COLOR_SCHEME = /* @__PURE__ */ ((TELE_BOX_COLOR_SCHEME2) => {
   TELE_BOX_COLOR_SCHEME2["Light"] = "light";
   TELE_BOX_COLOR_SCHEME2["Dark"] = "dark";
@@ -4276,8 +4237,11 @@ var TELE_BOX_EVENT = /* @__PURE__ */ ((TELE_BOX_EVENT2) => {
   TELE_BOX_EVENT2["Close"] = "close";
   TELE_BOX_EVENT2["Focus"] = "focus";
   TELE_BOX_EVENT2["Blur"] = "blur";
+  TELE_BOX_EVENT2["Move"] = "move";
+  TELE_BOX_EVENT2["Resize"] = "resize";
   TELE_BOX_EVENT2["IntrinsicMove"] = "intrinsic_move";
   TELE_BOX_EVENT2["IntrinsicResize"] = "intrinsic_resize";
+  TELE_BOX_EVENT2["VisualResize"] = "visual_resize";
   TELE_BOX_EVENT2["ZIndex"] = "z_index";
   TELE_BOX_EVENT2["State"] = "state";
   TELE_BOX_EVENT2["Minimized"] = "minimized";
@@ -4304,7 +4268,7 @@ var TELE_BOX_RESIZE_HANDLE = /* @__PURE__ */ ((TELE_BOX_RESIZE_HANDLE2) => {
   return TELE_BOX_RESIZE_HANDLE2;
 })(TELE_BOX_RESIZE_HANDLE || {});
 const TeleBoxDragHandleType = "dh";
-function clamp$1(value, min, max) {
+function clamp$2(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 function preventEvent$1(ev) {
@@ -4317,18 +4281,51 @@ let defaultBoxCount = 1;
 function getBoxDefaultName() {
   return `New Box ${defaultBoxCount++}`;
 }
+function isTruthy(value) {
+  return Boolean(value);
+}
+function isFalsy(value) {
+  return !value;
+}
+function uniqueByVal(arr) {
+  return arr.reduce((acc, item) => {
+    if (!acc.includes(item))
+      acc.push(item);
+    return acc;
+  }, []);
+}
+function removeByVal(arr, val) {
+  const index2 = arr.indexOf(val);
+  if (index2 < 0) {
+    return arr;
+  }
+  const newArr = [...arr];
+  newArr.splice(index2, 1);
+  return newArr;
+}
+function excludeFromBoth(c2, a2, b2) {
+  const aSet = new Set(a2);
+  const bSet = new Set(b2);
+  return c2.filter((item) => !aSet.has(item) && !bSet.has(item));
+}
+function flattenEvent$1(ev) {
+  return ev.touches ? ev.touches[0] : ev;
+}
+function genUniqueKey() {
+  return Date.now().toString().slice(6) + Math.random().toString().slice(2, 8);
+}
 class DefaultTitleBar {
   constructor({
-    readonly$,
-    state$,
-    title$,
+    readonly = false,
+    title,
     buttons,
     onEvent,
     onDragStart,
     namespace = "telebox",
-    boxId
-  }) {
-    this.sideEffect = new SideEffectManager$1();
+    state = TELE_BOX_STATE.Normal
+  } = {}) {
+    this.$btns = [];
+    this.sideEffect = new o$1();
     this.lastTitleBarClick = {
       timestamp: 0,
       clientX: -100,
@@ -4336,7 +4333,7 @@ class DefaultTitleBar {
     };
     this.handleTitleBarClick = (ev) => {
       var _a;
-      if (!ev.isPrimary || this.readonly$.value) {
+      if (this.readonly) {
         return;
       }
       if (ev.button !== 0) {
@@ -4350,7 +4347,7 @@ class DefaultTitleBar {
       if (now - this.lastTitleBarClick.timestamp <= 500) {
         if (Math.abs(ev.clientX - this.lastTitleBarClick.clientX) <= 5 && Math.abs(ev.clientY - this.lastTitleBarClick.clientY) <= 5) {
           if (this.onEvent) {
-            this.onEvent({ type: TELE_BOX_DELEGATE_EVENT.Maximize, boxId: this.boxId });
+            this.onEvent({ type: TELE_BOX_DELEGATE_EVENT.Maximize });
           }
         }
       } else if (this.onDragStart) {
@@ -4360,13 +4357,44 @@ class DefaultTitleBar {
       this.lastTitleBarClick.clientX = ev.clientX;
       this.lastTitleBarClick.clientY = ev.clientY;
     };
-    this.readonly$ = readonly$;
-    this.state$ = state$;
-    this.title$ = title$;
+    this.lastTitleBarTouch = {
+      timestamp: 0,
+      clientX: -100,
+      clientY: -100
+    };
+    this.handleTitleBarTouch = (ev) => {
+      var _a;
+      if (this.readonly) {
+        return;
+      }
+      if ((_a = ev.target.dataset) == null ? void 0 : _a.teleTitleBarNoDblClick) {
+        return;
+      }
+      preventEvent$1(ev);
+      const now = Date.now();
+      const {
+        clientX = this.lastTitleBarTouch.clientX + 100,
+        clientY = this.lastTitleBarTouch.clientY + 100
+      } = ev.touches[0] || {};
+      if (now - this.lastTitleBarTouch.timestamp <= 500) {
+        if (Math.abs(clientX - this.lastTitleBarTouch.clientX) <= 10 && Math.abs(clientY - this.lastTitleBarTouch.clientY) <= 10) {
+          if (this.onEvent) {
+            this.onEvent({ type: TELE_BOX_DELEGATE_EVENT.Maximize });
+          }
+        }
+      } else if (this.onDragStart) {
+        this.onDragStart(ev);
+      }
+      this.lastTitleBarTouch.timestamp = now;
+      this.lastTitleBarTouch.clientX = clientX;
+      this.lastTitleBarTouch.clientY = clientY;
+    };
+    this.readonly = readonly;
     this.onEvent = onEvent;
     this.onDragStart = onDragStart;
     this.namespace = namespace;
-    this.boxId = boxId || "";
+    this.title = title;
+    this.state = state;
     this.buttons = buttons || [
       {
         type: TELE_BOX_DELEGATE_EVENT.Minimize,
@@ -4375,7 +4403,7 @@ class DefaultTitleBar {
       {
         type: TELE_BOX_DELEGATE_EVENT.Maximize,
         iconClassName: this.wrapClassName("titlebar-icon-maximize"),
-        isActive: (state) => state === TELE_BOX_STATE.Maximized
+        isActive: (state2) => state2 === TELE_BOX_STATE.Maximized
       },
       {
         type: TELE_BOX_DELEGATE_EVENT.Close,
@@ -4384,6 +4412,31 @@ class DefaultTitleBar {
     ];
     this.$dragArea = this.renderDragArea();
   }
+  setTitle(title) {
+    this.title = title;
+    if (this.$title) {
+      this.$title.textContent = title;
+      this.$title.title = title;
+    }
+  }
+  setState(state) {
+    if (this.state !== state) {
+      this.state = state;
+      this.buttons.forEach((btn, i2) => {
+        if (btn.isActive) {
+          this.$btns[i2].classList.toggle(
+            "is-active",
+            btn.isActive(state)
+          );
+        }
+      });
+    }
+  }
+  setReadonly(readonly) {
+    if (this.readonly !== readonly) {
+      this.readonly = readonly;
+    }
+  }
   render() {
     if (!this.$titleBar) {
       this.$titleBar = document.createElement("div");
@@ -4391,56 +4444,57 @@ class DefaultTitleBar {
       const $titleArea = document.createElement("div");
       $titleArea.className = this.wrapClassName("title-area");
       $titleArea.dataset.teleBoxHandle = TeleBoxDragHandleType;
-      const $title = document.createElement("h1");
-      $title.className = this.wrapClassName("title");
-      $title.dataset.teleBoxHandle = TeleBoxDragHandleType;
-      $titleArea.appendChild($title);
+      this.$title = document.createElement("h1");
+      this.$title.className = this.wrapClassName("title");
+      this.$title.dataset.teleBoxHandle = TeleBoxDragHandleType;
+      if (this.title) {
+        this.$title.textContent = this.title;
+        this.$title.title = this.title;
+      }
+      $titleArea.appendChild(this.$title);
       $titleArea.appendChild(this.$dragArea);
       const $buttonsContainer = document.createElement("div");
       $buttonsContainer.className = this.wrapClassName("titlebar-btns");
-      this.buttons.forEach(({ iconClassName }, i2) => {
+      this.buttons.forEach(({ iconClassName, isActive }, i2) => {
         const teleTitleBarBtnIndex = String(i2);
         const $btn = document.createElement("button");
-        $btn.className = `${this.wrapClassName("titlebar-btn")} ${iconClassName}`;
+        $btn.className = `${this.wrapClassName(
+          "titlebar-btn"
+        )} ${iconClassName}`;
         $btn.dataset.teleTitleBarBtnIndex = teleTitleBarBtnIndex;
         $btn.dataset.teleTitleBarNoDblClick = "true";
-        $btn.dataset.teleBoxID = this.boxId;
+        if (isActive) {
+          $btn.classList.toggle("is-active", isActive(this.state));
+        }
+        this.$btns.push($btn);
         $buttonsContainer.appendChild($btn);
       });
-      this.sideEffect.addDisposer(this.title$.subscribe((title) => {
-        $title.textContent = title;
-        $title.title = title;
-      }), "render-title");
-      this.sideEffect.addDisposer(this.state$.subscribe((state) => {
-        this.buttons.forEach((btn, i2) => {
+      this.sideEffect.addEventListener(
+        $buttonsContainer,
+        "click",
+        (ev) => {
           var _a;
-          if (btn.isActive) {
-            (_a = $buttonsContainer.children[i2]) == null ? void 0 : _a.classList.toggle("is-active", btn.isActive(state));
+          if (this.readonly) {
+            return;
           }
-        });
-      }), "render-state-btns");
-      this.sideEffect.addEventListener($buttonsContainer, "click", (ev) => {
-        var _a;
-        if (this.readonly$.value) {
-          return;
-        }
-        const target = ev.target;
-        const teleTitleBarBtnIndex = Number((_a = target.dataset) == null ? void 0 : _a.teleTitleBarBtnIndex);
-        if (!Number.isNaN(teleTitleBarBtnIndex) && teleTitleBarBtnIndex < this.buttons.length) {
-          preventEvent$1(ev);
-          const btn = this.buttons[teleTitleBarBtnIndex];
-          if (this.onEvent) {
-            this.onEvent({
-              type: btn.type,
-              value: btn.value,
-              index: teleTitleBarBtnIndex,
-              boxId: this.boxId
-            });
+          const target = ev.target;
+          const teleTitleBarBtnIndex = Number(
+            (_a = target.dataset) == null ? void 0 : _a.teleTitleBarBtnIndex
+          );
+          if (!Number.isNaN(teleTitleBarBtnIndex) && teleTitleBarBtnIndex < this.buttons.length) {
+            preventEvent$1(ev);
+            const btn = this.buttons[teleTitleBarBtnIndex];
+            if (this.onEvent) {
+              this.onEvent({
+                type: btn.type,
+                value: btn.value
+              });
+            }
           }
         }
-      }, {}, "render-btns-container-click");
-      $titleArea.appendChild($buttonsContainer);
+      );
       this.$titleBar.appendChild($titleArea);
+      this.$titleBar.appendChild($buttonsContainer);
     }
     return this.$titleBar;
   }
@@ -4448,7 +4502,17 @@ class DefaultTitleBar {
     const $dragArea = document.createElement("div");
     $dragArea.className = this.wrapClassName("drag-area");
     $dragArea.dataset.teleBoxHandle = TeleBoxDragHandleType;
-    this.sideEffect.addEventListener($dragArea, "pointerdown", this.handleTitleBarClick);
+    this.sideEffect.addEventListener(
+      $dragArea,
+      "mousedown",
+      this.handleTitleBarClick
+    );
+    this.sideEffect.addEventListener(
+      $dragArea,
+      "touchstart",
+      this.handleTitleBarTouch,
+      { passive: true }
+    );
     return $dragArea;
   }
   dragHandle() {
@@ -4461,41 +4525,19 @@ class DefaultTitleBar {
     this.sideEffect.flushAll();
     if (this.$titleBar) {
       this.$titleBar = void 0;
+      this.$title = void 0;
+      this.$btns.length = 0;
       this.onDragStart = void 0;
       this.onEvent = void 0;
     }
   }
 }
-function calcStageRect([rootRect, ratio]) {
-  if (ratio <= 0 || rootRect.width <= 0 || rootRect.height <= 0) {
-    return rootRect;
-  }
-  const preferredHeight = rootRect.width * ratio;
-  if (preferredHeight === rootRect.height) {
-    return rootRect;
-  }
-  if (preferredHeight < rootRect.height) {
-    return {
-      x: 0,
-      y: (rootRect.height - preferredHeight) / 2,
-      width: rootRect.width,
-      height: preferredHeight
-    };
-  }
-  const preferredWidth = rootRect.height / ratio;
-  return {
-    x: (rootRect.width - preferredWidth) / 2,
-    y: 0,
-    width: preferredWidth,
-    height: rootRect.height
-  };
-}
-const ResizeObserver$1$1 = window.ResizeObserver || ResizeObserver$4;
 class TeleBox {
   constructor({
-    id: id2 = genUID$1(),
+    id: id2 = genUniqueKey(),
     title = getBoxDefaultName(),
-    namespace = "telebox",
+    prefersColorScheme = TELE_BOX_COLOR_SCHEME.Light,
+    darkMode,
     visible = true,
     width = 0.5,
     height = 0.5,
@@ -4503,199 +4545,365 @@ class TeleBox {
     minHeight = 0,
     x: x2 = 0.1,
     y: y2 = 0.1,
+    minimized = false,
+    maximized = false,
+    readonly = false,
     resizable = true,
     draggable = true,
-    boxRatio = -1,
+    fence = true,
+    fixRatio = false,
     focus = false,
     zIndex = 100,
-    stageRatio = null,
-    enableShadowDOM = true,
+    namespace = "telebox",
     titleBar,
     content,
-    stage,
     footer,
     styles: styles2,
-    userStyles,
-    bodyStyle = null,
-    stageStyle = null,
-    darkMode$,
-    fence$,
-    root,
-    rootRect$,
-    managerMinimized$,
-    managerMaximized$,
-    managerReadonly$,
-    managerStageRect$,
-    managerStageRatio$,
-    defaultBoxBodyStyle$,
-    defaultBoxStageStyle$,
-    collectorRect$
-  }) {
-    this.events = new Emittery();
-    this._delegateEvents = new Emittery();
+    containerRect = {
+      x: 0,
+      y: 0,
+      width: window.innerWidth,
+      height: window.innerHeight
+    },
+    collectorRect
+  } = {}) {
+    this._renderSideEffect = new o$1();
     this.handleTrackStart = (ev) => {
       var _a;
       return (_a = this._handleTrackStart) == null ? void 0 : _a.call(this, ev);
     };
-    this._sideEffect = new SideEffectManager$1();
+    this._sideEffect = new o$1();
+    this._valSideEffectBinder = c(this._sideEffect);
+    const { combine, createVal } = this._valSideEffectBinder;
     this.id = id2;
     this.namespace = namespace;
-    this.enableShadowDOM = enableShadowDOM;
-    const valManager = new ValManager();
-    this._sideEffect.addDisposer(() => valManager.destroy());
-    const title$ = new Val(title);
-    const visible$ = new Val(visible);
-    const resizable$ = new Val(resizable);
-    const draggable$ = new Val(draggable);
-    const boxRatio$ = new Val(boxRatio);
-    const zIndex$ = new Val(zIndex);
-    const focus$ = new Val(focus);
-    const boxMaximized$ = new Val(null);
-    const boxMinimized$ = new Val(null);
-    const boxReadonly$ = new Val(null);
-    const maximized$ = combine([boxMaximized$, managerMaximized$], ([boxMaximized, managerMaximized]) => {
-      return boxMaximized != null ? boxMaximized : managerMaximized;
+    this.events = new EventEmitter();
+    this._delegateEvents = new EventEmitter();
+    const prefersColorScheme$ = createVal(
+      prefersColorScheme
+    );
+    prefersColorScheme$.reaction((prefersColorScheme2, _2, skipUpdate) => {
+      if (!skipUpdate) {
+        this.events.emit(
+          TELE_BOX_EVENT.PrefersColorScheme,
+          prefersColorScheme2
+        );
+      }
     });
-    const minimized$ = combine([boxMinimized$, managerMinimized$], ([boxMinimized, managerMinimized]) => boxMinimized != null ? boxMinimized : managerMinimized);
-    const readonly$ = combine([boxReadonly$, managerReadonly$], ([boxReadonly, managerReadonly]) => boxReadonly != null ? boxReadonly : managerReadonly);
-    const state$ = combine([minimized$, maximized$], ([minimized, maximized]) => {
-      return minimized ? TELE_BOX_STATE.Minimized : maximized ? TELE_BOX_STATE.Maximized : TELE_BOX_STATE.Normal;
+    const darkMode$ = createVal(Boolean(darkMode));
+    if (darkMode == null) {
+      prefersColorScheme$.subscribe(
+        (prefersColorScheme2, _2, skipUpdate) => {
+          this._sideEffect.add(() => {
+            if (prefersColorScheme2 === "auto") {
+              const prefersDark = window.matchMedia(
+                "(prefers-color-scheme: dark)"
+              );
+              if (prefersDark) {
+                darkMode$.setValue(
+                  prefersDark.matches,
+                  skipUpdate
+                );
+                const handler = (evt) => {
+                  darkMode$.setValue(evt.matches, skipUpdate);
+                };
+                prefersDark.addListener(handler);
+                return () => prefersDark.removeListener(handler);
+              } else {
+                return noop$1;
+              }
+            } else {
+              darkMode$.setValue(
+                prefersColorScheme2 === "dark",
+                skipUpdate
+              );
+              return noop$1;
+            }
+          }, "prefers-color-scheme");
+        }
+      );
+    }
+    darkMode$.reaction((darkMode2, _2, skipUpdate) => {
+      if (!skipUpdate) {
+        this.events.emit(TELE_BOX_EVENT.DarkMode, darkMode2);
+      }
     });
-    const minSize$ = new Val({
-      width: clamp$1(minWidth, 0, 1),
-      height: clamp$1(minHeight, 0, 1)
-    }, { compare: shallowequal });
-    const pxMinSize$ = combine([minSize$, managerStageRect$], ([minSize, managerStageRect]) => ({
-      width: minSize.width * managerStageRect.width,
-      height: minSize.height * managerStageRect.height
-    }), { compare: shallowequal });
-    const intrinsicSize$ = new Val({ width, height }, { compare: shallowequal });
-    this._sideEffect.addDisposer(minSize$.reaction((minSize, skipUpdate) => {
-      intrinsicSize$.setValue({
-        width: Math.max(width, minSize.width),
-        height: Math.max(height, minSize.height)
-      }, skipUpdate);
-    }));
-    const intrinsicCoord$ = new Val({ x: x2, y: y2 }, { compare: shallowequal });
-    const pxIntrinsicSize$ = combine([intrinsicSize$, managerStageRect$], ([size2, managerStageRect]) => ({
-      width: managerStageRect.width * size2.width,
-      height: managerStageRect.height * size2.height
-    }), { compare: shallowequal });
-    const pxIntrinsicCoord$ = combine([intrinsicCoord$, managerStageRect$], ([intrinsicCoord, managerStageRect]) => ({
-      x: intrinsicCoord.x * managerStageRect.width,
-      y: intrinsicCoord.y * managerStageRect.height
-    }), { compare: shallowequal });
-    const bodyStyle$ = new Val(bodyStyle);
-    const stageStyle$ = new Val(stageStyle);
-    const contentRoot$ = new Val(null);
-    const bodyRect$ = new Val(managerStageRect$.value, {
-      compare: shallowequal
+    const containerRect$ = createVal(containerRect, shallowequal);
+    const collectorRect$ = createVal(collectorRect, shallowequal);
+    const title$ = createVal(title);
+    title$.reaction((title2, _2, skipUpdate) => {
+      if (!skipUpdate) {
+        this.titleBar.setTitle(title2);
+      }
     });
-    const stageRatio$ = new Val(stageRatio);
-    const finalStageRatio$ = combine([stageRatio$, managerStageRatio$], ([stageRatio2, managerStageRatio]) => stageRatio2 != null ? stageRatio2 : managerStageRatio);
-    const stageRect$ = combine([bodyRect$, finalStageRatio$], calcStageRect, { compare: shallowequal });
-    const propsValConfig = {
-      darkMode: darkMode$,
-      fence: fence$,
-      rootRect: rootRect$,
-      managerMinimized: managerMinimized$,
-      managerMaximized: managerMaximized$,
-      managerReadonly: managerReadonly$,
-      managerStageRect: managerStageRect$,
-      managerStageRatio: managerStageRatio$,
-      defaultBoxBodyStyle: defaultBoxBodyStyle$,
-      defaultBoxStageStyle: defaultBoxStageStyle$,
-      collectorRect: collectorRect$
-    };
-    withReadonlyValueEnhancer(this, propsValConfig);
-    const myReadonlyValConfig = {
-      zIndex: zIndex$,
-      focus: focus$,
-      state: state$,
-      minSize: minSize$,
-      pxMinSize: pxMinSize$,
-      intrinsicSize: intrinsicSize$,
-      intrinsicCoord: intrinsicCoord$,
-      pxIntrinsicSize: pxIntrinsicSize$,
-      pxIntrinsicCoord: pxIntrinsicCoord$,
-      bodyRect: bodyRect$,
-      stageRect: stageRect$,
-      minimized: minimized$,
-      maximized: maximized$,
-      readonly: readonly$
-    };
-    withReadonlyValueEnhancer(this, myReadonlyValConfig, valManager);
-    const valConfig = {
-      title: title$,
-      visible: visible$,
-      resizable: resizable$,
-      draggable: draggable$,
-      boxRatio: boxRatio$,
-      boxMinimized: boxMinimized$,
-      boxMaximized: boxMaximized$,
-      boxReadonly: boxReadonly$,
-      stageRatio: stageRatio$,
-      bodyStyle: bodyStyle$,
-      stageStyle: stageStyle$
-    };
-    withValueEnhancer(this, valConfig, valManager);
+    const visible$ = createVal(visible);
+    visible$.reaction((visible2, _2, skipUpdate) => {
+      if (!skipUpdate && !visible2) {
+        this.events.emit(TELE_BOX_EVENT.Close);
+      }
+    });
+    const readonly$ = createVal(readonly);
+    readonly$.reaction((readonly2, _2, skipUpdate) => {
+      if (!skipUpdate) {
+        this.events.emit(TELE_BOX_EVENT.Readonly, readonly2);
+      }
+    });
+    const resizable$ = createVal(resizable);
+    const draggable$ = createVal(draggable);
+    const fence$ = createVal(fence);
+    const fixRatio$ = createVal(fixRatio);
+    const zIndex$ = createVal(zIndex);
+    zIndex$.reaction((zIndex2, _2, skipUpdate) => {
+      if (!skipUpdate) {
+        this.events.emit(TELE_BOX_EVENT.ZIndex, zIndex2);
+      }
+    });
+    const focus$ = createVal(focus);
+    focus$.reaction((focus2, _2, skipUpdate) => {
+      if (!skipUpdate) {
+        this.events.emit(
+          focus2 ? TELE_BOX_EVENT.Focus : TELE_BOX_EVENT.Blur
+        );
+      }
+    });
+    const minimized$ = createVal(minimized);
+    minimized$.reaction((minimized2, _2, skipUpdate) => {
+      if (!skipUpdate) {
+        this.events.emit(TELE_BOX_EVENT.Minimized, minimized2);
+      }
+    });
+    const maximized$ = createVal(maximized);
+    maximized$.reaction((maximized2, _2, skipUpdate) => {
+      if (!skipUpdate) {
+        this.events.emit(TELE_BOX_EVENT.Maximized, maximized2);
+      }
+    });
+    const state$ = combine(
+      [minimized$, maximized$],
+      ([minimized2, maximized2]) => minimized2 ? TELE_BOX_STATE.Minimized : maximized2 ? TELE_BOX_STATE.Maximized : TELE_BOX_STATE.Normal
+    );
+    state$.reaction((state, _2, skipUpdate) => {
+      if (!skipUpdate) {
+        this.events.emit(TELE_BOX_EVENT.State, state);
+      }
+    });
+    const minSize$ = createVal(
+      {
+        width: clamp$2(minWidth, 0, 1),
+        height: clamp$2(minHeight, 0, 1)
+      },
+      shallowequal
+    );
+    const intrinsicSize$ = createVal(
+      {
+        width: clamp$2(width, minSize$.value.width, 1),
+        height: clamp$2(height, minSize$.value.height, 1)
+      },
+      shallowequal
+    );
+    minSize$.reaction((minSize, _2, skipUpdate) => {
+      intrinsicSize$.setValue(
+        {
+          width: clamp$2(width, minSize.width, 1),
+          height: clamp$2(height, minSize.height, 1)
+        },
+        skipUpdate
+      );
+    });
+    intrinsicSize$.reaction((size2, _2, skipUpdate) => {
+      if (!skipUpdate) {
+        this.events.emit(TELE_BOX_EVENT.IntrinsicResize, size2);
+      }
+    });
+    const size$ = combine(
+      [intrinsicSize$, maximized$],
+      ([intrinsicSize, maximized2]) => {
+        if (maximized2) {
+          return { width: 1, height: 1 };
+        }
+        return intrinsicSize;
+      },
+      shallowequal
+    );
+    size$.reaction((size2, _2, skipUpdate) => {
+      if (!skipUpdate) {
+        this.events.emit(TELE_BOX_EVENT.Resize, size2);
+      }
+    });
+    const visualSize$ = combine(
+      [size$, minimized$, containerRect$, collectorRect$],
+      ([size2, minimized2, containerRect2, collectorRect2]) => {
+        if (minimized2 && collectorRect2) {
+          return {
+            width: collectorRect2.width / size2.width / containerRect2.width,
+            height: collectorRect2.height / size2.height / containerRect2.height
+          };
+        }
+        return size2;
+      },
+      shallowequal
+    );
+    visualSize$.reaction((size2, _2, skipUpdate) => {
+      if (!skipUpdate) {
+        this.events.emit(TELE_BOX_EVENT.VisualResize, size2);
+      }
+    });
+    const intrinsicCoord$ = createVal(
+      { x: clamp$2(x2, 0, 1), y: clamp$2(y2, 0, 1) },
+      shallowequal
+    );
+    intrinsicCoord$.reaction((coord, _2, skipUpdate) => {
+      if (!skipUpdate) {
+        this.events.emit(TELE_BOX_EVENT.IntrinsicMove, coord);
+      }
+    });
+    const coord$ = combine(
+      [
+        intrinsicCoord$,
+        intrinsicSize$,
+        containerRect$,
+        collectorRect$,
+        minimized$,
+        maximized$
+      ],
+      ([
+        intrinsicCoord,
+        intrinsicSize,
+        containerRect2,
+        collectorRect2,
+        minimized2,
+        maximized2
+      ]) => {
+        if (minimized2 && collectorRect2) {
+          if (maximized2) {
+            return {
+              x: (collectorRect2.x + collectorRect2.width / 2) / containerRect2.width - 1 / 2,
+              y: (collectorRect2.y + collectorRect2.height / 2) / containerRect2.height - 1 / 2
+            };
+          }
+          return {
+            x: (collectorRect2.x + collectorRect2.width / 2) / containerRect2.width - intrinsicSize.width / 2,
+            y: (collectorRect2.y + collectorRect2.height / 2) / containerRect2.height - intrinsicSize.height / 2
+          };
+        }
+        if (maximized2) {
+          return { x: 0, y: 0 };
+        }
+        return intrinsicCoord;
+      },
+      shallowequal
+    );
+    coord$.reaction((coord, _2, skipUpdate) => {
+      if (!skipUpdate) {
+        this.events.emit(TELE_BOX_EVENT.Move, coord);
+      }
+    });
     this.titleBar = titleBar || new DefaultTitleBar({
-      readonly$,
-      state$,
-      title$,
+      readonly: readonly$.value,
+      title: title$.value,
       namespace: this.namespace,
       onDragStart: (event) => {
         var _a;
         return (_a = this._handleTrackStart) == null ? void 0 : _a.call(this, event);
       },
-      onEvent: (event) => this._delegateEvents.emit(event.type, this.id),
-      boxId: this.id
+      onEvent: (event) => {
+        if (this._delegateEvents.listeners.length > 0) {
+          this._delegateEvents.emit(event.type);
+        } else {
+          switch (event.type) {
+            case TELE_BOX_DELEGATE_EVENT.Maximize: {
+              maximized$.setValue(!maximized$.value);
+              break;
+            }
+            case TELE_BOX_DELEGATE_EVENT.Minimize: {
+              minimized$.setValue(true);
+              break;
+            }
+            case TELE_BOX_DELEGATE_EVENT.Close: {
+              visible$.setValue(false);
+              break;
+            }
+            default: {
+              console.error(
+                "Unsupported titleBar event:",
+                event
+              );
+              break;
+            }
+          }
+        }
+      }
     });
-    this._sideEffect.addDisposer(combine([boxRatio$, minimized$]).subscribe(([boxRatio2, minimized]) => {
-      if (!minimized && boxRatio2 > 0) {
-        this.transform(pxIntrinsicCoord$.value.x, pxIntrinsicCoord$.value.y, pxIntrinsicSize$.value.width, pxIntrinsicSize$.value.height);
-      }
-    }));
-    this._sideEffect.addDisposer(fence$.subscribe((fence) => {
-      if (fence) {
-        this.move(pxIntrinsicCoord$.value.x, pxIntrinsicCoord$.value.y);
-      }
-    }));
-    this.$box = this._render();
-    contentRoot$.setValue(this.$content.parentElement);
-    content && this.mountContent(content);
-    stage && this.mountStage(stage);
-    footer && this.mountFooter(footer);
-    styles2 && this.mountStyles(styles2);
-    userStyles && this.mountUserStyles(userStyles);
-    root.appendChild(this.$box);
-    const watchValEvent = (val, event) => {
-      this._sideEffect.addDisposer(val.reaction((v2, skipUpdate) => {
-        if (!skipUpdate) {
-          this.events.emit(event, v2);
-        }
-      }));
+    readonly$.reaction((readonly2) => {
+      this.titleBar.setReadonly(readonly2);
+    });
+    const $userContent$ = createVal(content);
+    const $userFooter$ = createVal(footer);
+    const $userStyles$ = createVal(styles2);
+    const valConfig = {
+      prefersColorScheme: prefersColorScheme$,
+      darkMode: darkMode$,
+      containerRect: containerRect$,
+      collectorRect: collectorRect$,
+      title: title$,
+      visible: visible$,
+      readonly: readonly$,
+      resizable: resizable$,
+      draggable: draggable$,
+      fence: fence$,
+      fixRatio: fixRatio$,
+      focus: focus$,
+      zIndex: zIndex$,
+      minimized: minimized$,
+      maximized: maximized$,
+      $userContent: $userContent$,
+      $userFooter: $userFooter$,
+      $userStyles: $userStyles$
     };
-    watchValEvent(darkMode$, TELE_BOX_EVENT.DarkMode);
-    watchValEvent(readonly$, TELE_BOX_EVENT.Readonly);
-    watchValEvent(zIndex$, TELE_BOX_EVENT.ZIndex);
-    watchValEvent(minimized$, TELE_BOX_EVENT.Minimized);
-    watchValEvent(maximized$, TELE_BOX_EVENT.Maximized);
-    watchValEvent(state$, TELE_BOX_EVENT.State);
-    watchValEvent(intrinsicSize$, TELE_BOX_EVENT.IntrinsicResize);
-    watchValEvent(intrinsicCoord$, TELE_BOX_EVENT.IntrinsicMove);
-    this._sideEffect.addDisposer([
-      visible$.reaction((visible2, skipUpdate) => {
-        if (!skipUpdate && !visible2) {
-          this.events.emit(TELE_BOX_EVENT.Close);
-        }
-      }),
-      focus$.reaction((focus2, skipUpdate) => {
-        if (!skipUpdate) {
-          this.events.emit(focus2 ? TELE_BOX_EVENT.Focus : TELE_BOX_EVENT.Blur);
-        }
-      })
-    ]);
+    i$1(this, valConfig);
+    this._state$ = state$;
+    this._minSize$ = minSize$;
+    this._size$ = size$;
+    this._intrinsicSize$ = intrinsicSize$;
+    this._visualSize$ = visualSize$;
+    this._coord$ = coord$;
+    this._intrinsicCoord$ = intrinsicCoord$;
+    if (this.fixRatio) {
+      this.transform(
+        coord$.value.x,
+        coord$.value.y,
+        size$.value.width,
+        size$.value.height,
+        true
+      );
+    }
+    this.$box = this.render();
+  }
+  get darkMode() {
+    return this._darkMode$.value;
+  }
+  get state() {
+    return this._state$.value;
+  }
+  setState(state, skipUpdate = false) {
+    switch (state) {
+      case TELE_BOX_STATE.Maximized: {
+        this.setMinimized(false, skipUpdate);
+        this.setMaximized(true, skipUpdate);
+        break;
+      }
+      case TELE_BOX_STATE.Minimized: {
+        this.setMinimized(true, skipUpdate);
+        this.setMaximized(false, skipUpdate);
+        break;
+      }
+      default: {
+        this.setMinimized(false, skipUpdate);
+        this.setMaximized(false, skipUpdate);
+        break;
+      }
+    }
+    return this;
   }
   get minWidth() {
     return this._minSize$.value.width;
@@ -4704,22 +4912,18 @@ class TeleBox {
     return this._minSize$.value.height;
   }
   setMinWidth(minWidth, skipUpdate = false) {
-    this._minSize$.setValue({ width: minWidth, height: this.minHeight }, skipUpdate);
+    this._minSize$.setValue(
+      { width: minWidth, height: this.minHeight },
+      skipUpdate
+    );
+    return this;
   }
   setMinHeight(minHeight, skipUpdate = false) {
-    this._minSize$.setValue({ width: this.minWidth, height: minHeight }, skipUpdate);
-  }
-  resize(width, height, skipUpdate = false) {
-    this._intrinsicSize$.setValue({
-      width: Math.max(width, this.minWidth),
-      height: Math.max(height, this.minHeight)
-    }, skipUpdate);
-  }
-  get intrinsicX() {
-    return this._intrinsicCoord$.value.x;
-  }
-  get intrinsicY() {
-    return this._intrinsicCoord$.value.y;
+    this._minSize$.setValue(
+      { width: this.minWidth, height: minHeight },
+      skipUpdate
+    );
+    return this;
   }
   get intrinsicWidth() {
     return this._intrinsicSize$.value.width;
@@ -4727,191 +4931,221 @@ class TeleBox {
   get intrinsicHeight() {
     return this._intrinsicSize$.value.height;
   }
+  resize(width, height, skipUpdate = false) {
+    this._intrinsicSize$.setValue({ width, height }, skipUpdate);
+    return this;
+  }
+  get width() {
+    return this._size$.value.width;
+  }
+  get height() {
+    return this._size$.value.height;
+  }
+  get absoluteWidth() {
+    return this.width * this.containerRect.width;
+  }
+  get absoluteHeight() {
+    return this.height * this.containerRect.height;
+  }
+  get visualWidth() {
+    return this._visualSize$.value.width;
+  }
+  get visualHeight() {
+    return this._visualSize$.value.height;
+  }
+  get intrinsicX() {
+    return this._intrinsicCoord$.value.x;
+  }
+  get intrinsicY() {
+    return this._intrinsicCoord$.value.y;
+  }
   move(x2, y2, skipUpdate = false) {
-    let safeX;
-    let safeY;
-    const managerStageRect = this.managerStageRect;
-    const pxIntrinsicSize = this.pxIntrinsicSize;
-    if (this.fence) {
-      safeX = clamp$1(x2, 0, managerStageRect.width - pxIntrinsicSize.width);
-      safeY = clamp$1(y2, 0, managerStageRect.height - pxIntrinsicSize.height);
-    } else {
-      safeX = clamp$1(x2, -(pxIntrinsicSize.width - 120), 0 + managerStageRect.width - 20);
-      safeY = clamp$1(y2, 0, 0 + managerStageRect.height - 20);
-    }
-    this._intrinsicCoord$.setValue({
-      x: safeX / managerStageRect.width,
-      y: safeY / managerStageRect.height
-    }, skipUpdate);
+    this._intrinsicCoord$.setValue({ x: x2, y: y2 }, skipUpdate);
+    return this;
+  }
+  get x() {
+    return this._coord$.value.x;
+  }
+  get y() {
+    return this._coord$.value.y;
   }
   transform(x2, y2, width, height, skipUpdate = false) {
-    const managerStageRect = this.managerStageRect;
-    width = Math.max(width, this.pxMinSize.width);
-    height = Math.max(height, this.pxMinSize.height);
-    if (this.boxRatio > 0) {
-      const newHeight = this.boxRatio * width;
-      if (y2 !== this.pxIntrinsicCoord.y) {
+    if (this.fixRatio) {
+      const newHeight = this.intrinsicHeight / this.intrinsicWidth * width;
+      if (y2 !== this.intrinsicY) {
         y2 -= newHeight - height;
       }
       height = newHeight;
     }
     if (y2 < 0) {
       y2 = 0;
-      height = this.pxIntrinsicSize.height;
+      if (height > this.intrinsicHeight) {
+        height = this.intrinsicHeight;
+      }
     }
-    this.move(x2, y2, skipUpdate);
-    this._intrinsicSize$.setValue({
-      width: width / managerStageRect.width,
-      height: height / managerStageRect.height
-    }, skipUpdate);
+    this._intrinsicCoord$.setValue(
+      {
+        x: width >= this.minWidth ? x2 : this.intrinsicX,
+        y: height >= this.minHeight ? y2 : this.intrinsicY
+      },
+      skipUpdate
+    );
+    this._intrinsicSize$.setValue(
+      {
+        width: clamp$2(width, this.minWidth, 1),
+        height: clamp$2(height, this.minHeight, 1)
+      },
+      skipUpdate
+    );
+    return this;
+  }
+  mount(container) {
+    container.appendChild(this.render());
+    return this;
+  }
+  unmount() {
+    if (this.$box) {
+      this.$box.remove();
+    }
+    return this;
   }
   mountContent(content) {
-    var _a;
-    (_a = this.$authorContent) == null ? void 0 : _a.remove();
-    this.$authorContent = content;
-    this.$content.appendChild(content);
+    this.set$userContent(content);
+    return this;
   }
   unmountContent() {
-    if (this.$authorContent) {
-      this.$authorContent.remove();
-      this.$authorContent = void 0;
-    }
-  }
-  mountStage(stage) {
-    var _a;
-    (_a = this.$authorStage) == null ? void 0 : _a.remove();
-    this.$authorStage = stage;
-    if (!this.$stage) {
-      this.$stage = this._renderStage();
-    }
-    this.$stage.appendChild(stage);
-    if (!this.$stage.parentElement) {
-      this.$body.appendChild(this.$stage);
-    }
-  }
-  unmountStage() {
-    var _a;
-    if (this.$authorStage) {
-      this.$authorStage.remove();
-      this.$authorStage = void 0;
-    }
-    (_a = this.$stage) == null ? void 0 : _a.remove();
+    this.set$userContent(void 0);
+    return this;
   }
   mountFooter(footer) {
-    var _a;
-    (_a = this.$authorFooter) == null ? void 0 : _a.remove();
-    this.$authorFooter = footer;
-    this.$footer.appendChild(footer);
+    this.set$userFooter(footer);
+    return this;
   }
   unmountFooter() {
-    if (this.$authorFooter) {
-      this.$authorFooter.remove();
-      this.$authorFooter = void 0;
-    }
+    this.set$userFooter(void 0);
+    return this;
+  }
+  getUserStyles() {
+    return this.$userStyles;
   }
   mountStyles(styles2) {
-    this.$styles.textContent = styles2;
+    let $styles;
+    if (typeof styles2 === "string") {
+      $styles = document.createElement("style");
+      $styles.textContent = styles2;
+    } else {
+      $styles = styles2;
+    }
+    this.set$userStyles($styles);
+    return this;
   }
   unmountStyles() {
-    this.$styles.textContent = "";
+    this.set$userStyles(void 0);
+    return this;
   }
-  mountUserStyles(styles2) {
-    this.$userStyles.textContent = styles2;
-  }
-  unmountUserStyles() {
-    this.$userStyles.textContent = "";
-  }
-  _render() {
-    if (this.$box) {
-      return this.$box;
+  render(root) {
+    if (root) {
+      if (root === this.$box) {
+        return this.$box;
+      } else {
+        this.$box = root;
+      }
+    } else {
+      if (this.$box) {
+        return this.$box;
+      } else {
+        this.$box = document.createElement("div");
+      }
     }
-    const bindBoxStates = (el, disposerID) => {
-      return this._sideEffect.addDisposer([
-        this._readonly$.subscribe((readonly) => el.classList.toggle(this.wrapClassName("readonly"), readonly)),
-        this._draggable$.subscribe((draggable) => el.classList.toggle(this.wrapClassName("no-drag"), !draggable)),
-        this._resizable$.subscribe((resizable) => el.classList.toggle(this.wrapClassName("no-resize"), !resizable)),
-        this._focus$.subscribe((focus) => el.classList.toggle(this.wrapClassName("blur"), !focus)),
-        this._darkMode$.subscribe((darkMode) => {
-          el.classList.toggle(this.wrapClassName("color-scheme-dark"), darkMode);
-          el.classList.toggle(this.wrapClassName("color-scheme-light"), !darkMode);
-        })
-      ], disposerID);
-    };
-    this.$box = document.createElement("div");
+    this._renderSideEffect.flushAll();
     this.$box.classList.add(this.wrapClassName("box"));
-    bindBoxStates(this.$box, "bind-box-state");
-    this._sideEffect.add(() => {
+    const bindClassName = (el, val, className, predicate = isTruthy) => {
+      return this._renderSideEffect.add(() => {
+        const wrappedClassName = this.wrapClassName(className);
+        return val.subscribe((value) => {
+          el.classList.toggle(wrappedClassName, predicate(value));
+        });
+      });
+    };
+    bindClassName(this.$box, this._readonly$, "readonly");
+    bindClassName(this.$box, this._draggable$, "no-drag", isFalsy);
+    bindClassName(this.$box, this._resizable$, "no-resize", isFalsy);
+    bindClassName(this.$box, this._focus$, "blur", isFalsy);
+    bindClassName(this.$box, this._darkMode$, "color-scheme-dark");
+    bindClassName(
+      this.$box,
+      this._darkMode$,
+      "color-scheme-light",
+      isFalsy
+    );
+    this._renderSideEffect.add(() => {
       const minimizedClassName = this.wrapClassName("minimized");
       const maximizedClassName = this.wrapClassName("maximized");
       const MAXIMIZED_TIMER_ID = "box-maximized-timer";
       return this._state$.subscribe((state) => {
-        this.$box.classList.toggle(minimizedClassName, state === TELE_BOX_STATE.Minimized);
+        this.$box.classList.toggle(
+          minimizedClassName,
+          state === TELE_BOX_STATE.Minimized
+        );
         if (state === TELE_BOX_STATE.Maximized) {
-          this._sideEffect.flush(MAXIMIZED_TIMER_ID);
+          this._renderSideEffect.flush(MAXIMIZED_TIMER_ID);
           this.$box.classList.toggle(maximizedClassName, true);
         } else {
-          this._sideEffect.setTimeout(() => {
-            this.$box.classList.toggle(maximizedClassName, false);
-          }, 0, MAXIMIZED_TIMER_ID);
+          this._renderSideEffect.setTimeout(
+            () => {
+              this.$box.classList.toggle(
+                maximizedClassName,
+                false
+              );
+            },
+            0,
+            MAXIMIZED_TIMER_ID
+          );
         }
       });
     });
-    this._sideEffect.addDisposer(this._visible$.subscribe((visible) => {
-      this.$box.style.display = visible ? "block" : "none";
-    }));
-    this._sideEffect.addDisposer(this._zIndex$.subscribe((zIndex) => {
-      this.$box.style.zIndex = String(zIndex);
-    }));
-    this.$box.dataset.teleBoxID = this.id;
+    this._renderSideEffect.add(
+      () => this._visible$.subscribe((visible) => {
+        this.$box.style.display = visible ? "block" : "none";
+      })
+    );
+    this._renderSideEffect.add(
+      () => this._zIndex$.subscribe((zIndex) => {
+        this.$box.style.zIndex = String(zIndex);
+      })
+    );
     const boxStyler = index(this.$box);
-    const boxStyles$ = combine([
-      this._maximized$,
-      this._minimized$,
-      this._pxIntrinsicSize$,
-      this._pxIntrinsicCoord$,
-      this._collectorRect$,
-      this._rootRect$,
-      this._managerStageRect$
-    ], ([
-      maximized,
-      minimized,
-      pxIntrinsicSize,
-      pxIntrinsicCoord,
-      collectorRect,
-      rootRect,
-      managerStageRect
-    ]) => {
-      const styles2 = maximized ? {
-        x: -managerStageRect.x,
-        y: -managerStageRect.y,
-        width: rootRect.width,
-        height: rootRect.height,
-        scaleX: 1,
-        scaleY: 1
-      } : {
-        x: pxIntrinsicCoord.x,
-        y: pxIntrinsicCoord.y,
-        width: pxIntrinsicSize.width,
-        height: pxIntrinsicSize.height,
-        scaleX: 1,
-        scaleY: 1
-      };
-      if (minimized && collectorRect) {
-        const { width: boxWidth, height: boxHeight } = maximized ? this.rootRect : pxIntrinsicSize;
-        styles2.x = collectorRect.x - boxWidth / 2 + collectorRect.width / 2 - managerStageRect.x;
-        styles2.y = collectorRect.y - boxHeight / 2 + collectorRect.height / 2 - managerStageRect.y;
-        styles2.scaleX = collectorRect.width / boxWidth;
-        styles2.scaleY = collectorRect.height / boxHeight;
-      }
-      return styles2;
-    }, { compare: shallowequal });
-    const boxStyles = boxStyles$.value;
-    this.$box.style.width = boxStyles.width + "px";
-    this.$box.style.height = boxStyles.height + "px";
-    this.$box.style.transform = `translate(${boxStyles.x - 10}px,${boxStyles.y - 10}px)`;
-    this._sideEffect.addDisposer(boxStyles$.subscribe((styles2) => {
+    this.$box.dataset.teleBoxID = this.id;
+    this.$box.style.width = this.absoluteWidth + "px";
+    this.$box.style.height = this.absoluteHeight + "px";
+    const translateX = this.x * this.containerRect.width + this.containerRect.x;
+    const translateY = this.y * this.containerRect.height + this.containerRect.y;
+    this.$box.style.transform = `translate(${translateX - 10}px,${translateY - 10}px)`;
+    this._valSideEffectBinder.combine(
+      [
+        this._coord$,
+        this._size$,
+        this._minimized$,
+        this._containerRect$,
+        this._collectorRect$
+      ],
+      ([coord, size2, minimized, containerRect, collectorRect]) => {
+        const absoluteWidth = size2.width * containerRect.width;
+        const absoluteHeight = size2.height * containerRect.height;
+        return {
+          width: absoluteWidth + (minimized && collectorRect ? 1 : 0),
+          height: absoluteHeight + (minimized && collectorRect ? 1 : 0),
+          x: coord.x * containerRect.width,
+          y: coord.y * containerRect.height,
+          scaleX: minimized && collectorRect ? collectorRect.width / absoluteWidth : 1,
+          scaleY: minimized && collectorRect ? collectorRect.height / absoluteHeight : 1
+        };
+      },
+      shallowequal
+    ).subscribe((styles2) => {
       boxStyler.set(styles2);
-    }));
+    });
+    boxStyler.set({ x: translateX, y: translateY });
     const $boxMain = document.createElement("div");
     $boxMain.className = this.wrapClassName("box-main");
     this.$box.appendChild($boxMain);
@@ -4919,88 +5153,56 @@ class TeleBox {
     $titleBar.className = this.wrapClassName("titlebar-wrap");
     $titleBar.appendChild(this.titleBar.render());
     this.$titleBar = $titleBar;
-    const $body = document.createElement("div");
-    $body.className = this.wrapClassName("body-wrap");
-    this.$body = $body;
-    const $styles = document.createElement("style");
-    this.$styles = $styles;
-    $body.appendChild($styles);
-    const $userStyles = document.createElement("style");
-    this.$userStyles = $userStyles;
-    $body.appendChild($userStyles);
+    const $contentWrap = document.createElement("div");
+    $contentWrap.className = this.wrapClassName("content-wrap");
     const $content = document.createElement("div");
     $content.className = this.wrapClassName("content") + " tele-fancy-scrollbar";
     this.$content = $content;
-    this._sideEffect.addDisposer(combine([this._bodyStyle$, this._defaultBoxBodyStyle$], ([bodyStyle, defaultBoxBodyStyle]) => bodyStyle != null ? bodyStyle : defaultBoxBodyStyle).subscribe((style2) => $content.style.cssText = style2 || ""));
-    $body.appendChild($content);
+    this._renderSideEffect.add(() => {
+      let last$userStyles;
+      return this._$userStyles$.subscribe(($userStyles) => {
+        if (last$userStyles) {
+          last$userStyles.remove();
+        }
+        last$userStyles = $userStyles;
+        if ($userStyles) {
+          $contentWrap.appendChild($userStyles);
+        }
+      });
+    });
+    this._renderSideEffect.add(() => {
+      let last$userContent;
+      return this._$userContent$.subscribe(($userContent) => {
+        if (last$userContent) {
+          last$userContent.remove();
+        }
+        last$userContent = $userContent;
+        if ($userContent) {
+          $content.appendChild($userContent);
+        }
+      });
+    });
+    $contentWrap.appendChild($content);
     const $footer = document.createElement("div");
     $footer.className = this.wrapClassName("footer-wrap");
     this.$footer = $footer;
-    $boxMain.appendChild($titleBar);
-    const $main = document.createElement("div");
-    $main.className = this.wrapClassName("main");
-    this.$main = $main;
-    $boxMain.appendChild($main);
-    const $quarantineOuter = document.createElement("div");
-    $quarantineOuter.className = this.wrapClassName("quarantine-outer");
-    $main.appendChild($quarantineOuter);
-    const $quarantine = document.createElement("div");
-    $quarantine.className = this.wrapClassName("quarantine");
-    $quarantine.appendChild($body);
-    $quarantine.appendChild($footer);
-    if (this.enableShadowDOM) {
-      bindBoxStates($quarantine, "bind-quarantine-state");
-      const $shadowStyle = document.createElement("style");
-      $shadowStyle.textContent = shadowStyles;
-      $quarantine.insertBefore($shadowStyle, $quarantine.firstChild);
-      const shadow = $quarantineOuter.attachShadow({ mode: "open" });
-      shadow.appendChild($quarantine);
-    } else {
-      $quarantineOuter.appendChild($quarantine);
-    }
-    this._renderResizeHandlers();
-    const updateBodyRect = () => {
-      const rect = $body.getBoundingClientRect();
-      this._bodyRect$.setValue({
-        x: 0,
-        y: 0,
-        width: rect.width,
-        height: rect.height
-      });
-    };
-    this._sideEffect.add(() => {
-      const observer = new ResizeObserver$1$1(() => {
-        if (!this.minimized) {
-          updateBodyRect();
+    this._renderSideEffect.add(() => {
+      let last$userFooter;
+      return this._$userFooter$.subscribe(($userFooter) => {
+        if (last$userFooter) {
+          last$userFooter.remove();
+        }
+        last$userFooter = $userFooter;
+        if ($userFooter) {
+          $footer.appendChild($userFooter);
         }
       });
-      observer.observe($body);
-      return () => observer.disconnect();
     });
-    this._sideEffect.addDisposer(this._minimized$.reaction((minimized) => {
-      if (!minimized) {
-        this._sideEffect.setTimeout(updateBodyRect, 400, "minimized-content-rect-fix");
-      }
-    }));
+    $boxMain.appendChild($titleBar);
+    $boxMain.appendChild($contentWrap);
+    $boxMain.appendChild($footer);
+    this._renderResizeHandlers();
     return this.$box;
-  }
-  _renderStage() {
-    const $stage = document.createElement("div");
-    $stage.className = this.wrapClassName("box-stage");
-    const updateStageRect = (stageRect) => {
-      $stage.style.top = stageRect.y + "px";
-      $stage.style.left = stageRect.x + "px";
-      $stage.style.width = stageRect.width + "px";
-      $stage.style.height = stageRect.height + "px";
-    };
-    this._sideEffect.addDisposer([
-      combine([this._stageStyle$, this._defaultBoxStageStyle$], ([stageStyle, defaultBoxStageStyle]) => stageStyle != null ? stageStyle : defaultBoxStageStyle).subscribe((styles2) => {
-        $stage.style.cssText = styles2 || "";
-        updateStageRect(this._stageRect$.value);
-      }),
-      this._stageRect$.subscribe(updateStageRect)
-    ], "box-stage-styles");
-    return $stage;
   }
   _renderResizeHandlers() {
     const $resizeHandles = document.createElement("div");
@@ -5023,72 +5225,112 @@ class TeleBox {
     let trackStartPageY = 0;
     let trackingHandle;
     const handleTracking = (ev) => {
-      if (!ev.isPrimary || this.state !== TELE_BOX_STATE.Normal) {
+      if (this.state !== TELE_BOX_STATE.Normal) {
         return;
       }
       preventEvent$1(ev);
-      let { pageX, pageY } = ev;
+      let { pageX, pageY } = flattenEvent$1(ev);
       if (pageY < 0) {
         pageY = 0;
       }
-      const offsetX = pageX - trackStartPageX;
-      const offsetY = pageY - trackStartPageY;
-      let { x: newX, y: newY } = this.pxIntrinsicCoord;
-      let { width: newWidth, height: newHeight } = this.pxIntrinsicSize;
+      const offsetX = (pageX - trackStartPageX) / this.containerRect.width;
+      const offsetY = (pageY - trackStartPageY) / this.containerRect.height;
       switch (trackingHandle) {
         case TELE_BOX_RESIZE_HANDLE.North: {
-          newY = trackStartY + offsetY;
-          newHeight = trackStartHeight - offsetY;
+          this.transform(
+            this.x,
+            trackStartY + offsetY,
+            this.width,
+            trackStartHeight - offsetY
+          );
           break;
         }
         case TELE_BOX_RESIZE_HANDLE.South: {
-          newHeight = trackStartHeight + offsetY;
+          this.transform(
+            this.x,
+            this.y,
+            this.width,
+            trackStartHeight + offsetY
+          );
           break;
         }
         case TELE_BOX_RESIZE_HANDLE.West: {
-          newX = trackStartX + offsetX;
-          newWidth = trackStartWidth - offsetX;
+          this.transform(
+            trackStartX + offsetX,
+            this.y,
+            trackStartWidth - offsetX,
+            this.height
+          );
           break;
         }
         case TELE_BOX_RESIZE_HANDLE.East: {
-          newWidth = trackStartWidth + offsetX;
+          this.transform(
+            this.x,
+            this.y,
+            trackStartWidth + offsetX,
+            this.height
+          );
           break;
         }
         case TELE_BOX_RESIZE_HANDLE.NorthWest: {
-          newX = trackStartX + offsetX;
-          newY = trackStartY + offsetY;
-          newWidth = trackStartWidth - offsetX;
-          newHeight = trackStartHeight - offsetY;
+          this.transform(
+            trackStartX + offsetX,
+            trackStartY + offsetY,
+            trackStartWidth - offsetX,
+            trackStartHeight - offsetY
+          );
           break;
         }
         case TELE_BOX_RESIZE_HANDLE.NorthEast: {
-          newY = trackStartY + offsetY;
-          newWidth = trackStartWidth + offsetX;
-          newHeight = trackStartHeight - offsetY;
+          this.transform(
+            this.x,
+            trackStartY + offsetY,
+            trackStartWidth + offsetX,
+            trackStartHeight - offsetY
+          );
           break;
         }
         case TELE_BOX_RESIZE_HANDLE.SouthEast: {
-          newWidth = trackStartWidth + offsetX;
-          newHeight = trackStartHeight + offsetY;
+          this.transform(
+            this.x,
+            this.y,
+            trackStartWidth + offsetX,
+            trackStartHeight + offsetY
+          );
           break;
         }
         case TELE_BOX_RESIZE_HANDLE.SouthWest: {
-          newX = trackStartX + offsetX;
-          newWidth = trackStartWidth - offsetX;
-          newHeight = trackStartHeight + offsetY;
+          this.transform(
+            trackStartX + offsetX,
+            this.y,
+            trackStartWidth - offsetX,
+            trackStartHeight + offsetY
+          );
           break;
         }
         default: {
-          this.move(trackStartX + offsetX, trackStartY + offsetY);
-          return;
+          if (this.fence) {
+            this.move(
+              clamp$2(trackStartX + offsetX, 0, 1 - this.width),
+              clamp$2(trackStartY + offsetY, 0, 1 - this.height)
+            );
+          } else {
+            const xOverflowOffset = 20 / this.containerRect.width;
+            const yOverflowOffset = 20 / this.containerRect.height;
+            this.move(
+              clamp$2(
+                trackStartX + offsetX,
+                xOverflowOffset - this.width,
+                1 - xOverflowOffset
+              ),
+              clamp$2(trackStartY + offsetY, 0, 1 - yOverflowOffset)
+            );
+          }
+          break;
         }
       }
-      this.transform(newX, newY, newWidth, newHeight);
     };
     const handleTrackEnd = (ev) => {
-      if (!ev.isPrimary) {
-        return;
-      }
       trackingHandle = void 0;
       if (!$trackMask) {
         return;
@@ -5100,7 +5342,7 @@ class TeleBox {
     };
     const handleTrackStart = (ev) => {
       var _a;
-      if (!ev.isPrimary || this.readonly) {
+      if (this.readonly) {
         return;
       }
       if (ev.button != null && ev.button !== 0) {
@@ -5112,140 +5354,385 @@ class TeleBox {
       const target = ev.target;
       if ((_a = target.dataset) == null ? void 0 : _a.teleBoxHandle) {
         preventEvent$1(ev);
-        ({ x: trackStartX, y: trackStartY } = this.pxIntrinsicCoord);
-        ({ width: trackStartWidth, height: trackStartHeight } = this.pxIntrinsicSize);
-        ({ pageX: trackStartPageX, pageY: trackStartPageY } = ev);
+        trackStartX = this.x;
+        trackStartY = this.y;
+        trackStartWidth = this.width;
+        trackStartHeight = this.height;
+        ({ pageX: trackStartPageX, pageY: trackStartPageY } = flattenEvent$1(ev));
         trackingHandle = target.dataset.teleBoxHandle;
         if (!$trackMask) {
           $trackMask = document.createElement("div");
         }
         const cursor = trackingHandle ? this.wrapClassName(`cursor-${trackingHandle}`) : "";
-        $trackMask.className = this.wrapClassName(`track-mask${cursor ? ` ${cursor}` : ""}`);
+        $trackMask.className = this.wrapClassName(
+          `track-mask${cursor ? ` ${cursor}` : ""}`
+        );
         this.$box.appendChild($trackMask);
         this.$box.classList.add(transformingClassName);
         this._sideEffect.add(() => {
-          window.addEventListener("pointermove", handleTracking, {
+          window.addEventListener("mousemove", handleTracking);
+          window.addEventListener("touchmove", handleTracking, {
             passive: false
           });
-          window.addEventListener("pointerup", handleTrackEnd, {
+          window.addEventListener("mouseup", handleTrackEnd);
+          window.addEventListener("touchend", handleTrackEnd, {
             passive: false
           });
-          window.addEventListener("pointercancel", handleTrackEnd, {
+          window.addEventListener("touchcancel", handleTrackEnd, {
             passive: false
           });
           return () => {
-            window.removeEventListener("pointermove", handleTracking);
-            window.removeEventListener("pointerup", handleTrackEnd);
-            window.removeEventListener("pointercancel", handleTrackEnd);
+            window.removeEventListener("mousemove", handleTracking);
+            window.removeEventListener("touchmove", handleTracking);
+            window.removeEventListener("mouseup", handleTrackEnd);
+            window.removeEventListener("touchend", handleTrackEnd);
+            window.removeEventListener(
+              "touchcancel",
+              handleTrackEnd
+            );
           };
         }, TRACKING_DISPOSER_ID);
       }
     };
     this._handleTrackStart = handleTrackStart;
-    this._sideEffect.addEventListener($resizeHandles, "pointerdown", handleTrackStart, {}, "box-resizeHandles-pointerdown");
+    this._sideEffect.addEventListener(
+      $resizeHandles,
+      "mousedown",
+      handleTrackStart,
+      {},
+      "box-resizeHandles-mousedown"
+    );
+    this._sideEffect.addEventListener(
+      $resizeHandles,
+      "touchstart",
+      handleTrackStart,
+      { passive: false },
+      "box-resizeHandles-touchstart"
+    );
   }
-  async destroy() {
+  destroy() {
     this.$box.remove();
+    this.events.emit(TELE_BOX_EVENT.Destroyed);
     this._sideEffect.flushAll();
-    this._sideEffect.flushAll();
-    await this.events.emit(TELE_BOX_EVENT.Destroyed);
-    this.events.clearListeners();
-    this._delegateEvents.clearListeners();
+    this._renderSideEffect.flushAll();
+    this.events.removeAllListeners();
+    this._delegateEvents.removeAllListeners();
   }
   wrapClassName(className) {
     return `${this.namespace}-${className}`;
   }
 }
+function noop$1() {
+  return;
+}
 var collectorSVG = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMjgiIHZpZXdCb3g9IjAgMCAyOCAyOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgY2xpcC1wYXRoPSJ1cmwoI2NsaXAwXzFfNDQyNDQpIj4KPGcgZmlsdGVyPSJ1cmwoI2ZpbHRlcjBfZF8xXzQ0MjQ0KSI+CjxwYXRoIGQ9Ik0xNC4wMDAyIDE2LjE5NTNDMTMuODI0NyAxNi4xOTUzIDEzLjY1MjIgMTYuMTQ5MSAxMy41MDAyIDE2LjA2MTVMNC41MDAxNyAxMC44NjQzQzQuMDIxNzggMTAuNTg3OSAzLjg1Nzk2IDkuOTc2MTIgNC4xMzQyOCA5LjQ5NzczQzQuMjIyMDQgOS4zNDU3OSA0LjM0ODIzIDkuMjE5NiA0LjUwMDE3IDkuMTMxODRMMTMuNTAwMiAzLjkzODQ4QzEzLjgwOTggMy43NjA3NCAxNC4xOTA1IDMuNzYwNzQgMTQuNTAwMiAzLjkzODQ4TDIzLjUwMDIgOS4xMzE4NEMyMy45Nzg2IDkuNDA4MTYgMjQuMTQyNCAxMC4wMiAyMy44NjYxIDEwLjQ5ODRDMjMuNzc4MyAxMC42NTAzIDIzLjY1MjEgMTAuNzc2NSAyMy41MDAyIDEwLjg2NDNMMTQuNTAwMiAxNi4wNjE1QzE0LjM0ODEgMTYuMTQ5MSAxNC4xNzU3IDE2LjE5NTMgMTQuMDAwMiAxNi4xOTUzWiIgZmlsbD0id2hpdGUiLz4KPC9nPgo8ZyBmaWx0ZXI9InVybCgjZmlsdGVyMV9kXzFfNDQyNDQpIj4KPHBhdGggZD0iTTIzLjUwMDIgMTMuMTMxOUwyMS41MzYxIDExLjk5ODVMMTQuNTAwMiAxNi4wNjE2QzE0LjE5MDcgMTYuMjQgMTMuODA5NiAxNi4yNCAxMy41MDAyIDE2LjA2MTZMNi40NjQyOCAxMS45OTg1TDQuNTAwMTcgMTMuMTMxOUM0LjAyMTc4IDEzLjQwODIgMy44NTc5NiAxNC4wMiA0LjEzNDI4IDE0LjQ5ODRDNC4yMjIwNCAxNC42NTA0IDQuMzQ4MjMgMTQuNzc2NiA0LjUwMDE3IDE0Ljg2NDNMMTMuNTAwMiAyMC4wNjE2QzEzLjgwOTYgMjAuMjQgMTQuMTkwNyAyMC4yNCAxNC41MDAyIDIwLjA2MTZMMjMuNTAwMiAxNC44NjQzQzIzLjk3ODYgMTQuNTg4IDI0LjE0MjQgMTMuOTc2MiAyMy44NjYxIDEzLjQ5NzhDMjMuNzc4MyAxMy4zNDU5IDIzLjY1MjEgMTMuMjE5NyAyMy41MDAyIDEzLjEzMTlaIiBmaWxsPSJ3aGl0ZSIgZmlsbC1vcGFjaXR5PSIwLjgiIHNoYXBlLXJlbmRlcmluZz0iY3Jpc3BFZGdlcyIvPgo8L2c+CjxnIGZpbHRlcj0idXJsKCNmaWx0ZXIyX2RfMV80NDI0NCkiPgo8cGF0aCBkPSJNMjMuNTAwMiAxNy4xMzE5TDIxLjUzNjEgMTUuOTk4NUwxNC41MDAyIDIwLjA2MTZDMTQuMTkwNyAyMC4yNCAxMy44MDk2IDIwLjI0IDEzLjUwMDIgMjAuMDYxNkw2LjQ2NDI4IDE1Ljk5ODVMNC41MDAxNyAxNy4xMzE5QzQuMDIxNzggMTcuNDA4MiAzLjg1Nzk2IDE4LjAyIDQuMTM0MjggMTguNDk4NEM0LjIyMjA0IDE4LjY1MDQgNC4zNDgyMyAxOC43NzY2IDQuNTAwMTcgMTguODY0M0wxMy41MDAyIDI0LjA2MTZDMTMuODA5NiAyNC4yNCAxNC4xOTA3IDI0LjI0IDE0LjUwMDIgMjQuMDYxNkwyMy41MDAyIDE4Ljg2NDNDMjMuOTc4NiAxOC41ODggMjQuMTQyNCAxNy45NzYyIDIzLjg2NjEgMTcuNDk3OEMyMy43NzgzIDE3LjM0NTkgMjMuNjUyMSAxNy4yMTk3IDIzLjUwMDIgMTcuMTMxOVoiIGZpbGw9IndoaXRlIiBmaWxsLW9wYWNpdHk9IjAuNiIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZ2VzIi8+CjwvZz4KPC9nPgo8ZGVmcz4KPGZpbHRlciBpZD0iZmlsdGVyMF9kXzFfNDQyNDQiIHg9IjMiIHk9IjMuODA1MTgiIHdpZHRoPSIyMiIgaGVpZ2h0PSIxNC4zOTAxIiBmaWx0ZXJVbml0cz0idXNlclNwYWNlT25Vc2UiIGNvbG9yLWludGVycG9sYXRpb24tZmlsdGVycz0ic1JHQiI+CjxmZUZsb29kIGZsb29kLW9wYWNpdHk9IjAiIHJlc3VsdD0iQmFja2dyb3VuZEltYWdlRml4Ii8+CjxmZUNvbG9yTWF0cml4IGluPSJTb3VyY2VBbHBoYSIgdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDEyNyAwIiByZXN1bHQ9ImhhcmRBbHBoYSIvPgo8ZmVPZmZzZXQgZHk9IjEiLz4KPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iMC41Ii8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwLjU1Mjk0MSAwIDAgMCAwIDAuNTYwNzg0IDAgMCAwIDAgMC42NTA5OCAwIDAgMCAwLjE1IDAiLz4KPGZlQmxlbmQgbW9kZT0ibm9ybWFsIiBpbjI9IkJhY2tncm91bmRJbWFnZUZpeCIgcmVzdWx0PSJlZmZlY3QxX2Ryb3BTaGFkb3dfMV80NDI0NCIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImVmZmVjdDFfZHJvcFNoYWRvd18xXzQ0MjQ0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXIxX2RfMV80NDI0NCIgeD0iMyIgeT0iMTEuOTk4NSIgd2lkdGg9IjIyIiBoZWlnaHQ9IjEwLjE5NjgiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMSIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIwLjUiLz4KPGZlQ29tcG9zaXRlIGluMj0iaGFyZEFscGhhIiBvcGVyYXRvcj0ib3V0Ii8+CjxmZUNvbG9yTWF0cml4IHR5cGU9Im1hdHJpeCIgdmFsdWVzPSIwIDAgMCAwIDAuNTUyOTQxIDAgMCAwIDAgMC41NjA3ODQgMCAwIDAgMCAwLjY1MDk4IDAgMCAwIDAuMTUgMCIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluMj0iQmFja2dyb3VuZEltYWdlRml4IiByZXN1bHQ9ImVmZmVjdDFfZHJvcFNoYWRvd18xXzQ0MjQ0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzFfNDQyNDQiIHJlc3VsdD0ic2hhcGUiLz4KPC9maWx0ZXI+CjxmaWx0ZXIgaWQ9ImZpbHRlcjJfZF8xXzQ0MjQ0IiB4PSIzIiB5PSIxNS45OTg1IiB3aWR0aD0iMjIiIGhlaWdodD0iMTAuMTk2OCIgZmlsdGVyVW5pdHM9InVzZXJTcGFjZU9uVXNlIiBjb2xvci1pbnRlcnBvbGF0aW9uLWZpbHRlcnM9InNSR0IiPgo8ZmVGbG9vZCBmbG9vZC1vcGFjaXR5PSIwIiByZXN1bHQ9IkJhY2tncm91bmRJbWFnZUZpeCIvPgo8ZmVDb2xvck1hdHJpeCBpbj0iU291cmNlQWxwaGEiIHR5cGU9Im1hdHJpeCIgdmFsdWVzPSIwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAxMjcgMCIgcmVzdWx0PSJoYXJkQWxwaGEiLz4KPGZlT2Zmc2V0IGR5PSIxIi8+CjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjAuNSIvPgo8ZmVDb21wb3NpdGUgaW4yPSJoYXJkQWxwaGEiIG9wZXJhdG9yPSJvdXQiLz4KPGZlQ29sb3JNYXRyaXggdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMC41NTI5NDEgMCAwIDAgMCAwLjU2MDc4NCAwIDAgMCAwIDAuNjUwOTggMCAwIDAgMC4xNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzFfNDQyNDQiLz4KPGZlQmxlbmQgbW9kZT0ibm9ybWFsIiBpbj0iU291cmNlR3JhcGhpYyIgaW4yPSJlZmZlY3QxX2Ryb3BTaGFkb3dfMV80NDI0NCIgcmVzdWx0PSJzaGFwZSIvPgo8L2ZpbHRlcj4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xXzQ0MjQ0Ij4KPHJlY3Qgd2lkdGg9IjI4IiBoZWlnaHQ9IjI4IiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo=";
+let onTickEndCallbacks;
+let onTickEndPrimaryCallbacks;
+function onTickEnd(callback, isPrimary = false) {
+  if (!onTickEndCallbacks) {
+    onTickEndCallbacks = isPrimary ? [] : [callback];
+    onTickEndPrimaryCallbacks = isPrimary ? [callback] : [];
+    Promise.resolve().then(() => {
+      const currentCallbacks = onTickEndCallbacks;
+      const currentPrimaryCallbacks = onTickEndPrimaryCallbacks;
+      onTickEndCallbacks = void 0;
+      onTickEndPrimaryCallbacks = void 0;
+      currentPrimaryCallbacks == null ? void 0 : currentPrimaryCallbacks.forEach((cb2) => cb2());
+      currentCallbacks == null ? void 0 : currentCallbacks.forEach((cb2) => cb2());
+    });
+  } else if (isPrimary) {
+    onTickEndPrimaryCallbacks == null ? void 0 : onTickEndPrimaryCallbacks.push(callback);
+  } else {
+    onTickEndCallbacks.push(callback);
+  }
+}
+function getHiddenElementSize(element2) {
+  const clone = element2.cloneNode(true);
+  clone.style.position = "absolute";
+  clone.style.top = "-99999px";
+  clone.style.float = "none";
+  clone.style.visibility = "hidden";
+  clone.style.display = "block";
+  document.body.appendChild(clone);
+  const rect = clone.getBoundingClientRect();
+  document.body.removeChild(clone);
+  return { height: rect.height, width: rect.width };
+}
 class TeleBoxCollector {
   constructor({
-    minimized$,
-    readonly$,
-    darkMode$,
-    boxes$,
+    visible = true,
+    readonly = false,
+    darkMode = false,
     namespace = "telebox",
     styles: styles2 = {},
-    root,
-    onClick
-  }) {
-    this._sideEffect = new SideEffectManager$1();
+    onClick,
+    minimizedBoxes = [],
+    boxes = []
+  } = {}) {
+    this.handleCollectorClick = () => {
+      if (!this._readonly && this.onClick) {
+        this.popupVisible$.setValue(!this.popupVisible$.value);
+      }
+    };
+    this._sideEffect = new o$1();
+    const { createVal } = c(this._sideEffect);
+    this._visible = visible;
+    this._readonly = readonly;
+    this._darkMode = darkMode;
     this.namespace = namespace;
-    const valManager = new ValManager();
-    this._sideEffect.addDisposer(() => valManager.destroy());
-    const rect$ = new Val(void 0);
-    const visible$ = derive(minimized$);
-    const styles$ = new Val(styles2);
-    const el$ = new Val(document.createElement("button"));
-    const wrp$ = new Val(document.createElement("div"));
-    const count$ = new Val(document.createElement("div"));
-    const valConfig = {
-      styles: styles$,
-      $collector: el$
+    this.styles = styles2;
+    this.minimizedBoxes = minimizedBoxes;
+    this.boxes = boxes;
+    this.onClick = onClick;
+    this.popupVisible$ = createVal(false);
+    this.popupVisible$.reaction((popupVisible) => {
+      var _a;
+      (_a = this.$titles) == null ? void 0 : _a.classList.toggle(
+        this.wrapClassName("collector-hide"),
+        !popupVisible
+      );
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          var _a2;
+          (_a2 = this.$titles) == null ? void 0 : _a2.classList.toggle(
+            this.wrapClassName(
+              "collector-titles-visible"
+            ),
+            popupVisible
+          );
+        });
+      });
+    });
+    const blurPopup = (ev) => {
+      if (!this.popupVisible$)
+        return;
+      const target = ev.target;
+      if (target.className.includes("collector"))
+        return;
+      this.popupVisible$.setValue(false);
     };
-    withValueEnhancer(this, valConfig, valManager);
-    const myReadonlyValConfig = {
-      rect: rect$,
-      visible: visible$
-    };
-    withReadonlyValueEnhancer(this, myReadonlyValConfig, valManager);
-    el$.value.className = this.wrapClassName("collector");
-    el$.value.style.backgroundImage = `url('${collectorSVG}')`;
-    wrp$.value.className = this.wrapClassName("collector-wrp");
-    count$.value.className = this.wrapClassName("collector-count");
-    wrp$.value.appendChild(count$.value);
-    this._sideEffect.addDisposer(el$.subscribe(($collector) => {
-      this._sideEffect.add(() => {
-        root.appendChild(wrp$.value);
-        wrp$.value.appendChild($collector);
-        return () => $collector.remove();
-      }, "telebox-collector-mount");
-      this._sideEffect.addEventListener($collector, "click", () => {
-        if (!readonly$.value) {
-          onClick == null ? void 0 : onClick();
+    this._sideEffect.addEventListener(
+      window,
+      "pointerdown",
+      blurPopup,
+      true
+    );
+  }
+  get visible() {
+    return this._visible;
+  }
+  get readonly() {
+    return this._readonly;
+  }
+  get darkMode() {
+    return this._darkMode;
+  }
+  mount(root) {
+    this.render(root);
+    this.root = root;
+    return this;
+  }
+  unmount() {
+    if (this.$collector) {
+      this.$collector.remove();
+    }
+    return this;
+  }
+  setVisible(visible) {
+    var _a;
+    if (this._visible !== visible) {
+      this._visible = visible;
+      if (this.$collector) {
+        this.$collector.classList.toggle(this.wrapClassName("collector-visible"), visible);
+        (_a = this.wrp$) == null ? void 0 : _a.classList.toggle(this.wrapClassName("collector-visible"), visible);
+        if (!visible) {
+          this.popupVisible$.setValue(false);
+        } else {
+          this.renderTitles();
         }
-      }, {}, "telebox-collector-click");
-      this._sideEffect.addDisposer([
-        visible$.subscribe((visible) => {
-          $collector.classList.toggle(this.wrapClassName("collector-visible"), visible);
-          wrp$.value.classList.toggle(this.wrapClassName("collector-visible"), visible);
-        }),
-        boxes$.subscribe((boxes) => {
-          count$.value.innerHTML = boxes.length.toString();
-        }),
-        readonly$.subscribe((readonly) => {
-          wrp$.value.classList.toggle(this.wrapClassName("collector-readonly"), readonly);
-        }),
-        darkMode$.subscribe((darkMode) => {
-          $collector.classList.toggle(this.wrapClassName("color-scheme-dark"), darkMode);
-          $collector.classList.toggle(this.wrapClassName("color-scheme-light"), !darkMode);
-          wrp$.value.classList.toggle(this.wrapClassName("color-scheme-dark"), darkMode);
-          wrp$.value.classList.toggle(this.wrapClassName("color-scheme-light"), !darkMode);
-        }),
-        styles$.subscribe((styles22) => {
-          Object.keys(styles22).forEach((key) => {
-            const value = styles22[key];
-            if (value != null) {
-              wrp$.value.style[key] = value;
-            }
+      }
+    }
+    return this;
+  }
+  setReadonly(readonly) {
+    if (this._readonly !== readonly) {
+      this._readonly = readonly;
+      if (this.$collector) {
+        this.$collector.classList.toggle(this.wrapClassName("collector-readonly"), readonly);
+      }
+    }
+    return this;
+  }
+  setDarkMode(darkMode) {
+    if (this._darkMode !== darkMode) {
+      this._darkMode = darkMode;
+      if (this.$collector) {
+        this.$collector.classList.toggle(this.wrapClassName("color-scheme-dark"), darkMode);
+        this.$collector.classList.toggle(
+          this.wrapClassName("color-scheme-light"),
+          !darkMode
+        );
+      }
+    }
+    return this;
+  }
+  setStyles(styles2) {
+    Object.assign(this.styles, styles2);
+    if (this.wrp$) {
+      const $collector = this.wrp$;
+      Object.keys(styles2).forEach((key) => {
+        const value = styles2[key];
+        if (value != null) {
+          $collector.style[key] = value;
+        }
+      });
+    }
+    return this;
+  }
+  setMinimizedBoxes(boxes) {
+    var _a;
+    this.minimizedBoxes = boxes;
+    if (this.count$) {
+      this.count$.textContent = String((_a = this.minimizedBoxes) == null ? void 0 : _a.length) || "0";
+    }
+    this.renderTitles();
+  }
+  setBoxes(boxes) {
+    this.boxes = boxes;
+    this.renderTitles();
+  }
+  render(root) {
+    if (!this.$collector) {
+      this.$collector = document.createElement("button");
+      this.$collector.className = this.wrapClassName("collector");
+      this.$collector.style.backgroundImage = `url('${collectorSVG}')`;
+      this.wrp$ = document.createElement("div");
+      this.count$ = document.createElement("div");
+      this.wrp$.className = this.wrapClassName("collector-wrp");
+      this.count$.className = this.wrapClassName("collector-count");
+      this.wrp$.appendChild(this.count$);
+      this.wrp$.appendChild(this.$collector);
+      this.$collector.addEventListener("click", this.handleCollectorClick);
+      if (this._visible) {
+        this.$collector.classList.add(this.wrapClassName("collector-visible"));
+        this.wrp$.classList.toggle(this.wrapClassName("collector-visible"));
+        this.renderTitles();
+      }
+      if (this._readonly) {
+        this.$collector.classList.add(this.wrapClassName("collector-readonly"));
+      }
+      this.$collector.classList.add(
+        this.wrapClassName(this._darkMode ? "color-scheme-dark" : "color-scheme-light")
+      );
+      this.setStyles(this.styles);
+      root.appendChild(this.wrp$);
+    }
+    return this.$collector;
+  }
+  renderTitles() {
+    var _a, _b, _c, _d;
+    if (!this.$titles) {
+      this.$titles = document.createElement("div");
+      this.$titles.className = this.wrapClassName("collector-titles");
+      this.$titles.classList.toggle(
+        this.wrapClassName("collector-hide"),
+        !this.popupVisible$.value
+      );
+    }
+    this._sideEffect.addEventListener(
+      this.$titles,
+      "wheel",
+      (ev) => {
+        if (!ev.deltaX) {
+          ev.currentTarget.scrollBy({
+            left: ev.deltaY > 0 ? 250 : -250,
+            behavior: "smooth"
           });
-        }),
-        minimized$.subscribe((minimized) => {
-          if (minimized) {
-            const { x: x2, y: y2, width, height } = $collector.getBoundingClientRect();
-            const rootRect = root.getBoundingClientRect();
-            rect$.setValue({
-              x: x2 - rootRect.x,
-              y: y2 - rootRect.y,
-              width,
-              height
-            });
+        }
+      },
+      { passive: false },
+      "min-popup-render-wheel-titles"
+    );
+    const existContent = this.$titles.querySelector(
+      `.${this.wrapClassName("collector-titles-content")}`
+    );
+    const $content = existContent != null ? existContent : document.createElement("div");
+    $content.className = this.wrapClassName("collector-titles-content");
+    if (!existContent) {
+      this.$titles.appendChild($content);
+      this._sideEffect.addEventListener(
+        $content,
+        "click",
+        (ev) => {
+          var _a2, _b2, _c2, _d2;
+          const target = ev.target;
+          if ((_b2 = (_a2 = target.dataset) == null ? void 0 : _a2.teleBoxID) == null ? void 0 : _b2.length) {
+            (_d2 = this.onClick) == null ? void 0 : _d2.call(this, (_c2 = target.dataset) == null ? void 0 : _c2.teleBoxID);
           }
-        })
-      ], "telebox-collector-el");
-    }));
+        },
+        {},
+        "telebox-collector-titles-content-click"
+      );
+    }
+    $content.innerHTML = "";
+    const disposers = (_a = this.boxes) == null ? void 0 : _a.filter((box) => {
+      var _a2;
+      return (_a2 = this.minimizedBoxes) == null ? void 0 : _a2.includes(box.id);
+    }).map((box) => {
+      const $tab = document.createElement("button");
+      $tab.className = this.wrapClassName("collector-titles-tab");
+      $tab.textContent = box.title;
+      $tab.dataset.teleBoxID = box.id;
+      $tab.dataset.teleTitleBarNoDblClick = "true";
+      $content.appendChild($tab);
+      return box._title$.reaction((title) => $tab.textContent = title);
+    });
+    this._sideEffect.addDisposer(
+      () => disposers == null ? void 0 : disposers.forEach((disposer) => disposer()),
+      "min-popup-render-tab-titles"
+    );
+    const existTitles = (_b = this.wrp$) == null ? void 0 : _b.querySelector(
+      `.${this.wrapClassName("collector-titles")}`
+    );
+    if (!existTitles) {
+      (_c = this.wrp$) == null ? void 0 : _c.appendChild(this.$titles);
+    } else {
+      (_d = this.wrp$) == null ? void 0 : _d.replaceChild(this.$titles, existTitles);
+    }
+    onTickEnd(() => {
+      var _a2, _b2;
+      if (!this.$titles)
+        return;
+      if (!this.wrp$)
+        return;
+      if (!this.root)
+        return;
+      const parentRect = (_a2 = this.wrp$) == null ? void 0 : _a2.getBoundingClientRect();
+      const rootRect = (_b2 = this.root) == null ? void 0 : _b2.getBoundingClientRect();
+      const popupSize = getHiddenElementSize(this.$titles);
+      const isAvailableSpaceTop = parentRect.top - rootRect.top > popupSize.height;
+      const isAvailableSpaceLeft = parentRect.x - rootRect.x > popupSize.width / 2 - parentRect.width / 2;
+      const topPosition = -popupSize.height - 10;
+      let leftPosition = -(popupSize.width / 2 - parentRect.width / 2);
+      if (!isAvailableSpaceTop) {
+        const availableHeight = parentRect.top;
+        this.$titles.style.height = `${availableHeight}px`;
+      }
+      if (!isAvailableSpaceLeft) {
+        leftPosition = -(parentRect.x - rootRect.x - 4);
+      }
+      this.$titles.style.top = `${topPosition}px`;
+      this.$titles.style.left = `${leftPosition}px`;
+    });
+    return this.$titles;
   }
   destroy() {
-    this._sideEffect.flushAll();
+    if (this.$collector) {
+      this.$collector.removeEventListener("click", this.handleCollectorClick);
+      this.$collector.remove();
+      this.$collector = void 0;
+    }
+    this.onClick = void 0;
   }
   wrapClassName(className) {
     return `${this.namespace}-${className}`;
@@ -5259,8 +5746,11 @@ var TELE_BOX_MANAGER_EVENT = /* @__PURE__ */ ((TELE_BOX_MANAGER_EVENT2) => {
   TELE_BOX_MANAGER_EVENT2["State"] = "state";
   TELE_BOX_MANAGER_EVENT2["Maximized"] = "maximized";
   TELE_BOX_MANAGER_EVENT2["Minimized"] = "minimized";
+  TELE_BOX_MANAGER_EVENT2["Move"] = "move";
+  TELE_BOX_MANAGER_EVENT2["Resize"] = "resize";
   TELE_BOX_MANAGER_EVENT2["IntrinsicMove"] = "intrinsic_move";
   TELE_BOX_MANAGER_EVENT2["IntrinsicResize"] = "intrinsic_resize";
+  TELE_BOX_MANAGER_EVENT2["VisualResize"] = "visual_resize";
   TELE_BOX_MANAGER_EVENT2["ZIndex"] = "z_index";
   TELE_BOX_MANAGER_EVENT2["PrefersColorScheme"] = "prefers_color_scheme";
   TELE_BOX_MANAGER_EVENT2["DarkMode"] = "dark_mode";
@@ -5269,19 +5759,19 @@ var TELE_BOX_MANAGER_EVENT = /* @__PURE__ */ ((TELE_BOX_MANAGER_EVENT2) => {
 class MaxTitleBar extends DefaultTitleBar {
   constructor(config) {
     super(config);
-    this.boxes$ = config.boxes$;
-    this.rootRect$ = config.rootRect$;
-    this.darkMode$ = config.darkMode$;
-    this.stageRect$ = config.stageRect$;
-    this.normalBoxes$ = config.normalBoxes$;
-    config.root.appendChild(this.render());
+    this.boxes = config.boxes;
+    this.focusedBox = config.focusedBox;
+    this.containerRect = config.containerRect;
+    this.darkMode = config.darkMode;
+    this.maximizedBoxes$ = config.maximizedBoxes$;
+    this.minimizedBoxes$ = config.minimizedBoxes$;
   }
   focusBox(box) {
     var _a;
     if (this.focusedBox && this.focusedBox === box) {
       return;
     }
-    if (this.$titles && this.state$.value === TELE_BOX_STATE.Maximized) {
+    if (this.$titles && this.state === TELE_BOX_STATE.Maximized) {
       const { children: children2 } = this.$titles.firstElementChild;
       for (let i2 = children2.length - 1; i2 >= 0; i2 -= 1) {
         const $tab = children2[i2];
@@ -5297,207 +5787,302 @@ class MaxTitleBar extends DefaultTitleBar {
     }
     this.focusedBox = box;
   }
-  render() {
+  setContainerRect(rect) {
+    this.containerRect = rect;
     if (this.$titleBar) {
-      return this.$titleBar;
+      const { x: x2, y: y2, width } = rect;
+      this.$titleBar.style.transform = `translate(${x2}px, ${y2}px)`;
+      this.$titleBar.style.width = width + "px";
     }
+  }
+  setBoxes(boxes) {
+    this.boxes = boxes;
+    this.updateTitles();
+  }
+  setMaximizedBoxes(boxes) {
+    this.maximizedBoxes$ = boxes;
+    this.updateTitles();
+  }
+  setMinimizedBoxes(boxes) {
+    this.minimizedBoxes$ = boxes;
+    this.updateTitles();
+  }
+  setState(state) {
+    super.setState(state);
+    if (this.$titleBar) {
+      this.$titleBar.classList.toggle(
+        this.wrapClassName("max-titlebar-maximized"),
+        state === TELE_BOX_STATE.Maximized
+      );
+    }
+    this.updateTitles();
+  }
+  setReadonly(readonly) {
+    super.setReadonly(readonly);
+    if (this.$titleBar) {
+      this.$titleBar.classList.toggle(this.wrapClassName("readonly"), this.readonly);
+    }
+  }
+  setDarkMode(darkMode) {
+    if (darkMode !== this.darkMode) {
+      this.darkMode = darkMode;
+      if (this.$titleBar) {
+        this.$titleBar.classList.toggle(this.wrapClassName("color-scheme-dark"), darkMode);
+        this.$titleBar.classList.toggle(this.wrapClassName("color-scheme-light"), !darkMode);
+      }
+    }
+  }
+  render() {
     const $titleBar = super.render();
+    const { x: x2, y: y2, width } = this.containerRect;
+    $titleBar.style.transform = `translate(${x2}px, ${y2}px)`;
+    $titleBar.style.width = width + "px";
     $titleBar.classList.add(this.wrapClassName("max-titlebar"));
-    this.sideEffect.addDisposer([
-      combine([this.boxes$, this.state$]).subscribe(([boxes, state]) => {
-        $titleBar.classList.toggle(this.wrapClassName("max-titlebar-active"), state === TELE_BOX_STATE.Maximized && boxes.length > 0);
-      }),
-      this.readonly$.subscribe((readonly) => {
-        $titleBar.classList.toggle(this.wrapClassName("readonly"), readonly);
-      }),
-      this.stageRect$.subscribe((stageRect) => {
-        $titleBar.style.width = stageRect.width + "px";
-        $titleBar.style.left = stageRect.x + 4 + "px";
-      }),
-      combine([this.state$, this.boxes$, this.normalBoxes$]).subscribe(([state, titles]) => {
-        if (state === TELE_BOX_STATE.Maximized) {
-          $titleBar.classList.toggle(this.wrapClassName("max-titlebar-single-title"), titles.length === 1);
-          if (titles.length !== 1) {
-            $titleBar.replaceChild(this.renderTitles(), $titleBar.firstElementChild);
-          }
-        }
-      })
-    ], "max-render");
+    $titleBar.classList.toggle(
+      this.wrapClassName("max-titlebar-maximized"),
+      this.state === TELE_BOX_STATE.Maximized
+    );
+    $titleBar.classList.toggle(this.wrapClassName("readonly"), this.readonly);
+    $titleBar.classList.add(
+      this.wrapClassName(this.darkMode ? "color-scheme-dark" : "color-scheme-light")
+    );
     const $titlesArea = document.createElement("div");
     $titlesArea.classList.add(this.wrapClassName("titles-area"));
     $titleBar.insertBefore($titlesArea, $titleBar.firstElementChild);
+    this.updateTitles();
     return $titleBar;
   }
   destroy() {
     super.destroy();
     this.$titles = void 0;
+    this.boxes.length = 0;
     this.focusedBox = void 0;
+  }
+  updateTitles() {
+    var _a;
+    (_a = this.$titleBar) == null ? void 0 : _a.classList.toggle(
+      this.wrapClassName("max-titlebar-active"),
+      this.maximizedBoxes$.length > 0 && this.boxes.length > 0 && this.maximizedBoxes$.filter((boxId) => !this.minimizedBoxes$.includes(boxId)).length > 0
+    );
+    if (this.$titleBar && this.maximizedBoxes$.length > 0 && this.boxes.length > 0 && this.maximizedBoxes$.filter((boxId) => !this.minimizedBoxes$.includes(boxId)).length > 0) {
+      this.$titleBar.classList.toggle(
+        this.wrapClassName("max-titlebar-single-title"),
+        this.boxes.length === 1
+      );
+      if (this.boxes.length === 1) {
+        this.setTitle(this.boxes[0].title);
+      } else {
+        this.$titleBar.replaceChild(
+          this.renderTitles(),
+          this.$titleBar.firstElementChild
+        );
+      }
+    }
   }
   renderTitles() {
     this.$titles = document.createElement("div");
     this.$titles.className = this.wrapClassName("titles");
-    this.sideEffect.addEventListener(this.$titles, "wheel", (ev) => {
-      if (!ev.deltaX) {
+    this.$titles.addEventListener(
+      "wheel",
+      (ev) => {
         ev.currentTarget.scrollBy({
           left: ev.deltaY > 0 ? 250 : -250,
           behavior: "smooth"
         });
-      }
-    }, { passive: false }, "max-render-wheel-titles");
+      },
+      { passive: false }
+    );
     const $content = document.createElement("div");
     $content.className = this.wrapClassName("titles-content");
     this.$titles.appendChild($content);
-    const disposers = this.boxes$.value.filter((box) => !this.normalBoxes$.value.includes(box.id)).map((box) => {
+    this.boxes.filter((box) => this.maximizedBoxes$.includes(box.id)).filter((box) => !this.minimizedBoxes$.includes(box.id)).forEach((box) => {
       const $tab = document.createElement("button");
       $tab.className = this.wrapClassName("titles-tab");
       $tab.textContent = box.title;
       $tab.dataset.teleBoxID = box.id;
       $tab.dataset.teleTitleBarNoDblClick = "true";
-      console.log(this.focusedBox);
       if (this.focusedBox && box.id === this.focusedBox.id) {
         $tab.classList.add(this.wrapClassName("titles-tab-focus"));
       }
       $content.appendChild($tab);
-      return box._title$.reaction((title) => $tab.textContent = title);
     });
-    this.sideEffect.addDisposer(() => disposers.forEach((disposer) => disposer()), "max-render-tab-titles");
     return this.$titles;
   }
 }
-const ResizeObserver$2 = window.ResizeObserver || ResizeObserver$4;
 class TeleBoxManager {
   constructor({
-    root = null,
-    fullscreen = false,
+    root = document.body,
     prefersColorScheme = TELE_BOX_COLOR_SCHEME.Light,
-    minimized = false,
-    maximized = false,
-    normalBoxes = [],
     fence = true,
-    collector,
-    namespace = "telebox",
-    readonly = false,
-    stageRatio = -1,
-    containerStyle = "",
-    stageStyle = "",
-    defaultBoxBodyStyle = null,
-    defaultBoxStageStyle = null,
-    theme = null
-  } = {}) {
-    this.events = new Emittery();
-    this._sideEffect = new SideEffectManager$1();
-    this.namespace = namespace;
-    const valManager = new ValManager();
-    this._sideEffect.addDisposer(() => valManager.destroy());
-    const root$ = new Val(root);
-    const readonly$ = new Val(readonly);
-    const fence$ = new Val(fence);
-    const containerStyle$ = new Val(containerStyle);
-    const stageStyle$ = new Val(stageStyle);
-    const stageRatio$ = new Val(stageRatio);
-    const defaultBoxBodyStyle$ = new Val(defaultBoxBodyStyle);
-    const defaultBoxStageStyle$ = new Val(defaultBoxStageStyle);
-    const fullscreen$ = new Val(fullscreen);
-    const input_minimized$ = new Val(minimized);
-    const input_maximized$ = new Val(maximized);
-    const maximized$ = combine([input_maximized$, fullscreen$], ([maximized2, fullscreen2]) => fullscreen2 ? true : maximized2);
-    const minimized$ = combine([input_minimized$, fullscreen$], ([minimized2, fullscreen2]) => fullscreen2 ? false : minimized2);
-    this.normalBoxes = new Val(normalBoxes);
-    this.setMaximized = (maximized2, skipUpdate) => input_maximized$.setValue(maximized2, skipUpdate);
-    this.setMinimized = (minimized2, skipUpdate) => input_minimized$.setValue(minimized2, skipUpdate);
-    this.setNormalboxes = (normalBoxes2) => this.normalBoxes.setValue(normalBoxes2);
-    const rootRect$ = new Val({
+    containerRect = {
       x: 0,
       y: 0,
       width: window.innerWidth,
       height: window.innerHeight
-    }, { compare: shallowequal });
-    this._sideEffect.addDisposer(root$.subscribe((root2) => {
-      this._sideEffect.add(() => {
-        if (!root2) {
-          return () => void 0;
-        }
-        const observer = new ResizeObserver$2(() => {
-          const rect = root2.getBoundingClientRect();
-          rootRect$.setValue({
-            x: 0,
-            y: 0,
-            width: rect.width,
-            height: rect.height
-          });
-        });
-        observer.observe(root2);
-        return () => observer.disconnect();
-      }, "calc-root-rect");
-    }));
-    const stageRect$ = combine([rootRect$, stageRatio$], calcStageRect, {
-      compare: shallowequal
-    });
-    this.boxes$ = new Val([]);
-    this.topBox$ = new Val(void 0);
-    this._sideEffect.addDisposer(this.boxes$.subscribe((boxes) => {
+    },
+    collector,
+    namespace = "telebox",
+    readonly = false,
+    minimizedBoxes = [],
+    maximizedBoxes = []
+  } = {}) {
+    this.events = new EventEmitter();
+    this._sideEffect = new o$1();
+    const { combine, createVal } = c(this._sideEffect);
+    this.root = root;
+    this.namespace = namespace;
+    this.boxes$ = createVal([]);
+    this.topBox$ = this.boxes$.derive((boxes) => {
       if (boxes.length > 0) {
-        const topBox = boxes.reduce((topBox2, box) => topBox2.zIndex > box.zIndex ? topBox2 : box);
-        this.topBox$.setValue(topBox);
-      } else {
-        this.topBox$.setValue(void 0);
+        const topBox = boxes.reduce(
+          (topBox2, box) => topBox2.zIndex > box.zIndex ? topBox2 : box
+        );
+        return topBox;
       }
-    }));
-    const prefersDarkMatch = window.matchMedia("(prefers-color-scheme: dark)");
-    const prefersDark$ = new Val(false);
-    if (prefersDarkMatch) {
-      prefersDark$.setValue(prefersDarkMatch.matches);
+      return;
+    });
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
+    const prefersDark$ = createVal(false);
+    if (prefersDark) {
+      prefersDark$.setValue(prefersDark.matches);
       this._sideEffect.add(() => {
         const handler = (evt) => {
           prefersDark$.setValue(evt.matches);
         };
-        if (prefersDarkMatch.addEventListener) {
-          prefersDarkMatch.addEventListener("change", handler);
-          return () => prefersDarkMatch.removeEventListener("change", handler);
-        } else {
-          prefersDarkMatch.addListener(handler);
-          return () => prefersDarkMatch.removeListener(handler);
-        }
+        prefersDark.addListener(handler);
+        return () => prefersDark.removeListener(handler);
       });
     }
-    const prefersColorScheme$ = new Val(prefersColorScheme);
-    this._sideEffect.addDisposer(prefersColorScheme$.reaction((prefersColorScheme2, skipUpdate) => {
+    const prefersColorScheme$ = createVal(prefersColorScheme);
+    prefersColorScheme$.reaction((prefersColorScheme2, _2, skipUpdate) => {
+      this.boxes.forEach((box) => box.setPrefersColorScheme(prefersColorScheme2, skipUpdate));
       if (!skipUpdate) {
         this.events.emit(TELE_BOX_MANAGER_EVENT.PrefersColorScheme, prefersColorScheme2);
       }
-    }));
-    const darkMode$ = combine([prefersDark$, prefersColorScheme$], ([prefersDark, prefersColorScheme2]) => prefersColorScheme2 === "auto" ? prefersDark : prefersColorScheme2 === "dark");
-    const state$ = combine([minimized$, maximized$], ([minimized2, maximized2]) => minimized2 ? TELE_BOX_STATE.Minimized : maximized2 ? TELE_BOX_STATE.Maximized : TELE_BOX_STATE.Normal);
-    const theme$ = new Val(theme, {
-      compare: shallowequal
     });
-    const readonlyValConfig = {
-      darkMode: darkMode$,
-      state: state$,
-      root: root$,
-      rootRect: rootRect$,
-      stageRect: stageRect$,
-      minimized: minimized$,
-      maximized: maximized$
+    this._darkMode$ = combine(
+      [prefersDark$, prefersColorScheme$],
+      ([prefersDark2, prefersColorScheme2]) => prefersColorScheme2 === "auto" ? prefersDark2 : prefersColorScheme2 === "dark"
+    );
+    this._darkMode$.reaction((darkMode, _2, skipUpdate) => {
+      this.boxes.forEach((box) => box.setDarkMode(darkMode, skipUpdate));
+      if (!skipUpdate) {
+        this.events.emit(TELE_BOX_MANAGER_EVENT.DarkMode, darkMode);
+      }
+    });
+    const readonly$ = createVal(readonly);
+    readonly$.reaction((readonly2, _2, skipUpdate) => {
+      this.boxes.forEach((box) => box.setReadonly(readonly2, skipUpdate));
+    });
+    this.maximizedBoxes$ = createVal(maximizedBoxes);
+    this.minimizedBoxes$ = createVal(minimizedBoxes);
+    this.maximizedBoxes$.reaction((maximizedBoxes2, _2, skipUpdate) => {
+      this.boxes.forEach((box) => box.setMaximized(maximizedBoxes2.includes(box.id), skipUpdate));
+      const maxBoxes = maximizedBoxes2.filter((id2) => !this.minimizedBoxes$.value.includes(id2));
+      this.maxTitleBar.setState(maxBoxes.length > 0 ? TELE_BOX_STATE.Maximized : TELE_BOX_STATE.Normal);
+      this.maxTitleBar.setMaximizedBoxes(maximizedBoxes2);
+      if (!skipUpdate) {
+        this.events.emit(TELE_BOX_MANAGER_EVENT.Maximized, maximizedBoxes2);
+      }
+    });
+    const state$ = combine(
+      [this.minimizedBoxes$, this.maximizedBoxes$],
+      ([minimized, maximized]) => minimized.length ? TELE_BOX_STATE.Minimized : maximized.length ? TELE_BOX_STATE.Maximized : TELE_BOX_STATE.Normal
+    );
+    state$.reaction((state, _2, skipUpdate) => {
+      this.maxTitleBar.setState(state);
+      if (!skipUpdate) {
+        this.events.emit(TELE_BOX_MANAGER_EVENT.State, state);
+      }
+    });
+    const fence$ = createVal(fence);
+    fence$.subscribe((fence2, _2, skipUpdate) => {
+      this.boxes.forEach((box) => box.setFence(fence2, skipUpdate));
+    });
+    const containerRect$ = createVal(containerRect, shallowequal);
+    containerRect$.reaction((containerRect2, _2, skipUpdate) => {
+      this.boxes.forEach((box) => box.setContainerRect(containerRect2, skipUpdate));
+      this.maxTitleBar.setContainerRect(containerRect2);
+    });
+    const collector$ = createVal(
+      collector === null ? null : collector || new TeleBoxCollector({
+        visible: this.minimizedBoxes$.value.length > 0,
+        readonly,
+        namespace,
+        minimizedBoxes: this.minimizedBoxes$.value,
+        boxes: this.boxes$.value
+      }).mount(root)
+    );
+    collector$.subscribe((collector2) => {
+      if (collector2) {
+        collector2.setVisible(this.minimizedBoxes$.value.length > 0);
+        collector2.setReadonly(readonly$.value);
+        collector2.setDarkMode(this._darkMode$.value);
+        this._sideEffect.add(() => {
+          collector2.onClick = (boxId) => {
+            if (!readonly$.value) {
+              this.setMinimizedBoxes(
+                removeByVal(
+                  this.minimizedBoxes$.value.filter(Boolean),
+                  boxId
+                )
+              );
+            }
+          };
+          return () => collector2.destroy();
+        }, "collect-onClick");
+      }
+    });
+    readonly$.subscribe((readonly2) => {
+      var _a;
+      return (_a = collector$.value) == null ? void 0 : _a.setReadonly(readonly2);
+    });
+    this._darkMode$.subscribe((darkMode) => {
+      var _a;
+      (_a = collector$.value) == null ? void 0 : _a.setDarkMode(darkMode);
+    });
+    const calcCollectorRect = () => {
+      var _a;
+      if ((_a = collector$.value) == null ? void 0 : _a.$collector) {
+        const { x: x2, y: y2, width, height } = collector$.value.$collector.getBoundingClientRect();
+        const rootRect = this.root.getBoundingClientRect();
+        return {
+          x: x2 - rootRect.x,
+          y: y2 - rootRect.y,
+          width,
+          height
+        };
+      }
+      return;
     };
-    withReadonlyValueEnhancer(this, readonlyValConfig, valManager);
-    const valConfig = {
-      fullscreen: fullscreen$,
-      prefersColorScheme: prefersColorScheme$,
-      readonly: readonly$,
-      fence: fence$,
-      stageRatio: stageRatio$,
-      containerStyle: containerStyle$,
-      stageStyle: stageStyle$,
-      defaultBoxBodyStyle: defaultBoxBodyStyle$,
-      defaultBoxStageStyle: defaultBoxStageStyle$,
-      theme: theme$
-    };
-    withValueEnhancer(this, valConfig, valManager);
+    const collectorRect$ = createVal(this.minimizedBoxes$.value.length > 0 ? calcCollectorRect() : void 0);
+    collectorRect$.subscribe((collectorRect, _2, skipUpdate) => {
+      this.boxes.forEach((box) => {
+        box.setCollectorRect(collectorRect, skipUpdate);
+      });
+    });
+    this.minimizedBoxes$.reaction((minimizedBoxes2, _2, skipUpdate) => {
+      var _a, _b, _c;
+      this.boxes.forEach((box) => box.setMinimized(minimizedBoxes2.includes(box.id), skipUpdate));
+      const maxBoxes = this.maximizedBoxes$.value.filter((id2) => !minimizedBoxes2.includes(id2));
+      this.maxTitleBar.setState(maxBoxes.length > 0 ? TELE_BOX_STATE.Maximized : TELE_BOX_STATE.Normal);
+      this.maxTitleBar.setMinimizedBoxes(minimizedBoxes2);
+      const minimized = minimizedBoxes2.length > 0;
+      (_a = collector$.value) == null ? void 0 : _a.setVisible(minimized);
+      (_b = this.collector) == null ? void 0 : _b.setMinimizedBoxes(minimizedBoxes2);
+      if (minimized) {
+        if ((_c = collector$.value) == null ? void 0 : _c.$collector) {
+          collectorRect$.setValue(calcCollectorRect());
+        }
+      }
+      if (!skipUpdate) {
+        this.events.emit(TELE_BOX_MANAGER_EVENT.Minimized, minimizedBoxes2);
+      }
+    });
     const closeBtnClassName = this.wrapClassName("titlebar-icon-close");
     const checkFocusBox = (ev) => {
       var _a;
-      if (!ev.isPrimary || readonly$.value) {
+      if (readonly$.value) {
         return;
       }
       const target = ev.target;
@@ -5519,151 +6104,101 @@ class TeleBoxManager {
         }
       }
     };
-    this._sideEffect.addEventListener(window, "pointerdown", checkFocusBox, true);
-    this.$container = document.createElement("div");
-    this.$container.className = this.wrapClassName("manager-container");
-    this.setTheme(theme);
-    this.$stage = document.createElement("div");
-    this.$stage.className = this.wrapClassName("manager-stage");
-    this.$container.appendChild(this.$stage);
-    this._sideEffect.addDisposer([
-      darkMode$.subscribe((darkMode) => {
-        this.$container.classList.toggle(this.wrapClassName("color-scheme-dark"), darkMode);
-        this.$container.classList.toggle(this.wrapClassName("color-scheme-light"), !darkMode);
-      }),
-      fullscreen$.subscribe((fullscreen2) => {
-        this.$container.classList.toggle(this.wrapClassName("is-fullscreen"), Boolean(fullscreen2));
-      }),
-      combine([this.boxes$, fullscreen$], ([boxes, fullscreen2]) => fullscreen2 === "no-titlebar" || fullscreen2 === true && boxes.length <= 1).subscribe((hideSingleTabTitlebar) => {
-        this.$container.classList.toggle(this.wrapClassName("hide-fullscreen-titlebar"), hideSingleTabTitlebar);
-      }),
-      maximized$.subscribe((maximized2) => {
-        this.$container.classList.toggle(this.wrapClassName("is-maximized"), maximized2);
-      }),
-      minimized$.subscribe((minimized2) => {
-        this.$container.classList.toggle(this.wrapClassName("is-minimized"), minimized2);
-      }),
-      combine([containerStyle$, theme$]).subscribe(([containerStyle2, theme2]) => {
-        this.$container.style.cssText = containerStyle2;
-        if (theme2) {
-          Object.keys(theme2).forEach((key) => {
-            var _a;
-            this.$container.style.setProperty(`--tele-${key}`, (_a = theme2[key]) != null ? _a : null);
-          });
-        }
-      }),
-      stageStyle$.subscribe((stageStyle2) => {
-        this.$stage.style.cssText = stageStyle2;
-        this.$stage.style.width = stageRect$.value.width + "px";
-        this.$stage.style.height = stageRect$.value.height + "px";
-      }),
-      stageRect$.subscribe((stageRect) => {
-        this.$stage.style.width = stageRect.width + "px";
-        this.$stage.style.height = stageRect.height + "px";
-      }),
-      root$.subscribe((root2) => {
-        if (root2) {
-          root2.appendChild(this.$container);
-        } else if (this.$container.parentElement) {
-          this.$container.remove();
-        }
-      })
-    ]);
-    this.collector = collector != null ? collector : new TeleBoxCollector({
-      minimized$,
-      readonly$,
-      darkMode$,
-      namespace,
-      boxes$: this.boxes$,
-      root: this.$container,
-      onClick: () => input_minimized$.setValue(false)
-    });
-    this.titleBar = new MaxTitleBar({
+    this._sideEffect.addEventListener(window, "mousedown", checkFocusBox, true);
+    this._sideEffect.addEventListener(window, "touchstart", checkFocusBox, true);
+    this.maxTitleBar = new MaxTitleBar({
+      darkMode: this.darkMode,
+      readonly: readonly$.value,
       namespace: this.namespace,
-      title$: derive(this.topBox$, (topBox) => (topBox == null ? void 0 : topBox.title) || ""),
-      boxes$: this.boxes$,
-      darkMode$,
-      readonly$,
-      state$,
-      rootRect$,
-      stageRect$,
-      root: this.$container,
-      normalBoxes$: this.normalBoxes,
+      state: state$.value,
+      boxes: this.boxes$.value,
+      containerRect: containerRect$.value,
+      maximizedBoxes$: this.maximizedBoxes$.value,
+      minimizedBoxes$: this.minimizedBoxes$.value,
       onEvent: (event) => {
-        var _a, _b, _c;
+        var _a, _b, _c, _d, _e, _f;
         switch (event.type) {
           case TELE_BOX_DELEGATE_EVENT.Maximize: {
-            if (maximized$.value) {
-              if ((_a = this.titleBar.focusedBox) == null ? void 0 : _a.id) {
-                const oldFocusId = (_b = this.titleBar.focusedBox) == null ? void 0 : _b.id;
-                const newNormalboxes = [
-                  ...this.normalBoxes.value,
-                  (_c = this.titleBar.focusedBox) == null ? void 0 : _c.id
-                ].reduce((acc, item) => {
-                  if (!acc.includes(item))
-                    acc.push(item);
-                  return acc;
-                }, []);
-                const nextFocusBoxes = this.boxes$.value.filter((box) => {
-                  var _a2;
-                  return box.id != ((_a2 = this.titleBar.focusedBox) == null ? void 0 : _a2.id) && !newNormalboxes.includes(box.id);
-                });
-                const maxIndexBox = nextFocusBoxes.reduce((maxItem, current) => {
-                  return current._zIndex$.value > maxItem._zIndex$.value ? current : maxItem;
-                });
-                this.setNormalboxes(newNormalboxes);
-                if (maxIndexBox) {
-                  const oldFocusBox = this.boxes$.value.find((box) => box.id == oldFocusId);
-                  if (oldFocusBox) {
-                    this.makeBoxTop(oldFocusBox);
-                  }
-                  this.titleBar.focusBox(maxIndexBox);
-                } else {
-                  this.setMaximized(!maximized$.value);
-                }
-              } else {
-                this.setMaximized(!maximized$.value);
+            if ((_a = this.maxTitleBar.focusedBox) == null ? void 0 : _a.id) {
+              const oldFocusId = (_b = this.maxTitleBar.focusedBox) == null ? void 0 : _b.id;
+              const isInMaximizedBoxes = this.maximizedBoxes$.value.includes(
+                oldFocusId
+              );
+              const newMaximizedBoxes = isInMaximizedBoxes ? removeByVal(
+                [...this.maximizedBoxes$.value],
+                oldFocusId
+              ) : uniqueByVal([
+                ...this.maximizedBoxes$.value,
+                (_c = this.maxTitleBar.focusedBox) == null ? void 0 : _c.id
+              ]);
+              this.setMaximizedBoxes(newMaximizedBoxes);
+              const hasTopBox = this.makeBoxTopFromMaximized();
+              const oldFocusBox = this.boxes$.value.find(
+                (box) => box.id == oldFocusId
+              );
+              if (oldFocusBox) {
+                this.makeBoxTop(oldFocusBox);
+              }
+              if (!hasTopBox) {
+                this.setMaximizedBoxes([]);
               }
             } else {
-              this.setMaximized(!maximized$.value);
-              this.setNormalboxes([]);
+              this.setMaximizedBoxes([]);
             }
             break;
           }
           case TELE_BOX_DELEGATE_EVENT.Minimize: {
-            this.setMinimized(true);
+            if ((_d = this.maxTitleBar.focusedBox) == null ? void 0 : _d.id) {
+              const newMinimizedBoxes = uniqueByVal([
+                ...this.minimizedBoxes$.value,
+                (_e = this.maxTitleBar.focusedBox) == null ? void 0 : _e.id
+              ]);
+              this.makeBoxTopFromMaximized();
+              this.setMinimizedBoxes(newMinimizedBoxes);
+            }
             break;
           }
           case TELE_BOX_EVENT.Close: {
-            this.removeTopBox();
+            const focusedId = (_f = this.maxTitleBar.focusedBox) == null ? void 0 : _f.id;
+            if (focusedId) {
+              this.remove(focusedId);
+              this.makeBoxTopFromMaximized();
+              this.setMaximizedBoxes(removeByVal(this.maximizedBoxes$.value, focusedId));
+            }
             this.focusTopBox();
             break;
           }
         }
       }
     });
-    this._sideEffect.addDisposer([
-      state$.reaction((state, skipUpdate) => {
-        if (!skipUpdate) {
-          this.events.emit(TELE_BOX_MANAGER_EVENT.State, state);
-        }
-      }),
-      maximized$.reaction((maximized2, skipUpdate) => {
-        if (!skipUpdate) {
-          this.events.emit(TELE_BOX_MANAGER_EVENT.Maximized, maximized2);
-        }
-      }),
-      minimized$.reaction((minimized2, skipUpdate) => {
-        if (!skipUpdate) {
-          this.events.emit(TELE_BOX_MANAGER_EVENT.Minimized, minimized2);
-        }
-      }),
-      darkMode$.reaction((darkMode, skipUpdate) => {
-        if (!skipUpdate) {
-          this.events.emit(TELE_BOX_MANAGER_EVENT.DarkMode, darkMode);
-        }
-      })
-    ]);
+    readonly$.subscribe((readonly2) => this.maxTitleBar.setReadonly(readonly2));
+    this._darkMode$.subscribe((darkMode) => {
+      this.maxTitleBar.setDarkMode(darkMode);
+    });
+    this.boxes$.reaction((boxes) => {
+      var _a;
+      this.maxTitleBar.setBoxes(boxes);
+      (_a = this.collector) == null ? void 0 : _a.setBoxes(boxes);
+    });
+    this.maximizedBoxes$.reaction((boxes) => {
+      this.maxTitleBar.setMaximizedBoxes(boxes);
+    });
+    this.minimizedBoxes$.reaction((boxes) => {
+      this.maxTitleBar.setMinimizedBoxes(boxes);
+    });
+    const valConfig = {
+      prefersColorScheme: prefersColorScheme$,
+      containerRect: containerRect$,
+      collector: collector$,
+      collectorRect: collectorRect$,
+      readonly: readonly$,
+      fence: fence$,
+      maximizedBoxes: this.maximizedBoxes$,
+      minimizedBoxes: this.minimizedBoxes$
+    };
+    i$1(this, valConfig);
+    this._state$ = state$;
+    this.root.appendChild(this.maxTitleBar.render());
   }
   get boxes() {
     return this.boxes$.value;
@@ -5671,51 +6206,49 @@ class TeleBoxManager {
   get topBox() {
     return this.topBox$.value;
   }
+  get darkMode() {
+    return this._darkMode$.value;
+  }
+  get state() {
+    return this._state$.value;
+  }
+  setMinimized(data, skipUpdate = false) {
+    console.log("mini", data, skipUpdate);
+  }
+  setMaximized(data, skipUpdate = false) {
+    console.log("max", data, skipUpdate);
+  }
   setState(state, skipUpdate = false) {
+    console.log(skipUpdate);
     switch (state) {
       case TELE_BOX_STATE.Maximized: {
-        this.setMinimized(false, skipUpdate);
-        this.setMaximized(true, skipUpdate);
         break;
       }
       case TELE_BOX_STATE.Minimized: {
-        this.setMinimized(true, skipUpdate);
-        this.setMaximized(false, skipUpdate);
-        break;
-      }
-      default: {
-        this.setMinimized(false, skipUpdate);
-        this.setMaximized(false, skipUpdate);
         break;
       }
     }
     return this;
   }
   create(config = {}, smartPosition = true) {
-    const id2 = config.id || genUID$1();
-    const managerMaximized$ = combine([this._maximized$, this.normalBoxes], ([maximized, normalBoxes]) => {
-      return maximized && !normalBoxes.includes(id2);
-    });
-    const managerMinimized$ = combine([this._minimized$, this.normalBoxes], ([minimized, normalBoxes]) => minimized && !normalBoxes.includes(id2));
+    const id2 = config.id || r$1$1();
+    const managerMaximized$ = this.maximizedBoxes$.value.includes(id2);
+    const managerMinimized$ = this.maximizedBoxes$.value.includes(id2);
     const box = new TeleBox({
       zIndex: this.topBox ? this.topBox.zIndex + 1 : 100,
-      ...config,
-      ...smartPosition ? this.smartPosition(config) : {},
-      id: id2,
+      ...smartPosition ? this.smartPosition(config) : config,
+      darkMode: this.darkMode,
+      prefersColorScheme: this.prefersColorScheme,
+      maximized: managerMaximized$,
+      minimized: managerMinimized$,
+      fence: this.fence,
       namespace: this.namespace,
-      root: this.$stage,
-      darkMode$: this._darkMode$,
-      fence$: this._fence$,
-      rootRect$: this._rootRect$,
-      managerStageRect$: this._stageRect$,
-      managerStageRatio$: this._stageRatio$,
-      managerMaximized$,
-      managerMinimized$,
-      managerReadonly$: this._readonly$,
-      collectorRect$: this.collector._rect$,
-      defaultBoxBodyStyle$: this._defaultBoxBodyStyle$,
-      defaultBoxStageStyle$: this._defaultBoxStageStyle$
+      containerRect: this.containerRect,
+      readonly: this.readonly,
+      collectorRect: this.collectorRect,
+      id: id2
     });
+    box.mount(this.root);
     if (box.focus) {
       this.focusBox(box);
       if (smartPosition) {
@@ -5723,45 +6256,54 @@ class TeleBoxManager {
       }
     }
     this.boxes$.setValue([...this.boxes, box]);
-    this._sideEffect.addDisposer([
-      box._delegateEvents.on(TELE_BOX_DELEGATE_EVENT.Maximize, () => {
-        var _a;
-        if ((_a = this.normalBoxes.value) == null ? void 0 : _a.length) {
-          this.setMaximized(true);
-          this.makeBoxTop(box);
-          this.titleBar.focusBox(box);
-          this.setNormalboxes([]);
-        } else {
-          this.setMaximized(!this.maximized);
-        }
-      }),
-      box._delegateEvents.on(TELE_BOX_DELEGATE_EVENT.Minimize, () => {
-        this.setMinimized(true);
-      }),
-      box._delegateEvents.on(TELE_BOX_DELEGATE_EVENT.Close, () => {
-        this.remove(box);
-        this.focusTopBox();
-      }),
-      box._intrinsicCoord$.reaction((_2, skipUpdate) => {
-        if (!skipUpdate) {
-          this.events.emit(TELE_BOX_MANAGER_EVENT.IntrinsicMove, box);
-        }
-      }),
-      box._intrinsicSize$.reaction((_2, skipUpdate) => {
-        if (!skipUpdate) {
-          this.events.emit(TELE_BOX_MANAGER_EVENT.IntrinsicResize, box);
-        }
-      }),
-      box._zIndex$.reaction((_2, skipUpdate) => {
-        if (this.boxes.length > 0) {
-          const topBox = this.boxes.reduce((topBox2, box2) => topBox2.zIndex > box2.zIndex ? topBox2 : box2);
-          this.topBox$.setValue(topBox);
-        }
-        if (!skipUpdate) {
-          this.events.emit(TELE_BOX_MANAGER_EVENT.ZIndex, box);
-        }
-      })
-    ]);
+    box._delegateEvents.on(TELE_BOX_DELEGATE_EVENT.Maximize, () => {
+      this.setMaximizedBoxes(this.boxes$.value.map((item) => item.id));
+      this.maxTitleBar.focusBox(box);
+    });
+    box._delegateEvents.on(TELE_BOX_DELEGATE_EVENT.Minimize, () => {
+      this.setMinimizedBoxes([...this.minimizedBoxes$.value, id2]);
+    });
+    box._delegateEvents.on(TELE_BOX_DELEGATE_EVENT.Close, () => {
+      this.remove(box);
+      this.makeBoxTopFromMaximized(box.id);
+      this.focusTopBox();
+    });
+    box._coord$.reaction((_2, __, skipUpdate) => {
+      if (!skipUpdate) {
+        this.events.emit(TELE_BOX_MANAGER_EVENT.Move, box);
+      }
+    });
+    box._size$.reaction((_2, __, skipUpdate) => {
+      if (!skipUpdate) {
+        this.events.emit(TELE_BOX_MANAGER_EVENT.Resize, box);
+      }
+    });
+    box._intrinsicCoord$.reaction((_2, __, skipUpdate) => {
+      if (!skipUpdate) {
+        this.events.emit(TELE_BOX_MANAGER_EVENT.IntrinsicMove, box);
+      }
+    });
+    box._intrinsicSize$.reaction((_2, __, skipUpdate) => {
+      if (!skipUpdate) {
+        this.events.emit(TELE_BOX_MANAGER_EVENT.IntrinsicResize, box);
+      }
+    });
+    box._visualSize$.reaction((_2, __, skipUpdate) => {
+      if (!skipUpdate) {
+        this.events.emit(TELE_BOX_MANAGER_EVENT.VisualResize, box);
+      }
+    });
+    box._zIndex$.reaction((_2, __, skipUpdate) => {
+      if (this.boxes.length > 0) {
+        const topBox = this.boxes.reduce(
+          (topBox2, box2) => topBox2.zIndex > box2.zIndex ? topBox2 : box2
+        );
+        this.topBox$.setValue(topBox);
+      }
+      if (!skipUpdate) {
+        this.events.emit(TELE_BOX_MANAGER_EVENT.ZIndex, box);
+      }
+    });
     this.events.emit(TELE_BOX_MANAGER_EVENT.Created, box);
     return box;
   }
@@ -5783,16 +6325,22 @@ class TeleBoxManager {
     });
   }
   remove(boxOrID, skipUpdate = false) {
+    var _a;
     const index2 = this.getBoxIndex(boxOrID);
     if (index2 >= 0) {
       const boxes = this.boxes.slice();
       const deletedBoxes = boxes.splice(index2, 1);
       this.boxes$.setValue(boxes);
       deletedBoxes.forEach((box) => box.destroy());
+      const boxId = (_a = this.getBox(boxOrID)) == null ? void 0 : _a.id;
+      if (boxId) {
+        this.setMaximizedBoxes(removeByVal(this.maximizedBoxes$.value, boxId));
+        this.setMinimizedBoxes(removeByVal(this.minimizedBoxes$.value, boxId));
+      }
       if (!skipUpdate) {
         if (this.boxes.length <= 0) {
-          this.setMaximized(false);
-          this.setMinimized(false);
+          this.setMaximizedBoxes([]);
+          this.setMinimizedBoxes([]);
         }
         this.events.emit(TELE_BOX_MANAGER_EVENT.Removed, deletedBoxes);
       }
@@ -5812,25 +6360,23 @@ class TeleBoxManager {
     deletedBoxes.forEach((box) => box.destroy());
     if (!skipUpdate) {
       if (this.boxes.length <= 0) {
-        this.setMaximized(false);
-        this.setMinimized(false);
+        this.setMaximizedBoxes([]);
+        this.setMinimizedBoxes([]);
       }
       this.events.emit(TELE_BOX_MANAGER_EVENT.Removed, deletedBoxes);
     }
     return deletedBoxes;
   }
-  mount(root) {
-    this._root$.setValue(root);
-  }
-  unmount() {
-    this._root$.setValue(null);
-  }
   destroy(skipUpdate = false) {
-    this.events.clearListeners();
+    this.events.removeAllListeners();
     this._sideEffect.flushAll();
     this.removeAll(skipUpdate);
-    this.collector.destroy();
-    this.titleBar.destroy();
+    Object.keys(this).forEach((key) => {
+      const value = this[key];
+      if (value instanceof r$3) {
+        value.destroy();
+      }
+    });
   }
   wrapClassName(className) {
     return `${this.namespace}-${className}`;
@@ -5843,17 +6389,23 @@ class TeleBoxManager {
           let focusChanged = false;
           if (!targetBox.focus) {
             focusChanged = true;
-            targetBox._focus$.setValue(true, skipUpdate);
+            targetBox.setFocus(true, skipUpdate);
           }
           if (focusChanged && !skipUpdate) {
             this.events.emit(TELE_BOX_MANAGER_EVENT.Focused, targetBox);
           }
         } else if (box.focus) {
-          this.blurBox(box, skipUpdate);
+          if (!this.maximizedBoxes$.value.includes(box.id)) {
+            this.blurBox(box, skipUpdate);
+          }
         }
       });
-      if (!this.normalBoxes.value.includes(targetBox.id)) {
-        this.titleBar.focusBox(targetBox);
+      if (this.maximizedBoxes$.value.length > 0) {
+        if (this.maximizedBoxes$.value.includes(targetBox.id)) {
+          this.maxTitleBar.focusBox(targetBox);
+        }
+      } else {
+        this.maxTitleBar.focusBox(targetBox);
       }
     }
   }
@@ -5866,27 +6418,27 @@ class TeleBoxManager {
     const targetBox = this.getBox(boxOrID);
     if (targetBox) {
       if (targetBox.focus) {
-        targetBox._focus$.setValue(false, skipUpdate);
+        targetBox.setFocus(false, skipUpdate);
         if (!skipUpdate) {
           this.events.emit(TELE_BOX_MANAGER_EVENT.Blurred, targetBox);
         }
       }
-      if (this.titleBar.focusedBox === targetBox) {
-        this.titleBar.focusBox();
+      if (this.maxTitleBar.focusedBox === targetBox) {
+        this.maxTitleBar.focusBox();
       }
     }
   }
   blurAll(skipUpdate = false) {
     this.boxes.forEach((box) => {
       if (box.focus) {
-        box._focus$.setValue(false, skipUpdate);
+        box.setFocus(false, skipUpdate);
         if (!skipUpdate) {
           this.events.emit(TELE_BOX_MANAGER_EVENT.Blurred, box);
         }
       }
     });
-    if (this.titleBar.focusedBox) {
-      this.titleBar.focusBox();
+    if (this.maxTitleBar.focusedBox) {
+      this.maxTitleBar.focusBox();
     }
   }
   teleBoxMatcher(config) {
@@ -5894,39 +6446,44 @@ class TeleBoxManager {
     return (box) => keys.every((key) => config[key] === box[key]);
   }
   updateBox(box, config, skipUpdate = false) {
-    var _a, _b, _c, _d, _e, _f;
     if (config.x != null || config.y != null) {
-      box._intrinsicCoord$.setValue({
-        x: (_a = config.x) != null ? _a : box.intrinsicX,
-        y: (_b = config.y) != null ? _b : box.intrinsicY
-      }, skipUpdate);
+      box.move(
+        config.x == null ? box.intrinsicX : config.x,
+        config.y == null ? box.intrinsicY : config.y,
+        skipUpdate
+      );
     }
     if (config.width != null || config.height != null) {
-      box._intrinsicSize$.setValue({
-        width: (_c = config.width) != null ? _c : box.intrinsicWidth,
-        height: (_d = config.height) != null ? _d : box.intrinsicHeight
-      }, skipUpdate);
+      box.resize(
+        config.width == null ? box.intrinsicWidth : config.width,
+        config.height == null ? box.intrinsicHeight : config.height,
+        skipUpdate
+      );
     }
     if (config.title != null) {
-      box._title$.setValue(config.title);
+      box.setTitle(config.title);
+      this.maxTitleBar.updateTitles();
     }
     if (config.visible != null) {
-      box._visible$.setValue(config.visible, skipUpdate);
+      box.setVisible(config.visible, skipUpdate);
+    }
+    if (config.minHeight != null) {
+      box.setMinHeight(config.minHeight, skipUpdate);
+    }
+    if (config.minWidth != null) {
+      box.setMinWidth(config.minWidth, skipUpdate);
     }
     if (config.resizable != null) {
-      box._resizable$.setValue(config.resizable, skipUpdate);
+      box.setResizable(config.resizable, skipUpdate);
     }
     if (config.draggable != null) {
-      box._draggable$.setValue(config.draggable, skipUpdate);
+      box.setDraggable(config.draggable, skipUpdate);
     }
-    if (config.boxRatio != null) {
-      box._boxRatio$.setValue(config.boxRatio, skipUpdate);
+    if (config.fixRatio != null) {
+      box.setFixRatio(config.fixRatio, skipUpdate);
     }
     if (config.zIndex != null) {
-      box._zIndex$.setValue(config.zIndex, skipUpdate);
-    }
-    if (config.stageRatio !== void 0) {
-      box.setStageRatio(config.stageRatio, skipUpdate);
+      box.setZIndex(config.zIndex, skipUpdate);
     }
     if (config.content != null) {
       box.mountContent(config.content);
@@ -5934,48 +6491,45 @@ class TeleBoxManager {
     if (config.footer != null) {
       box.mountFooter(config.footer);
     }
-    if (config.minHeight != null || config.minWidth != null) {
-      box._minSize$.setValue({
-        width: (_e = config.minWidth) != null ? _e : box.minWidth,
-        height: (_f = config.minHeight) != null ? _f : box.minHeight
-      }, skipUpdate);
-    }
   }
-  smartPosition(rect) {
-    let { x: x2, y: y2 } = rect;
-    const { width = 0.5, height = 0.5 } = rect;
-    const stageRect = this.stageRect;
-    const topBox = this.topBox;
+  smartPosition(config = {}) {
+    let { x: x2, y: y2 } = config;
+    const { width = 0.5, height = 0.5 } = config;
     if (x2 == null) {
-      let pxX = 20;
-      if (topBox) {
-        const pxPreferredX = topBox.pxIntrinsicCoord.x + 20;
-        const pxIntrinsicWidth = width * stageRect.width;
-        if (pxPreferredX + pxIntrinsicWidth <= stageRect.width) {
-          pxX = pxPreferredX;
+      let vx = 20;
+      if (this.topBox) {
+        vx = this.topBox.intrinsicX * this.containerRect.width + 20;
+        if (vx > this.containerRect.width - width * this.containerRect.width) {
+          vx = 20;
         }
       }
-      x2 = pxX / stageRect.width;
+      x2 = vx / this.containerRect.width;
     }
     if (y2 == null) {
-      let pxY = 20;
-      if (topBox) {
-        const pxPreferredY = topBox.pxIntrinsicCoord.y + 20;
-        const pxIntrinsicHeight = height * stageRect.height;
-        if (pxPreferredY + pxIntrinsicHeight <= stageRect.height) {
-          pxY = pxPreferredY;
+      let vy = 20;
+      if (this.topBox) {
+        vy = this.topBox.intrinsicY * this.containerRect.height + 20;
+        if (vy > this.containerRect.height - height * this.containerRect.height) {
+          vy = 20;
         }
       }
-      y2 = pxY / stageRect.height;
+      y2 = vy / this.containerRect.height;
     }
-    return { x: x2, y: y2, width, height };
+    return { ...config, x: x2, y: y2, width, height };
   }
   makeBoxTop(box, skipUpdate = false) {
     if (this.topBox) {
       if (box !== this.topBox) {
-        if (this._maximized$.value && this.normalBoxes.value.length && !this.normalBoxes.value.includes(box.id)) {
+        if (this.maximizedBoxes$.value.includes(box.id)) {
           const newIndex = this.topBox.zIndex + 1;
-          const normalBoxes = this.boxes$.value.filter((box2) => this.normalBoxes.value.includes(box2.id));
+          const normalBoxesIds = excludeFromBoth(
+            this.boxes$.value.map((item) => item.id),
+            this.maximizedBoxes$.value,
+            this.minimizedBoxes$.value
+          );
+          const normalBoxes = this.boxes$.value.filter(
+            (box2) => normalBoxesIds.includes(box2.id)
+          );
           box._zIndex$.setValue(newIndex, skipUpdate);
           normalBoxes.sort((a2, b2) => a2._zIndex$.value - b2._zIndex$.value).forEach((box2, index2) => {
             box2._zIndex$.setValue(newIndex + 1 + index2, skipUpdate);
@@ -5985,6 +6539,26 @@ class TeleBoxManager {
         }
       }
     }
+  }
+  makeBoxTopFromMaximized(boxId) {
+    let maxIndexBox = void 0;
+    if (boxId) {
+      if (this.maximizedBoxes$.value.includes(boxId) && !this.minimizedBoxes$.value.includes(boxId)) {
+        maxIndexBox = this.boxes$.value.find((box) => box.id === boxId);
+      }
+    } else {
+      const nextFocusBoxes = this.boxes$.value.filter((box) => {
+        var _a;
+        return box.id != ((_a = this.maxTitleBar.focusedBox) == null ? void 0 : _a.id) && this.maximizedBoxes$.value.includes(box.id) && !this.minimizedBoxes$.value.includes(box.id);
+      });
+      maxIndexBox = nextFocusBoxes.length ? nextFocusBoxes.reduce((maxItem, current) => {
+        return current._zIndex$.value > maxItem._zIndex$.value ? current : maxItem;
+      }) : void 0;
+      if (maxIndexBox) {
+        this.maxTitleBar.focusBox(maxIndexBox);
+      }
+    }
+    return !!maxIndexBox;
   }
   getBoxIndex(boxOrID) {
     return typeof boxOrID === "string" ? this.boxes.findIndex((box) => box.id === boxOrID) : this.boxes.findIndex((box) => box === boxOrID);
@@ -6038,8 +6612,8 @@ class BoxManager {
     this.teleBoxManager._prefersColorScheme$.reaction((colorScheme) => {
       callbacks2.emit("prefersColorSchemeChange", colorScheme);
     });
-    this.teleBoxManager._minimized$.reaction((minimized) => {
-      if (!minimized) {
+    this.teleBoxManager._minimizedBoxes$.reaction((minimizedBoxes) => {
+      if (!minimizedBoxes.length) {
         setTimeout(() => {
           const offset = 1e-3 * (Math.random() > 0.5 ? 1 : -1);
           this.teleBoxManager.boxes.forEach((box) => {
@@ -6048,21 +6622,11 @@ class BoxManager {
         }, 400);
       }
     });
-    this.teleBoxManager.events.on("minimized", (minimized) => {
-      this.context.safeSetAttributes({ minimized });
-      if (minimized) {
-        this.context.cleanFocus();
-        this.blurAllBox();
-      } else {
-        const topBox = this.getTopBox();
-        if (topBox) {
-          this.context.setAppFocus(topBox.id);
-          this.focusBox({ appId: topBox.id }, false);
-        }
-      }
+    this.teleBoxManager.events.on("minimized", (minimizedBoxes) => {
+      this.context.safeSetAttributes({ minimizedBoxes: JSON.stringify(minimizedBoxes) });
     });
-    this.teleBoxManager.events.on("maximized", (maximized) => {
-      this.context.safeSetAttributes({ maximized });
+    this.teleBoxManager.events.on("maximized", (maximizedBoxes) => {
+      this.context.safeSetAttributes({ maximizedBoxes: JSON.stringify(maximizedBoxes) });
     });
     this.teleBoxManager.events.on("removed", (boxes) => {
       boxes.forEach((box) => {
@@ -6110,10 +6674,10 @@ class BoxManager {
     return this.teleBoxManager.state;
   }
   get maximized() {
-    return this.teleBoxManager.maximized;
+    return !!this.teleBoxManager._maximizedBoxes$.value;
   }
   get minimized() {
-    return this.teleBoxManager.minimized;
+    return !!this.teleBoxManager._minimizedBoxes$.value;
   }
   get darkMode() {
     return this.teleBoxManager.darkMode;
@@ -6131,7 +6695,7 @@ class BoxManager {
     let { minwidth = MIN_WIDTH, minheight = MIN_HEIGHT } = (_a = params.app.config) != null ? _a : {};
     const { width, height } = (_b = params.app.config) != null ? _b : {};
     const title = ((_c = params.options) == null ? void 0 : _c.title) || params.appId;
-    const rect = this.teleBoxManager.$container.getBoundingClientRect();
+    const rect = this.teleBoxManager.containerRect;
     if (minwidth > 1) {
       minwidth = minwidth / rect.width;
     }
@@ -6155,8 +6719,8 @@ class BoxManager {
       if (box.state === TELE_BOX_STATE.Maximized) {
         this.context.boxEmitter.emit("resize", {
           appId,
-          x: box.intrinsicCoord.x,
-          y: box.intrinsicCoord.y,
+          x: box.x,
+          y: box.y,
           width: box.intrinsicWidth,
           height: box.intrinsicHeight
         });
@@ -6165,19 +6729,35 @@ class BoxManager {
   }
   setupBoxManager(createTeleBoxManagerConfig) {
     const root = WindowManager.wrapper ? WindowManager.wrapper : document.body;
+    const rect = root.getBoundingClientRect();
     const initManagerState = {
       root,
+      containerRect: {
+        x: 0,
+        y: 0,
+        width: rect.width,
+        height: rect.height
+      },
       fence: false,
-      prefersColorScheme: createTeleBoxManagerConfig == null ? void 0 : createTeleBoxManagerConfig.prefersColorScheme,
-      stageRatio: 2 / 3
+      prefersColorScheme: createTeleBoxManagerConfig == null ? void 0 : createTeleBoxManagerConfig.prefersColorScheme
     };
     const manager = new TeleBoxManager(initManagerState);
-    console.log("boxmanager", manager);
     if (this.teleBoxManager) {
       this.teleBoxManager.destroy();
     }
     this.teleBoxManager = manager;
+    const container = (createTeleBoxManagerConfig == null ? void 0 : createTeleBoxManagerConfig.collectorContainer) || WindowManager.wrapper;
+    if (container) {
+      this.setCollectorContainer(container);
+    }
     return manager;
+  }
+  setCollectorContainer(container) {
+    var _a;
+    const collector = new TeleBoxCollector({
+      styles: (_a = this.createTeleBoxManagerConfig) == null ? void 0 : _a.collectorStyles
+    }).mount(container);
+    this.teleBoxManager.setCollector(collector);
   }
   getBox(appId) {
     return this.teleBoxManager.queryOne({ id: appId });
@@ -6197,6 +6777,7 @@ class BoxManager {
     return this.teleBoxManager.topBox;
   }
   updateBoxState(state) {
+    console.log(state);
     if (!state)
       return;
     const box = this.getBox(state.id);
@@ -6217,10 +6798,10 @@ class BoxManager {
           this.teleBoxManager.focusBox(box.id, true);
         }
         if (state.maximized != null) {
-          this.teleBoxManager.setMaximized(Boolean(state.maximized), true);
+          this.teleBoxManager.setMaximizedBoxes(isString(state.maximizedBoxes) ? JSON.parse(state.maximizedBoxes) : [], true);
         }
         if (state.minimized != null) {
-          this.teleBoxManager.setMinimized(Boolean(state.minimized), true);
+          this.teleBoxManager.setMinimizedBoxes(isString(state.minimizedBoxes) ? JSON.parse(state.minimizedBoxes) : [], true);
         }
       }, 50);
       this.context.callbacks.emit("boxStateChange", this.teleBoxManager.state);
@@ -6231,6 +6812,7 @@ class BoxManager {
     const rect = (_a = this.mainView.divElement) == null ? void 0 : _a.getBoundingClientRect();
     if (rect && rect.width > 0 && rect.height > 0) {
       const containerRect = { x: 0, y: 0, width: rect.width, height: rect.height };
+      this.teleBoxManager.setContainerRect(containerRect);
       this.context.notifyContainerRectUpdate(containerRect);
     }
   }
@@ -6263,12 +6845,22 @@ class BoxManager {
     this.teleBoxManager.updateAll(config);
   }
   setMaximized(maximized, skipUpdate = true) {
-    if (maximized !== this.maximized) {
-      this.teleBoxManager.setMaximized(maximized, skipUpdate);
+    if (!isString(maximized))
+      return;
+    try {
+      this.teleBoxManager.setMaximizedBoxes(JSON.parse(maximized), skipUpdate);
+    } catch (e2) {
+      console.log(e2);
     }
   }
   setMinimized(minimized, skipUpdate = true) {
-    this.teleBoxManager.setMinimized(minimized, skipUpdate);
+    if (!isString(minimized))
+      return;
+    try {
+      this.teleBoxManager.setMinimizedBoxes(JSON.parse(minimized), skipUpdate);
+    } catch (e2) {
+      console.log(e2);
+    }
   }
   focusTopBox() {
     const boxes = this.teleBoxManager.query();
@@ -6280,6 +6872,7 @@ class BoxManager {
     }
   }
   updateBox(id2, payload, skipUpdate = true) {
+    console.log(id2, payload);
     this.teleBoxManager.update(id2, payload, skipUpdate);
   }
   setReadonly(readonly) {
@@ -7212,7 +7805,7 @@ class CursorManager {
     this.enableCursor = enableCursor;
     this.cursorInstances = /* @__PURE__ */ new Map();
     this.userApplianceIcons = {};
-    this.sideEffectManager = new o$1();
+    this.sideEffectManager = new o$2();
     this.store = this.manager.store;
     this.leaveFlag = true;
     this._style = "default";
@@ -10562,8 +11155,8 @@ var objectAssign = shouldUseNative() ? Object.assign : function(target, source) 
  */
 var l$1 = objectAssign, n$2 = "function" === typeof Symbol && Symbol.for, p$1 = n$2 ? Symbol.for("react.element") : 60103, q$1 = n$2 ? Symbol.for("react.portal") : 60106, r$2 = n$2 ? Symbol.for("react.fragment") : 60107, t$1 = n$2 ? Symbol.for("react.strict_mode") : 60108, u$1 = n$2 ? Symbol.for("react.profiler") : 60114, v$2 = n$2 ? Symbol.for("react.provider") : 60109, w$1 = n$2 ? Symbol.for("react.context") : 60110, x$1 = n$2 ? Symbol.for("react.forward_ref") : 60112, y$1 = n$2 ? Symbol.for("react.suspense") : 60113, z$1 = n$2 ? Symbol.for("react.memo") : 60115, A$1 = n$2 ? Symbol.for("react.lazy") : 60116, B$1 = "function" === typeof Symbol && Symbol.iterator;
 function C$2(a2) {
-  for (var b2 = "https://reactjs.org/docs/error-decoder.html?invariant=" + a2, c = 1; c < arguments.length; c++)
-    b2 += "&args[]=" + encodeURIComponent(arguments[c]);
+  for (var b2 = "https://reactjs.org/docs/error-decoder.html?invariant=" + a2, c2 = 1; c2 < arguments.length; c2++)
+    b2 += "&args[]=" + encodeURIComponent(arguments[c2]);
   return "Minified React error #" + a2 + "; visit " + b2 + " for the full message or use the non-minified dev environment for full errors and additional helpful warnings.";
 }
 var D$1 = { isMounted: function() {
@@ -10572,11 +11165,11 @@ var D$1 = { isMounted: function() {
 }, enqueueReplaceState: function() {
 }, enqueueSetState: function() {
 } }, E$2 = {};
-function F$2(a2, b2, c) {
+function F$2(a2, b2, c2) {
   this.props = a2;
   this.context = b2;
   this.refs = E$2;
-  this.updater = c || D$1;
+  this.updater = c2 || D$1;
 }
 F$2.prototype.isReactComponent = {};
 F$2.prototype.setState = function(a2, b2) {
@@ -10590,25 +11183,25 @@ F$2.prototype.forceUpdate = function(a2) {
 function G$2() {
 }
 G$2.prototype = F$2.prototype;
-function H$2(a2, b2, c) {
+function H$2(a2, b2, c2) {
   this.props = a2;
   this.context = b2;
   this.refs = E$2;
-  this.updater = c || D$1;
+  this.updater = c2 || D$1;
 }
 var I$2 = H$2.prototype = new G$2();
 I$2.constructor = H$2;
 l$1(I$2, F$2.prototype);
 I$2.isPureReactComponent = true;
 var J$2 = { current: null }, K$2 = Object.prototype.hasOwnProperty, L$2 = { key: true, ref: true, __self: true, __source: true };
-function M$2(a2, b2, c) {
+function M$2(a2, b2, c2) {
   var e2, d = {}, g2 = null, k2 = null;
   if (null != b2)
     for (e2 in void 0 !== b2.ref && (k2 = b2.ref), void 0 !== b2.key && (g2 = "" + b2.key), b2)
       K$2.call(b2, e2) && !L$2.hasOwnProperty(e2) && (d[e2] = b2[e2]);
   var f2 = arguments.length - 2;
   if (1 === f2)
-    d.children = c;
+    d.children = c2;
   else if (1 < f2) {
     for (var h2 = Array(f2), m2 = 0; m2 < f2; m2++)
       h2[m2] = arguments[m2 + 2];
@@ -10632,17 +11225,17 @@ function escape(a2) {
   });
 }
 var P$2 = /\/+/g, Q$2 = [];
-function R$2(a2, b2, c, e2) {
+function R$2(a2, b2, c2, e2) {
   if (Q$2.length) {
     var d = Q$2.pop();
     d.result = a2;
     d.keyPrefix = b2;
-    d.func = c;
+    d.func = c2;
     d.context = e2;
     d.count = 0;
     return d;
   }
-  return { result: a2, keyPrefix: b2, func: c, context: e2, count: 0 };
+  return { result: a2, keyPrefix: b2, func: c2, context: e2, count: 0 };
 }
 function S$2(a2) {
   a2.result = null;
@@ -10652,7 +11245,7 @@ function S$2(a2) {
   a2.count = 0;
   10 > Q$2.length && Q$2.push(a2);
 }
-function T$2(a2, b2, c, e2) {
+function T$2(a2, b2, c2, e2) {
   var d = typeof a2;
   if ("undefined" === d || "boolean" === d)
     a2 = null;
@@ -10673,24 +11266,24 @@ function T$2(a2, b2, c, e2) {
         }
     }
   if (g2)
-    return c(e2, a2, "" === b2 ? "." + U$2(a2, 0) : b2), 1;
+    return c2(e2, a2, "" === b2 ? "." + U$2(a2, 0) : b2), 1;
   g2 = 0;
   b2 = "" === b2 ? "." : b2 + ":";
   if (Array.isArray(a2))
     for (var k2 = 0; k2 < a2.length; k2++) {
       d = a2[k2];
       var f2 = b2 + U$2(d, k2);
-      g2 += T$2(d, f2, c, e2);
+      g2 += T$2(d, f2, c2, e2);
     }
   else if (null === a2 || "object" !== typeof a2 ? f2 = null : (f2 = B$1 && a2[B$1] || a2["@@iterator"], f2 = "function" === typeof f2 ? f2 : null), "function" === typeof f2)
     for (a2 = f2.call(a2), k2 = 0; !(d = a2.next()).done; )
-      d = d.value, f2 = b2 + U$2(d, k2++), g2 += T$2(d, f2, c, e2);
+      d = d.value, f2 = b2 + U$2(d, k2++), g2 += T$2(d, f2, c2, e2);
   else if ("object" === d)
-    throw c = "" + a2, Error(C$2(31, "[object Object]" === c ? "object with keys {" + Object.keys(a2).join(", ") + "}" : c, ""));
+    throw c2 = "" + a2, Error(C$2(31, "[object Object]" === c2 ? "object with keys {" + Object.keys(a2).join(", ") + "}" : c2, ""));
   return g2;
 }
-function V$2(a2, b2, c) {
-  return null == a2 ? 0 : T$2(a2, "", b2, c);
+function V$2(a2, b2, c2) {
+  return null == a2 ? 0 : T$2(a2, "", b2, c2);
 }
 function U$2(a2, b2) {
   return "object" === typeof a2 && null !== a2 && null != a2.key ? escape(a2.key) : b2.toString(36);
@@ -10698,16 +11291,16 @@ function U$2(a2, b2) {
 function W$2(a2, b2) {
   a2.func.call(a2.context, b2, a2.count++);
 }
-function aa$1(a2, b2, c) {
+function aa$1(a2, b2, c2) {
   var e2 = a2.result, d = a2.keyPrefix;
   a2 = a2.func.call(a2.context, b2, a2.count++);
-  Array.isArray(a2) ? X$2(a2, e2, c, function(a3) {
+  Array.isArray(a2) ? X$2(a2, e2, c2, function(a3) {
     return a3;
-  }) : null != a2 && (O$2(a2) && (a2 = N$2(a2, d + (!a2.key || b2 && b2.key === a2.key ? "" : ("" + a2.key).replace(P$2, "$&/") + "/") + c)), e2.push(a2));
+  }) : null != a2 && (O$2(a2) && (a2 = N$2(a2, d + (!a2.key || b2 && b2.key === a2.key ? "" : ("" + a2.key).replace(P$2, "$&/") + "/") + c2)), e2.push(a2));
 }
-function X$2(a2, b2, c, e2, d) {
+function X$2(a2, b2, c2, e2, d) {
   var g2 = "";
-  null != c && (g2 = ("" + c).replace(P$2, "$&/") + "/");
+  null != c2 && (g2 = ("" + c2).replace(P$2, "$&/") + "/");
   b2 = R$2(b2, g2, e2, d);
   V$2(a2, aa$1, b2);
   S$2(b2);
@@ -10720,16 +11313,16 @@ function Z$2() {
   return a2;
 }
 var ba$1 = { ReactCurrentDispatcher: Y$2, ReactCurrentBatchConfig: { suspense: null }, ReactCurrentOwner: J$2, IsSomeRendererActing: { current: false }, assign: l$1 };
-react_production_min.Children = { map: function(a2, b2, c) {
+react_production_min.Children = { map: function(a2, b2, c2) {
   if (null == a2)
     return a2;
   var e2 = [];
-  X$2(a2, e2, null, b2, c);
+  X$2(a2, e2, null, b2, c2);
   return e2;
-}, forEach: function(a2, b2, c) {
+}, forEach: function(a2, b2, c2) {
   if (null == a2)
     return a2;
-  b2 = R$2(null, null, b2, c);
+  b2 = R$2(null, null, b2, c2);
   V$2(a2, W$2, b2);
   S$2(b2);
 }, count: function(a2) {
@@ -10754,7 +11347,7 @@ react_production_min.PureComponent = H$2;
 react_production_min.StrictMode = t$1;
 react_production_min.Suspense = y$1;
 react_production_min.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = ba$1;
-react_production_min.cloneElement = function(a2, b2, c) {
+react_production_min.cloneElement = function(a2, b2, c2) {
   if (null === a2 || void 0 === a2)
     throw Error(C$2(267, a2));
   var e2 = l$1({}, a2.props), d = a2.key, g2 = a2.ref, k2 = a2._owner;
@@ -10768,7 +11361,7 @@ react_production_min.cloneElement = function(a2, b2, c) {
   }
   var h2 = arguments.length - 2;
   if (1 === h2)
-    e2.children = c;
+    e2.children = c2;
   else if (1 < h2) {
     f2 = Array(h2);
     for (var m2 = 0; m2 < h2; m2++)
@@ -10820,8 +11413,8 @@ react_production_min.useDebugValue = function() {
 react_production_min.useEffect = function(a2, b2) {
   return Z$2().useEffect(a2, b2);
 };
-react_production_min.useImperativeHandle = function(a2, b2, c) {
-  return Z$2().useImperativeHandle(a2, b2, c);
+react_production_min.useImperativeHandle = function(a2, b2, c2) {
+  return Z$2().useImperativeHandle(a2, b2, c2);
 };
 react_production_min.useLayoutEffect = function(a2, b2) {
   return Z$2().useLayoutEffect(a2, b2);
@@ -10829,8 +11422,8 @@ react_production_min.useLayoutEffect = function(a2, b2) {
 react_production_min.useMemo = function(a2, b2) {
   return Z$2().useMemo(a2, b2);
 };
-react_production_min.useReducer = function(a2, b2, c) {
-  return Z$2().useReducer(a2, b2, c);
+react_production_min.useReducer = function(a2, b2, c2) {
+  return Z$2().useReducer(a2, b2, c2);
 };
 react_production_min.useRef = function(a2) {
   return Z$2().useRef(a2);
@@ -10939,13 +11532,13 @@ var scheduler_production_min = {};
     };
   }
   function J2(a2, b2) {
-    var c = a2.length;
+    var c2 = a2.length;
     a2.push(b2);
     a:
       for (; ; ) {
-        var d = c - 1 >>> 1, e2 = a2[d];
+        var d = c2 - 1 >>> 1, e2 = a2[d];
         if (void 0 !== e2 && 0 < K2(e2, b2))
-          a2[d] = b2, a2[c] = e2, c = d;
+          a2[d] = b2, a2[c2] = e2, c2 = d;
         else
           break a;
       }
@@ -10957,16 +11550,16 @@ var scheduler_production_min = {};
   function M2(a2) {
     var b2 = a2[0];
     if (void 0 !== b2) {
-      var c = a2.pop();
-      if (c !== b2) {
-        a2[0] = c;
+      var c2 = a2.pop();
+      if (c2 !== b2) {
+        a2[0] = c2;
         a:
           for (var d = 0, e2 = a2.length; d < e2; ) {
             var m2 = 2 * (d + 1) - 1, n2 = a2[m2], v2 = m2 + 1, r2 = a2[v2];
-            if (void 0 !== n2 && 0 > K2(n2, c))
-              void 0 !== r2 && 0 > K2(r2, n2) ? (a2[d] = r2, a2[v2] = c, d = v2) : (a2[d] = n2, a2[m2] = c, d = m2);
-            else if (void 0 !== r2 && 0 > K2(r2, c))
-              a2[d] = r2, a2[v2] = c, d = v2;
+            if (void 0 !== n2 && 0 > K2(n2, c2))
+              void 0 !== r2 && 0 > K2(r2, n2) ? (a2[d] = r2, a2[v2] = c2, d = v2) : (a2[d] = n2, a2[m2] = c2, d = m2);
+            else if (void 0 !== r2 && 0 > K2(r2, c2))
+              a2[d] = r2, a2[v2] = c2, d = v2;
             else
               break a;
           }
@@ -10976,8 +11569,8 @@ var scheduler_production_min = {};
     return null;
   }
   function K2(a2, b2) {
-    var c = a2.sortIndex - b2.sortIndex;
-    return 0 !== c ? c : a2.id - b2.id;
+    var c2 = a2.sortIndex - b2.sortIndex;
+    return 0 !== c2 ? c2 : a2.id - b2.id;
   }
   var N2 = [], O2 = [], P2 = 1, Q2 = null, R2 = 3, S2 = false, T2 = false, U2 = false;
   function V2(a2) {
@@ -11006,7 +11599,7 @@ var scheduler_production_min = {};
     T2 = false;
     U2 && (U2 = false, h2());
     S2 = true;
-    var c = R2;
+    var c2 = R2;
     try {
       V2(b2);
       for (Q2 = L2(N2); null !== Q2 && (!(Q2.expirationTime > b2) || a2 && !k2()); ) {
@@ -11031,7 +11624,7 @@ var scheduler_production_min = {};
       }
       return m2;
     } finally {
-      Q2 = null, R2 = c, S2 = false;
+      Q2 = null, R2 = c2, S2 = false;
     }
   }
   function Y2(a2) {
@@ -11077,12 +11670,12 @@ var scheduler_production_min = {};
       default:
         b2 = R2;
     }
-    var c = R2;
+    var c2 = R2;
     R2 = b2;
     try {
       return a2();
     } finally {
-      R2 = c;
+      R2 = c2;
     }
   };
   exports.unstable_pauseExecution = function() {
@@ -11099,25 +11692,25 @@ var scheduler_production_min = {};
       default:
         a2 = 3;
     }
-    var c = R2;
+    var c2 = R2;
     R2 = a2;
     try {
       return b2();
     } finally {
-      R2 = c;
+      R2 = c2;
     }
   };
-  exports.unstable_scheduleCallback = function(a2, b2, c) {
+  exports.unstable_scheduleCallback = function(a2, b2, c2) {
     var d = exports.unstable_now();
-    if ("object" === typeof c && null !== c) {
-      var e2 = c.delay;
+    if ("object" === typeof c2 && null !== c2) {
+      var e2 = c2.delay;
       e2 = "number" === typeof e2 && 0 < e2 ? d + e2 : d;
-      c = "number" === typeof c.timeout ? c.timeout : Y2(a2);
+      c2 = "number" === typeof c2.timeout ? c2.timeout : Y2(a2);
     } else
-      c = Y2(a2), e2 = d;
-    c = e2 + c;
-    a2 = { id: P2++, callback: b2, priorityLevel: a2, startTime: e2, expirationTime: c, sortIndex: -1 };
-    e2 > d ? (a2.sortIndex = e2, J2(O2, a2), null === L2(N2) && a2 === L2(O2) && (U2 ? h2() : U2 = true, g2(W2, e2 - d))) : (a2.sortIndex = c, J2(N2, a2), T2 || S2 || (T2 = true, f2(X2)));
+      c2 = Y2(a2), e2 = d;
+    c2 = e2 + c2;
+    a2 = { id: P2++, callback: b2, priorityLevel: a2, startTime: e2, expirationTime: c2, sortIndex: -1 };
+    e2 > d ? (a2.sortIndex = e2, J2(O2, a2), null === L2(N2) && a2 === L2(O2) && (U2 ? h2() : U2 = true, g2(W2, e2 - d))) : (a2.sortIndex = c2, J2(N2, a2), T2 || S2 || (T2 = true, f2(X2)));
     return a2;
   };
   exports.unstable_shouldYield = function() {
@@ -11129,12 +11722,12 @@ var scheduler_production_min = {};
   exports.unstable_wrapCallback = function(a2) {
     var b2 = R2;
     return function() {
-      var c = R2;
+      var c2 = R2;
       R2 = b2;
       try {
         return a2.apply(this, arguments);
       } finally {
-        R2 = c;
+        R2 = c2;
       }
     };
   };
@@ -11152,16 +11745,16 @@ var scheduler_production_min = {};
  */
 var aa = react.exports, n$1 = objectAssign, r$1 = scheduler.exports;
 function u(a2) {
-  for (var b2 = "https://reactjs.org/docs/error-decoder.html?invariant=" + a2, c = 1; c < arguments.length; c++)
-    b2 += "&args[]=" + encodeURIComponent(arguments[c]);
+  for (var b2 = "https://reactjs.org/docs/error-decoder.html?invariant=" + a2, c2 = 1; c2 < arguments.length; c2++)
+    b2 += "&args[]=" + encodeURIComponent(arguments[c2]);
   return "Minified React error #" + a2 + "; visit " + b2 + " for the full message or use the non-minified dev environment for full errors and additional helpful warnings.";
 }
 if (!aa)
   throw Error(u(227));
-function ba(a2, b2, c, d, e2, f2, g2, h2, k2) {
+function ba(a2, b2, c2, d, e2, f2, g2, h2, k2) {
   var l2 = Array.prototype.slice.call(arguments, 3);
   try {
-    b2.apply(c, l2);
+    b2.apply(c2, l2);
   } catch (m2) {
     this.onError(m2);
   }
@@ -11170,12 +11763,12 @@ var da = false, ea = null, fa = false, ha = null, ia = { onError: function(a2) {
   da = true;
   ea = a2;
 } };
-function ja(a2, b2, c, d, e2, f2, g2, h2, k2) {
+function ja(a2, b2, c2, d, e2, f2, g2, h2, k2) {
   da = false;
   ea = null;
   ba.apply(ia, arguments);
 }
-function ka(a2, b2, c, d, e2, f2, g2, h2, k2) {
+function ka(a2, b2, c2, d, e2, f2, g2, h2, k2) {
   ja.apply(this, arguments);
   if (da) {
     if (da) {
@@ -11188,9 +11781,9 @@ function ka(a2, b2, c, d, e2, f2, g2, h2, k2) {
   }
 }
 var la = null, ma = null, na = null;
-function oa(a2, b2, c) {
+function oa(a2, b2, c2) {
   var d = a2.type || "unknown-event";
-  a2.currentTarget = na(c);
+  a2.currentTarget = na(c2);
   ka(d, b2, void 0, a2);
   a2.currentTarget = null;
 }
@@ -11198,17 +11791,17 @@ var pa = null, qa = {};
 function ra() {
   if (pa)
     for (var a2 in qa) {
-      var b2 = qa[a2], c = pa.indexOf(a2);
-      if (!(-1 < c))
+      var b2 = qa[a2], c2 = pa.indexOf(a2);
+      if (!(-1 < c2))
         throw Error(u(96, a2));
-      if (!sa[c]) {
+      if (!sa[c2]) {
         if (!b2.extractEvents)
           throw Error(u(97, a2));
-        sa[c] = b2;
-        c = b2.eventTypes;
-        for (var d in c) {
+        sa[c2] = b2;
+        c2 = b2.eventTypes;
+        for (var d in c2) {
           var e2 = void 0;
-          var f2 = c[d], g2 = b2, h2 = d;
+          var f2 = c2[d], g2 = b2, h2 = d;
           if (ta.hasOwnProperty(h2))
             throw Error(u(99, h2));
           ta[h2] = f2;
@@ -11225,22 +11818,22 @@ function ra() {
       }
     }
 }
-function ua(a2, b2, c) {
+function ua(a2, b2, c2) {
   if (va[a2])
     throw Error(u(100, a2));
   va[a2] = b2;
-  wa[a2] = b2.eventTypes[c].dependencies;
+  wa[a2] = b2.eventTypes[c2].dependencies;
 }
 var sa = [], ta = {}, va = {}, wa = {};
 function xa(a2) {
-  var b2 = false, c;
-  for (c in a2)
-    if (a2.hasOwnProperty(c)) {
-      var d = a2[c];
-      if (!qa.hasOwnProperty(c) || qa[c] !== d) {
-        if (qa[c])
-          throw Error(u(102, c));
-        qa[c] = d;
+  var b2 = false, c2;
+  for (c2 in a2)
+    if (a2.hasOwnProperty(c2)) {
+      var d = a2[c2];
+      if (!qa.hasOwnProperty(c2) || qa[c2] !== d) {
+        if (qa[c2])
+          throw Error(u(102, c2));
+        qa[c2] = d;
         b2 = true;
       }
     }
@@ -11271,8 +11864,8 @@ function Ea() {
 function Fa(a2, b2) {
   return a2(b2);
 }
-function Ga(a2, b2, c, d, e2) {
-  return a2(b2, c, d, e2);
+function Ga(a2, b2, c2, d, e2) {
+  return a2(b2, c2, d, e2);
 }
 function Ha() {
 }
@@ -11281,12 +11874,12 @@ function La() {
   if (null !== Aa || null !== Ba)
     Ha(), Ea();
 }
-function Ma(a2, b2, c) {
+function Ma(a2, b2, c2) {
   if (Ka)
-    return a2(b2, c);
+    return a2(b2, c2);
   Ka = true;
   try {
-    return Ia(a2, b2, c);
+    return Ia(a2, b2, c2);
   } finally {
     Ka = false, La();
   }
@@ -11302,8 +11895,8 @@ function Ra(a2) {
   Pa[a2] = true;
   return false;
 }
-function Sa(a2, b2, c, d) {
-  if (null !== c && 0 === c.type)
+function Sa(a2, b2, c2, d) {
+  if (null !== c2 && 0 === c2.type)
     return false;
   switch (typeof b2) {
     case "function":
@@ -11312,21 +11905,21 @@ function Sa(a2, b2, c, d) {
     case "boolean":
       if (d)
         return false;
-      if (null !== c)
-        return !c.acceptsBooleans;
+      if (null !== c2)
+        return !c2.acceptsBooleans;
       a2 = a2.toLowerCase().slice(0, 5);
       return "data-" !== a2 && "aria-" !== a2;
     default:
       return false;
   }
 }
-function Ta(a2, b2, c, d) {
-  if (null === b2 || "undefined" === typeof b2 || Sa(a2, b2, c, d))
+function Ta(a2, b2, c2, d) {
+  if (null === b2 || "undefined" === typeof b2 || Sa(a2, b2, c2, d))
     return true;
   if (d)
     return false;
-  if (null !== c)
-    switch (c.type) {
+  if (null !== c2)
+    switch (c2.type) {
       case 3:
         return !b2;
       case 4:
@@ -11338,11 +11931,11 @@ function Ta(a2, b2, c, d) {
     }
   return false;
 }
-function v$1(a2, b2, c, d, e2, f2) {
+function v$1(a2, b2, c2, d, e2, f2) {
   this.acceptsBooleans = 2 === b2 || 3 === b2 || 4 === b2;
   this.attributeName = d;
   this.attributeNamespace = e2;
-  this.mustUseProperty = c;
+  this.mustUseProperty = c2;
   this.propertyName = a2;
   this.type = b2;
   this.sanitizeURL = f2;
@@ -11405,10 +11998,10 @@ C$1.xlinkHref = new v$1("xlinkHref", 1, false, "xlink:href", "http://www.w3.org/
 var Wa = aa.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
 Wa.hasOwnProperty("ReactCurrentDispatcher") || (Wa.ReactCurrentDispatcher = { current: null });
 Wa.hasOwnProperty("ReactCurrentBatchConfig") || (Wa.ReactCurrentBatchConfig = { suspense: null });
-function Xa(a2, b2, c, d) {
+function Xa(a2, b2, c2, d) {
   var e2 = C$1.hasOwnProperty(b2) ? C$1[b2] : null;
   var f2 = null !== e2 ? 0 === e2.type : d ? false : !(2 < b2.length) || "o" !== b2[0] && "O" !== b2[0] || "n" !== b2[1] && "N" !== b2[1] ? false : true;
-  f2 || (Ta(b2, c, e2, d) && (c = null), d || null === e2 ? Ra(b2) && (null === c ? a2.removeAttribute(b2) : a2.setAttribute(b2, "" + c)) : e2.mustUseProperty ? a2[e2.propertyName] = null === c ? 3 === e2.type ? false : "" : c : (b2 = e2.attributeName, d = e2.attributeNamespace, null === c ? a2.removeAttribute(b2) : (e2 = e2.type, c = 3 === e2 || 4 === e2 && true === c ? "" : "" + c, d ? a2.setAttributeNS(d, b2, c) : a2.setAttribute(b2, c))));
+  f2 || (Ta(b2, c2, e2, d) && (c2 = null), d || null === e2 ? Ra(b2) && (null === c2 ? a2.removeAttribute(b2) : a2.setAttribute(b2, "" + c2)) : e2.mustUseProperty ? a2[e2.propertyName] = null === c2 ? 3 === e2.type ? false : "" : c2 : (b2 = e2.attributeName, d = e2.attributeNamespace, null === c2 ? a2.removeAttribute(b2) : (e2 = e2.type, c2 = 3 === e2 || 4 === e2 && true === c2 ? "" : "" + c2, d ? a2.setAttributeNS(d, b2, c2) : a2.setAttribute(b2, c2))));
 }
 var Ya = /^(.*)[\\\/]/, E$1 = "function" === typeof Symbol && Symbol.for, Za = E$1 ? Symbol.for("react.element") : 60103, $a = E$1 ? Symbol.for("react.portal") : 60106, ab = E$1 ? Symbol.for("react.fragment") : 60107, bb = E$1 ? Symbol.for("react.strict_mode") : 60108, cb = E$1 ? Symbol.for("react.profiler") : 60114, db = E$1 ? Symbol.for("react.provider") : 60109, eb = E$1 ? Symbol.for("react.context") : 60110, fb = E$1 ? Symbol.for("react.concurrent_mode") : 60111, gb = E$1 ? Symbol.for("react.forward_ref") : 60112, hb = E$1 ? Symbol.for("react.suspense") : 60113, ib = E$1 ? Symbol.for("react.suspense_list") : 60120, jb = E$1 ? Symbol.for("react.memo") : 60115, kb = E$1 ? Symbol.for("react.lazy") : 60116, lb = E$1 ? Symbol.for("react.block") : 60121, mb = "function" === typeof Symbol && Symbol.iterator;
 function nb(a2) {
@@ -11482,18 +12075,18 @@ function qb(a2) {
         case 7:
         case 10:
         case 9:
-          var c = "";
+          var c2 = "";
           break a;
         default:
           var d = a2._debugOwner, e2 = a2._debugSource, f2 = pb(a2.type);
-          c = null;
-          d && (c = pb(d.type));
+          c2 = null;
+          d && (c2 = pb(d.type));
           d = f2;
           f2 = "";
-          e2 ? f2 = " (at " + e2.fileName.replace(Ya, "") + ":" + e2.lineNumber + ")" : c && (f2 = " (created by " + c + ")");
-          c = "\n    in " + (d || "Unknown") + f2;
+          e2 ? f2 = " (at " + e2.fileName.replace(Ya, "") + ":" + e2.lineNumber + ")" : c2 && (f2 = " (created by " + c2 + ")");
+          c2 = "\n    in " + (d || "Unknown") + f2;
       }
-    b2 += c;
+    b2 += c2;
     a2 = a2.return;
   } while (a2);
   return b2;
@@ -11515,16 +12108,16 @@ function sb(a2) {
   return (a2 = a2.nodeName) && "input" === a2.toLowerCase() && ("checkbox" === b2 || "radio" === b2);
 }
 function tb(a2) {
-  var b2 = sb(a2) ? "checked" : "value", c = Object.getOwnPropertyDescriptor(a2.constructor.prototype, b2), d = "" + a2[b2];
-  if (!a2.hasOwnProperty(b2) && "undefined" !== typeof c && "function" === typeof c.get && "function" === typeof c.set) {
-    var e2 = c.get, f2 = c.set;
+  var b2 = sb(a2) ? "checked" : "value", c2 = Object.getOwnPropertyDescriptor(a2.constructor.prototype, b2), d = "" + a2[b2];
+  if (!a2.hasOwnProperty(b2) && "undefined" !== typeof c2 && "function" === typeof c2.get && "function" === typeof c2.set) {
+    var e2 = c2.get, f2 = c2.set;
     Object.defineProperty(a2, b2, { configurable: true, get: function() {
       return e2.call(this);
     }, set: function(a3) {
       d = "" + a3;
       f2.call(this, a3);
     } });
-    Object.defineProperty(a2, b2, { enumerable: c.enumerable });
+    Object.defineProperty(a2, b2, { enumerable: c2.enumerable });
     return { getValue: function() {
       return d;
     }, setValue: function(a3) {
@@ -11544,20 +12137,20 @@ function yb(a2) {
   var b2 = a2._valueTracker;
   if (!b2)
     return true;
-  var c = b2.getValue();
+  var c2 = b2.getValue();
   var d = "";
   a2 && (d = sb(a2) ? a2.checked ? "true" : "false" : a2.value);
   a2 = d;
-  return a2 !== c ? (b2.setValue(a2), true) : false;
+  return a2 !== c2 ? (b2.setValue(a2), true) : false;
 }
 function zb(a2, b2) {
-  var c = b2.checked;
-  return n$1({}, b2, { defaultChecked: void 0, defaultValue: void 0, value: void 0, checked: null != c ? c : a2._wrapperState.initialChecked });
+  var c2 = b2.checked;
+  return n$1({}, b2, { defaultChecked: void 0, defaultValue: void 0, value: void 0, checked: null != c2 ? c2 : a2._wrapperState.initialChecked });
 }
 function Ab(a2, b2) {
-  var c = null == b2.defaultValue ? "" : b2.defaultValue, d = null != b2.checked ? b2.checked : b2.defaultChecked;
-  c = rb(null != b2.value ? b2.value : c);
-  a2._wrapperState = { initialChecked: d, initialValue: c, controlled: "checkbox" === b2.type || "radio" === b2.type ? null != b2.checked : null != b2.value };
+  var c2 = null == b2.defaultValue ? "" : b2.defaultValue, d = null != b2.checked ? b2.checked : b2.defaultChecked;
+  c2 = rb(null != b2.value ? b2.value : c2);
+  a2._wrapperState = { initialChecked: d, initialValue: c2, controlled: "checkbox" === b2.type || "radio" === b2.type ? null != b2.checked : null != b2.value };
 }
 function Bb(a2, b2) {
   b2 = b2.checked;
@@ -11565,37 +12158,37 @@ function Bb(a2, b2) {
 }
 function Cb(a2, b2) {
   Bb(a2, b2);
-  var c = rb(b2.value), d = b2.type;
-  if (null != c)
+  var c2 = rb(b2.value), d = b2.type;
+  if (null != c2)
     if ("number" === d) {
-      if (0 === c && "" === a2.value || a2.value != c)
-        a2.value = "" + c;
+      if (0 === c2 && "" === a2.value || a2.value != c2)
+        a2.value = "" + c2;
     } else
-      a2.value !== "" + c && (a2.value = "" + c);
+      a2.value !== "" + c2 && (a2.value = "" + c2);
   else if ("submit" === d || "reset" === d) {
     a2.removeAttribute("value");
     return;
   }
-  b2.hasOwnProperty("value") ? Db(a2, b2.type, c) : b2.hasOwnProperty("defaultValue") && Db(a2, b2.type, rb(b2.defaultValue));
+  b2.hasOwnProperty("value") ? Db(a2, b2.type, c2) : b2.hasOwnProperty("defaultValue") && Db(a2, b2.type, rb(b2.defaultValue));
   null == b2.checked && null != b2.defaultChecked && (a2.defaultChecked = !!b2.defaultChecked);
 }
-function Eb(a2, b2, c) {
+function Eb(a2, b2, c2) {
   if (b2.hasOwnProperty("value") || b2.hasOwnProperty("defaultValue")) {
     var d = b2.type;
     if (!("submit" !== d && "reset" !== d || void 0 !== b2.value && null !== b2.value))
       return;
     b2 = "" + a2._wrapperState.initialValue;
-    c || b2 === a2.value || (a2.value = b2);
+    c2 || b2 === a2.value || (a2.value = b2);
     a2.defaultValue = b2;
   }
-  c = a2.name;
-  "" !== c && (a2.name = "");
+  c2 = a2.name;
+  "" !== c2 && (a2.name = "");
   a2.defaultChecked = !!a2._wrapperState.initialChecked;
-  "" !== c && (a2.name = c);
+  "" !== c2 && (a2.name = c2);
 }
-function Db(a2, b2, c) {
+function Db(a2, b2, c2) {
   if ("number" !== b2 || a2.ownerDocument.activeElement !== a2)
-    null == c ? a2.defaultValue = "" + a2._wrapperState.initialValue : a2.defaultValue !== "" + c && (a2.defaultValue = "" + c);
+    null == c2 ? a2.defaultValue = "" + a2._wrapperState.initialValue : a2.defaultValue !== "" + c2 && (a2.defaultValue = "" + c2);
 }
 function Fb(a2) {
   var b2 = "";
@@ -11610,19 +12203,19 @@ function Gb(a2, b2) {
     a2.children = b2;
   return a2;
 }
-function Hb(a2, b2, c, d) {
+function Hb(a2, b2, c2, d) {
   a2 = a2.options;
   if (b2) {
     b2 = {};
-    for (var e2 = 0; e2 < c.length; e2++)
-      b2["$" + c[e2]] = true;
-    for (c = 0; c < a2.length; c++)
-      e2 = b2.hasOwnProperty("$" + a2[c].value), a2[c].selected !== e2 && (a2[c].selected = e2), e2 && d && (a2[c].defaultSelected = true);
+    for (var e2 = 0; e2 < c2.length; e2++)
+      b2["$" + c2[e2]] = true;
+    for (c2 = 0; c2 < a2.length; c2++)
+      e2 = b2.hasOwnProperty("$" + a2[c2].value), a2[c2].selected !== e2 && (a2[c2].selected = e2), e2 && d && (a2[c2].defaultSelected = true);
   } else {
-    c = "" + rb(c);
+    c2 = "" + rb(c2);
     b2 = null;
     for (e2 = 0; e2 < a2.length; e2++) {
-      if (a2[e2].value === c) {
+      if (a2[e2].value === c2) {
         a2[e2].selected = true;
         d && (a2[e2].defaultSelected = true);
         return;
@@ -11638,28 +12231,28 @@ function Ib(a2, b2) {
   return n$1({}, b2, { value: void 0, defaultValue: void 0, children: "" + a2._wrapperState.initialValue });
 }
 function Jb(a2, b2) {
-  var c = b2.value;
-  if (null == c) {
-    c = b2.children;
+  var c2 = b2.value;
+  if (null == c2) {
+    c2 = b2.children;
     b2 = b2.defaultValue;
-    if (null != c) {
+    if (null != c2) {
       if (null != b2)
         throw Error(u(92));
-      if (Array.isArray(c)) {
-        if (!(1 >= c.length))
+      if (Array.isArray(c2)) {
+        if (!(1 >= c2.length))
           throw Error(u(93));
-        c = c[0];
+        c2 = c2[0];
       }
-      b2 = c;
+      b2 = c2;
     }
     null == b2 && (b2 = "");
-    c = b2;
+    c2 = b2;
   }
-  a2._wrapperState = { initialValue: rb(c) };
+  a2._wrapperState = { initialValue: rb(c2) };
 }
 function Kb(a2, b2) {
-  var c = rb(b2.value), d = rb(b2.defaultValue);
-  null != c && (c = "" + c, c !== a2.value && (a2.value = c), null == b2.defaultValue && a2.defaultValue !== c && (a2.defaultValue = c));
+  var c2 = rb(b2.value), d = rb(b2.defaultValue);
+  null != c2 && (c2 = "" + c2, c2 !== a2.value && (a2.value = c2), null == b2.defaultValue && a2.defaultValue !== c2 && (a2.defaultValue = c2));
   null != d && (a2.defaultValue = "" + d);
 }
 function Lb(a2) {
@@ -11681,9 +12274,9 @@ function Ob(a2, b2) {
   return null == a2 || "http://www.w3.org/1999/xhtml" === a2 ? Nb(b2) : "http://www.w3.org/2000/svg" === a2 && "foreignObject" === b2 ? "http://www.w3.org/1999/xhtml" : a2;
 }
 var Pb, Qb = function(a2) {
-  return "undefined" !== typeof MSApp && MSApp.execUnsafeLocalFunction ? function(b2, c, d, e2) {
+  return "undefined" !== typeof MSApp && MSApp.execUnsafeLocalFunction ? function(b2, c2, d, e2) {
     MSApp.execUnsafeLocalFunction(function() {
-      return a2(b2, c, d, e2);
+      return a2(b2, c2, d, e2);
     });
   } : a2;
 }(function(a2, b2) {
@@ -11700,20 +12293,20 @@ var Pb, Qb = function(a2) {
 });
 function Rb(a2, b2) {
   if (b2) {
-    var c = a2.firstChild;
-    if (c && c === a2.lastChild && 3 === c.nodeType) {
-      c.nodeValue = b2;
+    var c2 = a2.firstChild;
+    if (c2 && c2 === a2.lastChild && 3 === c2.nodeType) {
+      c2.nodeValue = b2;
       return;
     }
   }
   a2.textContent = b2;
 }
 function Sb(a2, b2) {
-  var c = {};
-  c[a2.toLowerCase()] = b2.toLowerCase();
-  c["Webkit" + a2] = "webkit" + b2;
-  c["Moz" + a2] = "moz" + b2;
-  return c;
+  var c2 = {};
+  c2[a2.toLowerCase()] = b2.toLowerCase();
+  c2["Webkit" + a2] = "webkit" + b2;
+  c2["Moz" + a2] = "moz" + b2;
+  return c2;
 }
 var Tb = { animationend: Sb("Animation", "AnimationEnd"), animationiteration: Sb("Animation", "AnimationIteration"), animationstart: Sb("Animation", "AnimationStart"), transitionend: Sb("Transition", "TransitionEnd") }, Ub = {}, Vb = {};
 ya && (Vb = document.createElement("div").style, "AnimationEvent" in window || (delete Tb.animationend.animation, delete Tb.animationiteration.animation, delete Tb.animationstart.animation), "TransitionEvent" in window || delete Tb.transitionend.transition);
@@ -11722,10 +12315,10 @@ function Wb(a2) {
     return Ub[a2];
   if (!Tb[a2])
     return a2;
-  var b2 = Tb[a2], c;
-  for (c in b2)
-    if (b2.hasOwnProperty(c) && c in Vb)
-      return Ub[a2] = b2[c];
+  var b2 = Tb[a2], c2;
+  for (c2 in b2)
+    if (b2.hasOwnProperty(c2) && c2 in Vb)
+      return Ub[a2] = b2[c2];
   return a2;
 }
 var Xb = Wb("animationend"), Yb = Wb("animationiteration"), Zb = Wb("animationstart"), $b = Wb("transitionend"), ac = "abort canplay canplaythrough durationchange emptied encrypted ended error loadeddata loadedmetadata loadstart pause play playing progress ratechange seeked seeking stalled suspend timeupdate volumechange waiting".split(" "), bc = new ("function" === typeof WeakMap ? WeakMap : Map)();
@@ -11735,17 +12328,17 @@ function cc(a2) {
   return b2;
 }
 function dc(a2) {
-  var b2 = a2, c = a2;
+  var b2 = a2, c2 = a2;
   if (a2.alternate)
     for (; b2.return; )
       b2 = b2.return;
   else {
     a2 = b2;
     do
-      b2 = a2, 0 !== (b2.effectTag & 1026) && (c = b2.return), a2 = b2.return;
+      b2 = a2, 0 !== (b2.effectTag & 1026) && (c2 = b2.return), a2 = b2.return;
     while (a2);
   }
-  return 3 === b2.tag ? c : null;
+  return 3 === b2.tag ? c2 : null;
 }
 function ec(a2) {
   if (13 === a2.tag) {
@@ -11768,22 +12361,22 @@ function gc(a2) {
       throw Error(u(188));
     return b2 !== a2 ? null : a2;
   }
-  for (var c = a2, d = b2; ; ) {
-    var e2 = c.return;
+  for (var c2 = a2, d = b2; ; ) {
+    var e2 = c2.return;
     if (null === e2)
       break;
     var f2 = e2.alternate;
     if (null === f2) {
       d = e2.return;
       if (null !== d) {
-        c = d;
+        c2 = d;
         continue;
       }
       break;
     }
     if (e2.child === f2.child) {
       for (f2 = e2.child; f2; ) {
-        if (f2 === c)
+        if (f2 === c2)
           return fc(e2), a2;
         if (f2 === d)
           return fc(e2), b2;
@@ -11791,36 +12384,36 @@ function gc(a2) {
       }
       throw Error(u(188));
     }
-    if (c.return !== d.return)
-      c = e2, d = f2;
+    if (c2.return !== d.return)
+      c2 = e2, d = f2;
     else {
       for (var g2 = false, h2 = e2.child; h2; ) {
-        if (h2 === c) {
+        if (h2 === c2) {
           g2 = true;
-          c = e2;
+          c2 = e2;
           d = f2;
           break;
         }
         if (h2 === d) {
           g2 = true;
           d = e2;
-          c = f2;
+          c2 = f2;
           break;
         }
         h2 = h2.sibling;
       }
       if (!g2) {
         for (h2 = f2.child; h2; ) {
-          if (h2 === c) {
+          if (h2 === c2) {
             g2 = true;
-            c = f2;
+            c2 = f2;
             d = e2;
             break;
           }
           if (h2 === d) {
             g2 = true;
             d = f2;
-            c = e2;
+            c2 = e2;
             break;
           }
           h2 = h2.sibling;
@@ -11829,12 +12422,12 @@ function gc(a2) {
           throw Error(u(189));
       }
     }
-    if (c.alternate !== d)
+    if (c2.alternate !== d)
       throw Error(u(190));
   }
-  if (3 !== c.tag)
+  if (3 !== c2.tag)
     throw Error(u(188));
-  return c.stateNode.current === c ? a2 : b2;
+  return c2.stateNode.current === c2 ? a2 : b2;
 }
 function hc(a2) {
   a2 = gc(a2);
@@ -11872,18 +12465,18 @@ function ic(a2, b2) {
   }
   return Array.isArray(b2) ? [a2].concat(b2) : [a2, b2];
 }
-function jc(a2, b2, c) {
-  Array.isArray(a2) ? a2.forEach(b2, c) : a2 && b2.call(c, a2);
+function jc(a2, b2, c2) {
+  Array.isArray(a2) ? a2.forEach(b2, c2) : a2 && b2.call(c2, a2);
 }
 var kc = null;
 function lc(a2) {
   if (a2) {
-    var b2 = a2._dispatchListeners, c = a2._dispatchInstances;
+    var b2 = a2._dispatchListeners, c2 = a2._dispatchInstances;
     if (Array.isArray(b2))
       for (var d = 0; d < b2.length && !a2.isPropagationStopped(); d++)
-        oa(a2, b2[d], c[d]);
+        oa(a2, b2[d], c2[d]);
     else
-      b2 && oa(a2, b2, c);
+      b2 && oa(a2, b2, c2);
     a2._dispatchListeners = null;
     a2._dispatchInstances = null;
     a2.isPersistent() || a2.constructor.release(a2);
@@ -11922,25 +12515,25 @@ function qc(a2) {
   a2.ancestors.length = 0;
   10 > pc.length && pc.push(a2);
 }
-function rc(a2, b2, c, d) {
+function rc(a2, b2, c2, d) {
   if (pc.length) {
     var e2 = pc.pop();
     e2.topLevelType = a2;
     e2.eventSystemFlags = d;
     e2.nativeEvent = b2;
-    e2.targetInst = c;
+    e2.targetInst = c2;
     return e2;
   }
-  return { topLevelType: a2, eventSystemFlags: d, nativeEvent: b2, targetInst: c, ancestors: [] };
+  return { topLevelType: a2, eventSystemFlags: d, nativeEvent: b2, targetInst: c2, ancestors: [] };
 }
 function sc(a2) {
-  var b2 = a2.targetInst, c = b2;
+  var b2 = a2.targetInst, c2 = b2;
   do {
-    if (!c) {
-      a2.ancestors.push(c);
+    if (!c2) {
+      a2.ancestors.push(c2);
       break;
     }
-    var d = c;
+    var d = c2;
     if (3 === d.tag)
       d = d.stateNode.containerInfo;
     else {
@@ -11950,16 +12543,16 @@ function sc(a2) {
     }
     if (!d)
       break;
-    b2 = c.tag;
-    5 !== b2 && 6 !== b2 || a2.ancestors.push(c);
-    c = tc(d);
-  } while (c);
-  for (c = 0; c < a2.ancestors.length; c++) {
-    b2 = a2.ancestors[c];
+    b2 = c2.tag;
+    5 !== b2 && 6 !== b2 || a2.ancestors.push(c2);
+    c2 = tc(d);
+  } while (c2);
+  for (c2 = 0; c2 < a2.ancestors.length; c2++) {
+    b2 = a2.ancestors[c2];
     var e2 = nc(a2.nativeEvent);
     d = a2.topLevelType;
     var f2 = a2.nativeEvent, g2 = a2.eventSystemFlags;
-    0 === c && (g2 |= 64);
+    0 === c2 && (g2 |= 64);
     for (var h2 = null, k2 = 0; k2 < sa.length; k2++) {
       var l2 = sa[k2];
       l2 && (l2 = l2.extractEvents(d, b2, f2, e2, g2)) && (h2 = ic(h2, l2));
@@ -11967,8 +12560,8 @@ function sc(a2) {
     mc(h2);
   }
 }
-function uc(a2, b2, c) {
-  if (!c.has(a2)) {
+function uc(a2, b2, c2) {
+  if (!c2.has(a2)) {
     switch (a2) {
       case "scroll":
         vc(b2, "scroll", true);
@@ -11977,8 +12570,8 @@ function uc(a2, b2, c) {
       case "blur":
         vc(b2, "focus", true);
         vc(b2, "blur", true);
-        c.set("blur", null);
-        c.set("focus", null);
+        c2.set("blur", null);
+        c2.set("focus", null);
         break;
       case "cancel":
       case "close":
@@ -11991,21 +12584,21 @@ function uc(a2, b2, c) {
       default:
         -1 === ac.indexOf(a2) && F$1(a2, b2);
     }
-    c.set(a2, null);
+    c2.set(a2, null);
   }
 }
 var wc, xc, yc, zc = false, Ac = [], Bc = null, Cc = null, Dc = null, Ec = /* @__PURE__ */ new Map(), Fc = /* @__PURE__ */ new Map(), Gc = [], Hc = "mousedown mouseup touchcancel touchend touchstart auxclick dblclick pointercancel pointerdown pointerup dragend dragstart drop compositionend compositionstart keydown keypress keyup input textInput close cancel copy cut paste click change contextmenu reset submit".split(" "), Ic = "focus blur dragenter dragleave mouseover mouseout pointerover pointerout gotpointercapture lostpointercapture".split(" ");
 function Jc(a2, b2) {
-  var c = cc(b2);
+  var c2 = cc(b2);
   Hc.forEach(function(a3) {
-    uc(a3, b2, c);
+    uc(a3, b2, c2);
   });
   Ic.forEach(function(a3) {
-    uc(a3, b2, c);
+    uc(a3, b2, c2);
   });
 }
-function Kc(a2, b2, c, d, e2) {
-  return { blockedOn: a2, topLevelType: b2, eventSystemFlags: c | 32, nativeEvent: e2, container: d };
+function Kc(a2, b2, c2, d, e2) {
+  return { blockedOn: a2, topLevelType: b2, eventSystemFlags: c2 | 32, nativeEvent: e2, container: d };
 }
 function Lc(a2, b2) {
   switch (a2) {
@@ -12030,44 +12623,44 @@ function Lc(a2, b2) {
       Fc.delete(b2.pointerId);
   }
 }
-function Mc(a2, b2, c, d, e2, f2) {
+function Mc(a2, b2, c2, d, e2, f2) {
   if (null === a2 || a2.nativeEvent !== f2)
-    return a2 = Kc(b2, c, d, e2, f2), null !== b2 && (b2 = Nc(b2), null !== b2 && xc(b2)), a2;
+    return a2 = Kc(b2, c2, d, e2, f2), null !== b2 && (b2 = Nc(b2), null !== b2 && xc(b2)), a2;
   a2.eventSystemFlags |= d;
   return a2;
 }
-function Oc(a2, b2, c, d, e2) {
+function Oc(a2, b2, c2, d, e2) {
   switch (b2) {
     case "focus":
-      return Bc = Mc(Bc, a2, b2, c, d, e2), true;
+      return Bc = Mc(Bc, a2, b2, c2, d, e2), true;
     case "dragenter":
-      return Cc = Mc(Cc, a2, b2, c, d, e2), true;
+      return Cc = Mc(Cc, a2, b2, c2, d, e2), true;
     case "mouseover":
-      return Dc = Mc(Dc, a2, b2, c, d, e2), true;
+      return Dc = Mc(Dc, a2, b2, c2, d, e2), true;
     case "pointerover":
       var f2 = e2.pointerId;
-      Ec.set(f2, Mc(Ec.get(f2) || null, a2, b2, c, d, e2));
+      Ec.set(f2, Mc(Ec.get(f2) || null, a2, b2, c2, d, e2));
       return true;
     case "gotpointercapture":
-      return f2 = e2.pointerId, Fc.set(f2, Mc(Fc.get(f2) || null, a2, b2, c, d, e2)), true;
+      return f2 = e2.pointerId, Fc.set(f2, Mc(Fc.get(f2) || null, a2, b2, c2, d, e2)), true;
   }
   return false;
 }
 function Pc(a2) {
   var b2 = tc(a2.target);
   if (null !== b2) {
-    var c = dc(b2);
-    if (null !== c) {
-      if (b2 = c.tag, 13 === b2) {
-        if (b2 = ec(c), null !== b2) {
+    var c2 = dc(b2);
+    if (null !== c2) {
+      if (b2 = c2.tag, 13 === b2) {
+        if (b2 = ec(c2), null !== b2) {
           a2.blockedOn = b2;
           r$1.unstable_runWithPriority(a2.priority, function() {
-            yc(c);
+            yc(c2);
           });
           return;
         }
-      } else if (3 === b2 && c.stateNode.hydrate) {
-        a2.blockedOn = 3 === c.tag ? c.stateNode.containerInfo : null;
+      } else if (3 === b2 && c2.stateNode.hydrate) {
+        a2.blockedOn = 3 === c2.tag ? c2.stateNode.containerInfo : null;
         return;
       }
     }
@@ -12079,15 +12672,15 @@ function Qc(a2) {
     return false;
   var b2 = Rc(a2.topLevelType, a2.eventSystemFlags, a2.container, a2.nativeEvent);
   if (null !== b2) {
-    var c = Nc(b2);
-    null !== c && xc(c);
+    var c2 = Nc(b2);
+    null !== c2 && xc(c2);
     a2.blockedOn = b2;
     return false;
   }
   return true;
 }
-function Sc(a2, b2, c) {
-  Qc(a2) && c.delete(b2);
+function Sc(a2, b2, c2) {
+  Qc(a2) && c2.delete(b2);
 }
 function Tc() {
   for (zc = false; 0 < Ac.length; ) {
@@ -12115,8 +12708,8 @@ function Vc(a2) {
   }
   if (0 < Ac.length) {
     Uc(Ac[0], a2);
-    for (var c = 1; c < Ac.length; c++) {
-      var d = Ac[c];
+    for (var c2 = 1; c2 < Ac.length; c2++) {
+      var d = Ac[c2];
       d.blockedOn === a2 && (d.blockedOn = null);
     }
   }
@@ -12125,10 +12718,10 @@ function Vc(a2) {
   null !== Dc && Uc(Dc, a2);
   Ec.forEach(b2);
   Fc.forEach(b2);
-  for (c = 0; c < Gc.length; c++)
-    d = Gc[c], d.blockedOn === a2 && (d.blockedOn = null);
-  for (; 0 < Gc.length && (c = Gc[0], null === c.blockedOn); )
-    Pc(c), null === c.blockedOn && Gc.shift();
+  for (c2 = 0; c2 < Gc.length; c2++)
+    d = Gc[c2], d.blockedOn === a2 && (d.blockedOn = null);
+  for (; 0 < Gc.length && (c2 = Gc[0], null === c2.blockedOn); )
+    Pc(c2), null === c2.blockedOn && Gc.shift();
 }
 var Wc = {}, Yc = /* @__PURE__ */ new Map(), Zc = /* @__PURE__ */ new Map(), $c = [
   "abort",
@@ -12183,8 +12776,8 @@ var Wc = {}, Yc = /* @__PURE__ */ new Map(), Zc = /* @__PURE__ */ new Map(), $c 
   "waiting"
 ];
 function ad(a2, b2) {
-  for (var c = 0; c < a2.length; c += 2) {
-    var d = a2[c], e2 = a2[c + 1], f2 = "on" + (e2[0].toUpperCase() + e2.slice(1));
+  for (var c2 = 0; c2 < a2.length; c2 += 2) {
+    var d = a2[c2], e2 = a2[c2 + 1], f2 = "on" + (e2[0].toUpperCase() + e2.slice(1));
     f2 = { phasedRegistrationNames: { bubbled: f2, captured: f2 + "Capture" }, dependencies: [d], eventPriority: b2 };
     Zc.set(d, b2);
     Yc.set(d, f2);
@@ -12200,7 +12793,7 @@ var dd = r$1.unstable_UserBlockingPriority, ed = r$1.unstable_runWithPriority, f
 function F$1(a2, b2) {
   vc(b2, a2, false);
 }
-function vc(a2, b2, c) {
+function vc(a2, b2, c2) {
   var d = Zc.get(b2);
   switch (void 0 === d ? 2 : d) {
     case 0:
@@ -12212,32 +12805,32 @@ function vc(a2, b2, c) {
     default:
       d = id.bind(null, b2, 1, a2);
   }
-  c ? a2.addEventListener(b2, d, true) : a2.addEventListener(b2, d, false);
+  c2 ? a2.addEventListener(b2, d, true) : a2.addEventListener(b2, d, false);
 }
-function gd(a2, b2, c, d) {
+function gd(a2, b2, c2, d) {
   Ja || Ha();
   var e2 = id, f2 = Ja;
   Ja = true;
   try {
-    Ga(e2, a2, b2, c, d);
+    Ga(e2, a2, b2, c2, d);
   } finally {
     (Ja = f2) || La();
   }
 }
-function hd(a2, b2, c, d) {
-  ed(dd, id.bind(null, a2, b2, c, d));
+function hd(a2, b2, c2, d) {
+  ed(dd, id.bind(null, a2, b2, c2, d));
 }
-function id(a2, b2, c, d) {
+function id(a2, b2, c2, d) {
   if (fd)
     if (0 < Ac.length && -1 < Hc.indexOf(a2))
-      a2 = Kc(null, a2, b2, c, d), Ac.push(a2);
+      a2 = Kc(null, a2, b2, c2, d), Ac.push(a2);
     else {
-      var e2 = Rc(a2, b2, c, d);
+      var e2 = Rc(a2, b2, c2, d);
       if (null === e2)
         Lc(a2, d);
       else if (-1 < Hc.indexOf(a2))
-        a2 = Kc(e2, a2, b2, c, d), Ac.push(a2);
-      else if (!Oc(e2, a2, b2, c, d)) {
+        a2 = Kc(e2, a2, b2, c2, d), Ac.push(a2);
+      else if (!Oc(e2, a2, b2, c2, d)) {
         Lc(a2, d);
         a2 = rc(a2, d, null, b2);
         try {
@@ -12248,29 +12841,29 @@ function id(a2, b2, c, d) {
       }
     }
 }
-function Rc(a2, b2, c, d) {
-  c = nc(d);
-  c = tc(c);
-  if (null !== c) {
-    var e2 = dc(c);
+function Rc(a2, b2, c2, d) {
+  c2 = nc(d);
+  c2 = tc(c2);
+  if (null !== c2) {
+    var e2 = dc(c2);
     if (null === e2)
-      c = null;
+      c2 = null;
     else {
       var f2 = e2.tag;
       if (13 === f2) {
-        c = ec(e2);
-        if (null !== c)
-          return c;
-        c = null;
+        c2 = ec(e2);
+        if (null !== c2)
+          return c2;
+        c2 = null;
       } else if (3 === f2) {
         if (e2.stateNode.hydrate)
           return 3 === e2.tag ? e2.stateNode.containerInfo : null;
-        c = null;
+        c2 = null;
       } else
-        e2 !== c && (c = null);
+        e2 !== c2 && (c2 = null);
     }
   }
-  a2 = rc(a2, d, c, b2);
+  a2 = rc(a2, d, c2, b2);
   try {
     Ma(sc, a2);
   } finally {
@@ -12328,16 +12921,16 @@ Object.keys(jd).forEach(function(a2) {
     jd[b2] = jd[a2];
   });
 });
-function ld(a2, b2, c) {
-  return null == b2 || "boolean" === typeof b2 || "" === b2 ? "" : c || "number" !== typeof b2 || 0 === b2 || jd.hasOwnProperty(a2) && jd[a2] ? ("" + b2).trim() : b2 + "px";
+function ld(a2, b2, c2) {
+  return null == b2 || "boolean" === typeof b2 || "" === b2 ? "" : c2 || "number" !== typeof b2 || 0 === b2 || jd.hasOwnProperty(a2) && jd[a2] ? ("" + b2).trim() : b2 + "px";
 }
 function md(a2, b2) {
   a2 = a2.style;
-  for (var c in b2)
-    if (b2.hasOwnProperty(c)) {
-      var d = 0 === c.indexOf("--"), e2 = ld(c, b2[c], d);
-      "float" === c && (c = "cssFloat");
-      d ? a2.setProperty(c, e2) : a2[c] = e2;
+  for (var c2 in b2)
+    if (b2.hasOwnProperty(c2)) {
+      var d = 0 === c2.indexOf("--"), e2 = ld(c2, b2[c2], d);
+      "float" === c2 && (c2 = "cssFloat");
+      d ? a2.setProperty(c2, e2) : a2[c2] = e2;
     }
 }
 var nd = n$1({ menuitem: true }, { area: true, base: true, br: true, col: true, embed: true, hr: true, img: true, input: true, keygen: true, link: true, meta: true, param: true, source: true, track: true, wbr: true });
@@ -12375,10 +12968,10 @@ function pd(a2, b2) {
 var qd = Mb.html;
 function rd(a2, b2) {
   a2 = 9 === a2.nodeType || 11 === a2.nodeType ? a2 : a2.ownerDocument;
-  var c = cc(a2);
+  var c2 = cc(a2);
   b2 = wa[b2];
   for (var d = 0; d < b2.length; d++)
-    uc(b2[d], a2, c);
+    uc(b2[d], a2, c2);
 }
 function sd() {
 }
@@ -12398,26 +12991,26 @@ function ud(a2) {
   return a2;
 }
 function vd(a2, b2) {
-  var c = ud(a2);
+  var c2 = ud(a2);
   a2 = 0;
-  for (var d; c; ) {
-    if (3 === c.nodeType) {
-      d = a2 + c.textContent.length;
+  for (var d; c2; ) {
+    if (3 === c2.nodeType) {
+      d = a2 + c2.textContent.length;
       if (a2 <= b2 && d >= b2)
-        return { node: c, offset: b2 - a2 };
+        return { node: c2, offset: b2 - a2 };
       a2 = d;
     }
     a: {
-      for (; c; ) {
-        if (c.nextSibling) {
-          c = c.nextSibling;
+      for (; c2; ) {
+        if (c2.nextSibling) {
+          c2 = c2.nextSibling;
           break a;
         }
-        c = c.parentNode;
+        c2 = c2.parentNode;
       }
-      c = void 0;
+      c2 = void 0;
     }
-    c = ud(c);
+    c2 = ud(c2);
   }
 }
 function wd(a2, b2) {
@@ -12426,11 +13019,11 @@ function wd(a2, b2) {
 function xd() {
   for (var a2 = window, b2 = td(); b2 instanceof a2.HTMLIFrameElement; ) {
     try {
-      var c = "string" === typeof b2.contentWindow.location.href;
+      var c2 = "string" === typeof b2.contentWindow.location.href;
     } catch (d) {
-      c = false;
+      c2 = false;
     }
-    if (c)
+    if (c2)
       a2 = b2.contentWindow;
     else
       break;
@@ -12469,13 +13062,13 @@ function Kd(a2) {
   a2 = a2.previousSibling;
   for (var b2 = 0; a2; ) {
     if (8 === a2.nodeType) {
-      var c = a2.data;
-      if (c === zd || c === Cd || c === Bd) {
+      var c2 = a2.data;
+      if (c2 === zd || c2 === Cd || c2 === Bd) {
         if (0 === b2)
           return a2;
         b2--;
       } else
-        c === Ad && b2++;
+        c2 === Ad && b2++;
     }
     a2 = a2.previousSibling;
   }
@@ -12486,19 +13079,19 @@ function tc(a2) {
   var b2 = a2[Md];
   if (b2)
     return b2;
-  for (var c = a2.parentNode; c; ) {
-    if (b2 = c[Od] || c[Md]) {
-      c = b2.alternate;
-      if (null !== b2.child || null !== c && null !== c.child)
+  for (var c2 = a2.parentNode; c2; ) {
+    if (b2 = c2[Od] || c2[Md]) {
+      c2 = b2.alternate;
+      if (null !== b2.child || null !== c2 && null !== c2.child)
         for (a2 = Kd(a2); null !== a2; ) {
-          if (c = a2[Md])
-            return c;
+          if (c2 = a2[Md])
+            return c2;
           a2 = Kd(a2);
         }
       return b2;
     }
-    a2 = c;
-    c = a2.parentNode;
+    a2 = c2;
+    c2 = a2.parentNode;
   }
   return null;
 }
@@ -12521,13 +13114,13 @@ function Rd(a2) {
   return a2 ? a2 : null;
 }
 function Sd(a2, b2) {
-  var c = a2.stateNode;
-  if (!c)
+  var c2 = a2.stateNode;
+  if (!c2)
     return null;
-  var d = la(c);
+  var d = la(c2);
   if (!d)
     return null;
-  c = d[b2];
+  c2 = d[b2];
   a:
     switch (b2) {
       case "onClick":
@@ -12549,30 +13142,30 @@ function Sd(a2, b2) {
     }
   if (a2)
     return null;
-  if (c && "function" !== typeof c)
+  if (c2 && "function" !== typeof c2)
     throw Error(u(
       231,
       b2,
-      typeof c
+      typeof c2
     ));
-  return c;
+  return c2;
 }
-function Td(a2, b2, c) {
-  if (b2 = Sd(a2, c.dispatchConfig.phasedRegistrationNames[b2]))
-    c._dispatchListeners = ic(c._dispatchListeners, b2), c._dispatchInstances = ic(c._dispatchInstances, a2);
+function Td(a2, b2, c2) {
+  if (b2 = Sd(a2, c2.dispatchConfig.phasedRegistrationNames[b2]))
+    c2._dispatchListeners = ic(c2._dispatchListeners, b2), c2._dispatchInstances = ic(c2._dispatchInstances, a2);
 }
 function Ud(a2) {
   if (a2 && a2.dispatchConfig.phasedRegistrationNames) {
-    for (var b2 = a2._targetInst, c = []; b2; )
-      c.push(b2), b2 = Rd(b2);
-    for (b2 = c.length; 0 < b2--; )
-      Td(c[b2], "captured", a2);
-    for (b2 = 0; b2 < c.length; b2++)
-      Td(c[b2], "bubbled", a2);
+    for (var b2 = a2._targetInst, c2 = []; b2; )
+      c2.push(b2), b2 = Rd(b2);
+    for (b2 = c2.length; 0 < b2--; )
+      Td(c2[b2], "captured", a2);
+    for (b2 = 0; b2 < c2.length; b2++)
+      Td(c2[b2], "bubbled", a2);
   }
 }
-function Vd(a2, b2, c) {
-  a2 && c && c.dispatchConfig.registrationName && (b2 = Sd(a2, c.dispatchConfig.registrationName)) && (c._dispatchListeners = ic(c._dispatchListeners, b2), c._dispatchInstances = ic(c._dispatchInstances, a2));
+function Vd(a2, b2, c2) {
+  a2 && c2 && c2.dispatchConfig.registrationName && (b2 = Sd(a2, c2.dispatchConfig.registrationName)) && (c2._dispatchListeners = ic(c2._dispatchListeners, b2), c2._dispatchInstances = ic(c2._dispatchInstances, a2));
 }
 function Wd(a2) {
   a2 && a2.dispatchConfig.registrationName && Vd(a2._targetInst, null, a2);
@@ -12584,11 +13177,11 @@ var Yd = null, Zd = null, $d = null;
 function ae() {
   if ($d)
     return $d;
-  var a2, b2 = Zd, c = b2.length, d, e2 = "value" in Yd ? Yd.value : Yd.textContent, f2 = e2.length;
-  for (a2 = 0; a2 < c && b2[a2] === e2[a2]; a2++)
+  var a2, b2 = Zd, c2 = b2.length, d, e2 = "value" in Yd ? Yd.value : Yd.textContent, f2 = e2.length;
+  for (a2 = 0; a2 < c2 && b2[a2] === e2[a2]; a2++)
     ;
-  var g2 = c - a2;
-  for (d = 1; d <= g2 && b2[c - d] === e2[f2 - d]; d++)
+  var g2 = c2 - a2;
+  for (d = 1; d <= g2 && b2[c2 - d] === e2[f2 - d]; d++)
     ;
   return $d = e2.slice(a2, 1 < d ? 1 - d : void 0);
 }
@@ -12598,14 +13191,14 @@ function be() {
 function ce() {
   return false;
 }
-function G$1(a2, b2, c, d) {
+function G$1(a2, b2, c2, d) {
   this.dispatchConfig = a2;
   this._targetInst = b2;
-  this.nativeEvent = c;
+  this.nativeEvent = c2;
   a2 = this.constructor.Interface;
   for (var e2 in a2)
-    a2.hasOwnProperty(e2) && ((b2 = a2[e2]) ? this[e2] = b2(c) : "target" === e2 ? this.target = d : this[e2] = c[e2]);
-  this.isDefaultPrevented = (null != c.defaultPrevented ? c.defaultPrevented : false === c.returnValue) ? be : ce;
+    a2.hasOwnProperty(e2) && ((b2 = a2[e2]) ? this[e2] = b2(c2) : "target" === e2 ? this.target = d : this[e2] = c2[e2]);
+  this.isDefaultPrevented = (null != c2.defaultPrevented ? c2.defaultPrevented : false === c2.returnValue) ? be : ce;
   this.isPropagationStopped = ce;
   return this;
 }
@@ -12634,28 +13227,28 @@ G$1.Interface = { type: null, target: null, currentTarget: function() {
 G$1.extend = function(a2) {
   function b2() {
   }
-  function c() {
+  function c2() {
     return d.apply(this, arguments);
   }
   var d = this;
   b2.prototype = d.prototype;
   var e2 = new b2();
-  n$1(e2, c.prototype);
-  c.prototype = e2;
-  c.prototype.constructor = c;
-  c.Interface = n$1({}, d.Interface, a2);
-  c.extend = d.extend;
-  de(c);
-  return c;
+  n$1(e2, c2.prototype);
+  c2.prototype = e2;
+  c2.prototype.constructor = c2;
+  c2.Interface = n$1({}, d.Interface, a2);
+  c2.extend = d.extend;
+  de(c2);
+  return c2;
 };
 de(G$1);
-function ee$1(a2, b2, c, d) {
+function ee$1(a2, b2, c2, d) {
   if (this.eventPool.length) {
     var e2 = this.eventPool.pop();
-    this.call(e2, a2, b2, c, d);
+    this.call(e2, a2, b2, c2, d);
     return e2;
   }
-  return new this(a2, b2, c, d);
+  return new this(a2, b2, c2, d);
 }
 function fe(a2) {
   if (!(a2 instanceof this))
@@ -12728,7 +13321,7 @@ function ue(a2, b2) {
       return null;
   }
 }
-var ve = { eventTypes: oe, extractEvents: function(a2, b2, c, d) {
+var ve = { eventTypes: oe, extractEvents: function(a2, b2, c2, d) {
   var e2;
   if (je)
     b: {
@@ -12746,14 +13339,14 @@ var ve = { eventTypes: oe, extractEvents: function(a2, b2, c, d) {
       f2 = void 0;
     }
   else
-    se ? qe(a2, c) && (f2 = oe.compositionEnd) : "keydown" === a2 && 229 === c.keyCode && (f2 = oe.compositionStart);
-  f2 ? (me && "ko" !== c.locale && (se || f2 !== oe.compositionStart ? f2 === oe.compositionEnd && se && (e2 = ae()) : (Yd = d, Zd = "value" in Yd ? Yd.value : Yd.textContent, se = true)), f2 = ge.getPooled(
+    se ? qe(a2, c2) && (f2 = oe.compositionEnd) : "keydown" === a2 && 229 === c2.keyCode && (f2 = oe.compositionStart);
+  f2 ? (me && "ko" !== c2.locale && (se || f2 !== oe.compositionStart ? f2 === oe.compositionEnd && se && (e2 = ae()) : (Yd = d, Zd = "value" in Yd ? Yd.value : Yd.textContent, se = true)), f2 = ge.getPooled(
     f2,
     b2,
-    c,
+    c2,
     d
-  ), e2 ? f2.data = e2 : (e2 = re(c), null !== e2 && (f2.data = e2)), Xd(f2), e2 = f2) : e2 = null;
-  (a2 = le ? te$1(a2, c) : ue(a2, c)) ? (b2 = he.getPooled(oe.beforeInput, b2, c, d), b2.data = a2, Xd(b2)) : b2 = null;
+  ), e2 ? f2.data = e2 : (e2 = re(c2), null !== e2 && (f2.data = e2)), Xd(f2), e2 = f2) : e2 = null;
+  (a2 = le ? te$1(a2, c2) : ue(a2, c2)) ? (b2 = he.getPooled(oe.beforeInput, b2, c2, d), b2.data = a2, Xd(b2)) : b2 = null;
   return null === e2 ? b2 : null === b2 ? e2 : [e2, b2];
 } }, we = { color: true, date: true, datetime: true, "datetime-local": true, email: true, month: true, number: true, password: true, range: true, search: true, tel: true, text: true, time: true, url: true, week: true };
 function xe(a2) {
@@ -12761,10 +13354,10 @@ function xe(a2) {
   return "input" === b2 ? !!we[a2.type] : "textarea" === b2 ? true : false;
 }
 var ye = { change: { phasedRegistrationNames: { bubbled: "onChange", captured: "onChangeCapture" }, dependencies: "blur change click focus input keydown keyup selectionchange".split(" ") } };
-function ze(a2, b2, c) {
-  a2 = G$1.getPooled(ye.change, a2, b2, c);
+function ze(a2, b2, c2) {
+  a2 = G$1.getPooled(ye.change, a2, b2, c2);
   a2.type = "change";
-  Da(c);
+  Da(c2);
   Xd(a2);
   return a2;
 }
@@ -12799,8 +13392,8 @@ function He(a2) {
       }
     }
 }
-function Ie(a2, b2, c) {
-  "focus" === a2 ? (Ge(), Ae = b2, Be = c, Ae.attachEvent("onpropertychange", He)) : "blur" === a2 && Ge();
+function Ie(a2, b2, c2) {
+  "focus" === a2 ? (Ge(), Ae = b2, Be = c2, Ae.attachEvent("onpropertychange", He)) : "blur" === a2 && Ge();
 }
 function Je(a2) {
   if ("selectionchange" === a2 || "keyup" === a2 || "keydown" === a2)
@@ -12814,7 +13407,7 @@ function Le(a2, b2) {
   if ("input" === a2 || "change" === a2)
     return De(b2);
 }
-var Me = { eventTypes: ye, _isInputEventSupported: Fe, extractEvents: function(a2, b2, c, d) {
+var Me = { eventTypes: ye, _isInputEventSupported: Fe, extractEvents: function(a2, b2, c2, d) {
   var e2 = b2 ? Pd(b2) : window, f2 = e2.nodeName && e2.nodeName.toLowerCase();
   if ("select" === f2 || "input" === f2 && "file" === e2.type)
     var g2 = Ee;
@@ -12828,7 +13421,7 @@ var Me = { eventTypes: ye, _isInputEventSupported: Fe, extractEvents: function(a
   else
     (f2 = e2.nodeName) && "input" === f2.toLowerCase() && ("checkbox" === e2.type || "radio" === e2.type) && (g2 = Ke);
   if (g2 && (g2 = g2(a2, b2)))
-    return ze(g2, c, d);
+    return ze(g2, c2, d);
   h2 && h2(a2, e2, b2);
   "blur" === a2 && (a2 = e2._wrapperState) && a2.controlled && "number" === e2.type && Db(e2, "number", e2.value);
 } }, Ne = G$1.extend({ view: null, detail: null }), Oe = { Alt: "altKey", Control: "ctrlKey", Meta: "metaKey", Shift: "shiftKey" };
@@ -12856,13 +13449,13 @@ var Re = 0, Se = 0, Te = false, Ue = false, Ve = Ne.extend({ screenX: null, scre
 } }), We = Ve.extend({ pointerId: null, width: null, height: null, pressure: null, tangentialPressure: null, tiltX: null, tiltY: null, twist: null, pointerType: null, isPrimary: null }), Xe = { mouseEnter: { registrationName: "onMouseEnter", dependencies: ["mouseout", "mouseover"] }, mouseLeave: { registrationName: "onMouseLeave", dependencies: ["mouseout", "mouseover"] }, pointerEnter: { registrationName: "onPointerEnter", dependencies: ["pointerout", "pointerover"] }, pointerLeave: {
   registrationName: "onPointerLeave",
   dependencies: ["pointerout", "pointerover"]
-} }, Ye = { eventTypes: Xe, extractEvents: function(a2, b2, c, d, e2) {
+} }, Ye = { eventTypes: Xe, extractEvents: function(a2, b2, c2, d, e2) {
   var f2 = "mouseover" === a2 || "pointerover" === a2, g2 = "mouseout" === a2 || "pointerout" === a2;
-  if (f2 && 0 === (e2 & 32) && (c.relatedTarget || c.fromElement) || !g2 && !f2)
+  if (f2 && 0 === (e2 & 32) && (c2.relatedTarget || c2.fromElement) || !g2 && !f2)
     return null;
   f2 = d.window === d ? d : (f2 = d.ownerDocument) ? f2.defaultView || f2.parentWindow : window;
   if (g2) {
-    if (g2 = b2, b2 = (b2 = c.relatedTarget || c.toElement) ? tc(b2) : null, null !== b2) {
+    if (g2 = b2, b2 = (b2 = c2.relatedTarget || c2.toElement) ? tc(b2) : null, null !== b2) {
       var h2 = dc(b2);
       if (b2 !== h2 || 5 !== b2.tag && 6 !== b2.tag)
         b2 = null;
@@ -12880,14 +13473,14 @@ var Re = 0, Se = 0, Te = false, Ue = false, Ve = Ne.extend({ screenX: null, scre
     k2 = We, l2 = Xe.pointerLeave, m2 = Xe.pointerEnter, p2 = "pointer";
   a2 = null == g2 ? f2 : Pd(g2);
   f2 = null == b2 ? f2 : Pd(b2);
-  l2 = k2.getPooled(l2, g2, c, d);
+  l2 = k2.getPooled(l2, g2, c2, d);
   l2.type = p2 + "leave";
   l2.target = a2;
   l2.relatedTarget = f2;
-  c = k2.getPooled(m2, b2, c, d);
-  c.type = p2 + "enter";
-  c.target = f2;
-  c.relatedTarget = a2;
+  c2 = k2.getPooled(m2, b2, c2, d);
+  c2.type = p2 + "enter";
+  c2.target = f2;
+  c2.relatedTarget = a2;
   d = g2;
   p2 = b2;
   if (d && p2)
@@ -12932,8 +13525,8 @@ var Re = 0, Se = 0, Te = false, Ue = false, Ve = Ne.extend({ screenX: null, scre
   for (p2 = 0; p2 < k2.length; p2++)
     Vd(k2[p2], "bubbled", l2);
   for (p2 = d.length; 0 < p2--; )
-    Vd(d[p2], "captured", c);
-  return 0 === (e2 & 64) ? [l2] : [l2, c];
+    Vd(d[p2], "captured", c2);
+  return 0 === (e2 & 64) ? [l2] : [l2, c2];
 } };
 function Ze(a2, b2) {
   return a2 === b2 && (0 !== a2 || 1 / a2 === 1 / b2) || a2 !== a2 && b2 !== b2;
@@ -12944,24 +13537,24 @@ function bf(a2, b2) {
     return true;
   if ("object" !== typeof a2 || null === a2 || "object" !== typeof b2 || null === b2)
     return false;
-  var c = Object.keys(a2), d = Object.keys(b2);
-  if (c.length !== d.length)
+  var c2 = Object.keys(a2), d = Object.keys(b2);
+  if (c2.length !== d.length)
     return false;
-  for (d = 0; d < c.length; d++)
-    if (!af.call(b2, c[d]) || !$e(a2[c[d]], b2[c[d]]))
+  for (d = 0; d < c2.length; d++)
+    if (!af.call(b2, c2[d]) || !$e(a2[c2[d]], b2[c2[d]]))
       return false;
   return true;
 }
 var cf = ya && "documentMode" in document && 11 >= document.documentMode, df = { select: { phasedRegistrationNames: { bubbled: "onSelect", captured: "onSelectCapture" }, dependencies: "blur contextmenu dragend focus keydown keyup mousedown mouseup selectionchange".split(" ") } }, ef = null, ff = null, gf = null, hf = false;
 function jf(a2, b2) {
-  var c = b2.window === b2 ? b2.document : 9 === b2.nodeType ? b2 : b2.ownerDocument;
-  if (hf || null == ef || ef !== td(c))
+  var c2 = b2.window === b2 ? b2.document : 9 === b2.nodeType ? b2 : b2.ownerDocument;
+  if (hf || null == ef || ef !== td(c2))
     return null;
-  c = ef;
-  "selectionStart" in c && yd(c) ? c = { start: c.selectionStart, end: c.selectionEnd } : (c = (c.ownerDocument && c.ownerDocument.defaultView || window).getSelection(), c = { anchorNode: c.anchorNode, anchorOffset: c.anchorOffset, focusNode: c.focusNode, focusOffset: c.focusOffset });
-  return gf && bf(gf, c) ? null : (gf = c, a2 = G$1.getPooled(df.select, ff, a2, b2), a2.type = "select", a2.target = ef, Xd(a2), a2);
+  c2 = ef;
+  "selectionStart" in c2 && yd(c2) ? c2 = { start: c2.selectionStart, end: c2.selectionEnd } : (c2 = (c2.ownerDocument && c2.ownerDocument.defaultView || window).getSelection(), c2 = { anchorNode: c2.anchorNode, anchorOffset: c2.anchorOffset, focusNode: c2.focusNode, focusOffset: c2.focusOffset });
+  return gf && bf(gf, c2) ? null : (gf = c2, a2 = G$1.getPooled(df.select, ff, a2, b2), a2.type = "select", a2.target = ef, Xd(a2), a2);
 }
-var kf = { eventTypes: df, extractEvents: function(a2, b2, c, d, e2, f2) {
+var kf = { eventTypes: df, extractEvents: function(a2, b2, c2, d, e2, f2) {
   e2 = f2 || (d.window === d ? d.document : 9 === d.nodeType ? d : d.ownerDocument);
   if (!(f2 = !e2)) {
     a: {
@@ -12993,13 +13586,13 @@ var kf = { eventTypes: df, extractEvents: function(a2, b2, c, d, e2, f2) {
     case "contextmenu":
     case "mouseup":
     case "dragend":
-      return hf = false, jf(c, d);
+      return hf = false, jf(c2, d);
     case "selectionchange":
       if (cf)
         break;
     case "keydown":
     case "keyup":
-      return jf(c, d);
+      return jf(c2, d);
   }
   return null;
 } }, lf = G$1.extend({ animationName: null, elapsedTime: null, pseudoElement: null }), mf = G$1.extend({ clipboardData: function(a2) {
@@ -13065,13 +13658,13 @@ var pf = { Esc: "Escape", Spacebar: " ", Left: "ArrowLeft", Up: "ArrowUp", Right
   return "deltaX" in a2 ? a2.deltaX : "wheelDeltaX" in a2 ? -a2.wheelDeltaX : 0;
 }, deltaY: function(a2) {
   return "deltaY" in a2 ? a2.deltaY : "wheelDeltaY" in a2 ? -a2.wheelDeltaY : "wheelDelta" in a2 ? -a2.wheelDelta : 0;
-}, deltaZ: null, deltaMode: null }), wf = { eventTypes: Wc, extractEvents: function(a2, b2, c, d) {
+}, deltaZ: null, deltaMode: null }), wf = { eventTypes: Wc, extractEvents: function(a2, b2, c2, d) {
   var e2 = Yc.get(a2);
   if (!e2)
     return null;
   switch (a2) {
     case "keypress":
-      if (0 === of(c))
+      if (0 === of(c2))
         return null;
     case "keydown":
     case "keyup":
@@ -13082,7 +13675,7 @@ var pf = { Esc: "Escape", Spacebar: " ", Left: "ArrowLeft", Up: "ArrowUp", Right
       a2 = nf;
       break;
     case "click":
-      if (2 === c.button)
+      if (2 === c2.button)
         return null;
     case "auxclick":
     case "dblclick":
@@ -13142,7 +13735,7 @@ var pf = { Esc: "Escape", Spacebar: " ", Left: "ArrowLeft", Up: "ArrowUp", Right
     default:
       a2 = G$1;
   }
-  b2 = a2.getPooled(e2, b2, c, d);
+  b2 = a2.getPooled(e2, b2, c2, d);
   Xd(b2);
   return b2;
 } };
@@ -13166,14 +13759,14 @@ function I$1(a2, b2) {
 }
 var Af = {}, J$1 = { current: Af }, K$1 = { current: false }, Bf = Af;
 function Cf(a2, b2) {
-  var c = a2.type.contextTypes;
-  if (!c)
+  var c2 = a2.type.contextTypes;
+  if (!c2)
     return Af;
   var d = a2.stateNode;
   if (d && d.__reactInternalMemoizedUnmaskedChildContext === b2)
     return d.__reactInternalMemoizedMaskedChildContext;
   var e2 = {}, f2;
-  for (f2 in c)
+  for (f2 in c2)
     e2[f2] = b2[f2];
   d && (a2 = a2.stateNode, a2.__reactInternalMemoizedUnmaskedChildContext = b2, a2.__reactInternalMemoizedMaskedChildContext = e2);
   return e2;
@@ -13186,22 +13779,22 @@ function Df() {
   H$1(K$1);
   H$1(J$1);
 }
-function Ef(a2, b2, c) {
+function Ef(a2, b2, c2) {
   if (J$1.current !== Af)
     throw Error(u(168));
   I$1(J$1, b2);
-  I$1(K$1, c);
+  I$1(K$1, c2);
 }
-function Ff(a2, b2, c) {
+function Ff(a2, b2, c2) {
   var d = a2.stateNode;
   a2 = b2.childContextTypes;
   if ("function" !== typeof d.getChildContext)
-    return c;
+    return c2;
   d = d.getChildContext();
   for (var e2 in d)
     if (!(e2 in a2))
       throw Error(u(108, pb(b2) || "Unknown", e2));
-  return n$1({}, c, {}, d);
+  return n$1({}, c2, {}, d);
 }
 function Gf(a2) {
   a2 = (a2 = a2.stateNode) && a2.__reactInternalMemoizedMergedChildContext || Af;
@@ -13210,12 +13803,12 @@ function Gf(a2) {
   I$1(K$1, K$1.current);
   return true;
 }
-function Hf(a2, b2, c) {
+function Hf(a2, b2, c2) {
   var d = a2.stateNode;
   if (!d)
     throw Error(u(169));
-  c ? (a2 = Ff(a2, b2, Bf), d.__reactInternalMemoizedMergedChildContext = a2, H$1(K$1), H$1(J$1), I$1(J$1, a2)) : H$1(K$1);
-  I$1(K$1, c);
+  c2 ? (a2 = Ff(a2, b2, Bf), d.__reactInternalMemoizedMergedChildContext = a2, H$1(K$1), H$1(J$1), I$1(J$1, a2)) : H$1(K$1);
+  I$1(K$1, c2);
 }
 var If = r$1.unstable_runWithPriority, Jf = r$1.unstable_scheduleCallback, Kf = r$1.unstable_cancelCallback, Lf = r$1.unstable_requestPaint, Mf = r$1.unstable_now, Nf = r$1.unstable_getCurrentPriorityLevel, Of = r$1.unstable_ImmediatePriority, Pf = r$1.unstable_UserBlockingPriority, Qf = r$1.unstable_NormalPriority, Rf = r$1.unstable_LowPriority, Sf = r$1.unstable_IdlePriority, Tf = {}, Uf = r$1.unstable_shouldYield, Vf = void 0 !== Lf ? Lf : function() {
 }, Wf = null, Xf = null, Yf = false, Zf = Mf(), $f = 1e4 > Zf ? Mf : function() {
@@ -13257,9 +13850,9 @@ function cg(a2, b2) {
   a2 = bg(a2);
   return If(a2, b2);
 }
-function dg(a2, b2, c) {
+function dg(a2, b2, c2) {
   a2 = bg(a2);
-  return Jf(a2, b2, c);
+  return Jf(a2, b2, c2);
 }
 function eg(a2) {
   null === Wf ? (Wf = [a2], Xf = Jf(Of, fg)) : Wf.push(a2);
@@ -13281,30 +13874,30 @@ function fg() {
       var b2 = Wf;
       cg(99, function() {
         for (; a2 < b2.length; a2++) {
-          var c = b2[a2];
+          var c2 = b2[a2];
           do
-            c = c(true);
-          while (null !== c);
+            c2 = c2(true);
+          while (null !== c2);
         }
       });
       Wf = null;
-    } catch (c) {
-      throw null !== Wf && (Wf = Wf.slice(a2 + 1)), Jf(Of, gg), c;
+    } catch (c2) {
+      throw null !== Wf && (Wf = Wf.slice(a2 + 1)), Jf(Of, gg), c2;
     } finally {
       Yf = false;
     }
   }
 }
-function hg(a2, b2, c) {
-  c /= 10;
-  return 1073741821 - (((1073741821 - a2 + b2 / 10) / c | 0) + 1) * c;
+function hg(a2, b2, c2) {
+  c2 /= 10;
+  return 1073741821 - (((1073741821 - a2 + b2 / 10) / c2 | 0) + 1) * c2;
 }
 function ig(a2, b2) {
   if (a2 && a2.defaultProps) {
     b2 = n$1({}, b2);
     a2 = a2.defaultProps;
-    for (var c in a2)
-      void 0 === b2[c] && (b2[c] = a2[c]);
+    for (var c2 in a2)
+      void 0 === b2[c2] && (b2[c2] = a2[c2]);
   }
   return b2;
 }
@@ -13319,11 +13912,11 @@ function og(a2) {
 }
 function pg(a2, b2) {
   for (; null !== a2; ) {
-    var c = a2.alternate;
+    var c2 = a2.alternate;
     if (a2.childExpirationTime < b2)
-      a2.childExpirationTime = b2, null !== c && c.childExpirationTime < b2 && (c.childExpirationTime = b2);
-    else if (null !== c && c.childExpirationTime < b2)
-      c.childExpirationTime = b2;
+      a2.childExpirationTime = b2, null !== c2 && c2.childExpirationTime < b2 && (c2.childExpirationTime = b2);
+    else if (null !== c2 && c2.childExpirationTime < b2)
+      c2.childExpirationTime = b2;
     else
       break;
     a2 = a2.return;
@@ -13366,19 +13959,19 @@ function xg(a2, b2) {
   a2 = a2.updateQueue;
   if (null !== a2) {
     a2 = a2.shared;
-    var c = a2.pending;
-    null === c ? b2.next = b2 : (b2.next = c.next, c.next = b2);
+    var c2 = a2.pending;
+    null === c2 ? b2.next = b2 : (b2.next = c2.next, c2.next = b2);
     a2.pending = b2;
   }
 }
 function yg(a2, b2) {
-  var c = a2.alternate;
-  null !== c && vg(c, a2);
+  var c2 = a2.alternate;
+  null !== c2 && vg(c2, a2);
   a2 = a2.updateQueue;
-  c = a2.baseQueue;
-  null === c ? (a2.baseQueue = b2.next = b2, b2.next = b2) : (b2.next = c.next, c.next = b2);
+  c2 = a2.baseQueue;
+  null === c2 ? (a2.baseQueue = b2.next = b2, b2.next = b2) : (b2.next = c2.next, c2.next = b2);
 }
-function zg(a2, b2, c, d) {
+function zg(a2, b2, c2, d) {
   var e2 = a2.updateQueue;
   tg = false;
   var f2 = e2.baseQueue, g2 = e2.shared.pending;
@@ -13410,7 +14003,7 @@ function zg(a2, b2, c, d) {
           a: {
             var D2 = a2, t2 = z2;
             g2 = b2;
-            ca = c;
+            ca = c2;
             switch (t2.tag) {
               case 1:
                 D2 = t2.payload;
@@ -13451,7 +14044,7 @@ function zg(a2, b2, c, d) {
     a2.memoizedState = k2;
   }
 }
-function Cg(a2, b2, c) {
+function Cg(a2, b2, c2) {
   a2 = b2.effects;
   b2.effects = null;
   if (null !== a2)
@@ -13460,7 +14053,7 @@ function Cg(a2, b2, c) {
       if (null !== e2) {
         d.callback = null;
         d = e2;
-        e2 = c;
+        e2 = c2;
         if ("function" !== typeof d)
           throw Error(u(191, d));
         d.call(e2);
@@ -13468,53 +14061,53 @@ function Cg(a2, b2, c) {
     }
 }
 var Dg = Wa.ReactCurrentBatchConfig, Eg = new aa.Component().refs;
-function Fg(a2, b2, c, d) {
+function Fg(a2, b2, c2, d) {
   b2 = a2.memoizedState;
-  c = c(d, b2);
-  c = null === c || void 0 === c ? b2 : n$1({}, b2, c);
-  a2.memoizedState = c;
-  0 === a2.expirationTime && (a2.updateQueue.baseState = c);
+  c2 = c2(d, b2);
+  c2 = null === c2 || void 0 === c2 ? b2 : n$1({}, b2, c2);
+  a2.memoizedState = c2;
+  0 === a2.expirationTime && (a2.updateQueue.baseState = c2);
 }
 var Jg = { isMounted: function(a2) {
   return (a2 = a2._reactInternalFiber) ? dc(a2) === a2 : false;
-}, enqueueSetState: function(a2, b2, c) {
+}, enqueueSetState: function(a2, b2, c2) {
   a2 = a2._reactInternalFiber;
   var d = Gg(), e2 = Dg.suspense;
   d = Hg(d, a2, e2);
   e2 = wg(d, e2);
   e2.payload = b2;
-  void 0 !== c && null !== c && (e2.callback = c);
+  void 0 !== c2 && null !== c2 && (e2.callback = c2);
   xg(a2, e2);
   Ig(a2, d);
-}, enqueueReplaceState: function(a2, b2, c) {
+}, enqueueReplaceState: function(a2, b2, c2) {
   a2 = a2._reactInternalFiber;
   var d = Gg(), e2 = Dg.suspense;
   d = Hg(d, a2, e2);
   e2 = wg(d, e2);
   e2.tag = 1;
   e2.payload = b2;
-  void 0 !== c && null !== c && (e2.callback = c);
+  void 0 !== c2 && null !== c2 && (e2.callback = c2);
   xg(a2, e2);
   Ig(a2, d);
 }, enqueueForceUpdate: function(a2, b2) {
   a2 = a2._reactInternalFiber;
-  var c = Gg(), d = Dg.suspense;
-  c = Hg(c, a2, d);
-  d = wg(c, d);
+  var c2 = Gg(), d = Dg.suspense;
+  c2 = Hg(c2, a2, d);
+  d = wg(c2, d);
   d.tag = 2;
   void 0 !== b2 && null !== b2 && (d.callback = b2);
   xg(a2, d);
-  Ig(a2, c);
+  Ig(a2, c2);
 } };
-function Kg(a2, b2, c, d, e2, f2, g2) {
+function Kg(a2, b2, c2, d, e2, f2, g2) {
   a2 = a2.stateNode;
-  return "function" === typeof a2.shouldComponentUpdate ? a2.shouldComponentUpdate(d, f2, g2) : b2.prototype && b2.prototype.isPureReactComponent ? !bf(c, d) || !bf(e2, f2) : true;
+  return "function" === typeof a2.shouldComponentUpdate ? a2.shouldComponentUpdate(d, f2, g2) : b2.prototype && b2.prototype.isPureReactComponent ? !bf(c2, d) || !bf(e2, f2) : true;
 }
-function Lg(a2, b2, c) {
+function Lg(a2, b2, c2) {
   var d = false, e2 = Af;
   var f2 = b2.contextType;
   "object" === typeof f2 && null !== f2 ? f2 = sg(f2) : (e2 = L$1(b2) ? Bf : J$1.current, d = b2.contextTypes, f2 = (d = null !== d && void 0 !== d) ? Cf(a2, e2) : Af);
-  b2 = new b2(c, f2);
+  b2 = new b2(c2, f2);
   a2.memoizedState = null !== b2.state && void 0 !== b2.state ? b2.state : null;
   b2.updater = Jg;
   a2.stateNode = b2;
@@ -13522,37 +14115,37 @@ function Lg(a2, b2, c) {
   d && (a2 = a2.stateNode, a2.__reactInternalMemoizedUnmaskedChildContext = e2, a2.__reactInternalMemoizedMaskedChildContext = f2);
   return b2;
 }
-function Mg(a2, b2, c, d) {
+function Mg(a2, b2, c2, d) {
   a2 = b2.state;
-  "function" === typeof b2.componentWillReceiveProps && b2.componentWillReceiveProps(c, d);
-  "function" === typeof b2.UNSAFE_componentWillReceiveProps && b2.UNSAFE_componentWillReceiveProps(c, d);
+  "function" === typeof b2.componentWillReceiveProps && b2.componentWillReceiveProps(c2, d);
+  "function" === typeof b2.UNSAFE_componentWillReceiveProps && b2.UNSAFE_componentWillReceiveProps(c2, d);
   b2.state !== a2 && Jg.enqueueReplaceState(b2, b2.state, null);
 }
-function Ng(a2, b2, c, d) {
+function Ng(a2, b2, c2, d) {
   var e2 = a2.stateNode;
-  e2.props = c;
+  e2.props = c2;
   e2.state = a2.memoizedState;
   e2.refs = Eg;
   ug(a2);
   var f2 = b2.contextType;
   "object" === typeof f2 && null !== f2 ? e2.context = sg(f2) : (f2 = L$1(b2) ? Bf : J$1.current, e2.context = Cf(a2, f2));
-  zg(a2, c, e2, d);
+  zg(a2, c2, e2, d);
   e2.state = a2.memoizedState;
   f2 = b2.getDerivedStateFromProps;
-  "function" === typeof f2 && (Fg(a2, b2, f2, c), e2.state = a2.memoizedState);
-  "function" === typeof b2.getDerivedStateFromProps || "function" === typeof e2.getSnapshotBeforeUpdate || "function" !== typeof e2.UNSAFE_componentWillMount && "function" !== typeof e2.componentWillMount || (b2 = e2.state, "function" === typeof e2.componentWillMount && e2.componentWillMount(), "function" === typeof e2.UNSAFE_componentWillMount && e2.UNSAFE_componentWillMount(), b2 !== e2.state && Jg.enqueueReplaceState(e2, e2.state, null), zg(a2, c, e2, d), e2.state = a2.memoizedState);
+  "function" === typeof f2 && (Fg(a2, b2, f2, c2), e2.state = a2.memoizedState);
+  "function" === typeof b2.getDerivedStateFromProps || "function" === typeof e2.getSnapshotBeforeUpdate || "function" !== typeof e2.UNSAFE_componentWillMount && "function" !== typeof e2.componentWillMount || (b2 = e2.state, "function" === typeof e2.componentWillMount && e2.componentWillMount(), "function" === typeof e2.UNSAFE_componentWillMount && e2.UNSAFE_componentWillMount(), b2 !== e2.state && Jg.enqueueReplaceState(e2, e2.state, null), zg(a2, c2, e2, d), e2.state = a2.memoizedState);
   "function" === typeof e2.componentDidMount && (a2.effectTag |= 4);
 }
 var Og = Array.isArray;
-function Pg(a2, b2, c) {
-  a2 = c.ref;
+function Pg(a2, b2, c2) {
+  a2 = c2.ref;
   if (null !== a2 && "function" !== typeof a2 && "object" !== typeof a2) {
-    if (c._owner) {
-      c = c._owner;
-      if (c) {
-        if (1 !== c.tag)
+    if (c2._owner) {
+      c2 = c2._owner;
+      if (c2) {
+        if (1 !== c2.tag)
           throw Error(u(309));
-        var d = c.stateNode;
+        var d = c2.stateNode;
       }
       if (!d)
         throw Error(u(147, a2));
@@ -13569,7 +14162,7 @@ function Pg(a2, b2, c) {
     }
     if ("string" !== typeof a2)
       throw Error(u(284));
-    if (!c._owner)
+    if (!c2._owner)
       throw Error(u(290, a2));
   }
   return a2;
@@ -13579,19 +14172,19 @@ function Qg(a2, b2) {
     throw Error(u(31, "[object Object]" === Object.prototype.toString.call(b2) ? "object with keys {" + Object.keys(b2).join(", ") + "}" : b2, ""));
 }
 function Rg(a2) {
-  function b2(b3, c2) {
+  function b2(b3, c3) {
     if (a2) {
       var d2 = b3.lastEffect;
-      null !== d2 ? (d2.nextEffect = c2, b3.lastEffect = c2) : b3.firstEffect = b3.lastEffect = c2;
-      c2.nextEffect = null;
-      c2.effectTag = 8;
+      null !== d2 ? (d2.nextEffect = c3, b3.lastEffect = c3) : b3.firstEffect = b3.lastEffect = c3;
+      c3.nextEffect = null;
+      c3.effectTag = 8;
     }
   }
-  function c(c2, d2) {
+  function c2(c3, d2) {
     if (!a2)
       return null;
     for (; null !== d2; )
-      b2(c2, d2), d2 = d2.sibling;
+      b2(c3, d2), d2 = d2.sibling;
     return null;
   }
   function d(a3, b3) {
@@ -13605,94 +14198,94 @@ function Rg(a2) {
     a3.sibling = null;
     return a3;
   }
-  function f2(b3, c2, d2) {
+  function f2(b3, c3, d2) {
     b3.index = d2;
     if (!a2)
-      return c2;
+      return c3;
     d2 = b3.alternate;
     if (null !== d2)
-      return d2 = d2.index, d2 < c2 ? (b3.effectTag = 2, c2) : d2;
+      return d2 = d2.index, d2 < c3 ? (b3.effectTag = 2, c3) : d2;
     b3.effectTag = 2;
-    return c2;
+    return c3;
   }
   function g2(b3) {
     a2 && null === b3.alternate && (b3.effectTag = 2);
     return b3;
   }
-  function h2(a3, b3, c2, d2) {
+  function h2(a3, b3, c3, d2) {
     if (null === b3 || 6 !== b3.tag)
-      return b3 = Tg(c2, a3.mode, d2), b3.return = a3, b3;
-    b3 = e2(b3, c2);
+      return b3 = Tg(c3, a3.mode, d2), b3.return = a3, b3;
+    b3 = e2(b3, c3);
     b3.return = a3;
     return b3;
   }
-  function k2(a3, b3, c2, d2) {
-    if (null !== b3 && b3.elementType === c2.type)
-      return d2 = e2(b3, c2.props), d2.ref = Pg(a3, b3, c2), d2.return = a3, d2;
-    d2 = Ug(c2.type, c2.key, c2.props, null, a3.mode, d2);
-    d2.ref = Pg(a3, b3, c2);
+  function k2(a3, b3, c3, d2) {
+    if (null !== b3 && b3.elementType === c3.type)
+      return d2 = e2(b3, c3.props), d2.ref = Pg(a3, b3, c3), d2.return = a3, d2;
+    d2 = Ug(c3.type, c3.key, c3.props, null, a3.mode, d2);
+    d2.ref = Pg(a3, b3, c3);
     d2.return = a3;
     return d2;
   }
-  function l2(a3, b3, c2, d2) {
-    if (null === b3 || 4 !== b3.tag || b3.stateNode.containerInfo !== c2.containerInfo || b3.stateNode.implementation !== c2.implementation)
-      return b3 = Vg(c2, a3.mode, d2), b3.return = a3, b3;
-    b3 = e2(b3, c2.children || []);
+  function l2(a3, b3, c3, d2) {
+    if (null === b3 || 4 !== b3.tag || b3.stateNode.containerInfo !== c3.containerInfo || b3.stateNode.implementation !== c3.implementation)
+      return b3 = Vg(c3, a3.mode, d2), b3.return = a3, b3;
+    b3 = e2(b3, c3.children || []);
     b3.return = a3;
     return b3;
   }
-  function m2(a3, b3, c2, d2, f3) {
+  function m2(a3, b3, c3, d2, f3) {
     if (null === b3 || 7 !== b3.tag)
-      return b3 = Wg(c2, a3.mode, d2, f3), b3.return = a3, b3;
-    b3 = e2(b3, c2);
+      return b3 = Wg(c3, a3.mode, d2, f3), b3.return = a3, b3;
+    b3 = e2(b3, c3);
     b3.return = a3;
     return b3;
   }
-  function p2(a3, b3, c2) {
+  function p2(a3, b3, c3) {
     if ("string" === typeof b3 || "number" === typeof b3)
-      return b3 = Tg("" + b3, a3.mode, c2), b3.return = a3, b3;
+      return b3 = Tg("" + b3, a3.mode, c3), b3.return = a3, b3;
     if ("object" === typeof b3 && null !== b3) {
       switch (b3.$$typeof) {
         case Za:
-          return c2 = Ug(b3.type, b3.key, b3.props, null, a3.mode, c2), c2.ref = Pg(a3, null, b3), c2.return = a3, c2;
+          return c3 = Ug(b3.type, b3.key, b3.props, null, a3.mode, c3), c3.ref = Pg(a3, null, b3), c3.return = a3, c3;
         case $a:
-          return b3 = Vg(b3, a3.mode, c2), b3.return = a3, b3;
+          return b3 = Vg(b3, a3.mode, c3), b3.return = a3, b3;
       }
       if (Og(b3) || nb(b3))
-        return b3 = Wg(b3, a3.mode, c2, null), b3.return = a3, b3;
+        return b3 = Wg(b3, a3.mode, c3, null), b3.return = a3, b3;
       Qg(a3, b3);
     }
     return null;
   }
-  function x2(a3, b3, c2, d2) {
+  function x2(a3, b3, c3, d2) {
     var e3 = null !== b3 ? b3.key : null;
-    if ("string" === typeof c2 || "number" === typeof c2)
-      return null !== e3 ? null : h2(a3, b3, "" + c2, d2);
-    if ("object" === typeof c2 && null !== c2) {
-      switch (c2.$$typeof) {
+    if ("string" === typeof c3 || "number" === typeof c3)
+      return null !== e3 ? null : h2(a3, b3, "" + c3, d2);
+    if ("object" === typeof c3 && null !== c3) {
+      switch (c3.$$typeof) {
         case Za:
-          return c2.key === e3 ? c2.type === ab ? m2(a3, b3, c2.props.children, d2, e3) : k2(a3, b3, c2, d2) : null;
+          return c3.key === e3 ? c3.type === ab ? m2(a3, b3, c3.props.children, d2, e3) : k2(a3, b3, c3, d2) : null;
         case $a:
-          return c2.key === e3 ? l2(a3, b3, c2, d2) : null;
+          return c3.key === e3 ? l2(a3, b3, c3, d2) : null;
       }
-      if (Og(c2) || nb(c2))
-        return null !== e3 ? null : m2(a3, b3, c2, d2, null);
-      Qg(a3, c2);
+      if (Og(c3) || nb(c3))
+        return null !== e3 ? null : m2(a3, b3, c3, d2, null);
+      Qg(a3, c3);
     }
     return null;
   }
-  function z2(a3, b3, c2, d2, e3) {
+  function z2(a3, b3, c3, d2, e3) {
     if ("string" === typeof d2 || "number" === typeof d2)
-      return a3 = a3.get(c2) || null, h2(b3, a3, "" + d2, e3);
+      return a3 = a3.get(c3) || null, h2(b3, a3, "" + d2, e3);
     if ("object" === typeof d2 && null !== d2) {
       switch (d2.$$typeof) {
         case Za:
-          return a3 = a3.get(null === d2.key ? c2 : d2.key) || null, d2.type === ab ? m2(b3, a3, d2.props.children, e3, d2.key) : k2(b3, a3, d2, e3);
+          return a3 = a3.get(null === d2.key ? c3 : d2.key) || null, d2.type === ab ? m2(b3, a3, d2.props.children, e3, d2.key) : k2(b3, a3, d2, e3);
         case $a:
-          return a3 = a3.get(null === d2.key ? c2 : d2.key) || null, l2(b3, a3, d2, e3);
+          return a3 = a3.get(null === d2.key ? c3 : d2.key) || null, l2(b3, a3, d2, e3);
       }
       if (Og(d2) || nb(d2))
-        return a3 = a3.get(c2) || null, m2(b3, a3, d2, e3, null);
+        return a3 = a3.get(c3) || null, m2(b3, a3, d2, e3, null);
       Qg(b3, d2);
     }
     return null;
@@ -13712,7 +14305,7 @@ function Rg(a2) {
       m3 = A2;
     }
     if (y2 === h3.length)
-      return c(e3, m3), l3;
+      return c2(e3, m3), l3;
     if (null === m3) {
       for (; y2 < h3.length; y2++)
         m3 = p2(e3, h3[y2], k3), null !== m3 && (g3 = f2(m3, g3, y2), null === t2 ? l3 = m3 : t2.sibling = m3, t2 = m3);
@@ -13746,7 +14339,7 @@ function Rg(a2) {
       t2 = A2;
     }
     if (q2.done)
-      return c(e3, t2), k3;
+      return c2(e3, t2), k3;
     if (null === t2) {
       for (; !q2.done; y2++, q2 = h3.next())
         q2 = p2(e3, q2.value, l3), null !== q2 && (g3 = f2(q2, g3, y2), null === m3 ? k3 = q2 : m3.sibling = q2, m3 = q2);
@@ -13773,7 +14366,7 @@ function Rg(a2) {
                 switch (k3.tag) {
                   case 7:
                     if (f3.type === ab) {
-                      c(a3, k3.sibling);
+                      c2(a3, k3.sibling);
                       d2 = e2(k3, f3.props.children);
                       d2.return = a3;
                       a3 = d2;
@@ -13782,7 +14375,7 @@ function Rg(a2) {
                     break;
                   default:
                     if (k3.elementType === f3.type) {
-                      c(
+                      c2(
                         a3,
                         k3.sibling
                       );
@@ -13793,7 +14386,7 @@ function Rg(a2) {
                       break a;
                     }
                 }
-                c(a3, k3);
+                c2(a3, k3);
                 break;
               } else
                 b2(a3, k3);
@@ -13807,13 +14400,13 @@ function Rg(a2) {
             for (k3 = f3.key; null !== d2; ) {
               if (d2.key === k3)
                 if (4 === d2.tag && d2.stateNode.containerInfo === f3.containerInfo && d2.stateNode.implementation === f3.implementation) {
-                  c(a3, d2.sibling);
+                  c2(a3, d2.sibling);
                   d2 = e2(d2, f3.children || []);
                   d2.return = a3;
                   a3 = d2;
                   break a;
                 } else {
-                  c(a3, d2);
+                  c2(a3, d2);
                   break;
                 }
               else
@@ -13827,7 +14420,7 @@ function Rg(a2) {
           return g2(a3);
       }
     if ("string" === typeof f3 || "number" === typeof f3)
-      return f3 = "" + f3, null !== d2 && 6 === d2.tag ? (c(a3, d2.sibling), d2 = e2(d2, f3), d2.return = a3, a3 = d2) : (c(a3, d2), d2 = Tg(f3, a3.mode, h3), d2.return = a3, a3 = d2), g2(a3);
+      return f3 = "" + f3, null !== d2 && 6 === d2.tag ? (c2(a3, d2.sibling), d2 = e2(d2, f3), d2.return = a3, a3 = d2) : (c2(a3, d2), d2 = Tg(f3, a3.mode, h3), d2.return = a3, a3 = d2), g2(a3);
     if (Og(f3))
       return ca(a3, d2, f3, h3);
     if (nb(f3))
@@ -13839,7 +14432,7 @@ function Rg(a2) {
         case 0:
           throw a3 = a3.type, Error(u(152, a3.displayName || a3.name || "Component"));
       }
-    return c(a3, d2);
+    return c2(a3, d2);
   };
 }
 var Xg = Rg(true), Yg = Rg(false), Zg = {}, $g = { current: Zg }, ah = { current: Zg }, bh = { current: Zg };
@@ -13872,8 +14465,8 @@ function eh() {
 function fh(a2) {
   ch(bh.current);
   var b2 = ch($g.current);
-  var c = Ob(b2, a2.type);
-  b2 !== c && (I$1(ah, a2), I$1($g, c));
+  var c2 = Ob(b2, a2.type);
+  b2 !== c2 && (I$1(ah, a2), I$1($g, c2));
 }
 function gh(a2) {
   ah.current === a2 && (H$1($g), H$1(ah));
@@ -13882,8 +14475,8 @@ var M$1 = { current: 0 };
 function hh(a2) {
   for (var b2 = a2; null !== b2; ) {
     if (13 === b2.tag) {
-      var c = b2.memoizedState;
-      if (null !== c && (c = c.dehydrated, null === c || c.data === Bd || c.data === Cd))
+      var c2 = b2.memoizedState;
+      if (null !== c2 && (c2 = c2.dehydrated, null === c2 || c2.data === Bd || c2.data === Cd))
         return b2;
     } else if (19 === b2.tag && void 0 !== b2.memoizedProps.revealOrder) {
       if (0 !== (b2.effectTag & 64))
@@ -13915,19 +14508,19 @@ function Q$1() {
 function nh(a2, b2) {
   if (null === b2)
     return false;
-  for (var c = 0; c < b2.length && c < a2.length; c++)
-    if (!$e(a2[c], b2[c]))
+  for (var c2 = 0; c2 < b2.length && c2 < a2.length; c2++)
+    if (!$e(a2[c2], b2[c2]))
       return false;
   return true;
 }
-function oh(a2, b2, c, d, e2, f2) {
+function oh(a2, b2, c2, d, e2, f2) {
   lh = f2;
   N$1 = b2;
   b2.memoizedState = null;
   b2.updateQueue = null;
   b2.expirationTime = 0;
   jh.current = null === a2 || null === a2.memoizedState ? ph : qh;
-  a2 = c(d, e2);
+  a2 = c2(d, e2);
   if (b2.expirationTime === lh) {
     f2 = 0;
     do {
@@ -13938,7 +14531,7 @@ function oh(a2, b2, c, d, e2, f2) {
       P$1 = O$1 = null;
       b2.updateQueue = null;
       jh.current = rh;
-      a2 = c(d, e2);
+      a2 = c2(d, e2);
     } while (b2.expirationTime === lh);
   }
   jh.current = sh;
@@ -13977,11 +14570,11 @@ function vh(a2, b2) {
   return "function" === typeof b2 ? b2(a2) : b2;
 }
 function wh(a2) {
-  var b2 = uh(), c = b2.queue;
-  if (null === c)
+  var b2 = uh(), c2 = b2.queue;
+  if (null === c2)
     throw Error(u(311));
-  c.lastRenderedReducer = a2;
-  var d = O$1, e2 = d.baseQueue, f2 = c.pending;
+  c2.lastRenderedReducer = a2;
+  var d = O$1, e2 = d.baseQueue, f2 = c2.pending;
   if (null !== f2) {
     if (null !== e2) {
       var g2 = e2.next;
@@ -13989,7 +14582,7 @@ function wh(a2) {
       f2.next = g2;
     }
     d.baseQueue = e2 = f2;
-    c.pending = null;
+    c2.pending = null;
   }
   if (null !== e2) {
     e2 = e2.next;
@@ -14010,18 +14603,18 @@ function wh(a2) {
     b2.memoizedState = d;
     b2.baseState = f2;
     b2.baseQueue = h2;
-    c.lastRenderedState = d;
+    c2.lastRenderedState = d;
   }
-  return [b2.memoizedState, c.dispatch];
+  return [b2.memoizedState, c2.dispatch];
 }
 function xh(a2) {
-  var b2 = uh(), c = b2.queue;
-  if (null === c)
+  var b2 = uh(), c2 = b2.queue;
+  if (null === c2)
     throw Error(u(311));
-  c.lastRenderedReducer = a2;
-  var d = c.dispatch, e2 = c.pending, f2 = b2.memoizedState;
+  c2.lastRenderedReducer = a2;
+  var d = c2.dispatch, e2 = c2.pending, f2 = b2.memoizedState;
   if (null !== e2) {
-    c.pending = null;
+    c2.pending = null;
     var g2 = e2 = e2.next;
     do
       f2 = a2(f2, g2.action), g2 = g2.next;
@@ -14029,7 +14622,7 @@ function xh(a2) {
     $e(f2, b2.memoizedState) || (rg = true);
     b2.memoizedState = f2;
     null === b2.baseQueue && (b2.baseState = f2);
-    c.lastRenderedState = f2;
+    c2.lastRenderedState = f2;
   }
   return [f2, d];
 }
@@ -14041,21 +14634,21 @@ function yh(a2) {
   a2 = a2.dispatch = zh.bind(null, N$1, a2);
   return [b2.memoizedState, a2];
 }
-function Ah(a2, b2, c, d) {
-  a2 = { tag: a2, create: b2, destroy: c, deps: d, next: null };
+function Ah(a2, b2, c2, d) {
+  a2 = { tag: a2, create: b2, destroy: c2, deps: d, next: null };
   b2 = N$1.updateQueue;
-  null === b2 ? (b2 = { lastEffect: null }, N$1.updateQueue = b2, b2.lastEffect = a2.next = a2) : (c = b2.lastEffect, null === c ? b2.lastEffect = a2.next = a2 : (d = c.next, c.next = a2, a2.next = d, b2.lastEffect = a2));
+  null === b2 ? (b2 = { lastEffect: null }, N$1.updateQueue = b2, b2.lastEffect = a2.next = a2) : (c2 = b2.lastEffect, null === c2 ? b2.lastEffect = a2.next = a2 : (d = c2.next, c2.next = a2, a2.next = d, b2.lastEffect = a2));
   return a2;
 }
 function Bh() {
   return uh().memoizedState;
 }
-function Ch(a2, b2, c, d) {
+function Ch(a2, b2, c2, d) {
   var e2 = th();
   N$1.effectTag |= a2;
-  e2.memoizedState = Ah(1 | b2, c, void 0, void 0 === d ? null : d);
+  e2.memoizedState = Ah(1 | b2, c2, void 0, void 0 === d ? null : d);
 }
-function Dh(a2, b2, c, d) {
+function Dh(a2, b2, c2, d) {
   var e2 = uh();
   d = void 0 === d ? null : d;
   var f2 = void 0;
@@ -14063,12 +14656,12 @@ function Dh(a2, b2, c, d) {
     var g2 = O$1.memoizedState;
     f2 = g2.destroy;
     if (null !== d && nh(d, g2.deps)) {
-      Ah(b2, c, f2, d);
+      Ah(b2, c2, f2, d);
       return;
     }
   }
   N$1.effectTag |= a2;
-  e2.memoizedState = Ah(1 | b2, c, f2, d);
+  e2.memoizedState = Ah(1 | b2, c2, f2, d);
 }
 function Eh(a2, b2) {
   return Ch(516, 4, a2, b2);
@@ -14089,9 +14682,9 @@ function Hh(a2, b2) {
       b2.current = null;
     };
 }
-function Ih(a2, b2, c) {
-  c = null !== c && void 0 !== c ? c.concat([a2]) : null;
-  return Dh(4, 2, Hh.bind(null, b2, a2), c);
+function Ih(a2, b2, c2) {
+  c2 = null !== c2 && void 0 !== c2 ? c2.concat([a2]) : null;
+  return Dh(4, 2, Hh.bind(null, b2, a2), c2);
 }
 function Jh() {
 }
@@ -14100,25 +14693,25 @@ function Kh(a2, b2) {
   return a2;
 }
 function Lh(a2, b2) {
-  var c = uh();
+  var c2 = uh();
   b2 = void 0 === b2 ? null : b2;
-  var d = c.memoizedState;
+  var d = c2.memoizedState;
   if (null !== d && null !== b2 && nh(b2, d[1]))
     return d[0];
-  c.memoizedState = [a2, b2];
+  c2.memoizedState = [a2, b2];
   return a2;
 }
 function Mh(a2, b2) {
-  var c = uh();
+  var c2 = uh();
   b2 = void 0 === b2 ? null : b2;
-  var d = c.memoizedState;
+  var d = c2.memoizedState;
   if (null !== d && null !== b2 && nh(b2, d[1]))
     return d[0];
   a2 = a2();
-  c.memoizedState = [a2, b2];
+  c2.memoizedState = [a2, b2];
   return a2;
 }
-function Nh(a2, b2, c) {
+function Nh(a2, b2, c2) {
   var d = ag();
   cg(98 > d ? 98 : d, function() {
     a2(true);
@@ -14127,16 +14720,16 @@ function Nh(a2, b2, c) {
     var d2 = kh.suspense;
     kh.suspense = void 0 === b2 ? null : b2;
     try {
-      a2(false), c();
+      a2(false), c2();
     } finally {
       kh.suspense = d2;
     }
   });
 }
-function zh(a2, b2, c) {
+function zh(a2, b2, c2) {
   var d = Gg(), e2 = Dg.suspense;
   d = Hg(d, a2, e2);
-  e2 = { expirationTime: d, suspenseConfig: e2, action: c, eagerReducer: null, eagerState: null, next: null };
+  e2 = { expirationTime: d, suspenseConfig: e2, action: c2, eagerReducer: null, eagerState: null, next: null };
   var f2 = b2.pending;
   null === f2 ? e2.next = e2 : (e2.next = f2.next, f2.next = e2);
   b2.pending = e2;
@@ -14146,7 +14739,7 @@ function zh(a2, b2, c) {
   else {
     if (0 === a2.expirationTime && (null === f2 || 0 === f2.expirationTime) && (f2 = b2.lastRenderedReducer, null !== f2))
       try {
-        var g2 = b2.lastRenderedState, h2 = f2(g2, c);
+        var g2 = b2.lastRenderedState, h2 = f2(g2, c2);
         e2.eagerReducer = f2;
         e2.eagerState = h2;
         if ($e(h2, g2))
@@ -14160,23 +14753,23 @@ function zh(a2, b2, c) {
     );
   }
 }
-var sh = { readContext: sg, useCallback: Q$1, useContext: Q$1, useEffect: Q$1, useImperativeHandle: Q$1, useLayoutEffect: Q$1, useMemo: Q$1, useReducer: Q$1, useRef: Q$1, useState: Q$1, useDebugValue: Q$1, useResponder: Q$1, useDeferredValue: Q$1, useTransition: Q$1 }, ph = { readContext: sg, useCallback: Kh, useContext: sg, useEffect: Eh, useImperativeHandle: function(a2, b2, c) {
-  c = null !== c && void 0 !== c ? c.concat([a2]) : null;
-  return Ch(4, 2, Hh.bind(null, b2, a2), c);
+var sh = { readContext: sg, useCallback: Q$1, useContext: Q$1, useEffect: Q$1, useImperativeHandle: Q$1, useLayoutEffect: Q$1, useMemo: Q$1, useReducer: Q$1, useRef: Q$1, useState: Q$1, useDebugValue: Q$1, useResponder: Q$1, useDeferredValue: Q$1, useTransition: Q$1 }, ph = { readContext: sg, useCallback: Kh, useContext: sg, useEffect: Eh, useImperativeHandle: function(a2, b2, c2) {
+  c2 = null !== c2 && void 0 !== c2 ? c2.concat([a2]) : null;
+  return Ch(4, 2, Hh.bind(null, b2, a2), c2);
 }, useLayoutEffect: function(a2, b2) {
   return Ch(4, 2, a2, b2);
 }, useMemo: function(a2, b2) {
-  var c = th();
+  var c2 = th();
   b2 = void 0 === b2 ? null : b2;
   a2 = a2();
-  c.memoizedState = [
+  c2.memoizedState = [
     a2,
     b2
   ];
   return a2;
-}, useReducer: function(a2, b2, c) {
+}, useReducer: function(a2, b2, c2) {
   var d = th();
-  b2 = void 0 !== c ? c(b2) : b2;
+  b2 = void 0 !== c2 ? c2(b2) : b2;
   d.memoizedState = d.baseState = b2;
   a2 = d.queue = { pending: null, dispatch: null, lastRenderedReducer: a2, lastRenderedState: b2 };
   a2 = a2.dispatch = zh.bind(null, N$1, a2);
@@ -14186,76 +14779,76 @@ var sh = { readContext: sg, useCallback: Q$1, useContext: Q$1, useEffect: Q$1, u
   a2 = { current: a2 };
   return b2.memoizedState = a2;
 }, useState: yh, useDebugValue: Jh, useResponder: ih, useDeferredValue: function(a2, b2) {
-  var c = yh(a2), d = c[0], e2 = c[1];
+  var c2 = yh(a2), d = c2[0], e2 = c2[1];
   Eh(function() {
-    var c2 = kh.suspense;
+    var c3 = kh.suspense;
     kh.suspense = void 0 === b2 ? null : b2;
     try {
       e2(a2);
     } finally {
-      kh.suspense = c2;
+      kh.suspense = c3;
     }
   }, [a2, b2]);
   return d;
 }, useTransition: function(a2) {
-  var b2 = yh(false), c = b2[0];
+  var b2 = yh(false), c2 = b2[0];
   b2 = b2[1];
-  return [Kh(Nh.bind(null, b2, a2), [b2, a2]), c];
+  return [Kh(Nh.bind(null, b2, a2), [b2, a2]), c2];
 } }, qh = { readContext: sg, useCallback: Lh, useContext: sg, useEffect: Fh, useImperativeHandle: Ih, useLayoutEffect: Gh, useMemo: Mh, useReducer: wh, useRef: Bh, useState: function() {
   return wh(vh);
 }, useDebugValue: Jh, useResponder: ih, useDeferredValue: function(a2, b2) {
-  var c = wh(vh), d = c[0], e2 = c[1];
+  var c2 = wh(vh), d = c2[0], e2 = c2[1];
   Fh(function() {
-    var c2 = kh.suspense;
+    var c3 = kh.suspense;
     kh.suspense = void 0 === b2 ? null : b2;
     try {
       e2(a2);
     } finally {
-      kh.suspense = c2;
+      kh.suspense = c3;
     }
   }, [a2, b2]);
   return d;
 }, useTransition: function(a2) {
-  var b2 = wh(vh), c = b2[0];
+  var b2 = wh(vh), c2 = b2[0];
   b2 = b2[1];
-  return [Lh(Nh.bind(null, b2, a2), [b2, a2]), c];
+  return [Lh(Nh.bind(null, b2, a2), [b2, a2]), c2];
 } }, rh = { readContext: sg, useCallback: Lh, useContext: sg, useEffect: Fh, useImperativeHandle: Ih, useLayoutEffect: Gh, useMemo: Mh, useReducer: xh, useRef: Bh, useState: function() {
   return xh(vh);
 }, useDebugValue: Jh, useResponder: ih, useDeferredValue: function(a2, b2) {
-  var c = xh(vh), d = c[0], e2 = c[1];
+  var c2 = xh(vh), d = c2[0], e2 = c2[1];
   Fh(function() {
-    var c2 = kh.suspense;
+    var c3 = kh.suspense;
     kh.suspense = void 0 === b2 ? null : b2;
     try {
       e2(a2);
     } finally {
-      kh.suspense = c2;
+      kh.suspense = c3;
     }
   }, [a2, b2]);
   return d;
 }, useTransition: function(a2) {
-  var b2 = xh(vh), c = b2[0];
+  var b2 = xh(vh), c2 = b2[0];
   b2 = b2[1];
   return [Lh(Nh.bind(
     null,
     b2,
     a2
-  ), [b2, a2]), c];
+  ), [b2, a2]), c2];
 } }, Oh = null, Ph = null, Qh = false;
 function Rh(a2, b2) {
-  var c = Sh(5, null, null, 0);
-  c.elementType = "DELETED";
-  c.type = "DELETED";
-  c.stateNode = b2;
-  c.return = a2;
-  c.effectTag = 8;
-  null !== a2.lastEffect ? (a2.lastEffect.nextEffect = c, a2.lastEffect = c) : a2.firstEffect = a2.lastEffect = c;
+  var c2 = Sh(5, null, null, 0);
+  c2.elementType = "DELETED";
+  c2.type = "DELETED";
+  c2.stateNode = b2;
+  c2.return = a2;
+  c2.effectTag = 8;
+  null !== a2.lastEffect ? (a2.lastEffect.nextEffect = c2, a2.lastEffect = c2) : a2.firstEffect = a2.lastEffect = c2;
 }
 function Th(a2, b2) {
   switch (a2.tag) {
     case 5:
-      var c = a2.type;
-      b2 = 1 !== b2.nodeType || c.toLowerCase() !== b2.nodeName.toLowerCase() ? null : b2;
+      var c2 = a2.type;
+      b2 = 1 !== b2.nodeType || c2.toLowerCase() !== b2.nodeName.toLowerCase() ? null : b2;
       return null !== b2 ? (a2.stateNode = b2, true) : false;
     case 6:
       return b2 = "" === a2.pendingProps || 3 !== b2.nodeType ? null : b2, null !== b2 ? (a2.stateNode = b2, true) : false;
@@ -14269,16 +14862,16 @@ function Uh(a2) {
   if (Qh) {
     var b2 = Ph;
     if (b2) {
-      var c = b2;
+      var c2 = b2;
       if (!Th(a2, b2)) {
-        b2 = Jd(c.nextSibling);
+        b2 = Jd(c2.nextSibling);
         if (!b2 || !Th(a2, b2)) {
           a2.effectTag = a2.effectTag & -1025 | 2;
           Qh = false;
           Oh = a2;
           return;
         }
-        Rh(Oh, c);
+        Rh(Oh, c2);
       }
       Oh = a2;
       Ph = Jd(b2.firstChild);
@@ -14310,15 +14903,15 @@ function Wh(a2) {
       a2 = a2.nextSibling;
       for (b2 = 0; a2; ) {
         if (8 === a2.nodeType) {
-          var c = a2.data;
-          if (c === Ad) {
+          var c2 = a2.data;
+          if (c2 === Ad) {
             if (0 === b2) {
               Ph = Jd(a2.nextSibling);
               break a;
             }
             b2--;
           } else
-            c !== zd && c !== Cd && c !== Bd || b2++;
+            c2 !== zd && c2 !== Cd && c2 !== Bd || b2++;
         }
         a2 = a2.nextSibling;
       }
@@ -14333,32 +14926,32 @@ function Xh() {
   Qh = false;
 }
 var Yh = Wa.ReactCurrentOwner, rg = false;
-function R$1(a2, b2, c, d) {
-  b2.child = null === a2 ? Yg(b2, null, c, d) : Xg(b2, a2.child, c, d);
+function R$1(a2, b2, c2, d) {
+  b2.child = null === a2 ? Yg(b2, null, c2, d) : Xg(b2, a2.child, c2, d);
 }
-function Zh(a2, b2, c, d, e2) {
-  c = c.render;
+function Zh(a2, b2, c2, d, e2) {
+  c2 = c2.render;
   var f2 = b2.ref;
   qg(b2, e2);
-  d = oh(a2, b2, c, d, f2, e2);
+  d = oh(a2, b2, c2, d, f2, e2);
   if (null !== a2 && !rg)
     return b2.updateQueue = a2.updateQueue, b2.effectTag &= -517, a2.expirationTime <= e2 && (a2.expirationTime = 0), $h(a2, b2, e2);
   b2.effectTag |= 1;
   R$1(a2, b2, d, e2);
   return b2.child;
 }
-function ai(a2, b2, c, d, e2, f2) {
+function ai(a2, b2, c2, d, e2, f2) {
   if (null === a2) {
-    var g2 = c.type;
-    if ("function" === typeof g2 && !bi(g2) && void 0 === g2.defaultProps && null === c.compare && void 0 === c.defaultProps)
+    var g2 = c2.type;
+    if ("function" === typeof g2 && !bi(g2) && void 0 === g2.defaultProps && null === c2.compare && void 0 === c2.defaultProps)
       return b2.tag = 15, b2.type = g2, ci(a2, b2, g2, d, e2, f2);
-    a2 = Ug(c.type, null, d, null, b2.mode, f2);
+    a2 = Ug(c2.type, null, d, null, b2.mode, f2);
     a2.ref = b2.ref;
     a2.return = b2;
     return b2.child = a2;
   }
   g2 = a2.child;
-  if (e2 < f2 && (e2 = g2.memoizedProps, c = c.compare, c = null !== c ? c : bf, c(e2, d) && a2.ref === b2.ref))
+  if (e2 < f2 && (e2 = g2.memoizedProps, c2 = c2.compare, c2 = null !== c2 ? c2 : bf, c2(e2, d) && a2.ref === b2.ref))
     return $h(a2, b2, f2);
   b2.effectTag |= 1;
   a2 = Sg(g2, d);
@@ -14366,67 +14959,67 @@ function ai(a2, b2, c, d, e2, f2) {
   a2.return = b2;
   return b2.child = a2;
 }
-function ci(a2, b2, c, d, e2, f2) {
-  return null !== a2 && bf(a2.memoizedProps, d) && a2.ref === b2.ref && (rg = false, e2 < f2) ? (b2.expirationTime = a2.expirationTime, $h(a2, b2, f2)) : di(a2, b2, c, d, f2);
+function ci(a2, b2, c2, d, e2, f2) {
+  return null !== a2 && bf(a2.memoizedProps, d) && a2.ref === b2.ref && (rg = false, e2 < f2) ? (b2.expirationTime = a2.expirationTime, $h(a2, b2, f2)) : di(a2, b2, c2, d, f2);
 }
 function ei(a2, b2) {
-  var c = b2.ref;
-  if (null === a2 && null !== c || null !== a2 && a2.ref !== c)
+  var c2 = b2.ref;
+  if (null === a2 && null !== c2 || null !== a2 && a2.ref !== c2)
     b2.effectTag |= 128;
 }
-function di(a2, b2, c, d, e2) {
-  var f2 = L$1(c) ? Bf : J$1.current;
+function di(a2, b2, c2, d, e2) {
+  var f2 = L$1(c2) ? Bf : J$1.current;
   f2 = Cf(b2, f2);
   qg(b2, e2);
-  c = oh(a2, b2, c, d, f2, e2);
+  c2 = oh(a2, b2, c2, d, f2, e2);
   if (null !== a2 && !rg)
     return b2.updateQueue = a2.updateQueue, b2.effectTag &= -517, a2.expirationTime <= e2 && (a2.expirationTime = 0), $h(a2, b2, e2);
   b2.effectTag |= 1;
-  R$1(a2, b2, c, e2);
+  R$1(a2, b2, c2, e2);
   return b2.child;
 }
-function fi(a2, b2, c, d, e2) {
-  if (L$1(c)) {
+function fi(a2, b2, c2, d, e2) {
+  if (L$1(c2)) {
     var f2 = true;
     Gf(b2);
   } else
     f2 = false;
   qg(b2, e2);
   if (null === b2.stateNode)
-    null !== a2 && (a2.alternate = null, b2.alternate = null, b2.effectTag |= 2), Lg(b2, c, d), Ng(b2, c, d, e2), d = true;
+    null !== a2 && (a2.alternate = null, b2.alternate = null, b2.effectTag |= 2), Lg(b2, c2, d), Ng(b2, c2, d, e2), d = true;
   else if (null === a2) {
     var g2 = b2.stateNode, h2 = b2.memoizedProps;
     g2.props = h2;
-    var k2 = g2.context, l2 = c.contextType;
-    "object" === typeof l2 && null !== l2 ? l2 = sg(l2) : (l2 = L$1(c) ? Bf : J$1.current, l2 = Cf(b2, l2));
-    var m2 = c.getDerivedStateFromProps, p2 = "function" === typeof m2 || "function" === typeof g2.getSnapshotBeforeUpdate;
+    var k2 = g2.context, l2 = c2.contextType;
+    "object" === typeof l2 && null !== l2 ? l2 = sg(l2) : (l2 = L$1(c2) ? Bf : J$1.current, l2 = Cf(b2, l2));
+    var m2 = c2.getDerivedStateFromProps, p2 = "function" === typeof m2 || "function" === typeof g2.getSnapshotBeforeUpdate;
     p2 || "function" !== typeof g2.UNSAFE_componentWillReceiveProps && "function" !== typeof g2.componentWillReceiveProps || (h2 !== d || k2 !== l2) && Mg(b2, g2, d, l2);
     tg = false;
     var x2 = b2.memoizedState;
     g2.state = x2;
     zg(b2, d, g2, e2);
     k2 = b2.memoizedState;
-    h2 !== d || x2 !== k2 || K$1.current || tg ? ("function" === typeof m2 && (Fg(b2, c, m2, d), k2 = b2.memoizedState), (h2 = tg || Kg(b2, c, h2, d, x2, k2, l2)) ? (p2 || "function" !== typeof g2.UNSAFE_componentWillMount && "function" !== typeof g2.componentWillMount || ("function" === typeof g2.componentWillMount && g2.componentWillMount(), "function" === typeof g2.UNSAFE_componentWillMount && g2.UNSAFE_componentWillMount()), "function" === typeof g2.componentDidMount && (b2.effectTag |= 4)) : ("function" === typeof g2.componentDidMount && (b2.effectTag |= 4), b2.memoizedProps = d, b2.memoizedState = k2), g2.props = d, g2.state = k2, g2.context = l2, d = h2) : ("function" === typeof g2.componentDidMount && (b2.effectTag |= 4), d = false);
+    h2 !== d || x2 !== k2 || K$1.current || tg ? ("function" === typeof m2 && (Fg(b2, c2, m2, d), k2 = b2.memoizedState), (h2 = tg || Kg(b2, c2, h2, d, x2, k2, l2)) ? (p2 || "function" !== typeof g2.UNSAFE_componentWillMount && "function" !== typeof g2.componentWillMount || ("function" === typeof g2.componentWillMount && g2.componentWillMount(), "function" === typeof g2.UNSAFE_componentWillMount && g2.UNSAFE_componentWillMount()), "function" === typeof g2.componentDidMount && (b2.effectTag |= 4)) : ("function" === typeof g2.componentDidMount && (b2.effectTag |= 4), b2.memoizedProps = d, b2.memoizedState = k2), g2.props = d, g2.state = k2, g2.context = l2, d = h2) : ("function" === typeof g2.componentDidMount && (b2.effectTag |= 4), d = false);
   } else
-    g2 = b2.stateNode, vg(a2, b2), h2 = b2.memoizedProps, g2.props = b2.type === b2.elementType ? h2 : ig(b2.type, h2), k2 = g2.context, l2 = c.contextType, "object" === typeof l2 && null !== l2 ? l2 = sg(l2) : (l2 = L$1(c) ? Bf : J$1.current, l2 = Cf(b2, l2)), m2 = c.getDerivedStateFromProps, (p2 = "function" === typeof m2 || "function" === typeof g2.getSnapshotBeforeUpdate) || "function" !== typeof g2.UNSAFE_componentWillReceiveProps && "function" !== typeof g2.componentWillReceiveProps || (h2 !== d || k2 !== l2) && Mg(b2, g2, d, l2), tg = false, k2 = b2.memoizedState, g2.state = k2, zg(b2, d, g2, e2), x2 = b2.memoizedState, h2 !== d || k2 !== x2 || K$1.current || tg ? ("function" === typeof m2 && (Fg(b2, c, m2, d), x2 = b2.memoizedState), (m2 = tg || Kg(b2, c, h2, d, k2, x2, l2)) ? (p2 || "function" !== typeof g2.UNSAFE_componentWillUpdate && "function" !== typeof g2.componentWillUpdate || ("function" === typeof g2.componentWillUpdate && g2.componentWillUpdate(
+    g2 = b2.stateNode, vg(a2, b2), h2 = b2.memoizedProps, g2.props = b2.type === b2.elementType ? h2 : ig(b2.type, h2), k2 = g2.context, l2 = c2.contextType, "object" === typeof l2 && null !== l2 ? l2 = sg(l2) : (l2 = L$1(c2) ? Bf : J$1.current, l2 = Cf(b2, l2)), m2 = c2.getDerivedStateFromProps, (p2 = "function" === typeof m2 || "function" === typeof g2.getSnapshotBeforeUpdate) || "function" !== typeof g2.UNSAFE_componentWillReceiveProps && "function" !== typeof g2.componentWillReceiveProps || (h2 !== d || k2 !== l2) && Mg(b2, g2, d, l2), tg = false, k2 = b2.memoizedState, g2.state = k2, zg(b2, d, g2, e2), x2 = b2.memoizedState, h2 !== d || k2 !== x2 || K$1.current || tg ? ("function" === typeof m2 && (Fg(b2, c2, m2, d), x2 = b2.memoizedState), (m2 = tg || Kg(b2, c2, h2, d, k2, x2, l2)) ? (p2 || "function" !== typeof g2.UNSAFE_componentWillUpdate && "function" !== typeof g2.componentWillUpdate || ("function" === typeof g2.componentWillUpdate && g2.componentWillUpdate(
       d,
       x2,
       l2
     ), "function" === typeof g2.UNSAFE_componentWillUpdate && g2.UNSAFE_componentWillUpdate(d, x2, l2)), "function" === typeof g2.componentDidUpdate && (b2.effectTag |= 4), "function" === typeof g2.getSnapshotBeforeUpdate && (b2.effectTag |= 256)) : ("function" !== typeof g2.componentDidUpdate || h2 === a2.memoizedProps && k2 === a2.memoizedState || (b2.effectTag |= 4), "function" !== typeof g2.getSnapshotBeforeUpdate || h2 === a2.memoizedProps && k2 === a2.memoizedState || (b2.effectTag |= 256), b2.memoizedProps = d, b2.memoizedState = x2), g2.props = d, g2.state = x2, g2.context = l2, d = m2) : ("function" !== typeof g2.componentDidUpdate || h2 === a2.memoizedProps && k2 === a2.memoizedState || (b2.effectTag |= 4), "function" !== typeof g2.getSnapshotBeforeUpdate || h2 === a2.memoizedProps && k2 === a2.memoizedState || (b2.effectTag |= 256), d = false);
-  return gi(a2, b2, c, d, f2, e2);
+  return gi(a2, b2, c2, d, f2, e2);
 }
-function gi(a2, b2, c, d, e2, f2) {
+function gi(a2, b2, c2, d, e2, f2) {
   ei(a2, b2);
   var g2 = 0 !== (b2.effectTag & 64);
   if (!d && !g2)
-    return e2 && Hf(b2, c, false), $h(a2, b2, f2);
+    return e2 && Hf(b2, c2, false), $h(a2, b2, f2);
   d = b2.stateNode;
   Yh.current = b2;
-  var h2 = g2 && "function" !== typeof c.getDerivedStateFromError ? null : d.render();
+  var h2 = g2 && "function" !== typeof c2.getDerivedStateFromError ? null : d.render();
   b2.effectTag |= 1;
   null !== a2 && g2 ? (b2.child = Xg(b2, a2.child, null, f2), b2.child = Xg(b2, null, h2, f2)) : R$1(a2, b2, h2, f2);
   b2.memoizedState = d.state;
-  e2 && Hf(b2, c, true);
+  e2 && Hf(b2, c2, true);
   return b2.child;
 }
 function hi(a2) {
@@ -14435,7 +15028,7 @@ function hi(a2) {
   dh(a2, b2.containerInfo);
 }
 var ii = { dehydrated: null, retryTime: 0 };
-function ji(a2, b2, c) {
+function ji(a2, b2, c2) {
   var d = b2.mode, e2 = b2.pendingProps, f2 = M$1.current, g2 = false, h2;
   (h2 = 0 !== (b2.effectTag & 64)) || (h2 = 0 !== (f2 & 2) && (null === a2 || null !== a2.memoizedState));
   h2 ? (g2 = true, b2.effectTag &= -65) : null !== a2 && null === a2.memoizedState || void 0 === e2.fallback || true === e2.unstable_avoidThisFallback || (f2 |= 1);
@@ -14449,38 +15042,38 @@ function ji(a2, b2, c) {
       if (0 === (b2.mode & 2))
         for (a2 = null !== b2.memoizedState ? b2.child.child : b2.child, e2.child = a2; null !== a2; )
           a2.return = e2, a2 = a2.sibling;
-      c = Wg(g2, d, c, null);
-      c.return = b2;
-      e2.sibling = c;
+      c2 = Wg(g2, d, c2, null);
+      c2.return = b2;
+      e2.sibling = c2;
       b2.memoizedState = ii;
       b2.child = e2;
-      return c;
+      return c2;
     }
     d = e2.children;
     b2.memoizedState = null;
-    return b2.child = Yg(b2, null, d, c);
+    return b2.child = Yg(b2, null, d, c2);
   }
   if (null !== a2.memoizedState) {
     a2 = a2.child;
     d = a2.sibling;
     if (g2) {
       e2 = e2.fallback;
-      c = Sg(a2, a2.pendingProps);
-      c.return = b2;
+      c2 = Sg(a2, a2.pendingProps);
+      c2.return = b2;
       if (0 === (b2.mode & 2) && (g2 = null !== b2.memoizedState ? b2.child.child : b2.child, g2 !== a2.child))
-        for (c.child = g2; null !== g2; )
-          g2.return = c, g2 = g2.sibling;
+        for (c2.child = g2; null !== g2; )
+          g2.return = c2, g2 = g2.sibling;
       d = Sg(d, e2);
       d.return = b2;
-      c.sibling = d;
-      c.childExpirationTime = 0;
+      c2.sibling = d;
+      c2.childExpirationTime = 0;
       b2.memoizedState = ii;
-      b2.child = c;
+      b2.child = c2;
       return d;
     }
-    c = Xg(b2, a2.child, e2.children, c);
+    c2 = Xg(b2, a2.child, e2.children, c2);
     b2.memoizedState = null;
-    return b2.child = c;
+    return b2.child = c2;
   }
   a2 = a2.child;
   if (g2) {
@@ -14492,31 +15085,31 @@ function ji(a2, b2, c) {
     if (0 === (b2.mode & 2))
       for (a2 = null !== b2.memoizedState ? b2.child.child : b2.child, e2.child = a2; null !== a2; )
         a2.return = e2, a2 = a2.sibling;
-    c = Wg(g2, d, c, null);
-    c.return = b2;
-    e2.sibling = c;
-    c.effectTag |= 2;
+    c2 = Wg(g2, d, c2, null);
+    c2.return = b2;
+    e2.sibling = c2;
+    c2.effectTag |= 2;
     e2.childExpirationTime = 0;
     b2.memoizedState = ii;
     b2.child = e2;
-    return c;
+    return c2;
   }
   b2.memoizedState = null;
-  return b2.child = Xg(b2, a2, e2.children, c);
+  return b2.child = Xg(b2, a2, e2.children, c2);
 }
 function ki(a2, b2) {
   a2.expirationTime < b2 && (a2.expirationTime = b2);
-  var c = a2.alternate;
-  null !== c && c.expirationTime < b2 && (c.expirationTime = b2);
+  var c2 = a2.alternate;
+  null !== c2 && c2.expirationTime < b2 && (c2.expirationTime = b2);
   pg(a2.return, b2);
 }
-function li(a2, b2, c, d, e2, f2) {
+function li(a2, b2, c2, d, e2, f2) {
   var g2 = a2.memoizedState;
-  null === g2 ? a2.memoizedState = { isBackwards: b2, rendering: null, renderingStartTime: 0, last: d, tail: c, tailExpiration: 0, tailMode: e2, lastEffect: f2 } : (g2.isBackwards = b2, g2.rendering = null, g2.renderingStartTime = 0, g2.last = d, g2.tail = c, g2.tailExpiration = 0, g2.tailMode = e2, g2.lastEffect = f2);
+  null === g2 ? a2.memoizedState = { isBackwards: b2, rendering: null, renderingStartTime: 0, last: d, tail: c2, tailExpiration: 0, tailMode: e2, lastEffect: f2 } : (g2.isBackwards = b2, g2.rendering = null, g2.renderingStartTime = 0, g2.last = d, g2.tail = c2, g2.tailExpiration = 0, g2.tailMode = e2, g2.lastEffect = f2);
 }
-function mi(a2, b2, c) {
+function mi(a2, b2, c2) {
   var d = b2.pendingProps, e2 = d.revealOrder, f2 = d.tail;
-  R$1(a2, b2, d.children, c);
+  R$1(a2, b2, d.children, c2);
   d = M$1.current;
   if (0 !== (d & 2))
     d = d & 1 | 2, b2.effectTag |= 64;
@@ -14525,9 +15118,9 @@ function mi(a2, b2, c) {
       a:
         for (a2 = b2.child; null !== a2; ) {
           if (13 === a2.tag)
-            null !== a2.memoizedState && ki(a2, c);
+            null !== a2.memoizedState && ki(a2, c2);
           else if (19 === a2.tag)
-            ki(a2, c);
+            ki(a2, c2);
           else if (null !== a2.child) {
             a2.child.return = a2;
             a2 = a2.child;
@@ -14551,15 +15144,15 @@ function mi(a2, b2, c) {
   else
     switch (e2) {
       case "forwards":
-        c = b2.child;
-        for (e2 = null; null !== c; )
-          a2 = c.alternate, null !== a2 && null === hh(a2) && (e2 = c), c = c.sibling;
-        c = e2;
-        null === c ? (e2 = b2.child, b2.child = null) : (e2 = c.sibling, c.sibling = null);
-        li(b2, false, e2, c, f2, b2.lastEffect);
+        c2 = b2.child;
+        for (e2 = null; null !== c2; )
+          a2 = c2.alternate, null !== a2 && null === hh(a2) && (e2 = c2), c2 = c2.sibling;
+        c2 = e2;
+        null === c2 ? (e2 = b2.child, b2.child = null) : (e2 = c2.sibling, c2.sibling = null);
+        li(b2, false, e2, c2, f2, b2.lastEffect);
         break;
       case "backwards":
-        c = null;
+        c2 = null;
         e2 = b2.child;
         for (b2.child = null; null !== e2; ) {
           a2 = e2.alternate;
@@ -14568,11 +15161,11 @@ function mi(a2, b2, c) {
             break;
           }
           a2 = e2.sibling;
-          e2.sibling = c;
-          c = e2;
+          e2.sibling = c2;
+          c2 = e2;
           e2 = a2;
         }
-        li(b2, true, c, null, f2, b2.lastEffect);
+        li(b2, true, c2, null, f2, b2.lastEffect);
         break;
       case "together":
         li(b2, false, null, null, void 0, b2.lastEffect);
@@ -14582,54 +15175,54 @@ function mi(a2, b2, c) {
     }
   return b2.child;
 }
-function $h(a2, b2, c) {
+function $h(a2, b2, c2) {
   null !== a2 && (b2.dependencies = a2.dependencies);
   var d = b2.expirationTime;
   0 !== d && Bg(d);
-  if (b2.childExpirationTime < c)
+  if (b2.childExpirationTime < c2)
     return null;
   if (null !== a2 && b2.child !== a2.child)
     throw Error(u(153));
   if (null !== b2.child) {
     a2 = b2.child;
-    c = Sg(a2, a2.pendingProps);
-    b2.child = c;
-    for (c.return = b2; null !== a2.sibling; )
-      a2 = a2.sibling, c = c.sibling = Sg(a2, a2.pendingProps), c.return = b2;
-    c.sibling = null;
+    c2 = Sg(a2, a2.pendingProps);
+    b2.child = c2;
+    for (c2.return = b2; null !== a2.sibling; )
+      a2 = a2.sibling, c2 = c2.sibling = Sg(a2, a2.pendingProps), c2.return = b2;
+    c2.sibling = null;
   }
   return b2.child;
 }
 var ni, oi, pi, qi;
 ni = function(a2, b2) {
-  for (var c = b2.child; null !== c; ) {
-    if (5 === c.tag || 6 === c.tag)
-      a2.appendChild(c.stateNode);
-    else if (4 !== c.tag && null !== c.child) {
-      c.child.return = c;
-      c = c.child;
+  for (var c2 = b2.child; null !== c2; ) {
+    if (5 === c2.tag || 6 === c2.tag)
+      a2.appendChild(c2.stateNode);
+    else if (4 !== c2.tag && null !== c2.child) {
+      c2.child.return = c2;
+      c2 = c2.child;
       continue;
     }
-    if (c === b2)
+    if (c2 === b2)
       break;
-    for (; null === c.sibling; ) {
-      if (null === c.return || c.return === b2)
+    for (; null === c2.sibling; ) {
+      if (null === c2.return || c2.return === b2)
         return;
-      c = c.return;
+      c2 = c2.return;
     }
-    c.sibling.return = c.return;
-    c = c.sibling;
+    c2.sibling.return = c2.return;
+    c2 = c2.sibling;
   }
 };
 oi = function() {
 };
-pi = function(a2, b2, c, d, e2) {
+pi = function(a2, b2, c2, d, e2) {
   var f2 = a2.memoizedProps;
   if (f2 !== d) {
     var g2 = b2.stateNode;
     ch($g.current);
     a2 = null;
-    switch (c) {
+    switch (c2) {
       case "input":
         f2 = zb(g2, f2);
         d = zb(g2, d);
@@ -14653,14 +15246,14 @@ pi = function(a2, b2, c, d, e2) {
       default:
         "function" !== typeof f2.onClick && "function" === typeof d.onClick && (g2.onclick = sd);
     }
-    od(c, d);
+    od(c2, d);
     var h2, k2;
-    c = null;
+    c2 = null;
     for (h2 in f2)
       if (!d.hasOwnProperty(h2) && f2.hasOwnProperty(h2) && null != f2[h2])
         if ("style" === h2)
           for (k2 in g2 = f2[h2], g2)
-            g2.hasOwnProperty(k2) && (c || (c = {}), c[k2] = "");
+            g2.hasOwnProperty(k2) && (c2 || (c2 = {}), c2[k2] = "");
         else
           "dangerouslySetInnerHTML" !== h2 && "children" !== h2 && "suppressContentEditableWarning" !== h2 && "suppressHydrationWarning" !== h2 && "autoFocus" !== h2 && (va.hasOwnProperty(h2) ? a2 || (a2 = []) : (a2 = a2 || []).push(h2, null));
     for (h2 in d) {
@@ -14670,39 +15263,39 @@ pi = function(a2, b2, c, d, e2) {
         if ("style" === h2)
           if (g2) {
             for (k2 in g2)
-              !g2.hasOwnProperty(k2) || l2 && l2.hasOwnProperty(k2) || (c || (c = {}), c[k2] = "");
+              !g2.hasOwnProperty(k2) || l2 && l2.hasOwnProperty(k2) || (c2 || (c2 = {}), c2[k2] = "");
             for (k2 in l2)
-              l2.hasOwnProperty(k2) && g2[k2] !== l2[k2] && (c || (c = {}), c[k2] = l2[k2]);
+              l2.hasOwnProperty(k2) && g2[k2] !== l2[k2] && (c2 || (c2 = {}), c2[k2] = l2[k2]);
           } else
-            c || (a2 || (a2 = []), a2.push(h2, c)), c = l2;
+            c2 || (a2 || (a2 = []), a2.push(h2, c2)), c2 = l2;
         else
           "dangerouslySetInnerHTML" === h2 ? (l2 = l2 ? l2.__html : void 0, g2 = g2 ? g2.__html : void 0, null != l2 && g2 !== l2 && (a2 = a2 || []).push(h2, l2)) : "children" === h2 ? g2 === l2 || "string" !== typeof l2 && "number" !== typeof l2 || (a2 = a2 || []).push(h2, "" + l2) : "suppressContentEditableWarning" !== h2 && "suppressHydrationWarning" !== h2 && (va.hasOwnProperty(h2) ? (null != l2 && rd(e2, h2), a2 || g2 === l2 || (a2 = [])) : (a2 = a2 || []).push(h2, l2));
     }
-    c && (a2 = a2 || []).push("style", c);
+    c2 && (a2 = a2 || []).push("style", c2);
     e2 = a2;
     if (b2.updateQueue = e2)
       b2.effectTag |= 4;
   }
 };
-qi = function(a2, b2, c, d) {
-  c !== d && (b2.effectTag |= 4);
+qi = function(a2, b2, c2, d) {
+  c2 !== d && (b2.effectTag |= 4);
 };
 function ri(a2, b2) {
   switch (a2.tailMode) {
     case "hidden":
       b2 = a2.tail;
-      for (var c = null; null !== b2; )
-        null !== b2.alternate && (c = b2), b2 = b2.sibling;
-      null === c ? a2.tail = null : c.sibling = null;
+      for (var c2 = null; null !== b2; )
+        null !== b2.alternate && (c2 = b2), b2 = b2.sibling;
+      null === c2 ? a2.tail = null : c2.sibling = null;
       break;
     case "collapsed":
-      c = a2.tail;
-      for (var d = null; null !== c; )
-        null !== c.alternate && (d = c), c = c.sibling;
+      c2 = a2.tail;
+      for (var d = null; null !== c2; )
+        null !== c2.alternate && (d = c2), c2 = c2.sibling;
       null === d ? b2 || null === a2.tail ? a2.tail = null : a2.tail.sibling = null : d.sibling = null;
   }
 }
-function si(a2, b2, c) {
+function si(a2, b2, c2) {
   var d = b2.pendingProps;
   switch (b2.tag) {
     case 2:
@@ -14719,13 +15312,13 @@ function si(a2, b2, c) {
     case 1:
       return L$1(b2.type) && Df(), null;
     case 3:
-      return eh(), H$1(K$1), H$1(J$1), c = b2.stateNode, c.pendingContext && (c.context = c.pendingContext, c.pendingContext = null), null !== a2 && null !== a2.child || !Wh(b2) || (b2.effectTag |= 4), oi(b2), null;
+      return eh(), H$1(K$1), H$1(J$1), c2 = b2.stateNode, c2.pendingContext && (c2.context = c2.pendingContext, c2.pendingContext = null), null !== a2 && null !== a2.child || !Wh(b2) || (b2.effectTag |= 4), oi(b2), null;
     case 5:
       gh(b2);
-      c = ch(bh.current);
+      c2 = ch(bh.current);
       var e2 = b2.type;
       if (null !== a2 && null != b2.stateNode)
-        pi(a2, b2, e2, d, c), a2.ref !== b2.ref && (b2.effectTag |= 128);
+        pi(a2, b2, e2, d, c2), a2.ref !== b2.ref && (b2.effectTag |= 128);
       else {
         if (!d) {
           if (null === b2.stateNode)
@@ -14769,22 +15362,22 @@ function si(a2, b2, c) {
             case "input":
               Ab(d, f2);
               F$1("invalid", d);
-              rd(c, "onChange");
+              rd(c2, "onChange");
               break;
             case "select":
               d._wrapperState = { wasMultiple: !!f2.multiple };
               F$1("invalid", d);
-              rd(c, "onChange");
+              rd(c2, "onChange");
               break;
             case "textarea":
-              Jb(d, f2), F$1("invalid", d), rd(c, "onChange");
+              Jb(d, f2), F$1("invalid", d), rd(c2, "onChange");
           }
           od(e2, f2);
           a2 = null;
           for (var g2 in f2)
             if (f2.hasOwnProperty(g2)) {
               var h2 = f2[g2];
-              "children" === g2 ? "string" === typeof h2 ? d.textContent !== h2 && (a2 = ["children", h2]) : "number" === typeof h2 && d.textContent !== "" + h2 && (a2 = ["children", "" + h2]) : va.hasOwnProperty(g2) && null != h2 && rd(c, g2);
+              "children" === g2 ? "string" === typeof h2 ? d.textContent !== h2 && (a2 = ["children", h2]) : "number" === typeof h2 && d.textContent !== "" + h2 && (a2 = ["children", "" + h2]) : va.hasOwnProperty(g2) && null != h2 && rd(c2, g2);
             }
           switch (e2) {
             case "input":
@@ -14801,11 +15394,11 @@ function si(a2, b2, c) {
             default:
               "function" === typeof f2.onClick && (d.onclick = sd);
           }
-          c = a2;
-          b2.updateQueue = c;
-          null !== c && (b2.effectTag |= 4);
+          c2 = a2;
+          b2.updateQueue = c2;
+          null !== c2 && (b2.effectTag |= 4);
         } else {
-          g2 = 9 === c.nodeType ? c : c.ownerDocument;
+          g2 = 9 === c2.nodeType ? c2 : c2.ownerDocument;
           a2 === qd && (a2 = Nb(e2));
           a2 === qd ? "script" === e2 ? (a2 = g2.createElement("div"), a2.innerHTML = "<script><\/script>", a2 = a2.removeChild(a2.firstChild)) : "string" === typeof d.is ? a2 = g2.createElement(e2, { is: d.is }) : (a2 = g2.createElement(e2), "select" === e2 && (g2 = a2, d.multiple ? g2.multiple = true : d.size && (g2.size = d.size))) : a2 = g2.createElementNS(a2, e2);
           a2[Md] = b2;
@@ -14853,7 +15446,7 @@ function si(a2, b2, c) {
               Ab(a2, d);
               h2 = zb(a2, d);
               F$1("invalid", a2);
-              rd(c, "onChange");
+              rd(c2, "onChange");
               break;
             case "option":
               h2 = Gb(a2, d);
@@ -14862,7 +15455,7 @@ function si(a2, b2, c) {
               a2._wrapperState = { wasMultiple: !!d.multiple };
               h2 = n$1({}, d, { value: void 0 });
               F$1("invalid", a2);
-              rd(c, "onChange");
+              rd(c2, "onChange");
               break;
             case "textarea":
               Jb(
@@ -14871,7 +15464,7 @@ function si(a2, b2, c) {
               );
               h2 = Ib(a2, d);
               F$1("invalid", a2);
-              rd(c, "onChange");
+              rd(c2, "onChange");
               break;
             default:
               h2 = d;
@@ -14881,7 +15474,7 @@ function si(a2, b2, c) {
           for (f2 in k2)
             if (k2.hasOwnProperty(f2)) {
               var l2 = k2[f2];
-              "style" === f2 ? md(a2, l2) : "dangerouslySetInnerHTML" === f2 ? (l2 = l2 ? l2.__html : void 0, null != l2 && Qb(a2, l2)) : "children" === f2 ? "string" === typeof l2 ? ("textarea" !== e2 || "" !== l2) && Rb(a2, l2) : "number" === typeof l2 && Rb(a2, "" + l2) : "suppressContentEditableWarning" !== f2 && "suppressHydrationWarning" !== f2 && "autoFocus" !== f2 && (va.hasOwnProperty(f2) ? null != l2 && rd(c, f2) : null != l2 && Xa(a2, f2, l2, g2));
+              "style" === f2 ? md(a2, l2) : "dangerouslySetInnerHTML" === f2 ? (l2 = l2 ? l2.__html : void 0, null != l2 && Qb(a2, l2)) : "children" === f2 ? "string" === typeof l2 ? ("textarea" !== e2 || "" !== l2) && Rb(a2, l2) : "number" === typeof l2 && Rb(a2, "" + l2) : "suppressContentEditableWarning" !== f2 && "suppressHydrationWarning" !== f2 && "autoFocus" !== f2 && (va.hasOwnProperty(f2) ? null != l2 && rd(c2, f2) : null != l2 && Xa(a2, f2, l2, g2));
             }
           switch (e2) {
             case "input":
@@ -14897,8 +15490,8 @@ function si(a2, b2, c) {
               break;
             case "select":
               a2.multiple = !!d.multiple;
-              c = d.value;
-              null != c ? Hb(a2, !!d.multiple, c, false) : null != d.defaultValue && Hb(a2, !!d.multiple, d.defaultValue, true);
+              c2 = d.value;
+              null != c2 ? Hb(a2, !!d.multiple, c2, false) : null != d.defaultValue && Hb(a2, !!d.multiple, d.defaultValue, true);
               break;
             default:
               "function" === typeof h2.onClick && (a2.onclick = sd);
@@ -14914,20 +15507,20 @@ function si(a2, b2, c) {
       else {
         if ("string" !== typeof d && null === b2.stateNode)
           throw Error(u(166));
-        c = ch(bh.current);
+        c2 = ch(bh.current);
         ch($g.current);
-        Wh(b2) ? (c = b2.stateNode, d = b2.memoizedProps, c[Md] = b2, c.nodeValue !== d && (b2.effectTag |= 4)) : (c = (9 === c.nodeType ? c : c.ownerDocument).createTextNode(d), c[Md] = b2, b2.stateNode = c);
+        Wh(b2) ? (c2 = b2.stateNode, d = b2.memoizedProps, c2[Md] = b2, c2.nodeValue !== d && (b2.effectTag |= 4)) : (c2 = (9 === c2.nodeType ? c2 : c2.ownerDocument).createTextNode(d), c2[Md] = b2, b2.stateNode = c2);
       }
       return null;
     case 13:
       H$1(M$1);
       d = b2.memoizedState;
       if (0 !== (b2.effectTag & 64))
-        return b2.expirationTime = c, b2;
-      c = null !== d;
+        return b2.expirationTime = c2, b2;
+      c2 = null !== d;
       d = false;
-      null === a2 ? void 0 !== b2.memoizedProps.fallback && Wh(b2) : (e2 = a2.memoizedState, d = null !== e2, c || null === e2 || (e2 = a2.child.sibling, null !== e2 && (f2 = b2.firstEffect, null !== f2 ? (b2.firstEffect = e2, e2.nextEffect = f2) : (b2.firstEffect = b2.lastEffect = e2, e2.nextEffect = null), e2.effectTag = 8)));
-      if (c && !d && 0 !== (b2.mode & 2))
+      null === a2 ? void 0 !== b2.memoizedProps.fallback && Wh(b2) : (e2 = a2.memoizedState, d = null !== e2, c2 || null === e2 || (e2 = a2.child.sibling, null !== e2 && (f2 = b2.firstEffect, null !== f2 ? (b2.firstEffect = e2, e2.nextEffect = f2) : (b2.firstEffect = b2.lastEffect = e2, e2.nextEffect = null), e2.effectTag = 8)));
+      if (c2 && !d && 0 !== (b2.mode & 2))
         if (null === a2 && true !== b2.memoizedProps.unstable_avoidThisFallback || 0 !== (M$1.current & 1))
           S$1 === ti && (S$1 = ui);
         else {
@@ -14935,7 +15528,7 @@ function si(a2, b2, c) {
             S$1 = vi;
           0 !== wi && null !== T$1 && (xi(T$1, U$1), yi(T$1, wi));
         }
-      if (c || d)
+      if (c2 || d)
         b2.effectTag |= 4;
       return null;
     case 4:
@@ -14966,7 +15559,7 @@ function si(a2, b2, c) {
                 null === d.lastEffect && (b2.firstEffect = null);
                 b2.lastEffect = d.lastEffect;
                 for (d = b2.child; null !== d; )
-                  e2 = d, f2 = c, e2.effectTag &= 2, e2.nextEffect = null, e2.firstEffect = null, e2.lastEffect = null, a2 = e2.alternate, null === a2 ? (e2.childExpirationTime = 0, e2.expirationTime = f2, e2.child = null, e2.memoizedProps = null, e2.memoizedState = null, e2.updateQueue = null, e2.dependencies = null) : (e2.childExpirationTime = a2.childExpirationTime, e2.expirationTime = a2.expirationTime, e2.child = a2.child, e2.memoizedProps = a2.memoizedProps, e2.memoizedState = a2.memoizedState, e2.updateQueue = a2.updateQueue, f2 = a2.dependencies, e2.dependencies = null === f2 ? null : { expirationTime: f2.expirationTime, firstContext: f2.firstContext, responders: f2.responders }), d = d.sibling;
+                  e2 = d, f2 = c2, e2.effectTag &= 2, e2.nextEffect = null, e2.firstEffect = null, e2.lastEffect = null, a2 = e2.alternate, null === a2 ? (e2.childExpirationTime = 0, e2.expirationTime = f2, e2.child = null, e2.memoizedProps = null, e2.memoizedState = null, e2.updateQueue = null, e2.dependencies = null) : (e2.childExpirationTime = a2.childExpirationTime, e2.expirationTime = a2.expirationTime, e2.child = a2.child, e2.memoizedProps = a2.memoizedProps, e2.memoizedState = a2.memoizedState, e2.updateQueue = a2.updateQueue, f2 = a2.dependencies, e2.dependencies = null === f2 ? null : { expirationTime: f2.expirationTime, firstContext: f2.firstContext, responders: f2.responders }), d = d.sibling;
                 I$1(M$1, M$1.current & 1 | 2);
                 return b2.child;
               }
@@ -14976,13 +15569,13 @@ function si(a2, b2, c) {
       else {
         if (!e2)
           if (a2 = hh(f2), null !== a2) {
-            if (b2.effectTag |= 64, e2 = true, c = a2.updateQueue, null !== c && (b2.updateQueue = c, b2.effectTag |= 4), ri(d, true), null === d.tail && "hidden" === d.tailMode && !f2.alternate)
+            if (b2.effectTag |= 64, e2 = true, c2 = a2.updateQueue, null !== c2 && (b2.updateQueue = c2, b2.effectTag |= 4), ri(d, true), null === d.tail && "hidden" === d.tailMode && !f2.alternate)
               return b2 = b2.lastEffect = d.lastEffect, null !== b2 && (b2.nextEffect = null), null;
           } else
-            2 * $f() - d.renderingStartTime > d.tailExpiration && 1 < c && (b2.effectTag |= 64, e2 = true, ri(d, false), b2.expirationTime = b2.childExpirationTime = c - 1);
-        d.isBackwards ? (f2.sibling = b2.child, b2.child = f2) : (c = d.last, null !== c ? c.sibling = f2 : b2.child = f2, d.last = f2);
+            2 * $f() - d.renderingStartTime > d.tailExpiration && 1 < c2 && (b2.effectTag |= 64, e2 = true, ri(d, false), b2.expirationTime = b2.childExpirationTime = c2 - 1);
+        d.isBackwards ? (f2.sibling = b2.child, b2.child = f2) : (c2 = d.last, null !== c2 ? c2.sibling = f2 : b2.child = f2, d.last = f2);
       }
-      return null !== d.tail ? (0 === d.tailExpiration && (d.tailExpiration = $f() + 500), c = d.tail, d.rendering = c, d.tail = c.sibling, d.lastEffect = b2.lastEffect, d.renderingStartTime = $f(), c.sibling = null, b2 = M$1.current, I$1(M$1, e2 ? b2 & 1 | 2 : b2 & 1), c) : null;
+      return null !== d.tail ? (0 === d.tailExpiration && (d.tailExpiration = $f() + 500), c2 = d.tail, d.rendering = c2, d.tail = c2.sibling, d.lastEffect = b2.lastEffect, d.renderingStartTime = $f(), c2.sibling = null, b2 = M$1.current, I$1(M$1, e2 ? b2 & 1 | 2 : b2 & 1), c2) : null;
   }
   throw Error(u(
     156,
@@ -15023,9 +15616,9 @@ function Ai(a2, b2) {
 }
 var Bi = "function" === typeof WeakSet ? WeakSet : Set;
 function Ci(a2, b2) {
-  var c = b2.source, d = b2.stack;
-  null === d && null !== c && (d = qb(c));
-  null !== c && pb(c.type);
+  var c2 = b2.source, d = b2.stack;
+  null === d && null !== c2 && (d = qb(c2));
+  null !== c2 && pb(c2.type);
   b2 = b2.value;
   null !== a2 && 1 === a2.tag && pb(a2.type);
   try {
@@ -15039,8 +15632,8 @@ function Ci(a2, b2) {
 function Di(a2, b2) {
   try {
     b2.props = a2.memoizedProps, b2.state = a2.memoizedState, b2.componentWillUnmount();
-  } catch (c) {
-    Ei(a2, c);
+  } catch (c2) {
+    Ei(a2, c2);
   }
 }
 function Fi(a2) {
@@ -15049,8 +15642,8 @@ function Fi(a2) {
     if ("function" === typeof b2)
       try {
         b2(null);
-      } catch (c) {
-        Ei(a2, c);
+      } catch (c2) {
+        Ei(a2, c2);
       }
     else
       b2.current = null;
@@ -15064,9 +15657,9 @@ function Gi(a2, b2) {
       return;
     case 1:
       if (b2.effectTag & 256 && null !== a2) {
-        var c = a2.memoizedProps, d = a2.memoizedState;
+        var c2 = a2.memoizedProps, d = a2.memoizedState;
         a2 = b2.stateNode;
-        b2 = a2.getSnapshotBeforeUpdate(b2.elementType === b2.type ? c : ig(b2.type, c), d);
+        b2 = a2.getSnapshotBeforeUpdate(b2.elementType === b2.type ? c2 : ig(b2.type, c2), d);
         a2.__reactInternalSnapshotBeforeUpdate = b2;
       }
       return;
@@ -15083,69 +15676,69 @@ function Hi(a2, b2) {
   b2 = b2.updateQueue;
   b2 = null !== b2 ? b2.lastEffect : null;
   if (null !== b2) {
-    var c = b2 = b2.next;
+    var c2 = b2 = b2.next;
     do {
-      if ((c.tag & a2) === a2) {
-        var d = c.destroy;
-        c.destroy = void 0;
+      if ((c2.tag & a2) === a2) {
+        var d = c2.destroy;
+        c2.destroy = void 0;
         void 0 !== d && d();
       }
-      c = c.next;
-    } while (c !== b2);
+      c2 = c2.next;
+    } while (c2 !== b2);
   }
 }
 function Ii(a2, b2) {
   b2 = b2.updateQueue;
   b2 = null !== b2 ? b2.lastEffect : null;
   if (null !== b2) {
-    var c = b2 = b2.next;
+    var c2 = b2 = b2.next;
     do {
-      if ((c.tag & a2) === a2) {
-        var d = c.create;
-        c.destroy = d();
+      if ((c2.tag & a2) === a2) {
+        var d = c2.create;
+        c2.destroy = d();
       }
-      c = c.next;
-    } while (c !== b2);
+      c2 = c2.next;
+    } while (c2 !== b2);
   }
 }
-function Ji(a2, b2, c) {
-  switch (c.tag) {
+function Ji(a2, b2, c2) {
+  switch (c2.tag) {
     case 0:
     case 11:
     case 15:
     case 22:
-      Ii(3, c);
+      Ii(3, c2);
       return;
     case 1:
-      a2 = c.stateNode;
-      if (c.effectTag & 4)
+      a2 = c2.stateNode;
+      if (c2.effectTag & 4)
         if (null === b2)
           a2.componentDidMount();
         else {
-          var d = c.elementType === c.type ? b2.memoizedProps : ig(c.type, b2.memoizedProps);
+          var d = c2.elementType === c2.type ? b2.memoizedProps : ig(c2.type, b2.memoizedProps);
           a2.componentDidUpdate(d, b2.memoizedState, a2.__reactInternalSnapshotBeforeUpdate);
         }
-      b2 = c.updateQueue;
-      null !== b2 && Cg(c, b2, a2);
+      b2 = c2.updateQueue;
+      null !== b2 && Cg(c2, b2, a2);
       return;
     case 3:
-      b2 = c.updateQueue;
+      b2 = c2.updateQueue;
       if (null !== b2) {
         a2 = null;
-        if (null !== c.child)
-          switch (c.child.tag) {
+        if (null !== c2.child)
+          switch (c2.child.tag) {
             case 5:
-              a2 = c.child.stateNode;
+              a2 = c2.child.stateNode;
               break;
             case 1:
-              a2 = c.child.stateNode;
+              a2 = c2.child.stateNode;
           }
-        Cg(c, b2, a2);
+        Cg(c2, b2, a2);
       }
       return;
     case 5:
-      a2 = c.stateNode;
-      null === b2 && c.effectTag & 4 && Fd(c.type, c.memoizedProps) && a2.focus();
+      a2 = c2.stateNode;
+      null === b2 && c2.effectTag & 4 && Fd(c2.type, c2.memoizedProps) && a2.focus();
       return;
     case 6:
       return;
@@ -15154,7 +15747,7 @@ function Ji(a2, b2, c) {
     case 12:
       return;
     case 13:
-      null === c.memoizedState && (c = c.alternate, null !== c && (c = c.memoizedState, null !== c && (c = c.dehydrated, null !== c && Vc(c))));
+      null === c2.memoizedState && (c2 = c2.alternate, null !== c2 && (c2 = c2.memoizedState, null !== c2 && (c2 = c2.dehydrated, null !== c2 && Vc(c2))));
       return;
     case 19:
     case 17:
@@ -15164,7 +15757,7 @@ function Ji(a2, b2, c) {
   }
   throw Error(u(163));
 }
-function Ki(a2, b2, c) {
+function Ki(a2, b2, c2) {
   "function" === typeof Li && Li(b2);
   switch (b2.tag) {
     case 0:
@@ -15175,14 +15768,14 @@ function Ki(a2, b2, c) {
       a2 = b2.updateQueue;
       if (null !== a2 && (a2 = a2.lastEffect, null !== a2)) {
         var d = a2.next;
-        cg(97 < c ? 97 : c, function() {
+        cg(97 < c2 ? 97 : c2, function() {
           var a3 = d;
           do {
-            var c2 = a3.destroy;
-            if (void 0 !== c2) {
+            var c3 = a3.destroy;
+            if (void 0 !== c3) {
               var g2 = b2;
               try {
-                c2();
+                c3();
               } catch (h2) {
                 Ei(g2, h2);
               }
@@ -15194,14 +15787,14 @@ function Ki(a2, b2, c) {
       break;
     case 1:
       Fi(b2);
-      c = b2.stateNode;
-      "function" === typeof c.componentWillUnmount && Di(b2, c);
+      c2 = b2.stateNode;
+      "function" === typeof c2.componentWillUnmount && Di(b2, c2);
       break;
     case 5:
       Fi(b2);
       break;
     case 4:
-      Mi(a2, b2, c);
+      Mi(a2, b2, c2);
   }
 }
 function Ni(a2) {
@@ -15226,15 +15819,15 @@ function Pi(a2) {
   a: {
     for (var b2 = a2.return; null !== b2; ) {
       if (Oi(b2)) {
-        var c = b2;
+        var c2 = b2;
         break a;
       }
       b2 = b2.return;
     }
     throw Error(u(160));
   }
-  b2 = c.stateNode;
-  switch (c.tag) {
+  b2 = c2.stateNode;
+  switch (c2.tag) {
     case 5:
       var d = false;
       break;
@@ -15249,50 +15842,50 @@ function Pi(a2) {
     default:
       throw Error(u(161));
   }
-  c.effectTag & 16 && (Rb(b2, ""), c.effectTag &= -17);
+  c2.effectTag & 16 && (Rb(b2, ""), c2.effectTag &= -17);
   a:
     b:
-      for (c = a2; ; ) {
-        for (; null === c.sibling; ) {
-          if (null === c.return || Oi(c.return)) {
-            c = null;
+      for (c2 = a2; ; ) {
+        for (; null === c2.sibling; ) {
+          if (null === c2.return || Oi(c2.return)) {
+            c2 = null;
             break a;
           }
-          c = c.return;
+          c2 = c2.return;
         }
-        c.sibling.return = c.return;
-        for (c = c.sibling; 5 !== c.tag && 6 !== c.tag && 18 !== c.tag; ) {
-          if (c.effectTag & 2)
+        c2.sibling.return = c2.return;
+        for (c2 = c2.sibling; 5 !== c2.tag && 6 !== c2.tag && 18 !== c2.tag; ) {
+          if (c2.effectTag & 2)
             continue b;
-          if (null === c.child || 4 === c.tag)
+          if (null === c2.child || 4 === c2.tag)
             continue b;
           else
-            c.child.return = c, c = c.child;
+            c2.child.return = c2, c2 = c2.child;
         }
-        if (!(c.effectTag & 2)) {
-          c = c.stateNode;
+        if (!(c2.effectTag & 2)) {
+          c2 = c2.stateNode;
           break a;
         }
       }
-  d ? Qi(a2, c, b2) : Ri(a2, c, b2);
+  d ? Qi(a2, c2, b2) : Ri(a2, c2, b2);
 }
-function Qi(a2, b2, c) {
+function Qi(a2, b2, c2) {
   var d = a2.tag, e2 = 5 === d || 6 === d;
   if (e2)
-    a2 = e2 ? a2.stateNode : a2.stateNode.instance, b2 ? 8 === c.nodeType ? c.parentNode.insertBefore(a2, b2) : c.insertBefore(a2, b2) : (8 === c.nodeType ? (b2 = c.parentNode, b2.insertBefore(a2, c)) : (b2 = c, b2.appendChild(a2)), c = c._reactRootContainer, null !== c && void 0 !== c || null !== b2.onclick || (b2.onclick = sd));
+    a2 = e2 ? a2.stateNode : a2.stateNode.instance, b2 ? 8 === c2.nodeType ? c2.parentNode.insertBefore(a2, b2) : c2.insertBefore(a2, b2) : (8 === c2.nodeType ? (b2 = c2.parentNode, b2.insertBefore(a2, c2)) : (b2 = c2, b2.appendChild(a2)), c2 = c2._reactRootContainer, null !== c2 && void 0 !== c2 || null !== b2.onclick || (b2.onclick = sd));
   else if (4 !== d && (a2 = a2.child, null !== a2))
-    for (Qi(a2, b2, c), a2 = a2.sibling; null !== a2; )
-      Qi(a2, b2, c), a2 = a2.sibling;
+    for (Qi(a2, b2, c2), a2 = a2.sibling; null !== a2; )
+      Qi(a2, b2, c2), a2 = a2.sibling;
 }
-function Ri(a2, b2, c) {
+function Ri(a2, b2, c2) {
   var d = a2.tag, e2 = 5 === d || 6 === d;
   if (e2)
-    a2 = e2 ? a2.stateNode : a2.stateNode.instance, b2 ? c.insertBefore(a2, b2) : c.appendChild(a2);
+    a2 = e2 ? a2.stateNode : a2.stateNode.instance, b2 ? c2.insertBefore(a2, b2) : c2.appendChild(a2);
   else if (4 !== d && (a2 = a2.child, null !== a2))
-    for (Ri(a2, b2, c), a2 = a2.sibling; null !== a2; )
-      Ri(a2, b2, c), a2 = a2.sibling;
+    for (Ri(a2, b2, c2), a2 = a2.sibling; null !== a2; )
+      Ri(a2, b2, c2), a2 = a2.sibling;
 }
-function Mi(a2, b2, c) {
+function Mi(a2, b2, c2) {
   for (var d = b2, e2 = false, f2, g2; ; ) {
     if (!e2) {
       e2 = d.return;
@@ -15320,7 +15913,7 @@ function Mi(a2, b2, c) {
     }
     if (5 === d.tag || 6 === d.tag) {
       a:
-        for (var h2 = a2, k2 = d, l2 = c, m2 = k2; ; )
+        for (var h2 = a2, k2 = d, l2 = c2, m2 = k2; ; )
           if (Ki(h2, m2, l2), null !== m2.child && 4 !== m2.tag)
             m2.child.return = m2, m2 = m2.child;
           else {
@@ -15343,7 +15936,7 @@ function Mi(a2, b2, c) {
         d = d.child;
         continue;
       }
-    } else if (Ki(a2, d, c), null !== d.child) {
+    } else if (Ki(a2, d, c2), null !== d.child) {
       d.child.return = d;
       d = d.child;
       continue;
@@ -15372,30 +15965,30 @@ function Si(a2, b2) {
     case 1:
       return;
     case 5:
-      var c = b2.stateNode;
-      if (null != c) {
+      var c2 = b2.stateNode;
+      if (null != c2) {
         var d = b2.memoizedProps, e2 = null !== a2 ? a2.memoizedProps : d;
         a2 = b2.type;
         var f2 = b2.updateQueue;
         b2.updateQueue = null;
         if (null !== f2) {
-          c[Nd] = d;
-          "input" === a2 && "radio" === d.type && null != d.name && Bb(c, d);
+          c2[Nd] = d;
+          "input" === a2 && "radio" === d.type && null != d.name && Bb(c2, d);
           pd(a2, e2);
           b2 = pd(a2, d);
           for (e2 = 0; e2 < f2.length; e2 += 2) {
             var g2 = f2[e2], h2 = f2[e2 + 1];
-            "style" === g2 ? md(c, h2) : "dangerouslySetInnerHTML" === g2 ? Qb(c, h2) : "children" === g2 ? Rb(c, h2) : Xa(c, g2, h2, b2);
+            "style" === g2 ? md(c2, h2) : "dangerouslySetInnerHTML" === g2 ? Qb(c2, h2) : "children" === g2 ? Rb(c2, h2) : Xa(c2, g2, h2, b2);
           }
           switch (a2) {
             case "input":
-              Cb(c, d);
+              Cb(c2, d);
               break;
             case "textarea":
-              Kb(c, d);
+              Kb(c2, d);
               break;
             case "select":
-              b2 = c._wrapperState.wasMultiple, c._wrapperState.wasMultiple = !!d.multiple, a2 = d.value, null != a2 ? Hb(c, !!d.multiple, a2, false) : b2 !== !!d.multiple && (null != d.defaultValue ? Hb(c, !!d.multiple, d.defaultValue, true) : Hb(c, !!d.multiple, d.multiple ? [] : "", false));
+              b2 = c2._wrapperState.wasMultiple, c2._wrapperState.wasMultiple = !!d.multiple, a2 = d.value, null != a2 ? Hb(c2, !!d.multiple, a2, false) : b2 !== !!d.multiple && (null != d.defaultValue ? Hb(c2, !!d.multiple, d.defaultValue, true) : Hb(c2, !!d.multiple, d.multiple ? [] : "", false));
           }
         }
       }
@@ -15412,11 +16005,11 @@ function Si(a2, b2) {
     case 12:
       return;
     case 13:
-      c = b2;
-      null === b2.memoizedState ? d = false : (d = true, c = b2.child, Ti = $f());
-      if (null !== c)
+      c2 = b2;
+      null === b2.memoizedState ? d = false : (d = true, c2 = b2.child, Ti = $f());
+      if (null !== c2)
         a:
-          for (a2 = c; ; ) {
+          for (a2 = c2; ; ) {
             if (5 === a2.tag)
               f2 = a2.stateNode, d ? (f2 = f2.style, "function" === typeof f2.setProperty ? f2.setProperty("display", "none", "important") : f2.display = "none") : (f2 = a2.stateNode, e2 = a2.memoizedProps.style, e2 = void 0 !== e2 && null !== e2 && e2.hasOwnProperty("display") ? e2.display : null, f2.style.display = ld("display", e2));
             else if (6 === a2.tag)
@@ -15431,10 +16024,10 @@ function Si(a2, b2) {
               a2 = a2.child;
               continue;
             }
-            if (a2 === c)
+            if (a2 === c2)
               break;
             for (; null === a2.sibling; ) {
-              if (null === a2.return || a2.return === c)
+              if (null === a2.return || a2.return === c2)
                 break a;
               a2 = a2.return;
             }
@@ -15455,50 +16048,50 @@ function Ui(a2) {
   var b2 = a2.updateQueue;
   if (null !== b2) {
     a2.updateQueue = null;
-    var c = a2.stateNode;
-    null === c && (c = a2.stateNode = new Bi());
+    var c2 = a2.stateNode;
+    null === c2 && (c2 = a2.stateNode = new Bi());
     b2.forEach(function(b3) {
       var d = Vi.bind(null, a2, b3);
-      c.has(b3) || (c.add(b3), b3.then(d, d));
+      c2.has(b3) || (c2.add(b3), b3.then(d, d));
     });
   }
 }
 var Wi = "function" === typeof WeakMap ? WeakMap : Map;
-function Xi(a2, b2, c) {
-  c = wg(c, null);
-  c.tag = 3;
-  c.payload = { element: null };
+function Xi(a2, b2, c2) {
+  c2 = wg(c2, null);
+  c2.tag = 3;
+  c2.payload = { element: null };
   var d = b2.value;
-  c.callback = function() {
+  c2.callback = function() {
     Yi || (Yi = true, Zi = d);
     Ci(a2, b2);
   };
-  return c;
+  return c2;
 }
-function $i(a2, b2, c) {
-  c = wg(c, null);
-  c.tag = 3;
+function $i(a2, b2, c2) {
+  c2 = wg(c2, null);
+  c2.tag = 3;
   var d = a2.type.getDerivedStateFromError;
   if ("function" === typeof d) {
     var e2 = b2.value;
-    c.payload = function() {
+    c2.payload = function() {
       Ci(a2, b2);
       return d(e2);
     };
   }
   var f2 = a2.stateNode;
-  null !== f2 && "function" === typeof f2.componentDidCatch && (c.callback = function() {
+  null !== f2 && "function" === typeof f2.componentDidCatch && (c2.callback = function() {
     "function" !== typeof d && (null === aj ? aj = /* @__PURE__ */ new Set([this]) : aj.add(this), Ci(a2, b2));
-    var c2 = b2.stack;
-    this.componentDidCatch(b2.value, { componentStack: null !== c2 ? c2 : "" });
+    var c3 = b2.stack;
+    this.componentDidCatch(b2.value, { componentStack: null !== c3 ? c3 : "" });
   });
-  return c;
+  return c2;
 }
 var bj = Math.ceil, cj = Wa.ReactCurrentDispatcher, dj = Wa.ReactCurrentOwner, V$1 = 0, ej = 8, fj = 16, gj = 32, ti = 0, hj = 1, ij = 2, ui = 3, vi = 4, jj = 5, W$1 = V$1, T$1 = null, X$1 = null, U$1 = 0, S$1 = ti, kj = null, lj = 1073741823, mj = 1073741823, nj = null, wi = 0, oj = false, Ti = 0, pj = 500, Y$1 = null, Yi = false, Zi = null, aj = null, qj = false, rj = null, sj = 90, tj = null, uj = 0, vj = null, wj = 0;
 function Gg() {
   return (W$1 & (fj | gj)) !== V$1 ? 1073741821 - ($f() / 10 | 0) : 0 !== wj ? wj : wj = 1073741821 - ($f() / 10 | 0);
 }
-function Hg(a2, b2, c) {
+function Hg(a2, b2, c2) {
   b2 = b2.mode;
   if (0 === (b2 & 2))
     return 1073741823;
@@ -15507,8 +16100,8 @@ function Hg(a2, b2, c) {
     return 99 === d ? 1073741823 : 1073741822;
   if ((W$1 & fj) !== V$1)
     return U$1;
-  if (null !== c)
-    a2 = hg(a2, c.timeoutMs | 0 || 5e3, 250);
+  if (null !== c2)
+    a2 = hg(a2, c2.timeoutMs | 0 || 5e3, 250);
   else
     switch (d) {
       case 99:
@@ -15535,23 +16128,23 @@ function Ig(a2, b2) {
     throw uj = 0, vj = null, Error(u(185));
   a2 = xj(a2, b2);
   if (null !== a2) {
-    var c = ag();
+    var c2 = ag();
     1073741823 === b2 ? (W$1 & ej) !== V$1 && (W$1 & (fj | gj)) === V$1 ? yj(a2) : (Z$1(a2), W$1 === V$1 && gg()) : Z$1(a2);
-    (W$1 & 4) === V$1 || 98 !== c && 99 !== c || (null === tj ? tj = /* @__PURE__ */ new Map([[a2, b2]]) : (c = tj.get(a2), (void 0 === c || c > b2) && tj.set(a2, b2)));
+    (W$1 & 4) === V$1 || 98 !== c2 && 99 !== c2 || (null === tj ? tj = /* @__PURE__ */ new Map([[a2, b2]]) : (c2 = tj.get(a2), (void 0 === c2 || c2 > b2) && tj.set(a2, b2)));
   }
 }
 function xj(a2, b2) {
   a2.expirationTime < b2 && (a2.expirationTime = b2);
-  var c = a2.alternate;
-  null !== c && c.expirationTime < b2 && (c.expirationTime = b2);
+  var c2 = a2.alternate;
+  null !== c2 && c2.expirationTime < b2 && (c2.expirationTime = b2);
   var d = a2.return, e2 = null;
   if (null === d && 3 === a2.tag)
     e2 = a2.stateNode;
   else
     for (; null !== d; ) {
-      c = d.alternate;
+      c2 = d.alternate;
       d.childExpirationTime < b2 && (d.childExpirationTime = b2);
-      null !== c && c.childExpirationTime < b2 && (c.childExpirationTime = b2);
+      null !== c2 && c2.childExpirationTime < b2 && (c2.childExpirationTime = b2);
       if (null === d.return && 3 === d.tag) {
         e2 = d.stateNode;
         break;
@@ -15568,26 +16161,26 @@ function zj(a2) {
   b2 = a2.firstPendingTime;
   if (!Aj(a2, b2))
     return b2;
-  var c = a2.lastPingedTime;
+  var c2 = a2.lastPingedTime;
   a2 = a2.nextKnownPendingLevel;
-  a2 = c > a2 ? c : a2;
+  a2 = c2 > a2 ? c2 : a2;
   return 2 >= a2 && b2 !== a2 ? 0 : a2;
 }
 function Z$1(a2) {
   if (0 !== a2.lastExpiredTime)
     a2.callbackExpirationTime = 1073741823, a2.callbackPriority = 99, a2.callbackNode = eg(yj.bind(null, a2));
   else {
-    var b2 = zj(a2), c = a2.callbackNode;
+    var b2 = zj(a2), c2 = a2.callbackNode;
     if (0 === b2)
-      null !== c && (a2.callbackNode = null, a2.callbackExpirationTime = 0, a2.callbackPriority = 90);
+      null !== c2 && (a2.callbackNode = null, a2.callbackExpirationTime = 0, a2.callbackPriority = 90);
     else {
       var d = Gg();
       1073741823 === b2 ? d = 99 : 1 === b2 || 2 === b2 ? d = 95 : (d = 10 * (1073741821 - b2) - 10 * (1073741821 - d), d = 0 >= d ? 99 : 250 >= d ? 98 : 5250 >= d ? 97 : 95);
-      if (null !== c) {
+      if (null !== c2) {
         var e2 = a2.callbackPriority;
         if (a2.callbackExpirationTime === b2 && e2 >= d)
           return;
-        c !== Tf && Kf(c);
+        c2 !== Tf && Kf(c2);
       }
       a2.callbackExpirationTime = b2;
       a2.callbackPriority = d;
@@ -15600,13 +16193,13 @@ function Bj(a2, b2) {
   wj = 0;
   if (b2)
     return b2 = Gg(), Cj(a2, b2), Z$1(a2), null;
-  var c = zj(a2);
-  if (0 !== c) {
+  var c2 = zj(a2);
+  if (0 !== c2) {
     b2 = a2.callbackNode;
     if ((W$1 & (fj | gj)) !== V$1)
       throw Error(u(327));
     Dj();
-    a2 === T$1 && c === U$1 || Ej(a2, c);
+    a2 === T$1 && c2 === U$1 || Ej(a2, c2);
     if (null !== X$1) {
       var d = W$1;
       W$1 |= fj;
@@ -15623,32 +16216,32 @@ function Bj(a2, b2) {
       W$1 = d;
       cj.current = e2;
       if (S$1 === hj)
-        throw b2 = kj, Ej(a2, c), xi(a2, c), Z$1(a2), b2;
+        throw b2 = kj, Ej(a2, c2), xi(a2, c2), Z$1(a2), b2;
       if (null === X$1)
-        switch (e2 = a2.finishedWork = a2.current.alternate, a2.finishedExpirationTime = c, d = S$1, T$1 = null, d) {
+        switch (e2 = a2.finishedWork = a2.current.alternate, a2.finishedExpirationTime = c2, d = S$1, T$1 = null, d) {
           case ti:
           case hj:
             throw Error(u(345));
           case ij:
-            Cj(a2, 2 < c ? 2 : c);
+            Cj(a2, 2 < c2 ? 2 : c2);
             break;
           case ui:
-            xi(a2, c);
+            xi(a2, c2);
             d = a2.lastSuspendedTime;
-            c === d && (a2.nextKnownPendingLevel = Ij(e2));
+            c2 === d && (a2.nextKnownPendingLevel = Ij(e2));
             if (1073741823 === lj && (e2 = Ti + pj - $f(), 10 < e2)) {
               if (oj) {
                 var f2 = a2.lastPingedTime;
-                if (0 === f2 || f2 >= c) {
-                  a2.lastPingedTime = c;
-                  Ej(a2, c);
+                if (0 === f2 || f2 >= c2) {
+                  a2.lastPingedTime = c2;
+                  Ej(a2, c2);
                   break;
                 }
               }
               f2 = zj(a2);
-              if (0 !== f2 && f2 !== c)
+              if (0 !== f2 && f2 !== c2)
                 break;
-              if (0 !== d && d !== c) {
+              if (0 !== d && d !== c2) {
                 a2.lastPingedTime = d;
                 break;
               }
@@ -15658,22 +16251,22 @@ function Bj(a2, b2) {
             Jj(a2);
             break;
           case vi:
-            xi(a2, c);
+            xi(a2, c2);
             d = a2.lastSuspendedTime;
-            c === d && (a2.nextKnownPendingLevel = Ij(e2));
-            if (oj && (e2 = a2.lastPingedTime, 0 === e2 || e2 >= c)) {
-              a2.lastPingedTime = c;
-              Ej(a2, c);
+            c2 === d && (a2.nextKnownPendingLevel = Ij(e2));
+            if (oj && (e2 = a2.lastPingedTime, 0 === e2 || e2 >= c2)) {
+              a2.lastPingedTime = c2;
+              Ej(a2, c2);
               break;
             }
             e2 = zj(a2);
-            if (0 !== e2 && e2 !== c)
+            if (0 !== e2 && e2 !== c2)
               break;
-            if (0 !== d && d !== c) {
+            if (0 !== d && d !== c2) {
               a2.lastPingedTime = d;
               break;
             }
-            1073741823 !== mj ? d = 10 * (1073741821 - mj) - $f() : 1073741823 === lj ? d = 0 : (d = 10 * (1073741821 - lj) - 5e3, e2 = $f(), c = 10 * (1073741821 - c) - e2, d = e2 - d, 0 > d && (d = 0), d = (120 > d ? 120 : 480 > d ? 480 : 1080 > d ? 1080 : 1920 > d ? 1920 : 3e3 > d ? 3e3 : 4320 > d ? 4320 : 1960 * bj(d / 1960)) - d, c < d && (d = c));
+            1073741823 !== mj ? d = 10 * (1073741821 - mj) - $f() : 1073741823 === lj ? d = 0 : (d = 10 * (1073741821 - lj) - 5e3, e2 = $f(), c2 = 10 * (1073741821 - c2) - e2, d = e2 - d, 0 > d && (d = 0), d = (120 > d ? 120 : 480 > d ? 480 : 1080 > d ? 1080 : 1920 > d ? 1920 : 3e3 > d ? 3e3 : 4320 > d ? 4320 : 1960 * bj(d / 1960)) - d, c2 < d && (d = c2));
             if (10 < d) {
               a2.timeoutHandle = Hd(Jj.bind(null, a2), d);
               break;
@@ -15687,7 +16280,7 @@ function Bj(a2, b2) {
               d = g2.busyMinDurationMs | 0;
               0 >= d ? d = 0 : (e2 = g2.busyDelayMs | 0, f2 = $f() - (10 * (1073741821 - f2) - (g2.timeoutMs | 0 || 5e3)), d = f2 <= e2 ? 0 : e2 + d - f2);
               if (10 < d) {
-                xi(a2, c);
+                xi(a2, c2);
                 a2.timeoutHandle = Hd(Jj.bind(null, a2), d);
                 break;
               }
@@ -15712,7 +16305,7 @@ function yj(a2) {
   Dj();
   a2 === T$1 && b2 === U$1 || Ej(a2, b2);
   if (null !== X$1) {
-    var c = W$1;
+    var c2 = W$1;
     W$1 |= fj;
     var d = Fj();
     do
@@ -15724,10 +16317,10 @@ function yj(a2) {
       }
     while (1);
     ng();
-    W$1 = c;
+    W$1 = c2;
     cj.current = d;
     if (S$1 === hj)
-      throw c = kj, Ej(a2, b2), xi(a2, b2), Z$1(a2), c;
+      throw c2 = kj, Ej(a2, b2), xi(a2, b2), Z$1(a2), c2;
     if (null !== X$1)
       throw Error(u(261));
     a2.finishedWork = a2.current.alternate;
@@ -15742,40 +16335,40 @@ function Lj() {
   if (null !== tj) {
     var a2 = tj;
     tj = null;
-    a2.forEach(function(a3, c) {
-      Cj(c, a3);
-      Z$1(c);
+    a2.forEach(function(a3, c2) {
+      Cj(c2, a3);
+      Z$1(c2);
     });
     gg();
   }
 }
 function Mj(a2, b2) {
-  var c = W$1;
+  var c2 = W$1;
   W$1 |= 1;
   try {
     return a2(b2);
   } finally {
-    W$1 = c, W$1 === V$1 && gg();
+    W$1 = c2, W$1 === V$1 && gg();
   }
 }
 function Nj(a2, b2) {
-  var c = W$1;
+  var c2 = W$1;
   W$1 &= -2;
   W$1 |= ej;
   try {
     return a2(b2);
   } finally {
-    W$1 = c, W$1 === V$1 && gg();
+    W$1 = c2, W$1 === V$1 && gg();
   }
 }
 function Ej(a2, b2) {
   a2.finishedWork = null;
   a2.finishedExpirationTime = 0;
-  var c = a2.timeoutHandle;
-  -1 !== c && (a2.timeoutHandle = -1, Id(c));
+  var c2 = a2.timeoutHandle;
+  -1 !== c2 && (a2.timeoutHandle = -1, Id(c2));
   if (null !== X$1)
-    for (c = X$1.return; null !== c; ) {
-      var d = c;
+    for (c2 = X$1.return; null !== c2; ) {
+      var d = c2;
       switch (d.tag) {
         case 1:
           d = d.type.childContextTypes;
@@ -15801,7 +16394,7 @@ function Ej(a2, b2) {
         case 10:
           og(d);
       }
-      c = c.return;
+      c2 = c2.return;
     }
   T$1 = a2;
   X$1 = Sg(a2.current, null);
@@ -15819,10 +16412,10 @@ function Hj(a2, b2) {
       ng();
       jh.current = sh;
       if (mh)
-        for (var c = N$1.memoizedState; null !== c; ) {
-          var d = c.queue;
+        for (var c2 = N$1.memoizedState; null !== c2; ) {
+          var d = c2.queue;
           null !== d && (d.pending = null);
-          c = c.next;
+          c2 = c2.next;
         }
       lh = 0;
       P$1 = O$1 = N$1 = null;
@@ -15960,13 +16553,13 @@ function Pj(a2) {
     if (0 === (X$1.effectTag & 2048)) {
       b2 = si(b2, X$1, U$1);
       if (1 === U$1 || 1 !== X$1.childExpirationTime) {
-        for (var c = 0, d = X$1.child; null !== d; ) {
+        for (var c2 = 0, d = X$1.child; null !== d; ) {
           var e2 = d.expirationTime, f2 = d.childExpirationTime;
-          e2 > c && (c = e2);
-          f2 > c && (c = f2);
+          e2 > c2 && (c2 = e2);
+          f2 > c2 && (c2 = f2);
           d = d.sibling;
         }
-        X$1.childExpirationTime = c;
+        X$1.childExpirationTime = c2;
       }
       if (null !== b2)
         return b2;
@@ -16001,24 +16594,24 @@ function Sj(a2, b2) {
   while (null !== rj);
   if ((W$1 & (fj | gj)) !== V$1)
     throw Error(u(327));
-  var c = a2.finishedWork, d = a2.finishedExpirationTime;
-  if (null === c)
+  var c2 = a2.finishedWork, d = a2.finishedExpirationTime;
+  if (null === c2)
     return null;
   a2.finishedWork = null;
   a2.finishedExpirationTime = 0;
-  if (c === a2.current)
+  if (c2 === a2.current)
     throw Error(u(177));
   a2.callbackNode = null;
   a2.callbackExpirationTime = 0;
   a2.callbackPriority = 90;
   a2.nextKnownPendingLevel = 0;
-  var e2 = Ij(c);
+  var e2 = Ij(c2);
   a2.firstPendingTime = e2;
   d <= a2.lastSuspendedTime ? a2.firstSuspendedTime = a2.lastSuspendedTime = a2.nextKnownPendingLevel = 0 : d <= a2.firstSuspendedTime && (a2.firstSuspendedTime = d - 1);
   d <= a2.lastPingedTime && (a2.lastPingedTime = 0);
   d <= a2.lastExpiredTime && (a2.lastExpiredTime = 0);
   a2 === T$1 && (X$1 = T$1 = null, U$1 = 0);
-  1 < c.effectTag ? null !== c.lastEffect ? (c.lastEffect.nextEffect = c, e2 = c.firstEffect) : e2 = c : e2 = c.firstEffect;
+  1 < c2.effectTag ? null !== c2.lastEffect ? (c2.lastEffect.nextEffect = c2, e2 = c2.firstEffect) : e2 = c2 : e2 = c2.firstEffect;
   if (null !== e2) {
     var f2 = W$1;
     W$1 |= gj;
@@ -16150,7 +16743,7 @@ function Sj(a2, b2) {
     }
     fd = !!Dd;
     Ed = Dd = null;
-    a2.current = c;
+    a2.current = c2;
     Y$1 = e2;
     do
       try {
@@ -16185,7 +16778,7 @@ function Sj(a2, b2) {
     Vf();
     W$1 = f2;
   } else
-    a2.current = c;
+    a2.current = c2;
   if (qj)
     qj = false, rj = a2, sj = b2;
   else
@@ -16194,7 +16787,7 @@ function Sj(a2, b2) {
   b2 = a2.firstPendingTime;
   0 === b2 && (aj = null);
   1073741823 === b2 ? a2 === vj ? uj++ : (uj = 0, vj = a2) : uj = 0;
-  "function" === typeof Uj && Uj(c.stateNode, d);
+  "function" === typeof Uj && Uj(c2.stateNode, d);
   Z$1(a2);
   if (Yi)
     throw Yi = false, a2 = Zi, Zi = null, a2;
@@ -16232,30 +16825,30 @@ function Vj() {
   W$1 |= gj;
   for (a2 = a2.current.firstEffect; null !== a2; ) {
     try {
-      var c = a2;
-      if (0 !== (c.effectTag & 512))
-        switch (c.tag) {
+      var c2 = a2;
+      if (0 !== (c2.effectTag & 512))
+        switch (c2.tag) {
           case 0:
           case 11:
           case 15:
           case 22:
-            Hi(5, c), Ii(5, c);
+            Hi(5, c2), Ii(5, c2);
         }
     } catch (d) {
       if (null === a2)
         throw Error(u(330));
       Ei(a2, d);
     }
-    c = a2.nextEffect;
+    c2 = a2.nextEffect;
     a2.nextEffect = null;
-    a2 = c;
+    a2 = c2;
   }
   W$1 = b2;
   gg();
   return true;
 }
-function Wj(a2, b2, c) {
-  b2 = Ai(c, b2);
+function Wj(a2, b2, c2) {
+  b2 = Ai(c2, b2);
   b2 = Xi(a2, b2, 1073741823);
   xg(a2, b2);
   a2 = xj(a2, 1073741823);
@@ -16265,46 +16858,46 @@ function Ei(a2, b2) {
   if (3 === a2.tag)
     Wj(a2, a2, b2);
   else
-    for (var c = a2.return; null !== c; ) {
-      if (3 === c.tag) {
-        Wj(c, a2, b2);
+    for (var c2 = a2.return; null !== c2; ) {
+      if (3 === c2.tag) {
+        Wj(c2, a2, b2);
         break;
-      } else if (1 === c.tag) {
-        var d = c.stateNode;
-        if ("function" === typeof c.type.getDerivedStateFromError || "function" === typeof d.componentDidCatch && (null === aj || !aj.has(d))) {
+      } else if (1 === c2.tag) {
+        var d = c2.stateNode;
+        if ("function" === typeof c2.type.getDerivedStateFromError || "function" === typeof d.componentDidCatch && (null === aj || !aj.has(d))) {
           a2 = Ai(b2, a2);
-          a2 = $i(c, a2, 1073741823);
-          xg(c, a2);
-          c = xj(c, 1073741823);
-          null !== c && Z$1(c);
+          a2 = $i(c2, a2, 1073741823);
+          xg(c2, a2);
+          c2 = xj(c2, 1073741823);
+          null !== c2 && Z$1(c2);
           break;
         }
       }
-      c = c.return;
+      c2 = c2.return;
     }
 }
-function Oj(a2, b2, c) {
+function Oj(a2, b2, c2) {
   var d = a2.pingCache;
   null !== d && d.delete(b2);
-  T$1 === a2 && U$1 === c ? S$1 === vi || S$1 === ui && 1073741823 === lj && $f() - Ti < pj ? Ej(a2, U$1) : oj = true : Aj(a2, c) && (b2 = a2.lastPingedTime, 0 !== b2 && b2 < c || (a2.lastPingedTime = c, Z$1(a2)));
+  T$1 === a2 && U$1 === c2 ? S$1 === vi || S$1 === ui && 1073741823 === lj && $f() - Ti < pj ? Ej(a2, U$1) : oj = true : Aj(a2, c2) && (b2 = a2.lastPingedTime, 0 !== b2 && b2 < c2 || (a2.lastPingedTime = c2, Z$1(a2)));
 }
 function Vi(a2, b2) {
-  var c = a2.stateNode;
-  null !== c && c.delete(b2);
+  var c2 = a2.stateNode;
+  null !== c2 && c2.delete(b2);
   b2 = 0;
   0 === b2 && (b2 = Gg(), b2 = Hg(b2, a2, null));
   a2 = xj(a2, b2);
   null !== a2 && Z$1(a2);
 }
 var Rj;
-Rj = function(a2, b2, c) {
+Rj = function(a2, b2, c2) {
   var d = b2.expirationTime;
   if (null !== a2) {
     var e2 = b2.pendingProps;
     if (a2.memoizedProps !== e2 || K$1.current)
       rg = true;
     else {
-      if (d < c) {
+      if (d < c2) {
         rg = false;
         switch (b2.tag) {
           case 3:
@@ -16313,7 +16906,7 @@ Rj = function(a2, b2, c) {
             break;
           case 5:
             fh(b2);
-            if (b2.mode & 4 && 1 !== c && e2.hidden)
+            if (b2.mode & 4 && 1 !== c2 && e2.hidden)
               return b2.expirationTime = b2.childExpirationTime = 1, null;
             break;
           case 1:
@@ -16331,19 +16924,19 @@ Rj = function(a2, b2, c) {
           case 13:
             if (null !== b2.memoizedState) {
               d = b2.child.childExpirationTime;
-              if (0 !== d && d >= c)
-                return ji(a2, b2, c);
+              if (0 !== d && d >= c2)
+                return ji(a2, b2, c2);
               I$1(M$1, M$1.current & 1);
-              b2 = $h(a2, b2, c);
+              b2 = $h(a2, b2, c2);
               return null !== b2 ? b2.sibling : null;
             }
             I$1(M$1, M$1.current & 1);
             break;
           case 19:
-            d = b2.childExpirationTime >= c;
+            d = b2.childExpirationTime >= c2;
             if (0 !== (a2.effectTag & 64)) {
               if (d)
-                return mi(a2, b2, c);
+                return mi(a2, b2, c2);
               b2.effectTag |= 64;
             }
             e2 = b2.memoizedState;
@@ -16352,7 +16945,7 @@ Rj = function(a2, b2, c) {
             if (!d)
               return null;
         }
-        return $h(a2, b2, c);
+        return $h(a2, b2, c2);
       }
       rg = false;
     }
@@ -16365,14 +16958,14 @@ Rj = function(a2, b2, c) {
       null !== a2 && (a2.alternate = null, b2.alternate = null, b2.effectTag |= 2);
       a2 = b2.pendingProps;
       e2 = Cf(b2, J$1.current);
-      qg(b2, c);
+      qg(b2, c2);
       e2 = oh(
         null,
         b2,
         d,
         a2,
         e2,
-        c
+        c2
       );
       b2.effectTag |= 1;
       if ("object" === typeof e2 && null !== e2 && "function" === typeof e2.render && void 0 === e2.$$typeof) {
@@ -16391,10 +16984,10 @@ Rj = function(a2, b2, c) {
         e2.updater = Jg;
         b2.stateNode = e2;
         e2._reactInternalFiber = b2;
-        Ng(b2, d, a2, c);
-        b2 = gi(null, b2, d, true, f2, c);
+        Ng(b2, d, a2, c2);
+        b2 = gi(null, b2, d, true, f2, c2);
       } else
-        b2.tag = 0, R$1(null, b2, e2, c), b2 = b2.child;
+        b2.tag = 0, R$1(null, b2, e2, c2), b2 = b2.child;
       return b2;
     case 16:
       a: {
@@ -16410,25 +17003,25 @@ Rj = function(a2, b2, c) {
         a2 = ig(e2, a2);
         switch (f2) {
           case 0:
-            b2 = di(null, b2, e2, a2, c);
+            b2 = di(null, b2, e2, a2, c2);
             break a;
           case 1:
-            b2 = fi(null, b2, e2, a2, c);
+            b2 = fi(null, b2, e2, a2, c2);
             break a;
           case 11:
-            b2 = Zh(null, b2, e2, a2, c);
+            b2 = Zh(null, b2, e2, a2, c2);
             break a;
           case 14:
-            b2 = ai(null, b2, e2, ig(e2.type, a2), d, c);
+            b2 = ai(null, b2, e2, ig(e2.type, a2), d, c2);
             break a;
         }
         throw Error(u(306, e2, ""));
       }
       return b2;
     case 0:
-      return d = b2.type, e2 = b2.pendingProps, e2 = b2.elementType === d ? e2 : ig(d, e2), di(a2, b2, d, e2, c);
+      return d = b2.type, e2 = b2.pendingProps, e2 = b2.elementType === d ? e2 : ig(d, e2), di(a2, b2, d, e2, c2);
     case 1:
-      return d = b2.type, e2 = b2.pendingProps, e2 = b2.elementType === d ? e2 : ig(d, e2), fi(a2, b2, d, e2, c);
+      return d = b2.type, e2 = b2.pendingProps, e2 = b2.elementType === d ? e2 : ig(d, e2), fi(a2, b2, d, e2, c2);
     case 3:
       hi(b2);
       d = b2.updateQueue;
@@ -16438,42 +17031,42 @@ Rj = function(a2, b2, c) {
       e2 = b2.memoizedState;
       e2 = null !== e2 ? e2.element : null;
       vg(a2, b2);
-      zg(b2, d, null, c);
+      zg(b2, d, null, c2);
       d = b2.memoizedState.element;
       if (d === e2)
-        Xh(), b2 = $h(a2, b2, c);
+        Xh(), b2 = $h(a2, b2, c2);
       else {
         if (e2 = b2.stateNode.hydrate)
           Ph = Jd(b2.stateNode.containerInfo.firstChild), Oh = b2, e2 = Qh = true;
         if (e2)
-          for (c = Yg(b2, null, d, c), b2.child = c; c; )
-            c.effectTag = c.effectTag & -3 | 1024, c = c.sibling;
+          for (c2 = Yg(b2, null, d, c2), b2.child = c2; c2; )
+            c2.effectTag = c2.effectTag & -3 | 1024, c2 = c2.sibling;
         else
-          R$1(a2, b2, d, c), Xh();
+          R$1(a2, b2, d, c2), Xh();
         b2 = b2.child;
       }
       return b2;
     case 5:
-      return fh(b2), null === a2 && Uh(b2), d = b2.type, e2 = b2.pendingProps, f2 = null !== a2 ? a2.memoizedProps : null, g2 = e2.children, Gd(d, e2) ? g2 = null : null !== f2 && Gd(d, f2) && (b2.effectTag |= 16), ei(a2, b2), b2.mode & 4 && 1 !== c && e2.hidden ? (b2.expirationTime = b2.childExpirationTime = 1, b2 = null) : (R$1(a2, b2, g2, c), b2 = b2.child), b2;
+      return fh(b2), null === a2 && Uh(b2), d = b2.type, e2 = b2.pendingProps, f2 = null !== a2 ? a2.memoizedProps : null, g2 = e2.children, Gd(d, e2) ? g2 = null : null !== f2 && Gd(d, f2) && (b2.effectTag |= 16), ei(a2, b2), b2.mode & 4 && 1 !== c2 && e2.hidden ? (b2.expirationTime = b2.childExpirationTime = 1, b2 = null) : (R$1(a2, b2, g2, c2), b2 = b2.child), b2;
     case 6:
       return null === a2 && Uh(b2), null;
     case 13:
-      return ji(a2, b2, c);
+      return ji(a2, b2, c2);
     case 4:
-      return dh(b2, b2.stateNode.containerInfo), d = b2.pendingProps, null === a2 ? b2.child = Xg(b2, null, d, c) : R$1(a2, b2, d, c), b2.child;
+      return dh(b2, b2.stateNode.containerInfo), d = b2.pendingProps, null === a2 ? b2.child = Xg(b2, null, d, c2) : R$1(a2, b2, d, c2), b2.child;
     case 11:
-      return d = b2.type, e2 = b2.pendingProps, e2 = b2.elementType === d ? e2 : ig(d, e2), Zh(a2, b2, d, e2, c);
+      return d = b2.type, e2 = b2.pendingProps, e2 = b2.elementType === d ? e2 : ig(d, e2), Zh(a2, b2, d, e2, c2);
     case 7:
-      return R$1(a2, b2, b2.pendingProps, c), b2.child;
+      return R$1(a2, b2, b2.pendingProps, c2), b2.child;
     case 8:
       return R$1(
         a2,
         b2,
         b2.pendingProps.children,
-        c
+        c2
       ), b2.child;
     case 12:
-      return R$1(a2, b2, b2.pendingProps.children, c), b2.child;
+      return R$1(a2, b2, b2.pendingProps.children, c2), b2.child;
     case 10:
       a: {
         d = b2.type._context;
@@ -16486,7 +17079,7 @@ Rj = function(a2, b2, c) {
         if (null !== g2)
           if (h2 = g2.value, f2 = $e(h2, f2) ? 0 : ("function" === typeof d._calculateChangedBits ? d._calculateChangedBits(h2, f2) : 1073741823) | 0, 0 === f2) {
             if (g2.children === e2.children && !K$1.current) {
-              b2 = $h(a2, b2, c);
+              b2 = $h(a2, b2, c2);
               break a;
             }
           } else
@@ -16496,12 +17089,12 @@ Rj = function(a2, b2, c) {
                 g2 = h2.child;
                 for (var l2 = k2.firstContext; null !== l2; ) {
                   if (l2.context === d && 0 !== (l2.observedBits & f2)) {
-                    1 === h2.tag && (l2 = wg(c, null), l2.tag = 2, xg(h2, l2));
-                    h2.expirationTime < c && (h2.expirationTime = c);
+                    1 === h2.tag && (l2 = wg(c2, null), l2.tag = 2, xg(h2, l2));
+                    h2.expirationTime < c2 && (h2.expirationTime = c2);
                     l2 = h2.alternate;
-                    null !== l2 && l2.expirationTime < c && (l2.expirationTime = c);
-                    pg(h2.return, c);
-                    k2.expirationTime < c && (k2.expirationTime = c);
+                    null !== l2 && l2.expirationTime < c2 && (l2.expirationTime = c2);
+                    pg(h2.return, c2);
+                    k2.expirationTime < c2 && (k2.expirationTime = c2);
                     break;
                   }
                   l2 = l2.next;
@@ -16526,27 +17119,27 @@ Rj = function(a2, b2, c) {
                 }
               h2 = g2;
             }
-        R$1(a2, b2, e2.children, c);
+        R$1(a2, b2, e2.children, c2);
         b2 = b2.child;
       }
       return b2;
     case 9:
-      return e2 = b2.type, f2 = b2.pendingProps, d = f2.children, qg(b2, c), e2 = sg(e2, f2.unstable_observedBits), d = d(e2), b2.effectTag |= 1, R$1(a2, b2, d, c), b2.child;
+      return e2 = b2.type, f2 = b2.pendingProps, d = f2.children, qg(b2, c2), e2 = sg(e2, f2.unstable_observedBits), d = d(e2), b2.effectTag |= 1, R$1(a2, b2, d, c2), b2.child;
     case 14:
-      return e2 = b2.type, f2 = ig(e2, b2.pendingProps), f2 = ig(e2.type, f2), ai(a2, b2, e2, f2, d, c);
+      return e2 = b2.type, f2 = ig(e2, b2.pendingProps), f2 = ig(e2.type, f2), ai(a2, b2, e2, f2, d, c2);
     case 15:
-      return ci(a2, b2, b2.type, b2.pendingProps, d, c);
+      return ci(a2, b2, b2.type, b2.pendingProps, d, c2);
     case 17:
-      return d = b2.type, e2 = b2.pendingProps, e2 = b2.elementType === d ? e2 : ig(d, e2), null !== a2 && (a2.alternate = null, b2.alternate = null, b2.effectTag |= 2), b2.tag = 1, L$1(d) ? (a2 = true, Gf(b2)) : a2 = false, qg(b2, c), Lg(b2, d, e2), Ng(b2, d, e2, c), gi(
+      return d = b2.type, e2 = b2.pendingProps, e2 = b2.elementType === d ? e2 : ig(d, e2), null !== a2 && (a2.alternate = null, b2.alternate = null, b2.effectTag |= 2), b2.tag = 1, L$1(d) ? (a2 = true, Gf(b2)) : a2 = false, qg(b2, c2), Lg(b2, d, e2), Ng(b2, d, e2, c2), gi(
         null,
         b2,
         d,
         true,
         a2,
-        c
+        c2
       );
     case 19:
-      return mi(a2, b2, c);
+      return mi(a2, b2, c2);
   }
   throw Error(u(156, b2.tag));
 };
@@ -16558,16 +17151,16 @@ function Yj(a2) {
   if (b2.isDisabled || !b2.supportsFiber)
     return true;
   try {
-    var c = b2.inject(a2);
+    var c2 = b2.inject(a2);
     Uj = function(a3) {
       try {
-        b2.onCommitFiberRoot(c, a3, void 0, 64 === (a3.current.effectTag & 64));
+        b2.onCommitFiberRoot(c2, a3, void 0, 64 === (a3.current.effectTag & 64));
       } catch (e2) {
       }
     };
     Li = function(a3) {
       try {
-        b2.onCommitFiberUnmount(c, a3);
+        b2.onCommitFiberUnmount(c2, a3);
       } catch (e2) {
       }
     };
@@ -16575,9 +17168,9 @@ function Yj(a2) {
   }
   return true;
 }
-function Zj(a2, b2, c, d) {
+function Zj(a2, b2, c2, d) {
   this.tag = a2;
-  this.key = c;
+  this.key = c2;
   this.sibling = this.child = this.return = this.stateNode = this.type = this.elementType = null;
   this.index = 0;
   this.ref = null;
@@ -16589,8 +17182,8 @@ function Zj(a2, b2, c, d) {
   this.childExpirationTime = this.expirationTime = 0;
   this.alternate = null;
 }
-function Sh(a2, b2, c, d) {
-  return new Zj(a2, b2, c, d);
+function Sh(a2, b2, c2, d) {
+  return new Zj(a2, b2, c2, d);
 }
 function bi(a2) {
   a2 = a2.prototype;
@@ -16609,26 +17202,26 @@ function Xj(a2) {
   return 2;
 }
 function Sg(a2, b2) {
-  var c = a2.alternate;
-  null === c ? (c = Sh(a2.tag, b2, a2.key, a2.mode), c.elementType = a2.elementType, c.type = a2.type, c.stateNode = a2.stateNode, c.alternate = a2, a2.alternate = c) : (c.pendingProps = b2, c.effectTag = 0, c.nextEffect = null, c.firstEffect = null, c.lastEffect = null);
-  c.childExpirationTime = a2.childExpirationTime;
-  c.expirationTime = a2.expirationTime;
-  c.child = a2.child;
-  c.memoizedProps = a2.memoizedProps;
-  c.memoizedState = a2.memoizedState;
-  c.updateQueue = a2.updateQueue;
+  var c2 = a2.alternate;
+  null === c2 ? (c2 = Sh(a2.tag, b2, a2.key, a2.mode), c2.elementType = a2.elementType, c2.type = a2.type, c2.stateNode = a2.stateNode, c2.alternate = a2, a2.alternate = c2) : (c2.pendingProps = b2, c2.effectTag = 0, c2.nextEffect = null, c2.firstEffect = null, c2.lastEffect = null);
+  c2.childExpirationTime = a2.childExpirationTime;
+  c2.expirationTime = a2.expirationTime;
+  c2.child = a2.child;
+  c2.memoizedProps = a2.memoizedProps;
+  c2.memoizedState = a2.memoizedState;
+  c2.updateQueue = a2.updateQueue;
   b2 = a2.dependencies;
-  c.dependencies = null === b2 ? null : {
+  c2.dependencies = null === b2 ? null : {
     expirationTime: b2.expirationTime,
     firstContext: b2.firstContext,
     responders: b2.responders
   };
-  c.sibling = a2.sibling;
-  c.index = a2.index;
-  c.ref = a2.ref;
-  return c;
+  c2.sibling = a2.sibling;
+  c2.index = a2.index;
+  c2.ref = a2.ref;
+  return c2;
 }
-function Ug(a2, b2, c, d, e2, f2) {
+function Ug(a2, b2, c2, d, e2, f2) {
   var g2 = 2;
   d = a2;
   if ("function" === typeof a2)
@@ -16639,7 +17232,7 @@ function Ug(a2, b2, c, d, e2, f2) {
     a:
       switch (a2) {
         case ab:
-          return Wg(c.children, e2, f2, b2);
+          return Wg(c2.children, e2, f2, b2);
         case fb:
           g2 = 8;
           e2 |= 7;
@@ -16649,11 +17242,11 @@ function Ug(a2, b2, c, d, e2, f2) {
           e2 |= 1;
           break;
         case cb:
-          return a2 = Sh(12, c, b2, e2 | 8), a2.elementType = cb, a2.type = cb, a2.expirationTime = f2, a2;
+          return a2 = Sh(12, c2, b2, e2 | 8), a2.elementType = cb, a2.type = cb, a2.expirationTime = f2, a2;
         case hb:
-          return a2 = Sh(13, c, b2, e2), a2.type = hb, a2.elementType = hb, a2.expirationTime = f2, a2;
+          return a2 = Sh(13, c2, b2, e2), a2.type = hb, a2.elementType = hb, a2.expirationTime = f2, a2;
         case ib:
-          return a2 = Sh(19, c, b2, e2), a2.elementType = ib, a2.expirationTime = f2, a2;
+          return a2 = Sh(19, c2, b2, e2), a2.elementType = ib, a2.expirationTime = f2, a2;
         default:
           if ("object" === typeof a2 && null !== a2)
             switch (a2.$$typeof) {
@@ -16679,29 +17272,29 @@ function Ug(a2, b2, c, d, e2, f2) {
             }
           throw Error(u(130, null == a2 ? a2 : typeof a2, ""));
       }
-  b2 = Sh(g2, c, b2, e2);
+  b2 = Sh(g2, c2, b2, e2);
   b2.elementType = a2;
   b2.type = d;
   b2.expirationTime = f2;
   return b2;
 }
-function Wg(a2, b2, c, d) {
+function Wg(a2, b2, c2, d) {
   a2 = Sh(7, a2, d, b2);
-  a2.expirationTime = c;
+  a2.expirationTime = c2;
   return a2;
 }
-function Tg(a2, b2, c) {
+function Tg(a2, b2, c2) {
   a2 = Sh(6, a2, null, b2);
-  a2.expirationTime = c;
+  a2.expirationTime = c2;
   return a2;
 }
-function Vg(a2, b2, c) {
+function Vg(a2, b2, c2) {
   b2 = Sh(4, null !== a2.children ? a2.children : [], a2.key, b2);
-  b2.expirationTime = c;
+  b2.expirationTime = c2;
   b2.stateNode = { containerInfo: a2.containerInfo, pendingChildren: null, implementation: a2.implementation };
   return b2;
 }
-function ak(a2, b2, c) {
+function ak(a2, b2, c2) {
   this.tag = b2;
   this.current = null;
   this.containerInfo = a2;
@@ -16710,44 +17303,44 @@ function ak(a2, b2, c) {
   this.finishedWork = null;
   this.timeoutHandle = -1;
   this.pendingContext = this.context = null;
-  this.hydrate = c;
+  this.hydrate = c2;
   this.callbackNode = null;
   this.callbackPriority = 90;
   this.lastExpiredTime = this.lastPingedTime = this.nextKnownPendingLevel = this.lastSuspendedTime = this.firstSuspendedTime = this.firstPendingTime = 0;
 }
 function Aj(a2, b2) {
-  var c = a2.firstSuspendedTime;
+  var c2 = a2.firstSuspendedTime;
   a2 = a2.lastSuspendedTime;
-  return 0 !== c && c >= b2 && a2 <= b2;
+  return 0 !== c2 && c2 >= b2 && a2 <= b2;
 }
 function xi(a2, b2) {
-  var c = a2.firstSuspendedTime, d = a2.lastSuspendedTime;
-  c < b2 && (a2.firstSuspendedTime = b2);
-  if (d > b2 || 0 === c)
+  var c2 = a2.firstSuspendedTime, d = a2.lastSuspendedTime;
+  c2 < b2 && (a2.firstSuspendedTime = b2);
+  if (d > b2 || 0 === c2)
     a2.lastSuspendedTime = b2;
   b2 <= a2.lastPingedTime && (a2.lastPingedTime = 0);
   b2 <= a2.lastExpiredTime && (a2.lastExpiredTime = 0);
 }
 function yi(a2, b2) {
   b2 > a2.firstPendingTime && (a2.firstPendingTime = b2);
-  var c = a2.firstSuspendedTime;
-  0 !== c && (b2 >= c ? a2.firstSuspendedTime = a2.lastSuspendedTime = a2.nextKnownPendingLevel = 0 : b2 >= a2.lastSuspendedTime && (a2.lastSuspendedTime = b2 + 1), b2 > a2.nextKnownPendingLevel && (a2.nextKnownPendingLevel = b2));
+  var c2 = a2.firstSuspendedTime;
+  0 !== c2 && (b2 >= c2 ? a2.firstSuspendedTime = a2.lastSuspendedTime = a2.nextKnownPendingLevel = 0 : b2 >= a2.lastSuspendedTime && (a2.lastSuspendedTime = b2 + 1), b2 > a2.nextKnownPendingLevel && (a2.nextKnownPendingLevel = b2));
 }
 function Cj(a2, b2) {
-  var c = a2.lastExpiredTime;
-  if (0 === c || c > b2)
+  var c2 = a2.lastExpiredTime;
+  if (0 === c2 || c2 > b2)
     a2.lastExpiredTime = b2;
 }
-function bk(a2, b2, c, d) {
+function bk(a2, b2, c2, d) {
   var e2 = b2.current, f2 = Gg(), g2 = Dg.suspense;
   f2 = Hg(f2, e2, g2);
   a:
-    if (c) {
-      c = c._reactInternalFiber;
+    if (c2) {
+      c2 = c2._reactInternalFiber;
       b: {
-        if (dc(c) !== c || 1 !== c.tag)
+        if (dc(c2) !== c2 || 1 !== c2.tag)
           throw Error(u(170));
-        var h2 = c;
+        var h2 = c2;
         do {
           switch (h2.tag) {
             case 3:
@@ -16763,17 +17356,17 @@ function bk(a2, b2, c, d) {
         } while (null !== h2);
         throw Error(u(171));
       }
-      if (1 === c.tag) {
-        var k2 = c.type;
+      if (1 === c2.tag) {
+        var k2 = c2.type;
         if (L$1(k2)) {
-          c = Ff(c, k2, h2);
+          c2 = Ff(c2, k2, h2);
           break a;
         }
       }
-      c = h2;
+      c2 = h2;
     } else
-      c = Af;
-  null === b2.context ? b2.context = c : b2.pendingContext = c;
+      c2 = Af;
+  null === b2.context ? b2.context = c2 : b2.pendingContext = c2;
   b2 = wg(f2, g2);
   b2.payload = { element: a2 };
   d = void 0 === d ? null : d;
@@ -16801,14 +17394,14 @@ function ek(a2, b2) {
   dk(a2, b2);
   (a2 = a2.alternate) && dk(a2, b2);
 }
-function fk(a2, b2, c) {
-  c = null != c && true === c.hydrate;
-  var d = new ak(a2, b2, c), e2 = Sh(3, null, null, 2 === b2 ? 7 : 1 === b2 ? 3 : 0);
+function fk(a2, b2, c2) {
+  c2 = null != c2 && true === c2.hydrate;
+  var d = new ak(a2, b2, c2), e2 = Sh(3, null, null, 2 === b2 ? 7 : 1 === b2 ? 3 : 0);
   d.current = e2;
   e2.stateNode = d;
   ug(e2);
   a2[Od] = d.current;
-  c && 0 !== b2 && Jc(a2, 9 === a2.nodeType ? a2 : a2.ownerDocument);
+  c2 && 0 !== b2 && Jc(a2, 9 === a2.nodeType ? a2 : a2.ownerDocument);
   this._internalRoot = d;
 }
 fk.prototype.render = function(a2) {
@@ -16826,12 +17419,12 @@ function gk(a2) {
 function hk(a2, b2) {
   b2 || (b2 = a2 ? 9 === a2.nodeType ? a2.documentElement : a2.firstChild : null, b2 = !(!b2 || 1 !== b2.nodeType || !b2.hasAttribute("data-reactroot")));
   if (!b2)
-    for (var c; c = a2.lastChild; )
-      a2.removeChild(c);
+    for (var c2; c2 = a2.lastChild; )
+      a2.removeChild(c2);
   return new fk(a2, 0, b2 ? { hydrate: true } : void 0);
 }
-function ik(a2, b2, c, d, e2) {
-  var f2 = c._reactRootContainer;
+function ik(a2, b2, c2, d, e2) {
+  var f2 = c2._reactRootContainer;
   if (f2) {
     var g2 = f2._internalRoot;
     if ("function" === typeof e2) {
@@ -16843,7 +17436,7 @@ function ik(a2, b2, c, d, e2) {
     }
     bk(b2, g2, a2, e2);
   } else {
-    f2 = c._reactRootContainer = hk(c, d);
+    f2 = c2._reactRootContainer = hk(c2, d);
     g2 = f2._internalRoot;
     if ("function" === typeof e2) {
       var k2 = e2;
@@ -16858,9 +17451,9 @@ function ik(a2, b2, c, d, e2) {
   }
   return ck(g2);
 }
-function jk(a2, b2, c) {
+function jk(a2, b2, c2) {
   var d = 3 < arguments.length && void 0 !== arguments[3] ? arguments[3] : null;
-  return { $$typeof: $a, key: null == d ? null : "" + d, children: a2, containerInfo: b2, implementation: c };
+  return { $$typeof: $a, key: null == d ? null : "" + d, children: a2, containerInfo: b2, implementation: c2 };
 }
 wc = function(a2) {
   if (13 === a2.tag) {
@@ -16880,17 +17473,17 @@ yc = function(a2) {
     ek(a2, b2);
   }
 };
-za = function(a2, b2, c) {
+za = function(a2, b2, c2) {
   switch (b2) {
     case "input":
-      Cb(a2, c);
-      b2 = c.name;
-      if ("radio" === c.type && null != b2) {
-        for (c = a2; c.parentNode; )
-          c = c.parentNode;
-        c = c.querySelectorAll("input[name=" + JSON.stringify("" + b2) + '][type="radio"]');
-        for (b2 = 0; b2 < c.length; b2++) {
-          var d = c[b2];
+      Cb(a2, c2);
+      b2 = c2.name;
+      if ("radio" === c2.type && null != b2) {
+        for (c2 = a2; c2.parentNode; )
+          c2 = c2.parentNode;
+        c2 = c2.querySelectorAll("input[name=" + JSON.stringify("" + b2) + '][type="radio"]');
+        for (b2 = 0; b2 < c2.length; b2++) {
+          var d = c2[b2];
           if (d !== a2 && d.form === a2.form) {
             var e2 = Qd(d);
             if (!e2)
@@ -16902,18 +17495,18 @@ za = function(a2, b2, c) {
       }
       break;
     case "textarea":
-      Kb(a2, c);
+      Kb(a2, c2);
       break;
     case "select":
-      b2 = c.value, null != b2 && Hb(a2, !!c.multiple, b2, false);
+      b2 = c2.value, null != b2 && Hb(a2, !!c2.multiple, b2, false);
   }
 };
 Fa = Mj;
-Ga = function(a2, b2, c, d, e2) {
+Ga = function(a2, b2, c2, d, e2) {
   var f2 = W$1;
   W$1 |= 4;
   try {
-    return cg(98, a2.bind(null, b2, c, d, e2));
+    return cg(98, a2.bind(null, b2, c2, d, e2));
   } finally {
     W$1 = f2, W$1 === V$1 && gg();
   }
@@ -16922,19 +17515,19 @@ Ha = function() {
   (W$1 & (1 | fj | gj)) === V$1 && (Lj(), Dj());
 };
 Ia = function(a2, b2) {
-  var c = W$1;
+  var c2 = W$1;
   W$1 |= 2;
   try {
     return a2(b2);
   } finally {
-    W$1 = c, W$1 === V$1 && gg();
+    W$1 = c2, W$1 === V$1 && gg();
   }
 };
 function kk(a2, b2) {
-  var c = 2 < arguments.length && void 0 !== arguments[2] ? arguments[2] : null;
+  var c2 = 2 < arguments.length && void 0 !== arguments[2] ? arguments[2] : null;
   if (!gk(b2))
     throw Error(u(200));
-  return jk(a2, b2, null, c);
+  return jk(a2, b2, null, c2);
 }
 var lk = { Events: [Nc, Pd, Qd, xa, ta, Xd, function(a2) {
   jc(a2, Wd);
@@ -16973,23 +17566,23 @@ reactDom_production_min.findDOMNode = function(a2) {
 reactDom_production_min.flushSync = function(a2, b2) {
   if ((W$1 & (fj | gj)) !== V$1)
     throw Error(u(187));
-  var c = W$1;
+  var c2 = W$1;
   W$1 |= 1;
   try {
     return cg(99, a2.bind(null, b2));
   } finally {
-    W$1 = c, gg();
+    W$1 = c2, gg();
   }
 };
-reactDom_production_min.hydrate = function(a2, b2, c) {
+reactDom_production_min.hydrate = function(a2, b2, c2) {
   if (!gk(b2))
     throw Error(u(200));
-  return ik(null, a2, b2, true, c);
+  return ik(null, a2, b2, true, c2);
 };
-reactDom_production_min.render = function(a2, b2, c) {
+reactDom_production_min.render = function(a2, b2, c2) {
   if (!gk(b2))
     throw Error(u(200));
-  return ik(null, a2, b2, false, c);
+  return ik(null, a2, b2, false, c2);
 };
 reactDom_production_min.unmountComponentAtNode = function(a2) {
   if (!gk(a2))
@@ -17005,12 +17598,12 @@ reactDom_production_min.unstable_batchedUpdates = Mj;
 reactDom_production_min.unstable_createPortal = function(a2, b2) {
   return kk(a2, b2, 2 < arguments.length && void 0 !== arguments[2] ? arguments[2] : null);
 };
-reactDom_production_min.unstable_renderSubtreeIntoContainer = function(a2, b2, c, d) {
-  if (!gk(c))
+reactDom_production_min.unstable_renderSubtreeIntoContainer = function(a2, b2, c2, d) {
+  if (!gk(c2))
     throw Error(u(200));
   if (null == a2 || void 0 === a2._reactInternalFiber)
     throw Error(u(38));
-  return ik(a2, b2, c, false, d);
+  return ik(a2, b2, c2, false, d);
 };
 reactDom_production_min.version = "16.14.0";
 function checkDCE() {
@@ -17107,19 +17700,19 @@ var z = function() {
   return S.Date.now();
 }, D = Math.max, Z = Math.min;
 function R(e2, t2, i2) {
-  var s2, r2, o2, n2, a2, l2, c = 0, p2 = false, u2 = false, d = true;
+  var s2, r2, o2, n2, a2, l2, c2 = 0, p2 = false, u2 = false, d = true;
   if ("function" != typeof e2)
     throw new TypeError("Expected a function");
   function h2(t3) {
     var i3 = s2, o3 = r2;
-    return s2 = r2 = void 0, c = t3, n2 = e2.apply(o3, i3);
+    return s2 = r2 = void 0, c2 = t3, n2 = e2.apply(o3, i3);
   }
   function m2(e3) {
-    return c = e3, a2 = setTimeout(v2, t2), p2 ? h2(e3) : n2;
+    return c2 = e3, a2 = setTimeout(v2, t2), p2 ? h2(e3) : n2;
   }
   function g2(e3) {
     var i3 = e3 - l2;
-    return void 0 === l2 || i3 >= t2 || i3 < 0 || u2 && e3 - c >= o2;
+    return void 0 === l2 || i3 >= t2 || i3 < 0 || u2 && e3 - c2 >= o2;
   }
   function v2() {
     var e3 = z();
@@ -17127,7 +17720,7 @@ function R(e2, t2, i2) {
       return f2(e3);
     a2 = setTimeout(v2, function(e4) {
       var i3 = t2 - (e4 - l2);
-      return u2 ? Z(i3, o2 - (e4 - c)) : i3;
+      return u2 ? Z(i3, o2 - (e4 - c2)) : i3;
     }(e3));
   }
   function f2(e3) {
@@ -17144,7 +17737,7 @@ function R(e2, t2, i2) {
     return void 0 === a2 && (a2 = setTimeout(v2, t2)), n2;
   }
   return t2 = O(t2) || 0, M(i2) && (p2 = !!i2.leading, o2 = (u2 = "maxWait" in i2) ? D(O(i2.maxWait) || 0, t2) : o2, d = "trailing" in i2 ? !!i2.trailing : d), A2.cancel = function() {
-    void 0 !== a2 && clearTimeout(a2), c = 0, s2 = l2 = r2 = a2 = void 0;
+    void 0 !== a2 && clearTimeout(a2), c2 = 0, s2 = l2 = r2 = a2 = void 0;
   }, A2.flush = function() {
     return void 0 === a2 ? n2 : f2(z());
   }, A2;
@@ -17347,7 +17940,7 @@ function _(e2, t2, i2) {
           return;
         if (1 !== r3.playState)
           return void $(">>> Skip timupdate", { playingId: n2, state: r3.playState, jsTime: t2.currentTime(), rtcEffectTime: o3 });
-        function c(t3, i5) {
+        function c2(t3, i5) {
           e2.setEffectPosition(i5, 1e3 * t3), r3.previousBeginSeekTime = Date.now() / 1e3, r3.previousSeekTargetTime = t3;
         }
         const p2 = r3.previousBeginSeekTime;
@@ -17356,12 +17949,12 @@ function _(e2, t2, i2) {
           if (t3 > i5)
             if (l2) {
               const t4 = r3.previousSeekTargetTime - o3, i6 = Date.now() / 1e3 - p2, s3 = i6 + (e3 > 0 ? e3 : 0), l3 = a2 + s3;
-              c(l3, n2), $(">>> Start seeking after seeking lag", { jsPlayerTime: a2, rtcEffectTime: o3, jsPlayerTimerAdvance: e3, lastSeekingCost: i6, estimatedRTCLag: s3, targetRTCSeekTime: l3, previousBeginSeekTime: p2, timeElapse: t4 });
+              c2(l3, n2), $(">>> Start seeking after seeking lag", { jsPlayerTime: a2, rtcEffectTime: o3, jsPlayerTimerAdvance: e3, lastSeekingCost: i6, estimatedRTCLag: s3, targetRTCSeekTime: l3, previousBeginSeekTime: p2, timeElapse: t4 });
             } else if (t3 > 10)
-              c(a2, n2), $(">>> DirectSeek", { time: a2, rtcEffectTime: o3, jsPlayerTimerAdvance: e3 });
+              c2(a2, n2), $(">>> DirectSeek", { time: a2, rtcEffectTime: o3, jsPlayerTimerAdvance: e3 });
             else {
               const t4 = r3.previousVideoJSAdvance, i6 = 0, s3 = a2 + i6;
-              r3.previousVideoJSAdvance = i6, c(s3, n2), $(">>> Start seeking with lag", { jsPlayerTime: a2, rtcEffectTime: o3, jsPlayerTimerAdvance: e3, previousAdvance: t4, estimatedRTCLag: i6, targetRTCSeekTime: s3 });
+              r3.previousVideoJSAdvance = i6, c2(s3, n2), $(">>> Start seeking with lag", { jsPlayerTime: a2, rtcEffectTime: o3, jsPlayerTimerAdvance: e3, previousAdvance: t4, estimatedRTCLag: i6, targetRTCSeekTime: s3 });
             }
           else
             l2 && ($(">>> SeekingFinish no lag", { jsPlayerTime: a2, rtcEffectTime: o3, jsPlayerTimerAdvance: e3, previousBeginSeekTime: p2, rtcLagTolerance: i5 }), r3.previousBeginSeekTime = 0, r3.previousSeekTargetTime = 0);
@@ -17447,7 +18040,7 @@ class te extends react.exports.Component {
       o2.className = "video-js", s2 && (o2.poster = s2), o2.setAttribute("playsInline", ""), o2.setAttribute("webkit-playsinline", "");
       const n2 = document.createElement("source");
       new URL(i2).pathname.endsWith(".m3u8") ? n2.type = "application/x-mpegURL" : o2.src = i2, n2.src = i2, t2 && (n2.type = t2), o2.appendChild(n2), r2.appendChild(o2), this.container.current.appendChild(r2), await new Promise((e4) => (window.requestAnimationFrame || window.setTimeout)(e4)), this.debug("initializing videojs() ...");
-      const a2 = u$2(o2);
+      const a2 = u$3(o2);
       this.player = a2, window.player = a2, a2.one("loadedmetadata", this.gracefullyUpdate);
       const l2 = window.__mediaPlayerAudioEffectClient;
       void 0 !== l2 && _(l2, a2, i2), a2.on("ready", () => {
@@ -17493,7 +18086,7 @@ class te extends react.exports.Component {
     g.verbose && g.log(`[MediaPlayer] ${e2}`, ...t2);
   }
   componentDidMount() {
-    this.debug("app version =", "0.1.0-alpha.5"), this.debug("video.js version =", u$2.VERSION), this.initPlayer(), this.props.context.emitter.on("attributesUpdate", this.syncPlayerWithAttributes), this.syncPlayerTimer = setInterval(this.syncPlayerWithAttributes, g.syncInterval), this.decreaseRetryTimer = setInterval(this.decreaseRetryCount, g.retryInterval);
+    this.debug("app version =", "0.1.0-alpha.5"), this.debug("video.js version =", u$3.VERSION), this.initPlayer(), this.props.context.emitter.on("attributesUpdate", this.syncPlayerWithAttributes), this.syncPlayerTimer = setInterval(this.syncPlayerWithAttributes, g.syncInterval), this.decreaseRetryTimer = setInterval(this.decreaseRetryCount, g.retryInterval);
   }
   componentWillUnmount() {
     var e2;
@@ -17587,9 +18180,9 @@ const _IframeBridge = class {
     this.magixEventMap = /* @__PURE__ */ new Map();
     this.cssList = [];
     this.allowAppliances = ["clicker"];
-    this.bridgeDisposer = noop$1;
+    this.bridgeDisposer = noop$2;
     this.rootRect = null;
-    this.sideEffectManager = new o$1();
+    this.sideEffectManager = new o$2();
     this.execListenIframe = debounce((options) => {
       this.listenIframe(options);
     }, 50);
@@ -18248,9 +18841,9 @@ const _WindowManager = class extends InvisiblePlugin {
     _WindowManager.container = container;
   }
   bindCollectorContainer(container) {
-    if (_WindowManager.isCreated && this.boxManager)
-      ;
-    else {
+    if (_WindowManager.isCreated && this.boxManager) {
+      this.boxManager.setCollectorContainer(container);
+    } else {
       if (_WindowManager.params) {
         _WindowManager.params.collectorContainer = container;
       }

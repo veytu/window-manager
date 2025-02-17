@@ -72,11 +72,11 @@ export class AttributesDelegate {
     }
 
     public getMaximized() {
-        return get(this.attributes, ["maximized"]);
+        return get(this.attributes, ["maximizedBoxes"]);
     }
 
     public getMinimized() {
-        return get(this.attributes, ["minimized"]);
+        return get(this.attributes, ["minimizedBoxes"]);
     }
 
     public setupAppAttributes(params: AddAppParams, id: string, isDynamicPPT: boolean) {
