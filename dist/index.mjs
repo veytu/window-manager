@@ -18679,7 +18679,7 @@ const reconnectRefresher = new ReconnectRefresher({ emitter: internalEmitter });
 const _WindowManager = class extends InvisiblePlugin {
   constructor(context) {
     super(context);
-    this.version = "1.0.1";
+    this.version = "1.0.2";
     this.dependencies = { "dependencies": { "@juggle/resize-observer": "^3.3.1", "@netless/telebox-insider": "github:veytu/telebox-insider", "emittery": "^0.9.2", "lodash": "^4.17.21", "p-retry": "^4.6.1", "uuid": "^7.0.3", "video.js": ">=7" }, "peerDependencies": { "jspdf": "2.5.1", "white-web-sdk": "^2.16.52" }, "devDependencies": { "@hyrious/dts": "^0.2.2", "@netless/app-docs-viewer": "^0.2.18", "@netless/app-media-player": "0.1.0-beta.9", "@rollup/plugin-commonjs": "^20.0.0", "@rollup/plugin-node-resolve": "^13.0.4", "@rollup/plugin-url": "^6.1.0", "@sveltejs/vite-plugin-svelte": "^1.0.0-next.22", "@tsconfig/svelte": "^2.0.1", "@types/debug": "^4.1.7", "@types/lodash": "^4.14.182", "@types/lodash-es": "^4.17.4", "@types/uuid": "^8.3.1", "@typescript-eslint/eslint-plugin": "^4.30.0", "@typescript-eslint/parser": "^4.30.0", "@vitest/ui": "^0.14.1", "cypress": "^8.7.0", "dotenv": "^10.0.0", "eslint": "^7.32.0", "eslint-config-prettier": "^8.3.0", "eslint-plugin-svelte3": "^3.2.0", "jsdom": "^19.0.0", "jspdf": "^2.5.1", "less": "^4.1.1", "prettier": "^2.3.2", "prettier-plugin-svelte": "^2.4.0", "rollup-plugin-analyzer": "^4.0.0", "rollup-plugin-styles": "^3.14.1", "side-effect-manager": "0.1.5", "svelte": "^3.42.4", "typescript": "^4.5.5", "vite": "^2.9.9", "vitest": "^0.14.1", "white-web-sdk": "2.16.52" } };
     this.emitter = callbacks$1;
     this.viewMode = ViewMode.Broadcaster;
@@ -19116,6 +19116,51 @@ const _WindowManager = class extends InvisiblePlugin {
       }
       this._cursorUIDsStyleDOM.textContent = style2;
     }
+  }
+  maximizedBoxNextPage() {
+    var _a, _b;
+    const boxId = this.getTopMaxBoxId();
+    if (!boxId)
+      return false;
+    const box = (_a = this.appManager) == null ? void 0 : _a.appProxies.get(boxId);
+    if (!box)
+      return false;
+    return (_b = box == null ? void 0 : box.appContext) == null ? void 0 : _b.nextPage();
+  }
+  maximizedBoxPrevPage() {
+    var _a, _b;
+    const boxId = this.getTopMaxBoxId();
+    if (!boxId)
+      return false;
+    const box = (_a = this.appManager) == null ? void 0 : _a.appProxies.get(boxId);
+    if (!box)
+      return false;
+    return (_b = box == null ? void 0 : box.appContext) == null ? void 0 : _b.prevPage();
+  }
+  getMaximizedBoxPageState() {
+    var _a, _b;
+    const boxId = this.getTopMaxBoxId();
+    if (!boxId)
+      return void 0;
+    const box = (_a = this.appManager) == null ? void 0 : _a.appProxies.get(boxId);
+    if (!box)
+      return void 0;
+    return (_b = box == null ? void 0 : box.appContext) == null ? void 0 : _b.pageState;
+  }
+  getTopMaxBoxId() {
+    var _a, _b;
+    const boxes = (_b = (_a = this.appManager) == null ? void 0 : _a.boxManager) == null ? void 0 : _b.teleBoxManager.maximizedBoxes.filter((box) => {
+      var _a2, _b2;
+      return !((_b2 = (_a2 = this.appManager) == null ? void 0 : _a2.boxManager) == null ? void 0 : _b2.teleBoxManager.minimizedBoxes.includes(box));
+    });
+    if (!(boxes == null ? void 0 : boxes.length))
+      return void 0;
+    return boxes.reduce(
+      (a2, b2) => {
+        var _a2, _b2, _c, _d, _e, _f, _g, _h;
+        return Number((_d = (_c = (_b2 = (_a2 = this.appManager) == null ? void 0 : _a2.boxManager) == null ? void 0 : _b2.getBox(a2)) == null ? void 0 : _c._zIndex$) == null ? void 0 : _d.value) > Number((_h = (_g = (_f = (_e = this.appManager) == null ? void 0 : _e.boxManager) == null ? void 0 : _f.getBox(b2)) == null ? void 0 : _g._zIndex$) == null ? void 0 : _h.value) ? a2 : b2;
+      }
+    );
   }
   get mainView() {
     if (this.appManager) {

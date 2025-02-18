@@ -718,6 +718,53 @@ export class WindowManager
         }
     }
 
+    public maximizedBoxNextPage() {
+        const boxId = this.getTopMaxBoxId();
+
+        if (!boxId) return false
+
+        const box = this.appManager?.appProxies.get(boxId)
+
+        if (!box) return false
+        
+        return box?.appContext?.nextPage();
+    }
+
+    public maximizedBoxPrevPage() {
+        const boxId = this.getTopMaxBoxId();
+
+        if (!boxId) return false
+
+        const box = this.appManager?.appProxies.get(boxId)
+
+        if (!box) return false
+
+        return box?.appContext?.prevPage();
+    }
+
+    public getMaximizedBoxPageState() {
+        const boxId = this.getTopMaxBoxId();
+
+        if (!boxId) return undefined
+
+        const box = this.appManager?.appProxies.get(boxId)
+
+        if (!box) return undefined
+        
+        return box?.appContext?.pageState
+    }
+    
+    public getTopMaxBoxId() {
+        const boxes = this.appManager?.boxManager?.teleBoxManager.maximizedBoxes.filter(box => !this.appManager?.boxManager?.teleBoxManager.minimizedBoxes.includes(box))
+        if (!boxes?.length) return undefined
+        return boxes.reduce((a, b) =>
+          Number(this.appManager?.boxManager?.getBox(a)?._zIndex$?.value) >
+          Number(this.appManager?.boxManager?.getBox(b)?._zIndex$?.value)
+            ? a
+            : b
+        );
+      }
+
     public get mainView(): View {
         if (this.appManager) {
             return this.appManager.mainViewProxy.view;

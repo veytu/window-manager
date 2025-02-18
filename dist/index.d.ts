@@ -367,6 +367,7 @@ type AppEmitterEvent<T = any> = {
     reconnected: void;
     seek: number;
     pageStateChange: PageState;
+    togglePreview: boolean;
 };
 type RegisterEventData = {
     appId: string;
@@ -1268,6 +1269,10 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     setFullscreen(fullscreen: boolean): void;
     get cursorUIDs(): string[];
     setCursorUIDs(cursorUIDs?: string[] | null): void;
+    maximizedBoxNextPage(): false | Promise<boolean> | undefined;
+    maximizedBoxPrevPage(): false | Promise<boolean> | undefined;
+    getMaximizedBoxPageState(): PageState | undefined;
+    getTopMaxBoxId(): string | undefined;
     get mainView(): View;
     get camera(): Camera;
     get cameraState(): CameraState;
