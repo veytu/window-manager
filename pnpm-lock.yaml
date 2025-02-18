@@ -32,8 +32,8 @@ devDependencies:
     specifier: ^0.2.2
     version: 0.2.2
   '@netless/app-docs-viewer':
-    specifier: ^0.2.18
-    version: 0.2.18(jspdf@2.5.1)
+    specifier: github:veytu/app-docs-viewer
+    version: git@github.com+veytu/app-docs-viewer/4c6c1fe466dc4dfc24f383b537426eba9926eba8(jspdf@2.5.1)
   '@netless/app-media-player':
     specifier: 0.1.0-beta.9
     version: 0.1.0-beta.9
@@ -266,20 +266,6 @@ packages:
 
   /@juggle/resize-observer@3.3.1:
     resolution: {integrity: sha512-zMM9Ds+SawiUkakS7y94Ymqx+S0ORzpG3frZirN3l+UlXUmSUR7hF4wxCVqW+ei94JzV5kt0uXBcoOEAuiydrw==}
-
-  /@netless/app-docs-viewer@0.2.18(jspdf@2.5.1):
-    resolution: {integrity: sha512-rFMvOPqTlPTYknj6YEsknK0tvKPOsET7GI8mLax4Q4i2jBfroYAgv0AmBM3zNX7Q2PcRnNybWgEz8Nbo7TaOLQ==}
-    peerDependencies:
-      jspdf: 2.5.1
-    peerDependenciesMeta:
-      jspdf:
-        optional: true
-    dependencies:
-      '@juggle/resize-observer': 3.3.1
-      debounce-fn: 5.1.2
-      jspdf: 2.5.1
-      vanilla-lazyload: 17.9.0
-    dev: true
 
   /@netless/app-media-player@0.1.0-beta.9:
     resolution: {integrity: sha512-pn6/k4T+7wCFhZ0Hq/yu+//lrqIkFGVLeUBqBtLrKXILiFO+c3g6dAtqbE5NLeUOnD9HKGbtjP1hHr9URUScpg==}
@@ -5821,6 +5807,23 @@ packages:
     dependencies:
       buffer-crc32: 0.2.13
       fd-slicer: 1.1.0
+    dev: true
+
+  git@github.com+veytu/app-docs-viewer/4c6c1fe466dc4dfc24f383b537426eba9926eba8(jspdf@2.5.1):
+    resolution: {commit: 4c6c1fe466dc4dfc24f383b537426eba9926eba8, repo: git@github.com:veytu/app-docs-viewer.git, type: git}
+    id: git@github.com+veytu/app-docs-viewer/4c6c1fe466dc4dfc24f383b537426eba9926eba8
+    name: '@netless/app-docs-viewer'
+    version: 0.2.18
+    peerDependencies:
+      jspdf: 2.5.1
+    peerDependenciesMeta:
+      jspdf:
+        optional: true
+    dependencies:
+      '@juggle/resize-observer': 3.3.1
+      debounce-fn: 5.1.2
+      jspdf: 2.5.1
+      vanilla-lazyload: 17.9.0
     dev: true
 
   github.com/veytu/telebox-insider/93f8c748a7b7c9ed4819b9ac41ad78cfacfbd2ff:
