@@ -162,7 +162,10 @@ export class BoxManager {
         });
         emitter.on("playgroundSizeChange", () => this.updateManagerRect());
         emitter.on("updateManagerRect", () => this.updateManagerRect());
-        emitter.on("onScaleChange", (scale) => this.changeScale(scale))
+        emitter.on("onScaleChange", (scale) => {
+            console.log('scale==========', scale)
+            this.changeScale(scale)
+        })
     }
 
     private get mainView() {

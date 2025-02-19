@@ -6694,7 +6694,10 @@ class BoxManager {
     });
     emitter.on("playgroundSizeChange", () => this.updateManagerRect());
     emitter.on("updateManagerRect", () => this.updateManagerRect());
-    emitter.on("onScaleChange", (scale2) => this.changeScale(scale2));
+    emitter.on("onScaleChange", (scale2) => {
+      console.log("scale==========", scale2);
+      this.changeScale(scale2);
+    });
   }
   get mainView() {
     return this.context.getMainView();
