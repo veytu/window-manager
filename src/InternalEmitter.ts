@@ -28,6 +28,7 @@ export type EmitterEvent = {
     changePageState: undefined;
     writableChange: boolean;
     containerSizeRatioUpdate: number;
+    onScaleChange: number;
 };
 
 export type EmitterType = Emittery<EmitterEvent>;

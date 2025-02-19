@@ -14,6 +14,7 @@ export const setupWrapper = (
     wrapper: HTMLDivElement;
     sizer: HTMLDivElement;
     mainViewElement: HTMLDivElement;
+    mainViewWrapper: HTMLDivElement;
 } => {
     const playground = document.createElement("div");
     playground.className = "netless-window-manager-playground";
@@ -24,16 +25,20 @@ export const setupWrapper = (
     const wrapper = document.createElement("div");
     wrapper.className = "netless-window-manager-wrapper";
 
+    const mainViewWrapper = document.createElement("div");
+    mainViewWrapper.className = "netless-window-manager-main-view-wrapper"
+
     const mainViewElement = document.createElement("div");
     mainViewElement.className = "netless-window-manager-main-view";
 
     playground.appendChild(sizer);
     sizer.appendChild(wrapper);
+    mainViewWrapper.appendChild(mainViewElement);
     wrapper.appendChild(mainViewElement);
     root.appendChild(playground);
     WindowManager.wrapper = wrapper;
 
-    return { playground, wrapper, sizer, mainViewElement };
+    return { playground, wrapper, sizer, mainViewElement, mainViewWrapper };
 };
 
 export const checkVersion = () => {

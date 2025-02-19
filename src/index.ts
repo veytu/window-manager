@@ -169,6 +169,7 @@ export class WindowManager
     public static kind = "WindowManager";
     public static displayer: Displayer;
     public static wrapper?: HTMLElement;
+    public static mainViewWrapper?: HTMLElement;
     public static sizer?: HTMLElement;
     public static playground?: HTMLElement;
     public static container?: HTMLElement;
@@ -296,6 +297,10 @@ export class WindowManager
             console.warn("[WindowManager]: indexedDB open failed");
             console.log(error);
         }
+
+        manager?.room?.addMagixEventListener("onScaleChange", (data) => {
+            manager?.setScale(data.payload)
+        })
         return manager;
     }
 
@@ -316,7 +321,7 @@ export class WindowManager
         if (!WindowManager.container) {
             WindowManager.container = container;
         }
-        const { playground, wrapper, sizer, mainViewElement } = setupWrapper(container);
+        const { playground, wrapper, sizer, mainViewElement, mainViewWrapper } = setupWrapper(container);
         WindowManager.playground = playground;
         if (chessboard) {
             sizer.classList.add("netless-window-manager-chess-sizer");
@@ -337,6 +342,7 @@ export class WindowManager
         );
         WindowManager.wrapper = wrapper;
         WindowManager.sizer = sizer;
+        WindowManager.mainViewWrapper = mainViewWrapper;
         return mainViewElement;
     }
 
@@ -1093,6 +1099,30 @@ export class WindowManager
         WindowManager.containerSizeRatio = ratio;
         this.containerSizeRatio = ratio;
         internalEmitter.emit("containerSizeRatioUpdate", ratio);
+    }
+
+    public setScale(scale: number): boolean {
+        if (!isNumber(scale)) return false
+        const setStyles = (styles: {width: number; height: number}) => {
+            if (!WindowManager.mainViewWrapper) return
+            WindowManager.mainViewWrapper.style.width = `${styles.width}px`
+            WindowManager.mainViewWrapper.style.height = `${styles.height}px`
+        }
+        const size = WindowManager.wrapper?.getBoundingClientRect()
+
+        if (!size) return false
+
+        if (scale < 1) {
+            setStyles({width: size?.width, height: size?.height})
+            internalEmitter.emit("onScaleChange", scale)
+            this.appManager?.room?.dispatchMagixEvent('onScaleChange', scale)
+            return true
+        }
+
+        setStyles({width: size?.width * scale, height: size?.height * scale})
+        internalEmitter.emit("onScaleChange", scale)
+        this.appManager?.room?.dispatchMagixEvent('onScaleChange', scale)
+        return true
     }
 
     private isDynamicPPT(scenes: SceneDefinition[]) {

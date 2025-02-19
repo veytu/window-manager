@@ -2906,14 +2906,17 @@ const setupWrapper = (root) => {
   sizer.className = "netless-window-manager-sizer";
   const wrapper = document.createElement("div");
   wrapper.className = "netless-window-manager-wrapper";
+  const mainViewWrapper = document.createElement("div");
+  mainViewWrapper.className = "netless-window-manager-main-view-wrapper";
   const mainViewElement = document.createElement("div");
   mainViewElement.className = "netless-window-manager-main-view";
   playground.appendChild(sizer);
   sizer.appendChild(wrapper);
+  mainViewWrapper.appendChild(mainViewElement);
   wrapper.appendChild(mainViewElement);
   root.appendChild(playground);
   WindowManager.wrapper = wrapper;
-  return { playground, wrapper, sizer, mainViewElement };
+  return { playground, wrapper, sizer, mainViewElement, mainViewWrapper };
 };
 const checkVersion = () => {
   const version = getVersionNumber(WhiteVersion);
@@ -5154,7 +5157,7 @@ class TeleBox {
     $titleBar.appendChild(this.titleBar.render());
     this.$titleBar = $titleBar;
     const $contentWrap = document.createElement("div");
-    $contentWrap.className = this.wrapClassName("content-wrap");
+    $contentWrap.className = this.wrapClassName("content-wrap") + " tele-fancy-scrollbar";
     const $content = document.createElement("div");
     $content.className = this.wrapClassName("content") + " tele-fancy-scrollbar";
     this.$content = $content;
@@ -5201,6 +5204,7 @@ class TeleBox {
     $boxMain.appendChild($titleBar);
     $boxMain.appendChild($contentWrap);
     $boxMain.appendChild($footer);
+    this.$contentWrap = $contentWrap;
     this._renderResizeHandlers();
     return this.$box;
   }
@@ -5410,6 +5414,27 @@ class TeleBox {
       "box-resizeHandles-touchstart"
     );
   }
+  setScaleContent(scale2) {
+    if (!this.$content)
+      return;
+    const styles2 = {};
+    for (const property in this.$content.style) {
+      if (typeof this.$content.style[property] === "string") {
+        styles2[property] = this.$content.style[property];
+      }
+    }
+    const contentWrapRect = this.$contentWrap.getBoundingClientRect();
+    Object.assign(styles2, {
+      width: contentWrapRect.width * scale2,
+      height: contentWrapRect.height * scale2
+    });
+    Object.keys(styles2).forEach((key) => {
+      const value = styles2[key];
+      if (value != null) {
+        this.$content.style[key] = value;
+      }
+    });
+  }
   destroy() {
     this.$box.remove();
     this.events.emit(TELE_BOX_EVENT.Destroyed);
@@ -5504,10 +5529,11 @@ class TeleBoxCollector {
       });
     });
     const blurPopup = (ev) => {
+      var _a, _b;
       if (!this.popupVisible$)
         return;
       const target = ev.target;
-      if (target.className.includes("collector"))
+      if ((_b = (_a = target.className) == null ? void 0 : _a.includes) == null ? void 0 : _b.call(_a, "collector"))
         return;
       this.popupVisible$.setValue(false);
     };
@@ -6441,6 +6467,11 @@ class TeleBoxManager {
       this.maxTitleBar.focusBox();
     }
   }
+  setScaleContent(scale2) {
+    this.boxes.forEach((box) => {
+      box.setScaleContent(scale2);
+    });
+  }
   teleBoxMatcher(config) {
     const keys = Object.keys(config);
     return (box) => keys.every((key) => config[key] === box[key]);
@@ -6663,6 +6694,7 @@ class BoxManager {
     });
     emitter.on("playgroundSizeChange", () => this.updateManagerRect());
     emitter.on("updateManagerRect", () => this.updateManagerRect());
+    emitter.on("onScaleChange", (scale2) => this.changeScale(scale2));
   }
   get mainView() {
     return this.context.getMainView();
@@ -6687,6 +6719,9 @@ class BoxManager {
   }
   get boxSize() {
     return this.teleBoxManager.boxes.length;
+  }
+  changeScale(scale2) {
+    this.teleBoxManager.setScaleContent(scale2);
   }
   createBox(params) {
     var _a, _b, _c;
@@ -8236,7 +8271,7 @@ var __spreadValues = (a2, b2) => {
   return a2;
 };
 var __spreadProps = (a2, b2) => __defProps(a2, __getOwnPropDescs(b2));
-var styles = /* @__PURE__ */ (() => ".netless-app-docs-viewer-content{position:relative;height:100%;overflow:hidden}.netless-app-docs-viewer-preview-mask{display:none;position:absolute;z-index:200;top:0;left:0;width:100%;height:100%}.netless-app-docs-viewer-preview{display:flex;flex-direction:column;align-items:center;z-index:300;top:0;right:0;width:23%;padding:12px;transform:translate(100%);box-shadow:-4.8px -3.2px 20px #20233826;transition:transform .4s;background:#f5f5fc;border-radius:4px;-webkit-box-shadow:-4.8px -3.2px 20px rgba(32,35,56,.15);height:100%;position:absolute;opacity:0}.netless-app-docs-viewer-preview-active .netless-app-docs-viewer-preview-mask{display:block}.netless-app-docs-viewer-preview-active .netless-app-docs-viewer-preview{transform:translate(0);opacity:1}.netless-app-docs-viewer-preview-head{display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:10px}.netless-app-docs-viewer-preview-head>h3{color:#484c70;font-weight:400;font-size:14px;width:calc(100% - 20px);overflow:hidden;-o-text-overflow:ellipsis;text-overflow:ellipsis;white-space:nowrap}.netless-app-docs-viewer-preview-head .netless-app-docs-viewer-close{width:25px;height:25px;padding:0;outline:none;border:none;background:#fff;display:flex;justify-content:center;align-items:center;border-radius:100%;cursor:pointer}.netless-app-docs-viewer-preview-head .netless-app-docs-viewer-close button{width:22px;height:22px;padding:0;outline:none;border:none;background:center/cover no-repeat;background-image:url(./icons/close.svg)}.netless-app-docs-viewer-preview-page{position:relative;display:flex;width:100%;margin-bottom:10px;font-size:0;color:transparent;outline:none;border-radius:4px;transition:border-color .3s;user-select:none;align-items:flex-end}.netless-app-docs-viewer-preview-page>img{width:calc(90% - 10px);height:auto;box-sizing:border-box;border:2px solid rgba(0,0,0,.5);border-radius:2px;background-color:#fff}.netless-app-docs-viewer-preview-page>img.netless-app-docs-viewer-active{border-color:#ff5353}.netless-app-docs-viewer-preview-page-name{text-align:right;font-size:12px;color:#8d8fa6;user-select:none;margin-right:10px;width:5%}.netless-app-docs-viewer-footer{box-sizing:border-box;height:40px;display:flex;align-items:center;padding:0 16px;color:#191919;background:#ebecfa}.netless-app-docs-viewer-float-footer{width:100%;min-height:40px;position:absolute;left:0;bottom:0;z-index:2000;transition:opacity .4s;color:#191919}.netless-app-docs-viewer-footer-btn{box-sizing:border-box;width:26px;height:26px;font-size:0;margin:0;padding:3px;border:none;border-radius:4px;outline:none;color:currentColor;background:transparent;transition:background .4s;cursor:pointer;user-select:none;-webkit-tap-highlight-color:rgba(0,0,0,0);color:#8d8fa6}.netless-app-docs-viewer-footer-btn.netless-app-docs-viewer-footer-btn-disable{color:#c6c7d2;cursor:not-allowed}.netless-app-docs-viewer-footer-btn.netless-app-docs-viewer-footer-btn-disable .arrow{fill:#c6c7d2}.netless-app-docs-viewer-footer-btn .arrow{fill:#8d8fa6}.netless-app-docs-viewer-footer-btn:hover{background-color:#1b1f4d0a}@media (hover: none){.netless-app-docs-viewer-footer-btn:hover{background:transparent!important}}.netless-app-docs-viewer-footer-btn>svg{width:100%;height:100%}.netless-app-docs-viewer-footer-btn>svg:nth-of-type(2){display:none}.netless-app-docs-viewer-footer-btn.netless-app-docs-viewer-footer-btn-playing>svg:nth-of-type(1){display:none}.netless-app-docs-viewer-footer-btn.netless-app-docs-viewer-footer-btn-playing>svg:nth-of-type(2){display:initial}.netless-app-docs-viewer-hide{visibility:hidden}.netless-app-docs-viewer-page-jumps{flex:1;display:flex;justify-content:center;align-items:center;gap:8px}.netless-app-docs-viewer-page-number{font-size:14px;color:#8d8fa6;user-select:none;white-space:nowrap;word-break:keep-all}.netless-app-docs-viewer-page-number-input{border:none;outline:none;width:3em;margin:0;padding:0 2px;text-align:right;font-size:13px;line-height:1;font-weight:400;font-family:inherit;border-radius:2px;color:currentColor;background:transparent;transition:background .4s;user-select:text;-webkit-tap-highlight-color:rgba(0,0,0,0)}.netless-app-docs-viewer-readonly .netless-app-docs-viewer-footer-btn{cursor:not-allowed}.netless-app-docs-viewer-readonly .netless-app-docs-viewer-footer-btn:hover{background:transparent}.netless-app-docs-viewer-readonly .netless-app-docs-viewer-page-number-input{cursor:not-allowed}.netless-app-docs-viewer-readonly .netless-app-docs-viewer-page-number-input:hover,.netless-app-docs-viewer-readonly .netless-app-docs-viewer-page-number-input:focus,.netless-app-docs-viewer-readonly .netless-app-docs-viewer-page-number-input:active{background:transparent;box-shadow:none}.netless-app-docs-viewer-readonly .netless-app-docs-viewer-page-number-input:disabled{color:inherit}.netless-app-docs-viewer-readonly.netless-app-docs-viewer-float-footer{display:none}.telebox-color-scheme-dark .netless-app-docs-viewer-page-number-input{color:#a6a6a8}.telebox-color-scheme-dark .netless-app-docs-viewer-page-number-input:active,.telebox-color-scheme-dark .netless-app-docs-viewer-page-number-input:focus,.telebox-color-scheme-dark .netless-app-docs-viewer-page-number-input:hover{color:#222}.telebox-color-scheme-dark .netless-app-docs-viewer-footer{color:#a6a6a8;background:#2d2d33;border-top:none}.telebox-color-scheme-dark .netless-app-docs-viewer-footer-btn:hover{background:#212126}.telebox-color-scheme-dark .netless-app-docs-viewer-preview{background:rgba(50,50,50,.9)}.netless-app-docs-viewer-static-scrollbar{position:absolute;top:0;right:0;z-index:2147483647;width:8px;min-height:30px;margin:0;padding:0;border:none;outline:none;border-radius:4px;background:rgba(68,78,96,.4);box-shadow:1px 1px 8px #ffffffb3;opacity:0;transition:background .4s,opacity .4s 3s,transform .2s;user-select:none}.netless-app-docs-viewer-static-scrollbar.netless-app-docs-viewer-static-scrollbar-dragging{background:rgba(68,78,96,.6);opacity:1;transition:background .4s,opacity .4s 3s!important}.netless-app-docs-viewer-static-scrollbar:hover,.netless-app-docs-viewer-static-scrollbar:focus{background:rgba(68,78,96,.5)}.netless-app-docs-viewer-static-scrollbar:active{background:rgba(68,78,96,.6)}.netless-app-docs-viewer-content:hover .netless-app-docs-viewer-static-scrollbar{opacity:1;transition:background .4s,opacity .4s,transform .2s}.netless-app-docs-viewer-readonly .netless-app-docs-viewer-static-scrollbar{display:none}.netless-app-docs-viewer-static-pages:hover .netless-app-docs-viewer-static-scrollbar{opacity:1;transition:background .4s,opacity .4s,transform .2s}.page-renderer-pages-container{position:relative;overflow:hidden}.page-renderer-page{position:absolute;top:0;left:0;background-position:center;background-size:cover;background-repeat:no-repeat}.page-renderer-pages-container.is-hwa .page-renderer-page{will-change:transform}.page-renderer-page-img{display:block;width:100%;height:auto;user-select:none}.netless-app-docs-viewer-static-pages{overflow:hidden;position:relative;height:100%;user-select:none}.netless-app-docs-viewer-static-page{display:block;width:100%;height:auto;user-select:none}.netless-app-docs-viewer-static-wb-view,.netless-app-docs-viewer-dynamic-wb-view{position:absolute;top:0;left:0;width:100%;height:100%;z-index:100;overflow:hidden}.netless-app-docs-viewer-dynamic-wb-view .cursor-clicker .ppt-event-source{cursor:pointer}\n")();
+var styles = /* @__PURE__ */ (() => ".netless-app-docs-viewer-content{position:relative;height:100%;overflow:hidden}.netless-app-docs-viewer-preview-mask{display:none;position:absolute;z-index:200;top:0;left:0;width:100%;height:100%}.netless-app-docs-viewer-preview{display:flex;flex-direction:column;align-items:center;z-index:300;top:0;right:0;width:23%;padding:12px;transform:translate(100%);box-shadow:-4.8px -3.2px 20px #20233826;transition:transform .4s;background:#f5f5fc;border-radius:4px;-webkit-box-shadow:-4.8px -3.2px 20px rgba(32,35,56,.15);height:100%;position:absolute;opacity:0}.netless-app-docs-viewer-preview-active .netless-app-docs-viewer-preview-mask{display:block}.netless-app-docs-viewer-preview-active .netless-app-docs-viewer-preview{transform:translate(0);opacity:1}.netless-app-docs-viewer-preview-head{display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:10px}.netless-app-docs-viewer-preview-head>h3{color:#484c70;font-weight:400;font-size:14px;width:calc(100% - 20px);overflow:hidden;-o-text-overflow:ellipsis;text-overflow:ellipsis;white-space:nowrap}.netless-app-docs-viewer-preview-head .netless-app-docs-viewer-close{width:25px;height:25px;padding:0;outline:none;border:none;background:#fff;display:flex;justify-content:center;align-items:center;border-radius:100%;cursor:pointer}.netless-app-docs-viewer-preview-head .netless-app-docs-viewer-close button{width:22px;height:22px;padding:0;outline:none;border:none;background:center/cover no-repeat;background-image:url(./icons/close.svg)}.netless-app-docs-viewer-preview-page{position:relative;display:flex;width:100%;margin-bottom:10px;font-size:0;color:transparent;outline:none;border-radius:4px;transition:border-color .3s;user-select:none;align-items:flex-end}.netless-app-docs-viewer-preview-page>img{width:calc(90% - 10px);height:auto;box-sizing:border-box;border:2px solid rgba(0,0,0,.5);border-radius:2px;background-color:#fff}.netless-app-docs-viewer-preview-page>img.netless-app-docs-viewer-active{border-color:#ff5353}.netless-app-docs-viewer-preview-page-name{text-align:right;font-size:12px;color:#8d8fa6;user-select:none;margin-right:10px;width:5%}.netless-app-docs-viewer-footer{box-sizing:border-box;height:40px;display:flex;align-items:center;padding:0 16px;color:#191919;background:#ebecfa}.netless-app-docs-viewer-float-footer{width:100%;min-height:40px;position:absolute;left:0;bottom:0;z-index:2000;transition:opacity .4s;color:#191919}.netless-app-docs-viewer-footer-btn{box-sizing:border-box;width:26px;height:26px;font-size:0;margin:0;padding:3px;border:none;border-radius:4px;outline:none;color:currentColor;background:transparent;transition:background .4s;cursor:pointer;user-select:none;-webkit-tap-highlight-color:rgba(0,0,0,0);color:#8d8fa6}.netless-app-docs-viewer-footer-btn.netless-app-docs-viewer-footer-btn-disable{color:#c6c7d2;cursor:not-allowed}.netless-app-docs-viewer-footer-btn.netless-app-docs-viewer-footer-btn-disable .arrow{fill:#c6c7d2}.netless-app-docs-viewer-footer-btn .arrow{fill:#8d8fa6}.netless-app-docs-viewer-footer-btn:hover{background-color:#1b1f4d0a}@media (hover: none){.netless-app-docs-viewer-footer-btn:hover{background:transparent!important}}.netless-app-docs-viewer-footer-btn>svg{width:100%;height:100%}.netless-app-docs-viewer-footer-btn>svg:nth-of-type(2){display:none}.netless-app-docs-viewer-footer-btn.netless-app-docs-viewer-footer-btn-playing>svg:nth-of-type(1){display:none}.netless-app-docs-viewer-footer-btn.netless-app-docs-viewer-footer-btn-playing>svg:nth-of-type(2){display:initial}.netless-app-docs-viewer-hide{display:none}.netless-app-docs-viewer-page-jumps{flex:1;display:flex;justify-content:center;align-items:center;gap:8px}.netless-app-docs-viewer-page-number{font-size:14px;color:#8d8fa6;user-select:none;white-space:nowrap;word-break:keep-all}.netless-app-docs-viewer-page-number-input{border:none;outline:none;width:3em;margin:0;padding:0 2px;text-align:right;font-size:13px;line-height:1;font-weight:400;font-family:inherit;border-radius:2px;color:currentColor;background:transparent;transition:background .4s;user-select:text;-webkit-tap-highlight-color:rgba(0,0,0,0)}.netless-app-docs-viewer-readonly .netless-app-docs-viewer-footer-btn{cursor:not-allowed}.netless-app-docs-viewer-readonly .netless-app-docs-viewer-footer-btn:hover{background:transparent}.netless-app-docs-viewer-readonly .netless-app-docs-viewer-page-number-input{cursor:not-allowed}.netless-app-docs-viewer-readonly .netless-app-docs-viewer-page-number-input:hover,.netless-app-docs-viewer-readonly .netless-app-docs-viewer-page-number-input:focus,.netless-app-docs-viewer-readonly .netless-app-docs-viewer-page-number-input:active{background:transparent;box-shadow:none}.netless-app-docs-viewer-readonly .netless-app-docs-viewer-page-number-input:disabled{color:inherit}.netless-app-docs-viewer-readonly.netless-app-docs-viewer-float-footer{display:none}.telebox-color-scheme-dark .netless-app-docs-viewer-page-number-input{color:#a6a6a8}.telebox-color-scheme-dark .netless-app-docs-viewer-page-number-input:active,.telebox-color-scheme-dark .netless-app-docs-viewer-page-number-input:focus,.telebox-color-scheme-dark .netless-app-docs-viewer-page-number-input:hover{color:#222}.telebox-color-scheme-dark .netless-app-docs-viewer-footer{color:#a6a6a8;background:#2d2d33;border-top:none}.telebox-color-scheme-dark .netless-app-docs-viewer-footer-btn:hover{background:#212126}.telebox-color-scheme-dark .netless-app-docs-viewer-preview{background:rgba(50,50,50,.9)}.netless-app-docs-viewer-static-scrollbar{position:absolute;top:0;right:0;z-index:2147483647;width:8px;min-height:30px;margin:0;padding:0;border:none;outline:none;border-radius:4px;background:rgba(68,78,96,.4);box-shadow:1px 1px 8px #ffffffb3;opacity:0;transition:background .4s,opacity .4s 3s,transform .2s;user-select:none}.netless-app-docs-viewer-static-scrollbar.netless-app-docs-viewer-static-scrollbar-dragging{background:rgba(68,78,96,.6);opacity:1;transition:background .4s,opacity .4s 3s!important}.netless-app-docs-viewer-static-scrollbar:hover,.netless-app-docs-viewer-static-scrollbar:focus{background:rgba(68,78,96,.5)}.netless-app-docs-viewer-static-scrollbar:active{background:rgba(68,78,96,.6)}.netless-app-docs-viewer-content:hover .netless-app-docs-viewer-static-scrollbar{opacity:1;transition:background .4s,opacity .4s,transform .2s}.netless-app-docs-viewer-readonly .netless-app-docs-viewer-static-scrollbar{display:none}.netless-app-docs-viewer-static-pages:hover .netless-app-docs-viewer-static-scrollbar{opacity:1;transition:background .4s,opacity .4s,transform .2s}.page-renderer-pages-container{position:relative;overflow:hidden}.page-renderer-page{position:absolute;top:0;left:0;background-position:center;background-size:cover;background-repeat:no-repeat}.page-renderer-pages-container.is-hwa .page-renderer-page{will-change:transform}.page-renderer-page-img{display:block;width:100%;height:auto;user-select:none}.netless-app-docs-viewer-static-pages{overflow:hidden;position:relative;height:100%;user-select:none}.netless-app-docs-viewer-static-page{display:block;width:100%;height:auto;user-select:none}.netless-app-docs-viewer-static-wb-view,.netless-app-docs-viewer-dynamic-wb-view{position:absolute;top:0;left:0;width:100%;height:100%;z-index:100;overflow:auto}.netless-app-docs-viewer-dynamic-wb-view .cursor-clicker .ppt-event-source{cursor:pointer}\n")();
 const copyProperty = (to, from, property, ignoreNonConfigurable) => {
   if (property === "length" || property === "prototype") {
     return;
@@ -9676,8 +9711,8 @@ class DocsViewer {
     }, "preview-lazyload");
     this.box.events.on("maximized", (max) => {
       this.$footer.classList.toggle(this.wrapClassName("hide"), max);
-      this.togglePreview(max);
     });
+    this.$footer.classList.toggle(this.wrapClassName("hide"), this.box.maximized);
   }
   unmount() {
     this.$content.remove();
@@ -9695,21 +9730,33 @@ class DocsViewer {
     this.unmount();
   }
   setPageIndex(pageIndex) {
-    var _a;
     if (!Number.isNaN(pageIndex)) {
-      const previews = (_a = this.$preview) == null ? void 0 : _a.querySelectorAll("." + this.wrapClassName("preview-page"));
-      previews == null ? void 0 : previews.forEach((node, i2) => {
-        var _a2;
-        (_a2 = node.querySelector("img")) == null ? void 0 : _a2.classList.toggle(this.wrapClassName("active"), Number(pageIndex) == i2);
-      });
-      this.$preview.scrollTo({
-        top: Array.prototype.slice.call(previews).find((node) => node.querySelector("img").className.includes(this.wrapClassName("active"))).offsetTop - 16
-      });
+      this.scrollPreview(pageIndex);
       this.pageIndex = pageIndex;
       this.$pageNumberInput.textContent = String(pageIndex + 1);
       this.onPageIndexChanged(pageIndex);
       this.$btnPageBack.classList.toggle(this.wrapClassName("footer-btn-disable"), pageIndex == 0);
       this.$btnPageNext.classList.toggle(this.wrapClassName("footer-btn-disable"), pageIndex == this.pages.length - 1);
+    }
+  }
+  scrollPreview(pageIndex) {
+    var _a;
+    const previews = (_a = this.$preview) == null ? void 0 : _a.querySelectorAll("." + this.wrapClassName("preview-page"));
+    previews == null ? void 0 : previews.forEach((node, i2) => {
+      var _a2;
+      (_a2 = node.querySelector("img")) == null ? void 0 : _a2.classList.toggle(this.wrapClassName("active"), Number(pageIndex) == i2);
+    });
+    const imgNode = Array.prototype.slice.call(previews).find((node) => node.querySelector("img").className.includes(this.wrapClassName("active")));
+    if (!imgNode)
+      return;
+    const parentRect = this.$preview.getBoundingClientRect();
+    const elementRect = imgNode == null ? void 0 : imgNode.getBoundingClientRect();
+    const isInView = elementRect.top >= parentRect.top && elementRect.bottom <= parentRect.bottom;
+    if (!isInView) {
+      this.$preview.scrollTo({
+        top: imgNode.offsetTop - 16,
+        behavior: this.isShowPreview ? "smooth" : "auto"
+      });
     }
   }
   setSmallBox(isSmallBox) {
@@ -10913,13 +10960,13 @@ const kind = "DocsViewer";
 const NetlessAppDocsViewer = {
   kind,
   setup(context) {
-    console.log(context);
     const box = context.getBox();
     const scenes = context.getScenes();
     if (!scenes) {
       throw new Error("[Docs Viewer]: scenes not found.");
     }
     const whiteboardView = context.getView();
+    console.log(context.storage.state);
     if (!whiteboardView) {
       throw new Error("[Docs Viewer]: no whiteboard view.");
     }
@@ -10934,9 +10981,9 @@ const NetlessAppDocsViewer = {
     }
     box.mountStyles(styles);
     if (pages[0].src.startsWith("ppt")) {
-      setupDynamicDocsViewer(context, whiteboardView, box, pages);
+      return setupDynamicDocsViewer(context, whiteboardView, box, pages);
     } else {
-      setupStaticDocsViewer(context, whiteboardView, box, pages);
+      return setupStaticDocsViewer(context, whiteboardView, box, pages);
     }
   }
 };
@@ -10978,6 +11025,17 @@ function setupStaticDocsViewer(context, whiteboardView, box, pages) {
     docsViewer.setReadonly(!isWritable);
     whiteboardView.disableCameraTransform = !isWritable;
   });
+  return {
+    viewer: () => {
+      return docsViewer;
+    },
+    position: () => {
+      const controller = docsViewer == null ? void 0 : docsViewer.viewer;
+      if (controller) {
+        return [controller.pageIndex, docsViewer.pages.length];
+      }
+    }
+  };
 }
 function setupDynamicDocsViewer(context, whiteboardView, box, pages) {
   whiteboardView.disableCameraTransform = true;
@@ -11010,6 +11068,34 @@ function setupDynamicDocsViewer(context, whiteboardView, box, pages) {
       }
     });
   }
+  return {
+    viewer: () => {
+      return docsViewer;
+    },
+    position: () => {
+      const controller = docsViewer == null ? void 0 : docsViewer.viewer;
+      if (controller) {
+        return [controller.pageIndex, docsViewer.pages.length];
+      }
+    },
+    nextStep: () => {
+      return docsViewer.onPlayPPT();
+    },
+    nextPage: () => {
+      return docsViewer.jumpToPage(docsViewer.getPageIndex() + 1, true);
+    },
+    prevPage: () => {
+      return docsViewer.jumpToPage(docsViewer.getPageIndex() + 1, true);
+    },
+    jumpToPage: (pageIndex) => {
+      if (typeof pageIndex == "number") {
+        docsViewer.jumpToPage(pageIndex, true);
+      }
+    },
+    togglePreview: (visible) => {
+      docsViewer.viewer.togglePreview(visible);
+    }
+  };
 }
 var react = { exports: {} };
 var react_production_min = {};
@@ -18615,7 +18701,7 @@ const reconnectRefresher = new ReconnectRefresher({ emitter: internalEmitter });
 const _WindowManager = class extends InvisiblePlugin {
   constructor(context) {
     super(context);
-    this.version = "1.0.2";
+    this.version = "1.0.3";
     this.dependencies = { "dependencies": { "@juggle/resize-observer": "^3.3.1", "@netless/telebox-insider": "github:veytu/telebox-insider", "emittery": "^0.9.2", "lodash": "^4.17.21", "p-retry": "^4.6.1", "uuid": "^7.0.3", "video.js": ">=7" }, "peerDependencies": { "jspdf": "2.5.1", "white-web-sdk": "^2.16.52" }, "devDependencies": { "@hyrious/dts": "^0.2.2", "@netless/app-media-player": "0.1.0-beta.9", "@netless/app-docs-viewer": "github:veytu/app-docs-viewer", "@rollup/plugin-commonjs": "^20.0.0", "@rollup/plugin-node-resolve": "^13.0.4", "@rollup/plugin-url": "^6.1.0", "@sveltejs/vite-plugin-svelte": "^1.0.0-next.22", "@tsconfig/svelte": "^2.0.1", "@types/debug": "^4.1.7", "@types/lodash": "^4.14.182", "@types/lodash-es": "^4.17.4", "@types/uuid": "^8.3.1", "@typescript-eslint/eslint-plugin": "^4.30.0", "@typescript-eslint/parser": "^4.30.0", "@vitest/ui": "^0.14.1", "cypress": "^8.7.0", "dotenv": "^10.0.0", "eslint": "^7.32.0", "eslint-config-prettier": "^8.3.0", "eslint-plugin-svelte3": "^3.2.0", "jsdom": "^19.0.0", "jspdf": "^2.5.1", "less": "^4.1.1", "prettier": "^2.3.2", "prettier-plugin-svelte": "^2.4.0", "rollup-plugin-analyzer": "^4.0.0", "rollup-plugin-styles": "^3.14.1", "side-effect-manager": "0.1.5", "svelte": "^3.42.4", "typescript": "^4.5.5", "vite": "^2.9.9", "vitest": "^0.14.1", "white-web-sdk": "2.16.52" } };
     this.emitter = callbacks$1;
     this.viewMode = ViewMode.Broadcaster;
@@ -18629,6 +18715,7 @@ const _WindowManager = class extends InvisiblePlugin {
     _WindowManager._resolve(manager);
   }
   static async mount(params) {
+    var _a;
     const room = params.room;
     _WindowManager.container = params.container;
     _WindowManager.supportAppliancePlugin = params.supportAppliancePlugin;
@@ -18704,6 +18791,9 @@ const _WindowManager = class extends InvisiblePlugin {
       console.warn("[WindowManager]: indexedDB open failed");
       console.log(error);
     }
+    (_a = manager == null ? void 0 : manager.room) == null ? void 0 : _a.addMagixEventListener("onScaleChange", (data) => {
+      manager == null ? void 0 : manager.setScale(data.payload);
+    });
     return manager;
   }
   static initManager(room) {
@@ -18714,7 +18804,7 @@ const _WindowManager = class extends InvisiblePlugin {
     if (!_WindowManager.container) {
       _WindowManager.container = container;
     }
-    const { playground, wrapper, sizer, mainViewElement } = setupWrapper(container);
+    const { playground, wrapper, sizer, mainViewElement, mainViewWrapper } = setupWrapper(container);
     _WindowManager.playground = playground;
     if (chessboard) {
       sizer.classList.add("netless-window-manager-chess-sizer");
@@ -18735,6 +18825,7 @@ const _WindowManager = class extends InvisiblePlugin {
     );
     _WindowManager.wrapper = wrapper;
     _WindowManager.sizer = sizer;
+    _WindowManager.mainViewWrapper = mainViewWrapper;
     return mainViewElement;
   }
   static get registered() {
@@ -19387,6 +19478,30 @@ const _WindowManager = class extends InvisiblePlugin {
     _WindowManager.containerSizeRatio = ratio;
     this.containerSizeRatio = ratio;
     internalEmitter.emit("containerSizeRatioUpdate", ratio);
+  }
+  setScale(scale2) {
+    var _a, _b, _c, _d, _e;
+    if (!isNumber(scale2))
+      return false;
+    const setStyles = (styles2) => {
+      if (!_WindowManager.mainViewWrapper)
+        return;
+      _WindowManager.mainViewWrapper.style.width = `${styles2.width}px`;
+      _WindowManager.mainViewWrapper.style.height = `${styles2.height}px`;
+    };
+    const size2 = (_a = _WindowManager.wrapper) == null ? void 0 : _a.getBoundingClientRect();
+    if (!size2)
+      return false;
+    if (scale2 < 1) {
+      setStyles({ width: size2 == null ? void 0 : size2.width, height: size2 == null ? void 0 : size2.height });
+      internalEmitter.emit("onScaleChange", scale2);
+      (_c = (_b = this.appManager) == null ? void 0 : _b.room) == null ? void 0 : _c.dispatchMagixEvent("onScaleChange", scale2);
+      return true;
+    }
+    setStyles({ width: (size2 == null ? void 0 : size2.width) * scale2, height: (size2 == null ? void 0 : size2.height) * scale2 });
+    internalEmitter.emit("onScaleChange", scale2);
+    (_e = (_d = this.appManager) == null ? void 0 : _d.room) == null ? void 0 : _e.dispatchMagixEvent("onScaleChange", scale2);
+    return true;
   }
   isDynamicPPT(scenes) {
     var _a, _b;

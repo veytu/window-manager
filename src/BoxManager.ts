@@ -162,6 +162,7 @@ export class BoxManager {
         });
         emitter.on("playgroundSizeChange", () => this.updateManagerRect());
         emitter.on("updateManagerRect", () => this.updateManagerRect());
+        emitter.on("onScaleChange", (scale) => this.changeScale(scale))
     }
 
     private get mainView() {
@@ -194,6 +195,10 @@ export class BoxManager {
 
     public get boxSize() {
         return this.teleBoxManager.boxes.length;
+    }
+
+    private changeScale (scale: number) {
+        this.teleBoxManager.setScaleContent(scale)
     }
 
     public createBox(params: CreateBoxParams): void {

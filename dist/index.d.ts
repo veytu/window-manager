@@ -463,6 +463,7 @@ type EmitterEvent = {
     changePageState: undefined;
     writableChange: boolean;
     containerSizeRatioUpdate: number;
+    onScaleChange: number;
 };
 type EmitterType = Emittery<EmitterEvent>;
 
@@ -524,6 +525,7 @@ declare class BoxManager {
     get darkMode(): boolean;
     get prefersColorScheme(): TeleBoxColorScheme;
     get boxSize(): number;
+    private changeScale;
     createBox(params: CreateBoxParams): void;
     setBoxInitState(appId: string): void;
     setupBoxManager(createTeleBoxManagerConfig?: CreateTeleBoxManagerConfig): TeleBoxManager;
@@ -1163,6 +1165,7 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     static kind: string;
     static displayer: Displayer;
     static wrapper?: HTMLElement;
+    static mainViewWrapper?: HTMLElement;
     static sizer?: HTMLElement;
     static playground?: HTMLElement;
     static container?: HTMLElement;
@@ -1342,6 +1345,7 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     lockImages(locked: boolean): void;
     refresh(): void;
     setContainerSizeRatio(ratio: number): void;
+    setScale(scale: number): boolean;
     private isDynamicPPT;
     private ensureAttributes;
     private _iframeBridge?;

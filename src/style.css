@@ -45,12 +45,19 @@
     z-index: 1;
     width: 100%;
     height: 100%;
-    overflow: hidden;
+    overflow: auto;
 }
 
 .netless-window-manager-main-view {
     width: 100%;
     height: 100%;
+}
+
+.netless-window-manager-main-view-wrapper {
+    width: 100%;
+    height: 100%;
+    min-width: 100%;
+    min-height: 100%;
 }
 
 .netless-window-manager-cursor-pencil-image {
