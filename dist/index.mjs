@@ -6726,6 +6726,7 @@ class BoxManager {
     if (minheight > 1) {
       minheight = minheight / rect.height;
     }
+    console.log(width, height, minwidth, minheight);
     const createBoxConfig = {
       title,
       minWidth: minwidth,
@@ -6754,6 +6755,7 @@ class BoxManager {
   setupBoxManager(createTeleBoxManagerConfig) {
     const root = WindowManager.wrapper ? WindowManager.wrapper : document.body;
     const rect = root.getBoundingClientRect();
+    console.log(rect, WindowManager.wrapper);
     const initManagerState = {
       root,
       containerRect: {
@@ -18821,7 +18823,7 @@ const _WindowManager = class extends InvisiblePlugin {
     return appRegister.registered;
   }
   bindContainer(container) {
-    var _a, _b, _c, _d, _e, _f, _g, _h;
+    var _a, _b, _c, _d, _e, _f, _g;
     if (isRoom(this.displayer) && this.room.phase !== RoomPhase.Connected) {
       throw new BindContainerRoomPhaseInvalidError();
     }
@@ -18848,15 +18850,14 @@ const _WindowManager = class extends InvisiblePlugin {
           (_b = this.cursorManager) == null ? void 0 : _b.setupWrapper(_WindowManager.wrapper);
         }
         const mainViewScale = (_c = this.appManager) == null ? void 0 : _c.store.attributes["scale"];
-        console.log((_d = this.appManager) == null ? void 0 : _d.store.attributes);
         this.setScale(isNumber(mainViewScale) ? mainViewScale : 1);
       }
     }
     internalEmitter.emit("updateManagerRect");
-    (_e = this.appManager) == null ? void 0 : _e.refresh();
-    (_f = this.appManager) == null ? void 0 : _f.resetMaximized();
-    (_g = this.appManager) == null ? void 0 : _g.resetMinimized();
-    (_h = this.appManager) == null ? void 0 : _h.displayerWritableListener(!this.room.isWritable);
+    (_d = this.appManager) == null ? void 0 : _d.refresh();
+    (_e = this.appManager) == null ? void 0 : _e.resetMaximized();
+    (_f = this.appManager) == null ? void 0 : _f.resetMinimized();
+    (_g = this.appManager) == null ? void 0 : _g.displayerWritableListener(!this.room.isWritable);
     _WindowManager.container = container;
   }
   bindCollectorContainer(container) {

@@ -218,6 +218,8 @@ export class BoxManager {
             minheight = minheight / rect.height;
         }
 
+        console.log(width, height, minwidth, minheight)
+
         const createBoxConfig: TeleBoxManagerCreateConfig = {
             title,
             minWidth: minwidth,
@@ -250,6 +252,7 @@ export class BoxManager {
     ): TeleBoxManager {
         const root = WindowManager.wrapper ? WindowManager.wrapper : document.body;
         const rect = root.getBoundingClientRect();
+        console.log(rect, WindowManager.wrapper)
         const initManagerState: TeleBoxManagerConfig = {
             root: root,
             containerRect: {

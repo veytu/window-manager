@@ -378,7 +378,6 @@ export class WindowManager
                 }
 
                 const mainViewScale = this.appManager?.store.attributes['scale']
-                console.log(this.appManager?.store.attributes)
                 this.setScale(isNumber(mainViewScale) ? mainViewScale : 1)
             }
         }
