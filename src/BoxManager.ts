@@ -408,7 +408,6 @@ export class BoxManager {
     }
 
     public updateBox(id: string, payload: TeleBoxConfig, skipUpdate = true): void {
-        console.log(id, payload)
         this.teleBoxManager.update(id, payload, skipUpdate);
     }
 

@@ -376,9 +376,6 @@ export class WindowManager
                 if (WindowManager.wrapper) {
                     this.cursorManager?.setupWrapper(WindowManager.wrapper);
                 }
-
-                const mainViewScale = this.appManager?.store.attributes['scale']
-                this.setScale(isNumber(mainViewScale) ? mainViewScale : 1)
             }
         }
         internalEmitter.emit("updateManagerRect");
@@ -387,6 +384,8 @@ export class WindowManager
         this.appManager?.resetMinimized();
         this.appManager?.displayerWritableListener(!this.room.isWritable);
         WindowManager.container = container;
+        const mainViewScale = this.appManager?.store.attributes['scale']
+        this.setScale(isNumber(mainViewScale) ? mainViewScale : 1)
     }
 
     public bindCollectorContainer(container: HTMLElement) {

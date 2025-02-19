@@ -6895,7 +6895,6 @@ class BoxManager {
     }
   }
   updateBox(id2, payload, skipUpdate = true) {
-    console.log(id2, payload);
     this.teleBoxManager.update(id2, payload, skipUpdate);
   }
   setReadonly(readonly) {
@@ -18846,16 +18845,16 @@ const _WindowManager = class extends InvisiblePlugin {
         if (_WindowManager.wrapper) {
           (_b = this.cursorManager) == null ? void 0 : _b.setupWrapper(_WindowManager.wrapper);
         }
-        const mainViewScale = (_c = this.appManager) == null ? void 0 : _c.store.attributes["scale"];
-        this.setScale(isNumber(mainViewScale) ? mainViewScale : 1);
       }
     }
     internalEmitter.emit("updateManagerRect");
-    (_d = this.appManager) == null ? void 0 : _d.refresh();
-    (_e = this.appManager) == null ? void 0 : _e.resetMaximized();
-    (_f = this.appManager) == null ? void 0 : _f.resetMinimized();
-    (_g = this.appManager) == null ? void 0 : _g.displayerWritableListener(!this.room.isWritable);
+    (_c = this.appManager) == null ? void 0 : _c.refresh();
+    (_d = this.appManager) == null ? void 0 : _d.resetMaximized();
+    (_e = this.appManager) == null ? void 0 : _e.resetMinimized();
+    (_f = this.appManager) == null ? void 0 : _f.displayerWritableListener(!this.room.isWritable);
     _WindowManager.container = container;
+    const mainViewScale = (_g = this.appManager) == null ? void 0 : _g.store.attributes["scale"];
+    this.setScale(isNumber(mainViewScale) ? mainViewScale : 1);
   }
   bindCollectorContainer(container) {
     if (_WindowManager.isCreated && this.boxManager) {
