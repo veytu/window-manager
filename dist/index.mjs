@@ -19480,7 +19480,7 @@ const _WindowManager = class extends InvisiblePlugin {
     internalEmitter.emit("containerSizeRatioUpdate", ratio);
   }
   setScale(scale2) {
-    var _a, _b, _c, _d, _e;
+    var _a;
     if (!isNumber(scale2))
       return false;
     const setStyles = (styles2) => {
@@ -19495,12 +19495,10 @@ const _WindowManager = class extends InvisiblePlugin {
     if (scale2 < 1) {
       setStyles({ width: size2 == null ? void 0 : size2.width, height: size2 == null ? void 0 : size2.height });
       internalEmitter.emit("onScaleChange", scale2);
-      (_c = (_b = this.appManager) == null ? void 0 : _b.room) == null ? void 0 : _c.dispatchMagixEvent("onScaleChange", scale2);
       return true;
     }
     setStyles({ width: (size2 == null ? void 0 : size2.width) * scale2, height: (size2 == null ? void 0 : size2.height) * scale2 });
     internalEmitter.emit("onScaleChange", scale2);
-    (_e = (_d = this.appManager) == null ? void 0 : _d.room) == null ? void 0 : _e.dispatchMagixEvent("onScaleChange", scale2);
     return true;
   }
   isDynamicPPT(scenes) {

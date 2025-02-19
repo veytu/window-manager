@@ -1115,13 +1115,11 @@ export class WindowManager
         if (scale < 1) {
             setStyles({width: size?.width, height: size?.height})
             internalEmitter.emit("onScaleChange", scale)
-            this.appManager?.room?.dispatchMagixEvent('onScaleChange', scale)
             return true
         }
 
         setStyles({width: size?.width * scale, height: size?.height * scale})
         internalEmitter.emit("onScaleChange", scale)
-        this.appManager?.room?.dispatchMagixEvent('onScaleChange', scale)
         return true
     }
 
