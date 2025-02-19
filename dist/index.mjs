@@ -6682,6 +6682,7 @@ class BoxManager {
     emitter.on("updateManagerRect", () => this.updateManagerRect());
     emitter.on("onScaleChange", (scale2) => {
       this.changeScale(scale2);
+      console.log("onScaleChange");
     });
   }
   get mainView() {
@@ -6710,6 +6711,7 @@ class BoxManager {
   }
   changeScale(scale2) {
     this.teleBoxManager.setScaleContent(scale2);
+    console.log(this.teleBoxManager.boxes);
   }
   createBox(params) {
     var _a, _b, _c;

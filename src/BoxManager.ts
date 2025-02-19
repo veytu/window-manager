@@ -164,6 +164,7 @@ export class BoxManager {
         emitter.on("updateManagerRect", () => this.updateManagerRect());
         emitter.on("onScaleChange", (scale) => {
             this.changeScale(scale)
+            console.log('onScaleChange')
         })
     }
 
@@ -201,6 +202,7 @@ export class BoxManager {
 
     private changeScale (scale: number) {
         this.teleBoxManager.setScaleContent(scale)
+        console.log(this.teleBoxManager.boxes)
     }
 
     public createBox(params: CreateBoxParams): void {
