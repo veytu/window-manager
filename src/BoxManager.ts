@@ -202,7 +202,6 @@ export class BoxManager {
 
     private changeScale (scale: number) {
         this.teleBoxManager.setScaleContent(scale)
-        console.log(this.teleBoxManager.boxes)
     }
 
     public createBox(params: CreateBoxParams): void {

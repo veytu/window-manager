@@ -1,6 +1,6 @@
 import pRetry from "p-retry";
 import Emittery from "emittery";
-import { debounce, isEqual, omit, isObject, has, get, size as size$1, mapValues, noop as noop$2, pick, isEmpty, isInteger, orderBy, isFunction, isString, isNumber, isNull } from "lodash";
+import { debounce, isEqual, omit, isObject, has, get, size as size$1, mapValues, noop as noop$2, pick, isEmpty, isInteger, isNumber, orderBy, isFunction, isString, isNull } from "lodash";
 import { ScenePathType, UpdateEventKind, listenUpdated, unlistenUpdated, reaction, autorun, toJS, listenDisposed, unlistenDisposed, ViewMode, AnimationMode, isPlayer, isRoom, WhiteVersion, ApplianceNames, RoomPhase, PlayerPhase, InvisiblePlugin } from "white-web-sdk";
 import { v4 } from "uuid";
 import { ResizeObserver as ResizeObserver$3 } from "@juggle/resize-observer";
@@ -2634,6 +2634,8 @@ class AppManager {
       });
       return () => redoUndo.destroy();
     });
+    const mainViewScale = this.store.attributes["scale"];
+    this.windowManger.setScale(isNumber(mainViewScale) ? mainViewScale : 1);
   }
   notifyAppsChange(appIds) {
     if (this._appIds.length !== appIds.length || !this._appIds.every((id2) => appIds.includes(id2))) {
@@ -6711,7 +6713,6 @@ class BoxManager {
   }
   changeScale(scale2) {
     this.teleBoxManager.setScaleContent(scale2);
-    console.log(this.teleBoxManager.boxes);
   }
   createBox(params) {
     var _a, _b, _c;
@@ -18821,7 +18822,7 @@ const _WindowManager = class extends InvisiblePlugin {
     return appRegister.registered;
   }
   bindContainer(container) {
-    var _a, _b, _c, _d, _e, _f, _g;
+    var _a, _b, _c, _d, _e, _f;
     if (isRoom(this.displayer) && this.room.phase !== RoomPhase.Connected) {
       throw new BindContainerRoomPhaseInvalidError();
     }
@@ -18855,8 +18856,6 @@ const _WindowManager = class extends InvisiblePlugin {
     (_e = this.appManager) == null ? void 0 : _e.resetMinimized();
     (_f = this.appManager) == null ? void 0 : _f.displayerWritableListener(!this.room.isWritable);
     _WindowManager.container = container;
-    const mainViewScale = (_g = this.appManager) == null ? void 0 : _g.store.attributes["scale"];
-    this.setScale(isNumber(mainViewScale) ? mainViewScale : 1);
   }
   bindCollectorContainer(container) {
     if (_WindowManager.isCreated && this.boxManager) {
