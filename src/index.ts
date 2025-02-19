@@ -1111,15 +1111,16 @@ export class WindowManager
         const size = WindowManager.wrapper?.getBoundingClientRect()
 
         if (!size) return false
+        let newScale = scale
 
-        if (scale < 1) {
-            setStyles({width: size?.width, height: size?.height})
-            internalEmitter.emit("onScaleChange", scale)
-            return true
+        if (newScale < 1) {
+            newScale = 1
         }
 
         setStyles({width: size?.width * scale, height: size?.height * scale})
+
         internalEmitter.emit("onScaleChange", scale)
+        this.safeUpdateAttributes(["scale"], scale)
         return true
     }
 

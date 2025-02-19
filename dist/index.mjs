@@ -1,6 +1,6 @@
 import pRetry from "p-retry";
 import Emittery from "emittery";
-import { debounce, isEqual, omit, isObject, has, get, size as size$1, mapValues, noop as noop$2, pick, isEmpty, isInteger, orderBy, isFunction, isString, isNumber, isNull } from "lodash";
+import { debounce, isEqual, omit, isObject, has, get, size as size$1, mapValues, noop as noop$2, pick, isNumber, isEmpty, isInteger, orderBy, isFunction, isString, isNull } from "lodash";
 import { ScenePathType, UpdateEventKind, listenUpdated, unlistenUpdated, reaction, autorun, toJS, listenDisposed, unlistenDisposed, ViewMode, AnimationMode, isPlayer, isRoom, WhiteVersion, ApplianceNames, RoomPhase, PlayerPhase, InvisiblePlugin } from "white-web-sdk";
 import { v4 } from "uuid";
 import { ResizeObserver as ResizeObserver$3 } from "@juggle/resize-observer";
@@ -2024,6 +2024,8 @@ class MainViewProxy {
   }
   createMainView() {
     const mainView = createView(this.manager.displayer);
+    const mainViewScale = this.store.attributes["scale"];
+    this.manager.windowManger.setScale(isNumber(mainViewScale) ? mainViewScale : 1);
     const mainViewScenePath = this.store.getMainViewScenePath();
     if (mainViewScenePath) {
       setViewFocusScenePath(mainView, mainViewScenePath);
@@ -19481,13 +19483,9 @@ const _WindowManager = class extends InvisiblePlugin {
     const size2 = (_a = _WindowManager.wrapper) == null ? void 0 : _a.getBoundingClientRect();
     if (!size2)
       return false;
-    if (scale2 < 1) {
-      setStyles({ width: size2 == null ? void 0 : size2.width, height: size2 == null ? void 0 : size2.height });
-      internalEmitter.emit("onScaleChange", scale2);
-      return true;
-    }
     setStyles({ width: (size2 == null ? void 0 : size2.width) * scale2, height: (size2 == null ? void 0 : size2.height) * scale2 });
     internalEmitter.emit("onScaleChange", scale2);
+    this.safeUpdateAttributes(["scale"], scale2);
     return true;
   }
   isDynamicPPT(scenes) {
