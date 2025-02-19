@@ -7,7 +7,7 @@ import { autorun, isPlayer, isRoom, ScenePathType } from "white-web-sdk";
 import { boxEmitter } from "./BoxEmitter";
 import { calculateNextIndex } from "./Page";
 import { callbacks } from "./callback";
-import { debounce, get, isInteger, isNumber, orderBy } from "lodash";
+import { debounce, get, isInteger, orderBy } from "lodash";
 import { internalEmitter } from "./InternalEmitter";
 import { Fields, store } from "./AttributesDelegate";
 import { log } from "./Utils/log";
@@ -376,9 +376,6 @@ export class AppManager {
             });
             return () => redoUndo.destroy();
         });
-        
-        const mainViewScale =  this.store.attributes['scale']
-        this.windowManger.setScale(isNumber(mainViewScale) ? mainViewScale : 1)
     }
 
     private onBoxMove = (payload: BoxMovePayload) => {

@@ -5,7 +5,7 @@ import { AppPageStateImpl } from "./AppPageStateImpl";
 import { appRegister } from "../Register";
 import { autorun } from "white-web-sdk";
 import { BoxManagerNotFoundError } from "../Utils/error";
-import { debounce, get } from "lodash";
+import { debounce, get, isNumber } from "lodash";
 import { internalEmitter } from "../InternalEmitter";
 import { Fields } from "../AttributesDelegate";
 import { log } from "../Utils/log";
@@ -16,12 +16,13 @@ import {
     setScenePath,
     setViewFocusScenePath,
 } from "../Utils/Common";
-import type {
-    AppEmitterEvent,
-    AppInitState,
-    BaseInsertParams,
-    setAppOptions,
-    AppListenerKeys,
+import {
+    type AppEmitterEvent,
+    type AppInitState,
+    type BaseInsertParams,
+    type setAppOptions,
+    type AppListenerKeys,
+    WindowManager,
 } from "../index";
 import type { SceneState, View, SceneDefinition } from "white-web-sdk";
 import type { AppManager } from "../AppManager";
@@ -213,6 +214,26 @@ export class AppProxy implements PageRemoveService {
                 });
                 this.boxManager.focusBox({ appId }, false);
             }
+
+            const mainViewScale =  this.store.attributes['scale']
+            const setStyles = (styles: {width: number; height: number}) => {
+                if (!WindowManager.mainViewWrapper) return
+                WindowManager.mainViewWrapper.style.width = `${styles.width}px`
+                WindowManager.mainViewWrapper.style.height = `${styles.height}px`
+            }
+            const size = WindowManager.wrapper?.getBoundingClientRect()
+    
+            if (!size) return false
+            let newScale = isNumber(mainViewScale) ? mainViewScale : 1
+    
+            if (newScale < 1) {
+                newScale = 1
+            }
+    
+            setStyles({width: size?.width * newScale, height: size?.height * newScale})
+    
+            internalEmitter.emit("onScaleChange", newScale)
+            
         } catch (error: any) {
             console.error(error);
             throw new Error(`[WindowManager]: app setup error: ${error.message}`);
