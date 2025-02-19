@@ -5417,23 +5417,9 @@ class TeleBox {
   setScaleContent(scale2) {
     if (!this.$content)
       return;
-    const styles2 = {};
-    for (const property in this.$content.style) {
-      if (typeof this.$content.style[property] === "string") {
-        styles2[property] = this.$content.style[property];
-      }
-    }
     const contentWrapRect = this.$contentWrap.getBoundingClientRect();
-    Object.assign(styles2, {
-      width: contentWrapRect.width * scale2,
-      height: contentWrapRect.height * scale2
-    });
-    Object.keys(styles2).forEach((key) => {
-      const value = styles2[key];
-      if (value != null) {
-        this.$content.style[key] = value;
-      }
-    });
+    this.$content.style.width = `${contentWrapRect.width * scale2}px`;
+    this.$content.style.height = `${contentWrapRect.height * scale2}px`;
   }
   destroy() {
     this.$box.remove();
