@@ -1,6 +1,6 @@
 import pRetry from "p-retry";
 import Emittery from "emittery";
-import { debounce, isEqual, omit, isObject, has, get, size as size$1, mapValues, noop as noop$2, pick, isEmpty, isInteger, isNumber, orderBy, isFunction, isString, isNull } from "lodash";
+import { debounce, isEqual, omit, isObject, has, get, size as size$1, mapValues, noop as noop$2, pick, isNumber, isEmpty, isInteger, orderBy, isFunction, isString, isNull } from "lodash";
 import { ScenePathType, UpdateEventKind, listenUpdated, unlistenUpdated, reaction, autorun, toJS, listenDisposed, unlistenDisposed, ViewMode, AnimationMode, isPlayer, isRoom, WhiteVersion, ApplianceNames, RoomPhase, PlayerPhase, InvisiblePlugin } from "white-web-sdk";
 import { v4 } from "uuid";
 import { ResizeObserver as ResizeObserver$3 } from "@juggle/resize-observer";
@@ -1571,7 +1571,7 @@ class AppProxy {
     return (_a = this.boxManager) == null ? void 0 : _a.getBox(this.id);
   }
   async setupApp(appId, skipUpdate, app, options, appOptions) {
-    var _a;
+    var _a, _b;
     log("setupApp", appId, app, options);
     if (!this.boxManager) {
       throw new BoxManagerNotFoundError();
@@ -1614,6 +1614,22 @@ class AppProxy {
         });
         this.boxManager.focusBox({ appId }, false);
       }
+      const mainViewScale = this.store.attributes["scale"];
+      const setStyles = (styles2) => {
+        if (!WindowManager.mainViewWrapper)
+          return;
+        WindowManager.mainViewWrapper.style.width = `${styles2.width}px`;
+        WindowManager.mainViewWrapper.style.height = `${styles2.height}px`;
+      };
+      const size2 = (_b = WindowManager.wrapper) == null ? void 0 : _b.getBoundingClientRect();
+      if (!size2)
+        return false;
+      let newScale = isNumber(mainViewScale) ? mainViewScale : 1;
+      if (newScale < 1) {
+        newScale = 1;
+      }
+      setStyles({ width: (size2 == null ? void 0 : size2.width) * newScale, height: (size2 == null ? void 0 : size2.height) * newScale });
+      internalEmitter.emit("onScaleChange", newScale);
     } catch (error) {
       console.error(error);
       throw new Error(`[WindowManager]: app setup error: ${error.message}`);
@@ -2634,8 +2650,6 @@ class AppManager {
       });
       return () => redoUndo.destroy();
     });
-    const mainViewScale = this.store.attributes["scale"];
-    this.windowManger.setScale(isNumber(mainViewScale) ? mainViewScale : 1);
   }
   notifyAppsChange(appIds) {
     if (this._appIds.length !== appIds.length || !this._appIds.every((id2) => appIds.includes(id2))) {
