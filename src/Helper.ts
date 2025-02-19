@@ -34,7 +34,7 @@ export const setupWrapper = (
     playground.appendChild(sizer);
     sizer.appendChild(wrapper);
     mainViewWrapper.appendChild(mainViewElement);
-    wrapper.appendChild(mainViewElement);
+    wrapper.appendChild(mainViewWrapper);
     root.appendChild(playground);
     WindowManager.wrapper = wrapper;
 
