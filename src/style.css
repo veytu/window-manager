@@ -220,6 +220,8 @@
     overflow: auto;
     overflow-y: scroll;
     overflow-y: overlay;
+    overflow-x: scroll;
+    overflow-x: overlay;
     -webkit-overflow-scrolling: touch;
     -ms-overflow-style: -ms-autohiding-scrollbar;
     scrollbar-width: auto;
