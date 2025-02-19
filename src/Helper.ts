@@ -23,7 +23,7 @@ export const setupWrapper = (
     sizer.className = "netless-window-manager-sizer";
 
     const wrapper = document.createElement("div");
-    wrapper.className = "netless-window-manager-wrapper";
+    wrapper.className = "netless-window-manager-wrapper netless-window-manager-fancy-scrollbar";
 
     const mainViewWrapper = document.createElement("div");
     mainViewWrapper.className = "netless-window-manager-main-view-wrapper"
