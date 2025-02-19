@@ -376,6 +376,10 @@ export class WindowManager
                 if (WindowManager.wrapper) {
                     this.cursorManager?.setupWrapper(WindowManager.wrapper);
                 }
+
+                const mainViewScale = this.appManager?.store.attributes['scale']
+                console.log(this.appManager?.store.attributes)
+                this.setScale(isNumber(mainViewScale) ? mainViewScale : 1)
             }
         }
         internalEmitter.emit("updateManagerRect");

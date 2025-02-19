@@ -1,7 +1,7 @@
 import { AnimationMode, reaction, ViewMode } from "white-web-sdk";
 import { callbacks } from "../callback";
 import { createView } from "./ViewManager";
-import { debounce, get, isEmpty, isEqual, isNumber } from "lodash";
+import { debounce, get, isEmpty, isEqual } from "lodash";
 import { internalEmitter } from "../InternalEmitter";
 import { Fields } from "../AttributesDelegate";
 import { setViewFocusScenePath } from "../Utils/Common";
@@ -151,8 +151,6 @@ export class MainViewProxy {
 
     public createMainView(): View {
         const mainView = createView(this.manager.displayer);
-        const mainViewScale = this.store.attributes['scale']
-        this.manager.windowManger.setScale(isNumber(mainViewScale) ? mainViewScale : 1)
         const mainViewScenePath = this.store.getMainViewScenePath();
         if (mainViewScenePath) {
             setViewFocusScenePath(mainView, mainViewScenePath);
