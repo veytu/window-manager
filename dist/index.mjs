@@ -6681,7 +6681,6 @@ class BoxManager {
     emitter.on("playgroundSizeChange", () => this.updateManagerRect());
     emitter.on("updateManagerRect", () => this.updateManagerRect());
     emitter.on("onScaleChange", (scale2) => {
-      console.log("scale==========", scale2);
       this.changeScale(scale2);
     });
   }
@@ -6726,7 +6725,6 @@ class BoxManager {
     if (minheight > 1) {
       minheight = minheight / rect.height;
     }
-    console.log(width, height, minwidth, minheight);
     const createBoxConfig = {
       title,
       minWidth: minwidth,
@@ -6755,7 +6753,6 @@ class BoxManager {
   setupBoxManager(createTeleBoxManagerConfig) {
     const root = WindowManager.wrapper ? WindowManager.wrapper : document.body;
     const rect = root.getBoundingClientRect();
-    console.log(rect, WindowManager.wrapper);
     const initManagerState = {
       root,
       containerRect: {
@@ -6835,7 +6832,7 @@ class BoxManager {
   }
   updateManagerRect() {
     var _a;
-    const rect = (_a = this.mainView.divElement) == null ? void 0 : _a.getBoundingClientRect();
+    const rect = (_a = WindowManager.wrapper) == null ? void 0 : _a.getBoundingClientRect();
     if (rect && rect.width > 0 && rect.height > 0) {
       const containerRect = { x: 0, y: 0, width: rect.width, height: rect.height };
       this.teleBoxManager.setContainerRect(containerRect);
