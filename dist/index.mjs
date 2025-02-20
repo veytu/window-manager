@@ -4598,6 +4598,7 @@ class TeleBox {
     this.namespace = namespace;
     this.events = new EventEmitter();
     this._delegateEvents = new EventEmitter();
+    this.scale = 1;
     const prefersColorScheme$ = createVal(
       prefersColorScheme
     );
@@ -4695,6 +4696,11 @@ class TeleBox {
     maximized$.reaction((maximized2, _2, skipUpdate) => {
       if (!skipUpdate) {
         this.events.emit(TELE_BOX_EVENT.Maximized, maximized2);
+      }
+      if (maximized2) {
+        this.resetScaleContent();
+      } else {
+        this.setScaleContent(this.scale);
       }
     });
     const state$ = combine(
@@ -5436,6 +5442,11 @@ class TeleBox {
     const contentWrapRect = this.$contentWrap.getBoundingClientRect();
     this.$content.style.width = `${contentWrapRect.width * scale2}px`;
     this.$content.style.height = `${contentWrapRect.height * scale2}px`;
+    this.scale = scale2;
+  }
+  resetScaleContent() {
+    this.$content.style.width = "";
+    this.$content.style.height = "";
   }
   destroy() {
     this.$box.remove();

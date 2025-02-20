@@ -10,7 +10,7 @@ dependencies:
     version: 3.3.1
   '@netless/telebox-insider':
     specifier: github:veytu/telebox-insider
-    version: github.com/veytu/telebox-insider/06221da545c2e81dc2e7b6c1c1ed6b0511b080d8
+    version: github.com/veytu/telebox-insider/14aaa7203e5df12214703c638c55efbb52da7e6a
   emittery:
     specifier: ^0.9.2
     version: 0.9.2
@@ -2914,13 +2914,13 @@ packages:
       safer-buffer: 2.1.2
     dev: true
 
-  /icss-utils@5.1.0(postcss@8.5.2):
+  /icss-utils@5.1.0(postcss@8.5.3):
     resolution: {integrity: sha512-soFhflCVWLfRNOPU3iv5Z9VUdT44xFRbzjLsEzSr5AQmgqPMTHdU3PMT1Cf1ssx8fLNJDA1juftYl+PUcv3MqA==}
     engines: {node: ^10 || ^12 || >= 14}
     peerDependencies:
       postcss: ^8.1.0
     dependencies:
-      postcss: 8.5.2
+      postcss: 8.5.3
     dev: true
 
   /ignore@4.0.6:
@@ -4118,45 +4118,45 @@ packages:
       postcss-selector-parser: 3.1.2
     dev: true
 
-  /postcss-modules-extract-imports@3.1.0(postcss@8.5.2):
+  /postcss-modules-extract-imports@3.1.0(postcss@8.5.3):
     resolution: {integrity: sha512-k3kNe0aNFQDAZGbin48pL2VNidTF0w4/eASDsxlyspobzU3wZQLOGj7L9gfRe0Jo9/4uud09DsjFNH7winGv8Q==}
     engines: {node: ^10 || ^12 || >= 14}
     peerDependencies:
       postcss: ^8.1.0
     dependencies:
-      postcss: 8.5.2
+      postcss: 8.5.3
     dev: true
 
-  /postcss-modules-local-by-default@4.2.0(postcss@8.5.2):
+  /postcss-modules-local-by-default@4.2.0(postcss@8.5.3):
     resolution: {integrity: sha512-5kcJm/zk+GJDSfw+V/42fJ5fhjL5YbFDl8nVdXkJPLLW+Vf9mTD5Xe0wqIaDnLuL2U6cDNpTr+UQ+v2HWIBhzw==}
     engines: {node: ^10 || ^12 || >= 14}
     peerDependencies:
       postcss: ^8.1.0
     dependencies:
-      icss-utils: 5.1.0(postcss@8.5.2)
-      postcss: 8.5.2
+      icss-utils: 5.1.0(postcss@8.5.3)
+      postcss: 8.5.3
       postcss-selector-parser: 7.1.0
       postcss-value-parser: 4.2.0
     dev: true
 
-  /postcss-modules-scope@3.2.1(postcss@8.5.2):
+  /postcss-modules-scope@3.2.1(postcss@8.5.3):
     resolution: {integrity: sha512-m9jZstCVaqGjTAuny8MdgE88scJnCiQSlSrOWcTQgM2t32UBe+MUmFSO5t7VMSfAf/FJKImAxBav8ooCHJXCJA==}
     engines: {node: ^10 || ^12 || >= 14}
     peerDependencies:
       postcss: ^8.1.0
     dependencies:
-      postcss: 8.5.2
+      postcss: 8.5.3
       postcss-selector-parser: 7.1.0
     dev: true
 
-  /postcss-modules-values@4.0.0(postcss@8.5.2):
+  /postcss-modules-values@4.0.0(postcss@8.5.3):
     resolution: {integrity: sha512-RDxHkAiEGI78gS2ofyvCsu7iycRv7oqw5xMWn9iMoR0N/7mf9D50ecQqUo5BZ9Zh2vH4bCUR/ktCqbB9m8vJjQ==}
     engines: {node: ^10 || ^12 || >= 14}
     peerDependencies:
       postcss: ^8.1.0
     dependencies:
-      icss-utils: 5.1.0(postcss@8.5.2)
-      postcss: 8.5.2
+      icss-utils: 5.1.0(postcss@8.5.3)
+      postcss: 8.5.3
     dev: true
 
   /postcss-normalize-charset@4.0.1:
@@ -4328,8 +4328,8 @@ packages:
       source-map: 0.6.1
     dev: true
 
-  /postcss@8.5.2:
-    resolution: {integrity: sha512-MjOadfU3Ys9KYoX0AdkBlFEF1Vx37uCCeN4ZHnmwm9FfpbsGWMZeBLMmmpY+6Ocqod7mkdZ0DT31OlbsFrLlkA==}
+  /postcss@8.5.3:
+    resolution: {integrity: sha512-dle9A3yYxlBSrt8Fu+IpjGT8SY8hN0mlaA6GY8t0P5PjIOZemULz/E2Bnm/2dcUOena75OTNkHI76uZBNUUq3A==}
     engines: {node: ^10 || ^12 || >=14}
     dependencies:
       nanoid: 3.3.8
@@ -4677,14 +4677,14 @@ packages:
       cosmiconfig: 7.1.0
       cssnano: 4.1.11
       fs-extra: 9.1.0
-      icss-utils: 5.1.0(postcss@8.5.2)
+      icss-utils: 5.1.0(postcss@8.5.3)
       mime-types: 2.1.35
       p-queue: 6.6.2
-      postcss: 8.5.2
-      postcss-modules-extract-imports: 3.1.0(postcss@8.5.2)
-      postcss-modules-local-by-default: 4.2.0(postcss@8.5.2)
-      postcss-modules-scope: 3.2.1(postcss@8.5.2)
-      postcss-modules-values: 4.0.0(postcss@8.5.2)
+      postcss: 8.5.3
+      postcss-modules-extract-imports: 3.1.0(postcss@8.5.3)
+      postcss-modules-local-by-default: 4.2.0(postcss@8.5.3)
+      postcss-modules-scope: 3.2.1(postcss@8.5.3)
+      postcss-modules-values: 4.0.0(postcss@8.5.3)
       postcss-value-parser: 4.2.0
       query-string: 6.14.1
       resolve: 1.22.10
@@ -5555,7 +5555,7 @@ packages:
     dependencies:
       esbuild: 0.14.54
       less: 4.1.1
-      postcss: 8.5.2
+      postcss: 8.5.3
       resolve: 1.22.10
       rollup: 2.79.2
     optionalDependencies:
@@ -5828,8 +5828,8 @@ packages:
       vanilla-lazyload: 17.9.0
     dev: true
 
-  github.com/veytu/telebox-insider/06221da545c2e81dc2e7b6c1c1ed6b0511b080d8:
-    resolution: {tarball: https://codeload.github.com/veytu/telebox-insider/tar.gz/06221da545c2e81dc2e7b6c1c1ed6b0511b080d8}
+  github.com/veytu/telebox-insider/14aaa7203e5df12214703c638c55efbb52da7e6a:
+    resolution: {tarball: https://codeload.github.com/veytu/telebox-insider/tar.gz/14aaa7203e5df12214703c638c55efbb52da7e6a}
     name: '@netless/telebox-insider'
     version: 0.2.32
     dev: false
