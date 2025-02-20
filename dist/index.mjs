@@ -2925,7 +2925,7 @@ const setupWrapper = (root) => {
   const mainViewWrapper = document.createElement("div");
   mainViewWrapper.className = "netless-window-manager-main-view-wrapper";
   const mainViewScrollWrapper = document.createElement("div");
-  mainViewWrapper.className = "netless-window-manager-main-view-wrapper netless-window-manager-fancy-scrollbar";
+  mainViewScrollWrapper.className = "netless-window-manager-main-view-wrapper netless-window-manager-fancy-scrollbar";
   const mainViewElement = document.createElement("div");
   mainViewElement.className = "netless-window-manager-main-view";
   playground.appendChild(sizer);
