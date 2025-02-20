@@ -4977,6 +4977,8 @@ class TeleBox {
     return this._intrinsicCoord$.value.y;
   }
   move(x2, y2, skipUpdate = false) {
+    if (this.fixed)
+      return this;
     this._intrinsicCoord$.setValue({ x: x2, y: y2 }, skipUpdate);
     return this;
   }
@@ -5000,7 +5002,6 @@ class TeleBox {
         height = this.intrinsicHeight;
       }
     }
-    console.log(this.fixed);
     if (!this.fixed) {
       this._intrinsicCoord$.setValue(
         {
