@@ -16,13 +16,12 @@ import {
     setScenePath,
     setViewFocusScenePath,
 } from "../Utils/Common";
-import {
-    type AppEmitterEvent,
-    type AppInitState,
-    type BaseInsertParams,
-    type setAppOptions,
-    type AppListenerKeys,
-    WindowManager,
+import type {
+    AppEmitterEvent,
+    AppInitState,
+    BaseInsertParams,
+    setAppOptions,
+    AppListenerKeys,
 } from "../index";
 import type { SceneState, View, SceneDefinition } from "white-web-sdk";
 import type { AppManager } from "../AppManager";
@@ -216,23 +215,14 @@ export class AppProxy implements PageRemoveService {
             }
 
             const mainViewScale =  this.store.attributes['scale']
-            const setStyles = (styles: {width: number; height: number}) => {
-                if (!WindowManager.mainViewWrapper) return
-                WindowManager.mainViewWrapper.style.width = `${styles.width}px`
-                WindowManager.mainViewWrapper.style.height = `${styles.height}px`
-            }
-            const size = WindowManager.wrapper?.getBoundingClientRect()
-    
-            if (!size) return false
+            const mainViewBgImg =  this.store.attributes['mainViewBackgroundImg']
             let newScale = isNumber(mainViewScale) ? mainViewScale : 1
     
             if (newScale < 1) {
                 newScale = 1
             }
-    
-            setStyles({width: size?.width * newScale, height: size?.height * newScale})
-    
             internalEmitter.emit("onScaleChange", newScale)
+            internalEmitter.emit("onBackgroundImgChange", mainViewBgImg)
             
         } catch (error: any) {
             console.error(error);

@@ -29,6 +29,7 @@ export type EmitterEvent = {
     writableChange: boolean;
     containerSizeRatioUpdate: number;
     onScaleChange: number;
+    onBackgroundImgChange: string | undefined;
 };
 
 export type EmitterType = Emittery<EmitterEvent>;

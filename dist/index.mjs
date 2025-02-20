@@ -1571,7 +1571,7 @@ class AppProxy {
     return (_a = this.boxManager) == null ? void 0 : _a.getBox(this.id);
   }
   async setupApp(appId, skipUpdate, app, options, appOptions) {
-    var _a, _b;
+    var _a;
     log("setupApp", appId, app, options);
     if (!this.boxManager) {
       throw new BoxManagerNotFoundError();
@@ -1615,21 +1615,13 @@ class AppProxy {
         this.boxManager.focusBox({ appId }, false);
       }
       const mainViewScale = this.store.attributes["scale"];
-      const setStyles = (styles2) => {
-        if (!WindowManager.mainViewWrapper)
-          return;
-        WindowManager.mainViewWrapper.style.width = `${styles2.width}px`;
-        WindowManager.mainViewWrapper.style.height = `${styles2.height}px`;
-      };
-      const size2 = (_b = WindowManager.wrapper) == null ? void 0 : _b.getBoundingClientRect();
-      if (!size2)
-        return false;
+      const mainViewBgImg = this.store.attributes["mainViewBackgroundImg"];
       let newScale = isNumber(mainViewScale) ? mainViewScale : 1;
       if (newScale < 1) {
         newScale = 1;
       }
-      setStyles({ width: (size2 == null ? void 0 : size2.width) * newScale, height: (size2 == null ? void 0 : size2.height) * newScale });
       internalEmitter.emit("onScaleChange", newScale);
+      internalEmitter.emit("onBackgroundImgChange", mainViewBgImg);
     } catch (error) {
       console.error(error);
       throw new Error(`[WindowManager]: app setup error: ${error.message}`);
@@ -19556,6 +19548,12 @@ const _WindowManager = class extends InvisiblePlugin {
     }
     this._iframeBridge || (this._iframeBridge = new IframeBridge(this, this.appManager));
     return this._iframeBridge;
+  }
+  setBackgroundImg(src) {
+    if (!_WindowManager.mainViewWrapper)
+      return;
+    _WindowManager.mainViewWrapper.style.backgroundImage = `url(${src})`;
+    this.safeUpdateAttributes(["mainViewBackgroundImg"], src);
   }
 };
 let WindowManager = _WindowManager;

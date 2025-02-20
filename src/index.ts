@@ -1163,6 +1163,12 @@ export class WindowManager
         this._iframeBridge || (this._iframeBridge = new IframeBridge(this, this.appManager));
         return this._iframeBridge;
     }
+
+    public setBackgroundImg (src: string): void {
+        if (!WindowManager.mainViewWrapper) return
+        WindowManager.mainViewWrapper.style.backgroundImage = `url(${src})`
+        this.safeUpdateAttributes(["mainViewBackgroundImg"], src)
+    }
 }
 
 setupBuiltin();

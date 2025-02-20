@@ -464,6 +464,7 @@ type EmitterEvent = {
     writableChange: boolean;
     containerSizeRatioUpdate: number;
     onScaleChange: number;
+    onBackgroundImgChange: string | undefined;
 };
 type EmitterType = Emittery<EmitterEvent>;
 
@@ -1350,6 +1351,7 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     private ensureAttributes;
     private _iframeBridge?;
     getIframeBridge(): IframeBridge;
+    setBackgroundImg(src: string): void;
 }
 
 export { type AddAppOptions, type AddAppParams, type AddPageParams, AppContext, AppCreateError, type AppEmitterEvent, type AppInitState, type AppListenerKeys, AppManagerNotInitError, AppNotRegisterError, type AppPayload, type AppSyncAttributes, type ApplianceIcons, type BaseInsertParams, BindContainerRoomPhaseInvalidError, BoxManagerNotFoundError, BoxNotCreatedError, BuiltinApps, type CursorMovePayload, type CursorOptions, DomEvents, IframeBridge, type IframeBridgeAttributes, type IframeBridgeEvents, IframeEvents, type IframeSize, type InsertOptions, InvalidScenePath, type MountParams, type NetlessApp, type OnCreateInsertOption, type PageController, type PageRemoveService, type PageState, ParamsInvalidError, type PublicEvent, type RegisterEventData, type RegisterEvents, type RegisterParams, Storage, type StorageStateChangedEvent, type StorageStateChangedListener, WhiteWebSDKInvalidError, WindowManager, type WindowMangerAttributes, type apps, calculateNextIndex, reconnectRefresher, type setAppOptions };
