@@ -18730,7 +18730,7 @@ const _WindowManager = class extends InvisiblePlugin {
     _WindowManager._resolve(manager);
   }
   static async mount(params) {
-    var _a;
+    var _a, _b;
     const room = params.room;
     _WindowManager.container = params.container;
     _WindowManager.supportAppliancePlugin = params.supportAppliancePlugin;
@@ -18807,7 +18807,10 @@ const _WindowManager = class extends InvisiblePlugin {
       console.log(error);
     }
     (_a = manager == null ? void 0 : manager.room) == null ? void 0 : _a.addMagixEventListener("onScaleChange", (data) => {
-      manager == null ? void 0 : manager.setScale(data.payload);
+      manager == null ? void 0 : manager._setScale(data.payload);
+    });
+    (_b = manager == null ? void 0 : manager.room) == null ? void 0 : _b.addMagixEventListener("onMainViewBackgroundImgChange", (data) => {
+      manager == null ? void 0 : manager._setBackgroundImg(data.payload);
     });
     return manager;
   }
@@ -19495,6 +19498,9 @@ const _WindowManager = class extends InvisiblePlugin {
     internalEmitter.emit("containerSizeRatioUpdate", ratio);
   }
   setScale(scale2) {
+    this.room.dispatchMagixEvent("onScaleChange", scale2);
+  }
+  _setScale(scale2) {
     var _a;
     if (!isNumber(scale2))
       return false;
@@ -19550,6 +19556,9 @@ const _WindowManager = class extends InvisiblePlugin {
     return this._iframeBridge;
   }
   setBackgroundImg(src) {
+    this.room.dispatchMagixEvent("onMainViewBackgroundImgChange", src);
+  }
+  _setBackgroundImg(src) {
     if (!_WindowManager.mainViewWrapper)
       return;
     _WindowManager.mainViewWrapper.style.backgroundImage = `url(${src})`;

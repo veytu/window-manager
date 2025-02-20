@@ -299,7 +299,11 @@ export class WindowManager
         }
 
         manager?.room?.addMagixEventListener("onScaleChange", (data) => {
-            manager?.setScale(data.payload)
+            manager?._setScale(data.payload)
+        })
+
+        manager?.room?.addMagixEventListener("onMainViewBackgroundImgChange", (data) => {
+            manager?._setBackgroundImg(data.payload)
         })
         return manager;
     }
@@ -1101,7 +1105,11 @@ export class WindowManager
         internalEmitter.emit("containerSizeRatioUpdate", ratio);
     }
 
-    public setScale(scale: number): boolean {
+    public setScale(scale: number): void {
+        this.room.dispatchMagixEvent("onScaleChange", scale)
+    }
+
+    private _setScale (scale: number): boolean {
         if (!isNumber(scale)) return false
         const setStyles = (styles: {width: number; height: number}) => {
             if (!WindowManager.mainViewWrapper) return
@@ -1165,6 +1173,9 @@ export class WindowManager
     }
 
     public setBackgroundImg (src: string): void {
+        this.room.dispatchMagixEvent('onMainViewBackgroundImgChange', src)
+    }
+    private _setBackgroundImg (src: string): void {
         if (!WindowManager.mainViewWrapper) return
         WindowManager.mainViewWrapper.style.backgroundImage = `url(${src})`
         this.safeUpdateAttributes(["mainViewBackgroundImg"], src)

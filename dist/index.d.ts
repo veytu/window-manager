@@ -1346,12 +1346,14 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     lockImages(locked: boolean): void;
     refresh(): void;
     setContainerSizeRatio(ratio: number): void;
-    setScale(scale: number): boolean;
+    setScale(scale: number): void;
+    private _setScale;
     private isDynamicPPT;
     private ensureAttributes;
     private _iframeBridge?;
     getIframeBridge(): IframeBridge;
     setBackgroundImg(src: string): void;
+    private _setBackgroundImg;
 }
 
 export { type AddAppOptions, type AddAppParams, type AddPageParams, AppContext, AppCreateError, type AppEmitterEvent, type AppInitState, type AppListenerKeys, AppManagerNotInitError, AppNotRegisterError, type AppPayload, type AppSyncAttributes, type ApplianceIcons, type BaseInsertParams, BindContainerRoomPhaseInvalidError, BoxManagerNotFoundError, BoxNotCreatedError, BuiltinApps, type CursorMovePayload, type CursorOptions, DomEvents, IframeBridge, type IframeBridgeAttributes, type IframeBridgeEvents, IframeEvents, type IframeSize, type InsertOptions, InvalidScenePath, type MountParams, type NetlessApp, type OnCreateInsertOption, type PageController, type PageRemoveService, type PageState, ParamsInvalidError, type PublicEvent, type RegisterEventData, type RegisterEvents, type RegisterParams, Storage, type StorageStateChangedEvent, type StorageStateChangedListener, WhiteWebSDKInvalidError, WindowManager, type WindowMangerAttributes, type apps, calculateNextIndex, reconnectRefresher, type setAppOptions };
