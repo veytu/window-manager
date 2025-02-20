@@ -4598,7 +4598,7 @@ class TeleBox {
     this.namespace = namespace;
     this.events = new EventEmitter();
     this._delegateEvents = new EventEmitter();
-    this.scale = 1;
+    this.scale = createVal(1);
     const prefersColorScheme$ = createVal(
       prefersColorScheme
     );
@@ -4649,9 +4649,6 @@ class TeleBox {
       }
     });
     const containerRect$ = createVal(containerRect, shallowequal);
-    containerRect$.reaction(() => {
-      this.setScaleContent(this.scale);
-    });
     const collectorRect$ = createVal(collectorRect, shallowequal);
     const title$ = createVal(title);
     title$.reaction((title2, _2, skipUpdate) => {
@@ -5150,11 +5147,23 @@ class TeleBox {
         this._size$,
         this._minimized$,
         this._containerRect$,
-        this._collectorRect$
+        this._collectorRect$,
+        this._maximized$,
+        this.scale
       ],
-      ([coord, size2, minimized, containerRect, collectorRect]) => {
+      ([coord, size2, minimized, containerRect, collectorRect, maximized, scale2]) => {
         const absoluteWidth = size2.width * containerRect.width;
         const absoluteHeight = size2.height * containerRect.height;
+        if (maximized) {
+          return {
+            width: absoluteWidth * scale2,
+            height: absoluteHeight * scale2,
+            x: coord.x * containerRect.width,
+            y: coord.y * containerRect.height,
+            scaleX: 1,
+            scaleY: 1
+          };
+        }
         return {
           width: absoluteWidth + (minimized && collectorRect ? 1 : 0),
           height: absoluteHeight + (minimized && collectorRect ? 1 : 0),
@@ -5181,6 +5190,25 @@ class TeleBox {
     const $content = document.createElement("div");
     $content.className = this.wrapClassName("content") + " tele-fancy-scrollbar";
     this.$content = $content;
+    this._valSideEffectBinder.combine(
+      [
+        this._size$,
+        this._containerRect$,
+        this.scale
+      ],
+      ([size2, containerRect, scale2]) => {
+        const absoluteWidth = size2.width * containerRect.width;
+        const absoluteHeight = size2.height * containerRect.height;
+        return {
+          width: absoluteWidth * scale2,
+          height: absoluteHeight * scale2
+        };
+      },
+      shallowequal
+    ).subscribe((size2) => {
+      $content.style.width = size2.width + "px";
+      $content.style.height = size2.height + "px";
+    });
     this._renderSideEffect.add(() => {
       let last$userStyles;
       return this._$userStyles$.subscribe(($userStyles) => {
@@ -5435,12 +5463,7 @@ class TeleBox {
     );
   }
   setScaleContent(scale2) {
-    if (!this.$content)
-      return;
-    const contentWrapRect = this.$contentWrap.getBoundingClientRect();
-    this.$content.style.width = `${contentWrapRect.width * scale2}px`;
-    this.$content.style.height = `${contentWrapRect.height * scale2}px`;
-    this.scale = scale2;
+    this.scale.setValue(scale2);
   }
   destroy() {
     this.$box.remove();
