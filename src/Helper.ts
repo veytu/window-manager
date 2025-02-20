@@ -23,16 +23,20 @@ export const setupWrapper = (
     sizer.className = "netless-window-manager-sizer";
 
     const wrapper = document.createElement("div");
-    wrapper.className = "netless-window-manager-wrapper netless-window-manager-fancy-scrollbar";
+    wrapper.className = "netless-window-manager-wrapper";
 
     const mainViewWrapper = document.createElement("div");
     mainViewWrapper.className = "netless-window-manager-main-view-wrapper"
+
+     const mainViewScrollWrapper = document.createElement("div");
+    mainViewWrapper.className = "netless-window-manager-main-view-wrapper netless-window-manager-fancy-scrollbar"
 
     const mainViewElement = document.createElement("div");
     mainViewElement.className = "netless-window-manager-main-view";
 
     playground.appendChild(sizer);
     sizer.appendChild(wrapper);
+    mainViewScrollWrapper.appendChild(mainViewWrapper)
     mainViewWrapper.appendChild(mainViewElement);
     wrapper.appendChild(mainViewWrapper);
     root.appendChild(playground);
