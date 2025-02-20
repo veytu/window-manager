@@ -6709,7 +6709,6 @@ class BoxManager {
     emitter.on("updateManagerRect", () => this.updateManagerRect());
     emitter.on("onScaleChange", (scale2) => {
       this.changeScale(scale2);
-      console.log("onScaleChange");
     });
   }
   get mainView() {
@@ -18812,6 +18811,12 @@ const _WindowManager = class extends InvisiblePlugin {
     (_b = manager == null ? void 0 : manager.room) == null ? void 0 : _b.addMagixEventListener("onMainViewBackgroundImgChange", (data) => {
       manager == null ? void 0 : manager._setBackgroundImg(data.payload);
     });
+    internalEmitter.on("onScaleChange", (scale2) => {
+      manager == null ? void 0 : manager._setScale(scale2, true);
+    });
+    internalEmitter.on("onBackgroundImgChange", (mainViewBgImg) => {
+      manager == null ? void 0 : manager._setBackgroundImg(mainViewBgImg || "");
+    });
     return manager;
   }
   static initManager(room) {
@@ -19500,7 +19505,7 @@ const _WindowManager = class extends InvisiblePlugin {
   setScale(scale2) {
     this.room.dispatchMagixEvent("onScaleChange", scale2);
   }
-  _setScale(scale2) {
+  _setScale(scale2, skipEmit) {
     var _a;
     if (!isNumber(scale2))
       return false;
@@ -19514,7 +19519,9 @@ const _WindowManager = class extends InvisiblePlugin {
     if (!size2)
       return false;
     setStyles({ width: (size2 == null ? void 0 : size2.width) * scale2, height: (size2 == null ? void 0 : size2.height) * scale2 });
-    internalEmitter.emit("onScaleChange", scale2);
+    if (!skipEmit) {
+      internalEmitter.emit("onScaleChange", scale2);
+    }
     this.safeUpdateAttributes(["scale"], scale2);
     return true;
   }

@@ -164,7 +164,6 @@ export class BoxManager {
         emitter.on("updateManagerRect", () => this.updateManagerRect());
         emitter.on("onScaleChange", (scale) => {
             this.changeScale(scale)
-            console.log('onScaleChange')
         })
     }
 

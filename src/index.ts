@@ -305,6 +305,12 @@ export class WindowManager
         manager?.room?.addMagixEventListener("onMainViewBackgroundImgChange", (data) => {
             manager?._setBackgroundImg(data.payload)
         })
+        internalEmitter.on("onScaleChange", (scale) => {
+            manager?._setScale(scale, true)
+        })
+        internalEmitter.on("onBackgroundImgChange", (mainViewBgImg) => {
+            manager?._setBackgroundImg(mainViewBgImg || "")
+        })
         return manager;
     }
 
@@ -1109,7 +1115,7 @@ export class WindowManager
         this.room.dispatchMagixEvent("onScaleChange", scale)
     }
 
-    private _setScale (scale: number): boolean {
+    private _setScale (scale: number, skipEmit?: boolean): boolean {
         if (!isNumber(scale)) return false
         const setStyles = (styles: {width: number; height: number}) => {
             if (!WindowManager.mainViewWrapper) return
@@ -1127,7 +1133,10 @@ export class WindowManager
 
         setStyles({width: size?.width * scale, height: size?.height * scale})
 
-        internalEmitter.emit("onScaleChange", scale)
+        if (!skipEmit) {
+            internalEmitter.emit("onScaleChange", scale)
+        }
+
         this.safeUpdateAttributes(["scale"], scale)
         return true
     }
