@@ -220,10 +220,7 @@
 
 .netless-window-manager-fancy-scrollbar {
     overscroll-behavior: contain;
-    overflow-y: scroll;
-    overflow-y: overlay;
-    overflow-x: scroll;
-    overflow-x: overlay;
+    overflow:auto;
     -webkit-overflow-scrolling: touch;
     -ms-overflow-style: -ms-autohiding-scrollbar;
     scrollbar-width: auto;
