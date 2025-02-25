@@ -268,20 +268,19 @@ export class BoxManager {
             this.teleBoxManager.destroy();
         }
         this.teleBoxManager = manager;
-        // const container = createTeleBoxManagerConfig?.collectorContainer || WindowManager.wrapper;
-        // if (container) {
-        //     this.setCollectorContainer(container);
-        // }
+        const container = createTeleBoxManagerConfig?.collectorContainer || WindowManager.wrapper;
+        if (container) {
+            this.setCollectorContainer(container);
+        }
         return manager;
     }
 
     public setCollectorContainer(container: HTMLElement) {
-        // const collector = new TeleBoxCollector({
-        //     styles: this.createTeleBoxManagerConfig?.collectorStyles,
-        //     readonly: this.teleBoxManager.readonly,
-        // }).mount(container);
-        // this.teleBoxManager.setCollector(collector);
-        console.log(container)
+        const collector = new TeleBoxCollector({
+            styles: this.createTeleBoxManagerConfig?.collectorStyles,
+            readonly: this.teleBoxManager.readonly,
+        }).mount(container);
+        this.teleBoxManager.setCollector(collector);
     }
 
     public getBox(appId: string): ReadonlyTeleBox | undefined {
