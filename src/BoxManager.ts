@@ -276,11 +276,12 @@ export class BoxManager {
     }
 
     public setCollectorContainer(container: HTMLElement) {
-        const collector = new TeleBoxCollector({
-            styles: this.createTeleBoxManagerConfig?.collectorStyles,
-            readonly: this.teleBoxManager.readonly,
-        }).mount(container);
-        this.teleBoxManager.setCollector(collector);
+        // const collector = new TeleBoxCollector({
+        //     styles: this.createTeleBoxManagerConfig?.collectorStyles,
+        //     readonly: this.teleBoxManager.readonly,
+        // }).mount(container);
+        // this.teleBoxManager.setCollector(collector);
+        console.log(container)
     }
 
     public getBox(appId: string): ReadonlyTeleBox | undefined {
