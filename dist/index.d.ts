@@ -1347,6 +1347,7 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     refresh(): void;
     setContainerSizeRatio(ratio: number): void;
     setScale(scale: number): void;
+    private _updateMainViewWrapperSize;
     private _setScale;
     private isDynamicPPT;
     private ensureAttributes;

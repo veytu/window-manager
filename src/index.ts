@@ -305,11 +305,16 @@ export class WindowManager
         manager?.room?.addMagixEventListener("onMainViewBackgroundImgChange", (data) => {
             manager?._setBackgroundImg(data.payload)
         })
+
         internalEmitter.on("onScaleChange", (scale) => {
             manager?._setScale(scale, true)
         })
         internalEmitter.on("onBackgroundImgChange", (mainViewBgImg) => {
             manager?._setBackgroundImg(mainViewBgImg || "")
+        })
+
+        internalEmitter.on('playgroundSizeChange', () => {
+            manager?._updateMainViewWrapperSize()
         })
         return manager;
     }
@@ -1115,8 +1120,7 @@ export class WindowManager
         this.room.dispatchMagixEvent("onScaleChange", scale)
     }
 
-    private _setScale (scale: number, skipEmit?: boolean): boolean {
-        if (!isNumber(scale)) return false
+    private _updateMainViewWrapperSize (scale?: number) {
         const setStyles = (styles: {width: number; height: number}) => {
             if (!WindowManager.mainViewWrapper) return
             WindowManager.mainViewWrapper.style.width = `${styles.width}px`
@@ -1125,19 +1129,29 @@ export class WindowManager
         const size = WindowManager.wrapper?.getBoundingClientRect()
 
         if (!size) return false
+
+        const currentScale = scale ?? this.getAttributesValue('scale')
+
+        setStyles({width: size?.width * currentScale, height: size?.height * currentScale})
+    }
+
+    private _setScale (scale: number, skipEmit?: boolean): boolean {
+        if (!isNumber(scale)) return false
+        
         let newScale = scale
 
         if (newScale < 1) {
             newScale = 1
         }
 
-        setStyles({width: size?.width * scale, height: size?.height * scale})
-
         if (!skipEmit) {
-            internalEmitter.emit("onScaleChange", scale)
+            internalEmitter.emit("onScaleChange", newScale)
         }
 
-        this.safeUpdateAttributes(["scale"], scale)
+        this.safeUpdateAttributes(["scale"], newScale)
+
+        this._updateMainViewWrapperSize(newScale)
+
         return true
     }
 
