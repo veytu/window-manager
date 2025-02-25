@@ -268,10 +268,10 @@ export class BoxManager {
             this.teleBoxManager.destroy();
         }
         this.teleBoxManager = manager;
-        const container = createTeleBoxManagerConfig?.collectorContainer || WindowManager.wrapper;
-        if (container) {
-            this.setCollectorContainer(container);
-        }
+        // const container = createTeleBoxManagerConfig?.collectorContainer || WindowManager.wrapper;
+        // if (container) {
+        //     this.setCollectorContainer(container);
+        // }
         return manager;
     }
 
