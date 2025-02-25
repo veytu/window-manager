@@ -4263,7 +4263,8 @@ class oP {
   setCollectorContainer(i) {
     var c;
     const o = new VM({
-      styles: (c = this.createTeleBoxManagerConfig) == null ? void 0 : c.collectorStyles
+      styles: (c = this.createTeleBoxManagerConfig) == null ? void 0 : c.collectorStyles,
+      readonly: this.teleBoxManager.readonly
     }).mount(i);
     this.teleBoxManager.setCollector(o);
   }
@@ -4363,7 +4364,8 @@ class oP {
     this.teleBoxManager.update(i, o, c);
   }
   setReadonly(i) {
-    this.teleBoxManager.setReadonly(i);
+    var o;
+    this.teleBoxManager.setReadonly(i), (o = this.teleBoxManager._collector$.value) == null || o.setReadonly(i);
   }
   setPrefersColorScheme(i) {
     this.teleBoxManager.setPrefersColorScheme(i);

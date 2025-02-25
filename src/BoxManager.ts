@@ -278,6 +278,7 @@ export class BoxManager {
     public setCollectorContainer(container: HTMLElement) {
         const collector = new TeleBoxCollector({
             styles: this.createTeleBoxManagerConfig?.collectorStyles,
+            readonly: this.teleBoxManager.readonly,
         }).mount(container);
         this.teleBoxManager.setCollector(collector);
     }
@@ -413,6 +414,7 @@ export class BoxManager {
 
     public setReadonly(readonly: boolean) {
         this.teleBoxManager.setReadonly(readonly);
+        this.teleBoxManager._collector$.value?.setReadonly(readonly);
     }
 
     public setPrefersColorScheme(colorScheme: TeleBoxColorScheme) {
