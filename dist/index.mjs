@@ -2987,7 +2987,7 @@ class Kk {
         return (st = this._handleTrackStart) == null ? void 0 : st.call(this, Ne);
       },
       onEvent: (Ne) => {
-        if (this._delegateEvents.listeners.length > 0)
+        if (console.log(this._delegateEvents.listeners), this._delegateEvents.listeners.length > 0)
           this._delegateEvents.emit(Ne.type);
         else
           switch (Ne.type) {
