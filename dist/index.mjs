@@ -2987,7 +2987,7 @@ class Kk {
         return (st = this._handleTrackStart) == null ? void 0 : st.call(this, Ne);
       },
       onEvent: (Ne) => {
-        if (console.log(this._delegateEvents.listeners), this._delegateEvents.listeners.length > 0)
+        if (this._delegateEvents.listeners.length > 0)
           this._delegateEvents.emit(Ne.type);
         else
           switch (Ne.type) {
@@ -3993,6 +3993,7 @@ class aP {
   remove(i, o = !1) {
     var c;
     const h = this.getBoxIndex(i);
+    debugger;
     if (h >= 0) {
       const m = this.boxes.slice(), y = m.splice(h, 1);
       this.boxes$.setValue(m), y.forEach((S) => S.destroy());
