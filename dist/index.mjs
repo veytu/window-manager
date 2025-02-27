@@ -3993,7 +3993,6 @@ class aP {
   remove(i, o = !1) {
     var c;
     const h = this.getBoxIndex(i);
-    debugger;
     if (h >= 0) {
       const m = this.boxes.slice(), y = m.splice(h, 1);
       this.boxes$.setValue(m), y.forEach((S) => S.destroy());
