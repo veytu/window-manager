@@ -1028,12 +1028,14 @@ export class WindowManager
 
     public safeSetAttributes(attributes: any): void {
         if (this.canOperate) {
+            this.room?.dispatchMagixEvent('Windowmanager_custom_attributes', attributes)
             this.setAttributes(attributes);
         }
     }
 
     public safeUpdateAttributes(keys: string[], value: any): void {
         if (this.canOperate) {
+            this.room?.dispatchMagixEvent('Windowmanager_custom_attributes', {keys, value})
             this.updateAttributes(keys, value);
         }
     }
