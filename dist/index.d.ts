@@ -3,7 +3,7 @@ import * as white_web_sdk from 'white-web-sdk';
 import { RoomMember, View, ApplianceNames, Camera, Size, SceneDefinition, SceneState, DisplayerState, ViewVisionMode, CameraState, Event as Event$1, Scope, EventPhase, MagixEventListenerOptions as MagixEventListenerOptions$1, autorun, reaction, toJS, listenUpdated, unlistenUpdated, listenDisposed, unlistenDisposed, Room, ViewMode, Displayer, MemberState, AnimationMode, InvisiblePlugin, InvisiblePluginContext, Player, Rectangle, Point, CameraBound, ImageInformation } from 'white-web-sdk';
 export { AnimationMode, Displayer, Player, Room, SceneDefinition, SceneState, View } from 'white-web-sdk';
 import Emittery from 'emittery';
-import { TELE_BOX_STATE, TeleBoxRect, TeleBoxColorScheme, TeleBoxManager, ReadonlyTeleBox, TeleBoxManagerUpdateConfig, TeleBoxConfig, TeleBoxState } from '@netless/telebox-insider';
+import { TELE_BOX_STATE, TeleBoxRect, TeleBoxColorScheme, ReadonlyTeleBox, TeleBoxManager, TeleBoxManagerUpdateConfig, TeleBoxConfig, TeleBoxState } from '@netless/telebox-insider';
 export { ReadonlyTeleBox, TeleBoxRect } from '@netless/telebox-insider';
 
 declare enum Events {
@@ -431,6 +431,12 @@ type PublicEvent = {
     onAppViewMounted: AppPayload;
     onAppSetup: string;
     onAppScenePathChange: AppPayload;
+    appZIndexChange: {
+        appId: string;
+        box: ReadonlyTeleBox;
+    };
+    onMinimized: string;
+    onMaximized: string;
 };
 type CallbacksType = Emittery<PublicEvent>;
 
