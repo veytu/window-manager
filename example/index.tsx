@@ -330,6 +330,9 @@ const App = () => {
                 <button className="side-button" onClick={() => cleanCurrentScene(manager)}>
                     清屏
                 </button>
+                <button className="side-button" onClick={() => manager.setBackgroundColor('#000')}>
+                    背景色
+                </button>
                 <span>
                     {pageState.index}/{pageState.length}
                 </span>

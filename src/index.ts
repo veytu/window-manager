@@ -66,6 +66,8 @@ export type WindowMangerAttributes = {
     minimized?: boolean;
     maximizedBoxes?: string
     minimizedBoxes?: string
+    mainViewBackgroundImg?: string
+    mainViewBackgroundColor?: string
     [key: string]: any;
 };
 
@@ -305,17 +307,15 @@ export class WindowManager
         manager?.room?.addMagixEventListener("onMainViewBackgroundImgChange", (data) => {
             manager?._setBackgroundImg(data.payload)
         })
-
-        internalEmitter.on("onScaleChange", (scale) => {
-            manager?._setScale(scale, true)
-        })
-        internalEmitter.on("onBackgroundImgChange", (mainViewBgImg) => {
-            manager?._setBackgroundImg(mainViewBgImg || "")
+        manager?.room?.addMagixEventListener("onMainViewBackgroundColorChange", (data) => {
+            manager?._setBackgroundColor(data.payload)
         })
 
         internalEmitter.on('playgroundSizeChange', () => {
             manager?._updateMainViewWrapperSize()
         })
+
+        manager._initAttribute()
         return manager;
     }
 
@@ -1185,6 +1185,15 @@ export class WindowManager
             if (!this.attributes[Fields.IframeBridge]) {
                 this.safeSetAttributes({ [Fields.IframeBridge]: {} });
             }
+            if (!this.attributes['mainViewBackgroundColor']) {
+                this.safeSetAttributes({ mainViewBackgroundColor: '' });
+            }
+            if (!this.attributes['mainViewBackgroundImg']) {
+                this.safeSetAttributes({mainViewBackgroundImg: ''})
+            }
+            if (!this.attributes['scale']) {
+                this.safeSetAttributes({scale: 1})
+            }
         }
     }
 
@@ -1197,13 +1206,55 @@ export class WindowManager
         return this._iframeBridge;
     }
 
+    public getBackground (): {type: 'img' | 'color', value: string | undefined} | undefined {
+        if (!!this.attributes['mainViewBackgroundColor']) {
+            return {
+                type: 'color',
+                value: this.attributes['mainViewBackgroundColor']
+            }
+        }
+
+        if (!!this.attributes['mainViewBackgroundImg']) {
+            return {
+                type: 'img',
+                value: this.attributes['mainViewBackgroundImg']
+            }
+        }
+
+        return undefined
+    }
+
     public setBackgroundImg (src: string): void {
+        this.room.dispatchMagixEvent('onMainViewBackgroundColorChange', '')
         this.room.dispatchMagixEvent('onMainViewBackgroundImgChange', src)
+    }
+    public setBackgroundColor (color: string): void {
+        this.room.dispatchMagixEvent('onMainViewBackgroundImgChange', '')
+        this.room.dispatchMagixEvent('onMainViewBackgroundColorChange', color)
+    }
+    private _setBackgroundColor (color: string): void {
+        if (!WindowManager.mainViewWrapper) return
+        WindowManager.mainViewWrapper.style.backgroundColor = color
+        this.safeUpdateAttributes(["mainViewBackgroundColor"], color)
     }
     private _setBackgroundImg (src: string): void {
         if (!WindowManager.mainViewWrapper) return
         WindowManager.mainViewWrapper.style.backgroundImage = `url(${src})`
         this.safeUpdateAttributes(["mainViewBackgroundImg"], src)
+    }
+
+    private _initAttribute (): void {
+        if (!!this.attributes['mainViewBackgroundImg']) {
+            this._setBackgroundImg(this.attributes['mainViewBackgroundImg'])
+        }
+
+        if (!!this.attributes['mainViewBackgroundColor']) {
+            this._setBackgroundColor(this.attributes['mainViewBackgroundColor'])
+        }
+
+        if (!!this.attributes['scale']) {
+            this._setScale(this.attributes['scale'])
+        }
     }
 }
 
