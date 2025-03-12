@@ -1810,7 +1810,7 @@ const $N = (r) => {
   const y = document.createElement("div");
   y.className = "netless-window-manager-main-view";
   const g = document.createElement("div");
-  return g.style.display = "block", i.appendChild(o), i.appendChild(g), o.appendChild(c), m.appendChild(y), h.appendChild(m), c.appendChild(h), r.appendChild(i), Wt.wrapper = c, { playground: i, wrapper: c, sizer: o, mainViewElement: y, mainViewWrapper: m, extendWrapper: g };
+  return g.style.display = "none", i.appendChild(o), i.appendChild(g), o.appendChild(c), m.appendChild(y), h.appendChild(m), c.appendChild(h), r.appendChild(i), Wt.wrapper = c, { playground: i, wrapper: c, sizer: o, mainViewElement: y, mainViewWrapper: m, extendWrapper: g };
 }, QN = () => {
   if (rT(GD) < rT(tT))
     throw new EN(tT);

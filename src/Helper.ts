@@ -36,7 +36,7 @@ export const setupWrapper = (
     mainViewElement.className = "netless-window-manager-main-view";
 
     const extendWrapper = document.createElement('div')
-    extendWrapper.style.display = 'block'
+    extendWrapper.style.display = 'none'
 
     
     playground.appendChild(sizer);
