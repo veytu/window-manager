@@ -711,6 +711,9 @@ class ON {
       value: o
     });
   }
+  get extendWrapper() {
+    return this.manager.extendWrapper;
+  }
 }
 class LN {
   constructor(i) {

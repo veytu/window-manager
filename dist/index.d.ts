@@ -656,6 +656,7 @@ declare class AppContext<TAttributes extends {} = any, TMagixEventPayloads = any
     get kind(): string;
     /** Dispatch a local event to `manager.onAppEvent()`. */
     dispatchAppEvent(type: string, value?: any): void;
+    get extendWrapper(): HTMLElement | undefined;
 }
 
 type AppEmitter = Emittery<AppEmitterEvent>;

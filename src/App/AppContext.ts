@@ -276,4 +276,8 @@ export class AppContext<TAttributes extends {} = any, TMagixEventPayloads = any,
             value,
         });
     }
+
+    public get extendWrapper () {
+        return this.manager.extendWrapper
+    }
 }
