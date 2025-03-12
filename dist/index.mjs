@@ -1572,6 +1572,9 @@ class FN {
     if (this.store.focus)
       return this.appProxies.get(this.store.focus);
   }
+  get extendWrapper() {
+    return this.windowManger.extendWrapper;
+  }
   get uid() {
     var i;
     return ((i = this.room) == null ? void 0 : i.uid) || "";

@@ -853,6 +853,7 @@ declare class AppManager {
     get polling(): boolean;
     set polling(b: boolean);
     get focusApp(): AppProxy | undefined;
+    get extendWrapper(): HTMLElement | undefined;
     get uid(): string;
     getMainViewSceneDir(): string;
     private onCreated;

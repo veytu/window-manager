@@ -305,6 +305,10 @@ export class AppManager {
         }
     }
 
+    public get extendWrapper () {
+        return this.windowManger.extendWrapper
+    }
+
     public get uid() {
         return this.room?.uid || "";
     }
