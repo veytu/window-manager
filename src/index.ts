@@ -178,9 +178,10 @@ export class WindowManager
     public static debug = false;
     public static containerSizeRatio = DEFAULT_CONTAINER_RATIO;
     public static supportAppliancePlugin?: boolean;
-    private static isCreated = false;
+    public static isCreated = false;
     private static _resolve = (_manager: WindowManager) => void 0;
 
+    private static extendWrapper?: HTMLElement
     public version = __APP_VERSION__;
     public dependencies = __APP_DEPENDENCIES__;
 
@@ -336,7 +337,7 @@ export class WindowManager
         if (!WindowManager.container) {
             WindowManager.container = container;
         }
-        const { playground, wrapper, sizer, mainViewElement, mainViewWrapper } = setupWrapper(container);
+        const { playground, wrapper, sizer, mainViewElement, mainViewWrapper, extendWrapper } = setupWrapper(container);
         WindowManager.playground = playground;
         if (chessboard) {
             sizer.classList.add("netless-window-manager-chess-sizer");
@@ -358,6 +359,7 @@ export class WindowManager
         WindowManager.wrapper = wrapper;
         WindowManager.sizer = sizer;
         WindowManager.mainViewWrapper = mainViewWrapper;
+        WindowManager.extendWrapper = extendWrapper
         return mainViewElement;
     }
 
@@ -910,6 +912,10 @@ export class WindowManager
 
     public get fullscreen(): boolean {
         return Boolean(this._fullscreen);
+    }
+
+    public get extendWrapper() {
+        return WindowManager.extendWrapper
     }
 
     /**

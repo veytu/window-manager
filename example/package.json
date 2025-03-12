@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@netless/app-slide": "^0.2.24",
+    "@netless/app-slide": "git+https://github.com/veytu/app-slide.git",
     "@netless/telebox-insider": "^0.2.30",
     "@netless/video-js-plugin": "^0.3.7",
     "normalize.css": "^8.0.1",

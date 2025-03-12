@@ -1181,8 +1181,9 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     static debug: boolean;
     static containerSizeRatio: number;
     static supportAppliancePlugin?: boolean;
-    private static isCreated;
+    static isCreated: boolean;
     private static _resolve;
+    private static extendWrapper?;
     version: string;
     dependencies: Record<string, string>;
     appListeners?: AppListeners;
@@ -1307,6 +1308,7 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     get sceneState(): SceneState;
     get pageState(): PageState;
     get fullscreen(): boolean;
+    get extendWrapper(): HTMLElement | undefined;
     /**
      * 查询所有的 App
      */
