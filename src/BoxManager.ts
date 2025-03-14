@@ -322,7 +322,7 @@ export class BoxManager {
                     height: state.height || 0.5,
                     zIndex: state.zIndex,
                 },
-                true
+                false
             );
             setTimeout(() => {
                 if (state.focus) {
