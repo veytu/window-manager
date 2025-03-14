@@ -10,7 +10,7 @@ dependencies:
     version: 3.3.1
   '@netless/telebox-insider':
     specifier: github:veytu/telebox-insider
-    version: github.com/veytu/telebox-insider/3238d9ded00d6bd200362329d7312d807b82901b
+    version: github.com/veytu/telebox-insider/728b4925ae88a97517d17af8744719aa5b22f783
   emittery:
     specifier: ^0.9.2
     version: 0.9.2
@@ -1235,8 +1235,8 @@ packages:
     resolution: {integrity: sha512-kRlAGTRWgPsOj7oARC9m1okJEXdL/8fekFVcxA8Hl7GH4r/sN4OJn/i6Flde373T50KS7Y37oFbMwlE8+F42kQ==}
     dev: true
 
-  /canvg@3.0.10:
-    resolution: {integrity: sha512-qwR2FRNO9NlzTeKIPIKpnTY6fqwuYSequ8Ru8c0YkYU7U0oW+hLUvWadLvAu1Rl72OMNiFhoLu4f8eUjQ7l/+Q==}
+  /canvg@3.0.11:
+    resolution: {integrity: sha512-5ON+q7jCTgMp9cjpu4Jo6XbvfYwSB2Ow3kzHKfIyJfaCAOHLbdKPQqGKgfED/R5B+3TFFfe8pegYA+b423SRyA==}
     engines: {node: '>=10.0.0'}
     requiresBuild: true
     dependencies:
@@ -3397,7 +3397,7 @@ packages:
       btoa: 1.2.1
       fflate: 0.4.8
     optionalDependencies:
-      canvg: 3.0.10
+      canvg: 3.0.11
       core-js: 3.41.0
       dompurify: 2.5.8
       html2canvas: 1.4.1
@@ -5877,8 +5877,8 @@ packages:
       vanilla-lazyload: 17.9.0
     dev: true
 
-  github.com/veytu/telebox-insider/3238d9ded00d6bd200362329d7312d807b82901b:
-    resolution: {tarball: https://codeload.github.com/veytu/telebox-insider/tar.gz/3238d9ded00d6bd200362329d7312d807b82901b}
+  github.com/veytu/telebox-insider/728b4925ae88a97517d17af8744719aa5b22f783:
+    resolution: {tarball: https://codeload.github.com/veytu/telebox-insider/tar.gz/728b4925ae88a97517d17af8744719aa5b22f783}
     name: '@netless/telebox-insider'
-    version: 0.2.32
+    version: 0.2.33
     dev: false

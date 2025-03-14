@@ -328,12 +328,12 @@ export class BoxManager {
                 if (state.focus) {
                     this.teleBoxManager.focusBox(box.id, true);
                 }
-                if (state.maximized != null) {
-                    this.teleBoxManager.setMaximizedBoxes(isString(state.maximizedBoxes) ? JSON.parse(state.maximizedBoxes) : [], true);
-                }
-                if (state.minimized != null) {
-                    this.teleBoxManager.setMinimizedBoxes(isString(state.minimizedBoxes) ? JSON.parse(state.minimizedBoxes) : [], true);
-                }
+                // if (state.maximized != null) {
+                //     this.teleBoxManager.setMaximizedBoxes(isString(state.maximizedBoxes) ? JSON.parse(state.maximizedBoxes) : [], true);
+                // }
+                // if (state.minimized != null) {
+                //     this.teleBoxManager.setMinimizedBoxes(isString(state.minimizedBoxes) ? JSON.parse(state.minimizedBoxes) : [], true);
+                // }
             }, 50);
             this.context.callbacks.emit("boxStateChange", this.teleBoxManager.state);
         }
