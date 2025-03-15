@@ -620,6 +620,7 @@ declare class AppContext<TAttributes extends {} = any, TMagixEventPayloads = any
     getInitScenePath: () => string | undefined;
     /** Get App writable status. */
     getIsWritable: () => boolean;
+    getIsAppReadonly: () => boolean;
     /** Get the App Window UI box. */
     getBox: () => ReadonlyTeleBox;
     getRoom: () => Room | undefined;
@@ -849,6 +850,7 @@ declare class AppManager {
     private get eventName();
     get attributes(): WindowMangerAttributes;
     get canOperate(): boolean;
+    get appReadonly(): boolean;
     get room(): Room | undefined;
     get mainView(): white_web_sdk.View;
     get polling(): boolean;
@@ -1199,6 +1201,7 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     private _fullscreen?;
     private _cursorUIDs;
     private _cursorUIDsStyleDOM?;
+    private _appReadonly;
     private boxManager?;
     private static params?;
     private containerResizeObserver?;
@@ -1340,7 +1343,9 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     private _destroy;
     private bindMainView;
     get canOperate(): boolean;
+    get appReadonly(): boolean;
     get room(): Room;
+    setAppReadonly(readonly: boolean): void;
     safeSetAttributes(attributes: any): void;
     safeUpdateAttributes(keys: string[], value: any): void;
     setPrefersColorScheme(scheme: TeleBoxColorScheme): void;

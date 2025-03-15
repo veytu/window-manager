@@ -197,6 +197,7 @@ export class WindowManager
     private _fullscreen?: boolean;
     private _cursorUIDs: string[] = [];
     private _cursorUIDsStyleDOM?: HTMLStyleElement;
+    private _appReadonly: boolean = false;
 
     private boxManager?: BoxManager;
     private static params?: MountParams;
@@ -1028,8 +1029,23 @@ export class WindowManager
         }
     }
 
+    public get appReadonly (): boolean {
+        if (isRoom(this.displayer)) {
+            return (
+                this._appReadonly &&
+                (this.displayer as Room).phase === RoomPhase.Connected
+            );
+        } else {
+            return false;
+        }
+    }
+
     public get room(): Room {
         return this.displayer as Room;
+    }
+
+    public setAppReadonly (readonly: boolean): void {
+        this._appReadonly = readonly
     }
 
     public safeSetAttributes(attributes: any): void {

@@ -18,6 +18,7 @@ import type { NetlessApp } from "./typings";
 import type { View } from "white-web-sdk";
 import type { CallbacksType } from "./callback";
 import type { EmitterType } from "./InternalEmitter";
+import { isAndroid, isIOS } from "./Utils/environment";
 
 export { TELE_BOX_STATE };
 
@@ -416,8 +417,8 @@ export class BoxManager {
     }
 
     public setReadonly(readonly: boolean) {
-        this.teleBoxManager.setReadonly(readonly);
-        this.teleBoxManager._collector$.value?.setReadonly(readonly);
+        this.teleBoxManager.setReadonly(readonly || isIOS() || isAndroid());
+        this.teleBoxManager._collector$.value?.setReadonly(readonly || isIOS() || isAndroid());
     }
 
     public setPrefersColorScheme(colorScheme: TeleBoxColorScheme) {
