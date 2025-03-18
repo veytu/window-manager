@@ -11,7 +11,7 @@ export class ScrollerManager {
     manager: WindowManager
   }) {
     this.manager = manager
-    manager.room?.addMagixEventListener(ScrollerScrollEventType, this.onAppScrolling.bind(this))
+    this.manager.room?.addMagixEventListener(ScrollerScrollEventType, this.onAppScrolling.bind(this))
   }
 
   private onAppScrolling ({payload}: Event) {
@@ -20,7 +20,6 @@ export class ScrollerManager {
       x,
       y,
     } = payload
-    console.log(payload)
     this.scrollTo(appId, {x, y})
   }
 

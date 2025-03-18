@@ -297,6 +297,7 @@ export class BoxManager {
     }
 
     public closeBox(appId: string, skipUpdate = false): ReadonlyTeleBox | undefined {
+        this.manager.scrollerManager?.remove(appId)
         return this.teleBoxManager.remove(appId, skipUpdate);
     }
 
