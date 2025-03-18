@@ -59,6 +59,7 @@ export type BoxManagerContext = {
     notifyContainerRectUpdate: (rect: TeleBoxRect) => void;
     cleanFocus: () => void;
     setAppFocus: (appId: string) => void;
+    manager: WindowManager
 };
 
 export const createBoxManager = (
@@ -81,6 +82,7 @@ export const createBoxManager = (
             callbacks,
             emitter,
             boxEmitter,
+            manager
         },
         options
     );
@@ -88,12 +90,14 @@ export const createBoxManager = (
 
 export class BoxManager {
     public teleBoxManager: TeleBoxManager;
+    private readonly manager: WindowManager
 
     constructor(
         private context: BoxManagerContext,
         private createTeleBoxManagerConfig?: CreateTeleBoxManagerConfig
     ) {
-        const { emitter, callbacks, boxEmitter } = context;
+        const { emitter, callbacks, boxEmitter, manager } = context;
+        this.manager = manager
         this.teleBoxManager = this.setupBoxManager(createTeleBoxManagerConfig);
 
         // 使用 _xxx$.reaction 订阅修改的值, 不管有没有 skipUpdate, 修改值都会触发回调
@@ -229,8 +233,9 @@ export class BoxManager {
             height,
             id: params.appId,
         };
-        this.teleBoxManager.create(createBoxConfig, params.smartPosition);
+        const box = this.teleBoxManager.create(createBoxConfig, params.smartPosition);
         this.context.emitter.emit(`${params.appId}${Events.WindowCreated}` as any);
+        this.manager.scrollerManager?.add({appId: params.appId!, manager: this.manager, scrollElement: box?.$contentWrap!})
     }
 
     public setBoxInitState(appId: string): void {

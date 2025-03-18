@@ -483,7 +483,6 @@ export class WindowManager
                 params.options.scenePath = ensureValidScenePath(params.options.scenePath);
             }
             const appId = await this.appManager.addApp(params, Boolean(isDynamicPPT));
-            this.scrollerManager?.add({appId: appId!, manager: this, scrollElement: this.appManager.boxManager?.getBox(appId!)?.$contentWrap!})
             return appId;
         } else {
             throw new Errors.AppManagerNotInitError();

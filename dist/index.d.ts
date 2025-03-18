@@ -518,11 +518,13 @@ type BoxManagerContext = {
     notifyContainerRectUpdate: (rect: TeleBoxRect) => void;
     cleanFocus: () => void;
     setAppFocus: (appId: string) => void;
+    manager: WindowManager;
 };
 declare class BoxManager {
     private context;
     private createTeleBoxManagerConfig?;
     teleBoxManager: TeleBoxManager;
+    private readonly manager;
     constructor(context: BoxManagerContext, createTeleBoxManagerConfig?: CreateTeleBoxManagerConfig | undefined);
     private get mainView();
     private get canOperate();
