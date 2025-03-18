@@ -157,11 +157,11 @@ class ViewScroller {
         const newLocalCoord = { x: 0, y: 0 };
 
         if (CoordX) {
-            newLocalCoord.x = CoordX / this.baseScrollLeft;
+            newLocalCoord.x = Number((CoordX / this.baseScrollLeft).toFixed(2));
         }
 
         if (CoordY) {
-            newLocalCoord.y = CoordY / this.baseScrollTop;
+            newLocalCoord.y = Number((CoordY / this.baseScrollTop).toFixed(2));
         }
 
         return newLocalCoord;

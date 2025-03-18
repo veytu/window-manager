@@ -20,6 +20,7 @@ export class ScrollerManager {
       x,
       y,
     } = payload
+    console.log(payload)
     this.scrollTo(appId, {x, y})
   }
 
