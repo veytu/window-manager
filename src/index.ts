@@ -57,6 +57,7 @@ import type { PageController, AddPageParams, PageState } from "./Page";
 import { boxEmitter } from "./BoxEmitter";
 import { IframeBridge } from "./View/IframeBridge";
 import { setOptions } from "@netless/app-media-player";
+import { ScrollerManager } from "./ScrollerManager";
 export * from "./View/IframeBridge";
 
 export type WindowMangerAttributes = {
@@ -182,6 +183,7 @@ export class WindowManager
     private static _resolve = (_manager: WindowManager) => void 0;
 
     private static extendWrapper?: HTMLElement
+    private static mainViewScrollWrapper?: HTMLElement
     public version = __APP_VERSION__;
     public dependencies = __APP_DEPENDENCIES__;
 
@@ -191,6 +193,7 @@ export class WindowManager
     public emitter: Emittery<PublicEvent> = callbacks;
     public appManager?: AppManager;
     public cursorManager?: CursorManager;
+    public scrollerManager?: ScrollerManager
     public viewMode = ViewMode.Broadcaster;
     public isReplay = isPlayer(this.displayer);
     private _pageState?: PageStateImpl;
@@ -284,6 +287,7 @@ export class WindowManager
             params.cursorOptions,
             params.applianceIcons
         );
+        manager.scrollerManager = new ScrollerManager({manager})
         if (containerSizeRatio) {
             manager.containerSizeRatio = containerSizeRatio;
         }
@@ -338,7 +342,7 @@ export class WindowManager
         if (!WindowManager.container) {
             WindowManager.container = container;
         }
-        const { playground, wrapper, sizer, mainViewElement, mainViewWrapper, extendWrapper } = setupWrapper(container);
+        const { playground, wrapper, sizer, mainViewElement, mainViewWrapper, extendWrapper, mainViewScrollWrapper } = setupWrapper(container);
         WindowManager.playground = playground;
         if (chessboard) {
             sizer.classList.add("netless-window-manager-chess-sizer");
@@ -361,6 +365,7 @@ export class WindowManager
         WindowManager.sizer = sizer;
         WindowManager.mainViewWrapper = mainViewWrapper;
         WindowManager.extendWrapper = extendWrapper
+        WindowManager.mainViewScrollWrapper = mainViewScrollWrapper
         return mainViewElement;
     }
 
@@ -390,6 +395,9 @@ export class WindowManager
                 });
                 this.boxManager = boxManager;
                 this.appManager?.setBoxManager(boxManager);
+                if (WindowManager.mainViewWrapper) {
+                    this.scrollerManager?.add({appId: 'mainView', scrollElement: WindowManager.mainViewScrollWrapper! ,manager: this})
+                }
                 this.bindMainView(mainViewElement, params.disableCameraTransform);
                 if (WindowManager.wrapper) {
                     this.cursorManager?.setupWrapper(WindowManager.wrapper);
@@ -475,6 +483,7 @@ export class WindowManager
                 params.options.scenePath = ensureValidScenePath(params.options.scenePath);
             }
             const appId = await this.appManager.addApp(params, Boolean(isDynamicPPT));
+            this.scrollerManager?.add({appId: appId!, manager: this, scrollElement: this.appManager.boxManager?.getBox(appId!)?.$contentWrap!})
             return appId;
         } else {
             throw new Errors.AppManagerNotInitError();
@@ -1157,6 +1166,11 @@ export class WindowManager
         const currentScale = scale ?? this.getAttributesValue('scale')
 
         setStyles({width: size?.width * currentScale, height: size?.height * currentScale})
+        this.room.moveCamera({
+            centerX: 0,
+            centerY: 0,
+            scale
+        })
     }
 
     private _setScale (scale: number, skipEmit?: boolean): boolean {
@@ -1177,6 +1191,10 @@ export class WindowManager
         this._updateMainViewWrapperSize(newScale)
 
         return true
+    }
+
+    public getScale (): number {
+        return this.getAttributesValue(['scale']) || 1
     }
 
     private isDynamicPPT(scenes: SceneDefinition[]) {

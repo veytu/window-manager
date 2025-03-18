@@ -1076,6 +1076,124 @@ declare class IframeBridge {
     private get isDisableInput();
 }
 
+declare type SideEffectDisposer = () => void;
+declare class SideEffectManager {
+    /**
+     * Add a side effect.
+     * @param executor execute side effect
+     * @param disposerID Optional id for the disposer
+     * @returns disposerID
+     */
+    add(executor: () => SideEffectDisposer, disposerID?: string): string;
+    /**
+     * Add a disposer directly.
+     * @param disposer a disposer
+     * @param disposerID Optional id for the disposer
+     * @returns disposerID
+     */
+    addDisposer(disposer: SideEffectDisposer, disposerID?: string): string;
+    /**
+     * Sugar for addEventListener.
+     * @param el
+     * @param type
+     * @param listener
+     * @param options
+     * @param disposerID Optional id for the disposer
+     * @returns disposerID
+     */
+    addEventListener<K extends keyof WindowEventMap>(el: Window, type: K, listener: (this: Window, ev: WindowEventMap[K]) => unknown, options?: boolean | AddEventListenerOptions, disposerID?: string): string;
+    addEventListener<K extends keyof DocumentEventMap>(el: Document, type: K, listener: (this: Document, ev: DocumentEventMap[K]) => unknown, options?: boolean | AddEventListenerOptions, disposerID?: string): string;
+    addEventListener<K extends keyof HTMLElementEventMap>(el: HTMLElement, type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => unknown, options?: boolean | AddEventListenerOptions, disposerID?: string): string;
+    /**
+     * Sugar for setTimeout.
+     * @param handler
+     * @param timeout
+     * @param disposerID Optional id for the disposer
+     * @returns disposerID
+     */
+    setTimeout(handler: () => void, timeout: number, disposerID?: string): string;
+    /**
+     * Sugar for setInterval.
+     * @param handler
+     * @param timeout
+     * @param disposerID Optional id for the disposer
+     * @returns disposerID
+     */
+    setInterval(handler: () => void, timeout: number, disposerID?: string): string;
+    /**
+     * Remove but not run the disposer. Do nothing if not found.
+     * @param disposerID
+     */
+    remove(disposerID: string): SideEffectDisposer | undefined;
+    /**
+     * Remove and run the disposer. Do nothing if not found.
+     * @param disposerID
+     */
+    flush(disposerID: string): void;
+    /**
+     * Remove and run all of the disposers.
+     */
+    flushAll(): void;
+    /**
+     * All disposers. Use this only when you know what you are doing.
+     */
+    readonly disposers: Map<string, SideEffectDisposer>;
+}
+
+type CallbackManager = any;
+
+type ViewScrollerConfig = {
+    appId: string;
+    manager: WindowManager;
+    scrollElement: HTMLDivElement | HTMLElement;
+};
+type ScrollCoord = {
+    x?: number;
+    y?: number;
+};
+type InternalCoord = {
+    x: number;
+    y: number;
+};
+declare class ViewScroller {
+    readonly appId: string;
+    private readonly _scrollingElement;
+    private readonly manager;
+    private crood;
+    protected _sideEffect: SideEffectManager;
+    private baseScrollTop;
+    private baseScrollLeft;
+    protected sizeObserver: ResizeObserver;
+    protected callbackManager: CallbackManager;
+    constructor(config: ViewScrollerConfig);
+    private updateSize;
+    private onScroll;
+    private scroll;
+    setCoord(position: ScrollCoord): void;
+    private setAttribute;
+    private getAttribute;
+    private calcCoordToLocal;
+    private getLocalCoord;
+    calcLocalToCoord(position: ScrollCoord): InternalCoord;
+    private scrollLeft;
+    private scrollTop;
+    destroy(): void;
+}
+
+declare class ScrollerManager {
+    private readonly manager;
+    private scrollers;
+    constructor({ manager }: {
+        manager: WindowManager;
+    });
+    private onAppScrolling;
+    add(config: ViewScrollerConfig): void;
+    scrollTo(appId: string, position: ScrollCoord): void;
+    moveToCenter(appId?: string): void;
+    getScroller(appId: string): ViewScroller | undefined;
+    remove(appId: string): void;
+}
+
 declare const BuiltinApps: {
     DocsViewer: string;
     MediaPlayer: string;
@@ -1188,6 +1306,7 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     static isCreated: boolean;
     private static _resolve;
     private static extendWrapper?;
+    private static mainViewScrollWrapper?;
     version: string;
     dependencies: Record<string, string>;
     appListeners?: AppListeners;
@@ -1195,6 +1314,7 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     emitter: Emittery<PublicEvent>;
     appManager?: AppManager;
     cursorManager?: CursorManager;
+    scrollerManager?: ScrollerManager;
     viewMode: ViewMode;
     isReplay: boolean;
     private _pageState?;
@@ -1366,6 +1486,7 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     setScale(scale: number): void;
     private _updateMainViewWrapperSize;
     private _setScale;
+    getScale(): number;
     private isDynamicPPT;
     private ensureAttributes;
     private _iframeBridge?;

@@ -333,6 +333,22 @@ const App = () => {
                 <button className="side-button" onClick={() => manager.setBackgroundColor('#000')}>
                     背景色
                 </button>
+                <button className="side-button" onClick={() => {
+                    manager.setScale(manager.getScale() + 0.5)
+                    setTimeout(() => {
+                        manager.scrollerManager?.moveToCenter()
+                    })
+                }}>
+                    zoomout
+                </button>
+                <button className="side-button" onClick={() => {
+                    manager.setScale(manager.getScale() - 0.5)
+                    setTimeout(() => {
+                        manager.scrollerManager?.moveToCenter()
+                    })
+                }}>
+                    zoomin
+                </button>
                 <span>
                     {pageState.index}/{pageState.length}
                 </span>
