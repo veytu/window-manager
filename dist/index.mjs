@@ -25606,7 +25606,7 @@ const nL = new G_({ emitter: tt }), $e = class extends nk {
     n({ width: (o == null ? void 0 : o.width) * l, height: (o == null ? void 0 : o.height) * l }), this.room.moveCamera({
       centerX: 0,
       centerY: 0,
-      scale: r
+      scale: l
     });
   }
   _setScale(r, n) {

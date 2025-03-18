@@ -1169,7 +1169,7 @@ export class WindowManager
         this.room.moveCamera({
             centerX: 0,
             centerY: 0,
-            scale
+            scale: currentScale
         })
     }
 
