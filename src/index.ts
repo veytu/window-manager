@@ -1171,7 +1171,7 @@ export class WindowManager
         const currentScale = scale ?? this.getAttributesValue('scale')[mainViewField]
 
         setStyles({width: size?.width * currentScale, height: size?.height * currentScale})
-        this.room.moveCamera({
+        this.moveCamera({
             scale: currentScale,
             animationMode: AnimationMode.Immediately
         })

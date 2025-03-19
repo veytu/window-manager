@@ -61,6 +61,7 @@
     background-size: contain; 
     background-repeat: no-repeat;
     background-position: center;
+    position: relative;
 }
 
 .netless-window-manager-cursor-pencil-image {
