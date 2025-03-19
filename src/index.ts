@@ -320,7 +320,6 @@ export class WindowManager
         })
 
         manager.room?.addMagixEventListener(ScrollerScrollEventType, (data) => {
-            console.log('onAppScrolling', data)
             internalEmitter.emit(ScrollerScrollEventType, data.payload)
         })
 
@@ -402,8 +401,8 @@ export class WindowManager
                 });
                 this.boxManager = boxManager;
                 this.appManager?.setBoxManager(boxManager);
-                if (WindowManager.mainViewWrapper) {
-                    this.scrollerManager?.add({appId: mainViewField, scrollElement: WindowManager.mainViewScrollWrapper! ,manager: this})
+                if (WindowManager.mainViewScrollWrapper) {
+                    this.scrollerManager?.add({appId: mainViewField, scrollElement: WindowManager.mainViewScrollWrapper ,manager: this})
                 }
                 this.bindMainView(mainViewElement, params.disableCameraTransform);
                 if (WindowManager.wrapper) {

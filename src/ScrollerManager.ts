@@ -34,7 +34,7 @@ export class ScrollerManager {
 
   public scrollTo (appId: string, position: ScrollCoord) {
     const scroller = this.getScroller(appId)
-
+    console.log('onAppScrolling scrollTo', this.scrollers)
     if (!scroller) return
 
     scroller.setCoord(position)

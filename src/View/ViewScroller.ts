@@ -95,11 +95,14 @@ class ViewScroller {
         if (!this._scrollingElement) return;
 
         const { x: left, y: top } = this.calcCoordToLocal();
+
+        console.log('onAppScrolling', {left, top})
         this.scrollLeft(left);
         this.scrollTop(top);
     }
 
     public setCoord(position: ScrollCoord): void {
+        console.log('onAppScrolling setCoord', position)
         this.crood.setValue({
             x: position.x || this.crood.value.x,
             y: position.y || this.crood.value.y,
