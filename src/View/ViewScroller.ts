@@ -3,6 +3,7 @@ import { SideEffectManager } from "side-effect-manager";
 import { WindowManager } from "..";
 import { type CallbackManager, createCallbackManager } from "../Utils/callbacks";
 import { ScrollerScrollEventType } from "../ScrollerManager";
+import { debounce } from "lodash";
 
 type ValConfig = {
     $crood: Val<InternalCoord>;
@@ -87,9 +88,12 @@ class ViewScroller {
     private onScroll() {
         if (this.manager.readonly) return
         const {x, y} = this.calcLocalToCoord(this.getLocalCoord())
-
-        this.manager.room?.dispatchMagixEvent(ScrollerScrollEventType, {appId: this.appId, x, y})
+        this.dispatchScrollEvent({x, y})
     }
+
+    private dispatchScrollEvent = debounce(({x, y}: {x: number, y: number}) => {
+        this.manager.room?.dispatchMagixEvent(ScrollerScrollEventType, {appId: this.appId, x, y})
+    }, 500)
 
     private scroll(): void {
         if (!this._scrollingElement) return;

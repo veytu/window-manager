@@ -1194,9 +1194,12 @@ export class WindowManager
 
         this.safeUpdateAttributes(["scale"], {...this.getAttributesValue(['scale']), [appId]: newScale})
 
+
         if (appId == mainViewField) {
             this._updateMainViewWrapperSize(newScale)
         }
+
+        setTimeout(() => {this.scrollerManager?.moveToCenter(appId)})
 
         return true
     }

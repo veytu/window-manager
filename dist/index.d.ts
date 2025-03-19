@@ -1178,6 +1178,7 @@ declare class ViewScroller {
     constructor(config: ViewScrollerConfig);
     private updateSize;
     private onScroll;
+    private dispatchScrollEvent;
     private scroll;
     setCoord(position: ScrollCoord): void;
     private setAttribute;
