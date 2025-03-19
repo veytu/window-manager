@@ -77,7 +77,7 @@ class ViewScroller {
     }
 
     private updateSize () {
-        console.log(this._scrollingElement.scrollHeight)
+        console.log('onAppScrolling update size', this._scrollingElement.scrollHeight, this._scrollingElement.clientHeight)
         this.baseScrollTop =
             this._scrollingElement.scrollHeight - this._scrollingElement.clientHeight;
         this.baseScrollLeft =
