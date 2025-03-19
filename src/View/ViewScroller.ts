@@ -92,7 +92,7 @@ class ViewScroller {
 
     private dispatchScrollEvent = debounce(({x, y}: {x: number, y: number}) => {
         this.manager.room?.dispatchMagixEvent(ScrollerScrollEventType, {appId: this.appId, x, y})
-    }, 500)
+    }, 100)
 
     private scroll(): void {
         if (!this._scrollingElement) return;
