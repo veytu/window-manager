@@ -31,7 +31,7 @@ export const setupWrapper = (
     mainViewScrollWrapper.className = "netless-window-manager-main-view-wrapper netless-window-manager-fancy-scrollbar"
 
     const mainViewWrapper = document.createElement("div");
-    mainViewWrapper.className = "netless-window-manager-main-view-wrapper"
+    mainViewWrapper.className = "netless-window-manager-main-view-wrapper netless-window-manager-main-view-wrp"
 
     const mainViewElement = document.createElement("div");
     mainViewElement.className = "netless-window-manager-main-view";
