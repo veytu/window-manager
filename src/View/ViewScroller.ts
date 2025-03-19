@@ -96,14 +96,13 @@ class ViewScroller {
         clearTimeout(this.scrollFinished);
 
         this.scrollFinished = setTimeout(() => {
-            const currentScrollTop = Math.ceil(this._scrollingElement.scrollTop);
-            console.log('onappscrolling', this.lastScrollTop, currentScrollTop)
-            if (currentScrollTop === this.lastScrollTop) {
+            const currentScrollTop = this._scrollingElement.scrollTop
+            const scrollDiff = Math.abs(currentScrollTop - this.lastScrollTop);
+            if (scrollDiff < 1) {
                 this.manager.room?.dispatchMagixEvent(ScrollerScrollEventType, {appId: this.appId, x, y})
-            } else {
-                this.lastScrollTop = currentScrollTop;
             }
         }, 200)
+        this.lastScrollTop = this._scrollingElement.scrollTop
     }
 
     private scroll(): void {
