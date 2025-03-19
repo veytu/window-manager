@@ -320,6 +320,7 @@ export class WindowManager
         })
 
         manager.room?.addMagixEventListener(ScrollerScrollEventType, (data) => {
+            console.log('onAppScrolling', data)
             internalEmitter.emit(data.payload)
         })
 
