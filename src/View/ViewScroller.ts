@@ -97,6 +97,7 @@ class ViewScroller {
 
         this.scrollFinished = setTimeout(() => {
             const currentScrollTop = Math.ceil(this._scrollingElement.scrollTop);
+            console.log('onappscrolling', this.lastScrollTop, currentScrollTop)
             if (currentScrollTop === this.lastScrollTop) {
                 this.manager.room?.dispatchMagixEvent(ScrollerScrollEventType, {appId: this.appId, x, y})
             } else {
