@@ -3,7 +3,7 @@ import { SideEffectManager } from "side-effect-manager";
 import { WindowManager } from "..";
 import { type CallbackManager, createCallbackManager } from "../Utils/callbacks";
 import { ScrollerScrollEventType } from "../ScrollerManager";
-import { debounce } from "lodash";
+import { debounce, isNumber } from "lodash";
 
 type ValConfig = {
     $crood: Val<InternalCoord>;
@@ -31,6 +31,9 @@ type InternalCoord = {
     y: number;
 };
 
+const isValidNumber = (num: any) => {
+    return isNumber(num) && !Number.isNaN(num)
+}
 class ViewScroller {
     public readonly appId: string;
     private readonly _scrollingElement: HTMLDivElement | HTMLElement;
@@ -41,8 +44,6 @@ class ViewScroller {
     private baseScrollLeft: number = 0;
     protected sizeObserver: ResizeObserver
     protected callbackManager: CallbackManager
-    private scrollFinished: number = -1
-    private lastScrollTop: number = -1
 
     constructor(config: ViewScrollerConfig) {
         this._sideEffect = new SideEffectManager();
@@ -92,18 +93,9 @@ class ViewScroller {
         this.dispatchScrollEvent({x, y})
     }
 
-    private dispatchScrollEvent ({x, y}: {x: number, y: number}) {
-        clearTimeout(this.scrollFinished);
-
-        this.scrollFinished = setTimeout(() => {
-            const currentScrollTop = this._scrollingElement.scrollTop
-            const scrollDiff = Math.abs(currentScrollTop - this.lastScrollTop);
-            if (scrollDiff < 1) {
-                this.manager.room?.dispatchMagixEvent(ScrollerScrollEventType, {appId: this.appId, x, y})
-            }
-        }, 200)
-        this.lastScrollTop = this._scrollingElement.scrollTop
-    }
+    private dispatchScrollEvent = debounce(({x, y}: {x: number, y: number}) => {
+        this.manager.room?.dispatchMagixEvent(ScrollerScrollEventType, {appId: this.appId, x, y})
+    }, 200)
 
     private scroll(): void {
         if (!this._scrollingElement) return;
@@ -116,8 +108,8 @@ class ViewScroller {
 
     public setCoord(position: ScrollCoord): void {
         this.crood.setValue({
-            x: position.x || this.crood.value.x,
-            y: position.y || this.crood.value.y,
+            x: isValidNumber(position.x) ? position.x! : this.crood.value.x,
+            y: isValidNumber(position.y) ? position.y! : this.crood.value.y
         });
         this.setAttribute();
     }
@@ -147,15 +139,7 @@ class ViewScroller {
 
         const { x: CoordX, y: CoordY } = this.crood.value;
 
-        const newLocalCoord = { x: 0, y: 0 };
-
-        if (CoordX) {
-            newLocalCoord.x = CoordX * this.baseScrollLeft;
-        }
-
-        if (CoordY) {
-            newLocalCoord.y = CoordY * this.baseScrollTop;
-        }
+        const newLocalCoord = { x: CoordX * this.baseScrollLeft, y: CoordY * this.baseScrollTop };
 
         return newLocalCoord;
     }
@@ -173,12 +157,12 @@ class ViewScroller {
         const { x: CoordX, y: CoordY } = position;
         const newLocalCoord = { x: 0, y: 0 };
 
-        if (CoordX) {
-            newLocalCoord.x = Number((CoordX / this.baseScrollLeft).toFixed(2));
+        if (isValidNumber(CoordX)) {
+            newLocalCoord.x = Number((CoordX! / this.baseScrollLeft).toFixed(2));
         }
 
-        if (CoordY) {
-            newLocalCoord.y = Number((CoordY / this.baseScrollTop).toFixed(2));
+        if (isValidNumber(CoordY)) {
+            newLocalCoord.y = Number((CoordY! / this.baseScrollTop).toFixed(2));
         }
 
         return newLocalCoord;
