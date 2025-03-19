@@ -223,14 +223,7 @@ export class AppProxy implements PageRemoveService {
                 this.boxManager.focusBox({ appId }, false);
             }
 
-            const mainViewScale =  this.store.attributes['scale']
             const mainViewBgImg =  this.store.attributes['mainViewBackgroundImg']
-            let newScale = isNumber(mainViewScale) ? mainViewScale : 1
-    
-            if (newScale < 1) {
-                newScale = 1
-            }
-            internalEmitter.emit("onScaleChange", newScale)
             internalEmitter.emit("onBackgroundImgChange", mainViewBgImg)
             
         } catch (error: any) {

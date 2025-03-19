@@ -28,7 +28,7 @@ export type EmitterEvent = {
     changePageState: undefined;
     writableChange: boolean;
     containerSizeRatioUpdate: number;
-    onScaleChange: number;
+    onScaleChange: {appId: string, scale: number};
     onBackgroundImgChange: string | undefined;
 };
 

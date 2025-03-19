@@ -237,7 +237,7 @@
 
 .netless-window-manager-fancy-scrollbar::-webkit-scrollbar-thumb {
     background: rgba(27, 31, 77, .3);
-    border-radius: .03rem;
+    border-radius: 3px;
     height: 6px;
     width: 6px;
 }

@@ -165,6 +165,8 @@ export type MountParams = {
 
 export const reconnectRefresher = new ReconnectRefresher({ emitter: internalEmitter });
 
+export const mainViewField = 'mainView'
+
 export class WindowManager
     extends InvisiblePlugin<WindowMangerAttributes, any>
     implements PageController
@@ -396,7 +398,7 @@ export class WindowManager
                 this.boxManager = boxManager;
                 this.appManager?.setBoxManager(boxManager);
                 if (WindowManager.mainViewWrapper) {
-                    this.scrollerManager?.add({appId: 'mainView', scrollElement: WindowManager.mainViewScrollWrapper! ,manager: this})
+                    this.scrollerManager?.add({appId: mainViewField, scrollElement: WindowManager.mainViewScrollWrapper! ,manager: this})
                 }
                 this.bindMainView(mainViewElement, params.disableCameraTransform);
                 if (WindowManager.wrapper) {
@@ -1148,8 +1150,8 @@ export class WindowManager
         internalEmitter.emit("containerSizeRatioUpdate", ratio);
     }
 
-    public setScale(scale: number): void {
-        this.room.dispatchMagixEvent("onScaleChange", scale)
+    public setScale(appId: string, scale: number): void {
+        this.room.dispatchMagixEvent("onScaleChange", {appId, scale})
     }
 
     private _updateMainViewWrapperSize (scale?: number) {
@@ -1162,7 +1164,7 @@ export class WindowManager
 
         if (!size) return false
 
-        const currentScale = scale ?? this.getAttributesValue('scale')
+        const currentScale = scale ?? this.getAttributesValue('scale')[mainViewField]
 
         setStyles({width: size?.width * currentScale, height: size?.height * currentScale})
         this.room.moveCamera({
@@ -1172,7 +1174,8 @@ export class WindowManager
         })
     }
 
-    private _setScale (scale: number, skipEmit?: boolean): boolean {
+    private _setScale (data: {appId: string, scale: number}, skipEmit?: boolean): boolean {
+        const {appId, scale} = data
         if (!isNumber(scale)) return false
         
         let newScale = scale
@@ -1182,12 +1185,14 @@ export class WindowManager
         }
 
         if (!skipEmit) {
-            internalEmitter.emit("onScaleChange", newScale)
+            internalEmitter.emit("onScaleChange", {appId, scale: newScale})
         }
 
-        this.safeUpdateAttributes(["scale"], newScale)
+        this.safeUpdateAttributes(["scale"], {...this.getAttributesValue(['scale']), [appId]: newScale})
 
-        this._updateMainViewWrapperSize(newScale)
+        if (appId == mainViewField) {
+            this._updateMainViewWrapperSize(newScale)
+        }
 
         return true
     }
@@ -1231,7 +1236,9 @@ export class WindowManager
                 this.safeSetAttributes({mainViewBackgroundImg: ''})
             }
             if (!this.attributes['scale']) {
-                this.safeSetAttributes({scale: 1})
+                this.safeSetAttributes({scale: {
+                    [mainViewField]: 1
+                }})
             }
         }
     }
@@ -1292,7 +1299,10 @@ export class WindowManager
         }
 
         if (!!this.attributes['scale']) {
-            this._setScale(this.attributes['scale'])
+            const scaleMap: Record<string, number> = this.attributes['scale']
+            Object.keys(scaleMap).forEach(item => {
+                this._setScale({appId: item, scale: scaleMap[item]})
+            })
         }
     }
 }
