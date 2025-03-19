@@ -56,6 +56,8 @@ class ViewScroller {
 
         withValueEnhancer(this, valConfig);
 
+        this.updateSize()
+
         this._sideEffect.addEventListener(this._scrollingElement, 'scroll', this.onScroll.bind(this), true)
 
         this.callbackManager = createCallbackManager()
@@ -75,6 +77,7 @@ class ViewScroller {
     }
 
     private updateSize () {
+        console.log(this._scrollingElement.scrollHeight)
         this.baseScrollTop =
             this._scrollingElement.scrollHeight - this._scrollingElement.clientHeight;
         this.baseScrollLeft =
