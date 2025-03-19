@@ -47,10 +47,6 @@ class ViewScroller {
         this._scrollingElement = config.scrollElement;
         this.manager = config.manager;
         this.appId = config.appId;
-        this.baseScrollTop =
-            this._scrollingElement.scrollHeight - this._scrollingElement.clientHeight;
-        this.baseScrollLeft =
-            this._scrollingElement.scrollWidth - this._scrollingElement.clientWidth;
         
         this.crood = createVal<InternalCoord>(this.getAttribute());
 
@@ -73,6 +69,7 @@ class ViewScroller {
         })
 
         setTimeout(() => {
+            this.updateSize()
             this.scroll();
         })
     }
@@ -126,7 +123,6 @@ class ViewScroller {
 
     private getAttribute() {
         const currentAttribute = this.manager.getAttributesValue([PageScrollerAttributeField]);
-        console.log('currentAttribute', currentAttribute)
 
         return currentAttribute?.[this.appId] || { x: 0, y: 0 };
     }
@@ -136,6 +132,7 @@ class ViewScroller {
 
         const { x: CoordX, y: CoordY } = this.crood.value;
 
+        console.log('onAppScrolling calcCoordToLocal', {CoordX, CoordY, baseScrollLeft: this.baseScrollLeft, baseScrollTop: this.baseScrollTop})
         const newLocalCoord = { x: 0, y: 0 };
 
         if (CoordX) {
