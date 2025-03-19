@@ -25615,7 +25615,10 @@ const iL = new X_({ emitter: tt }), Xv = "mainView", $e = class extends iN {
     return h < 1 && (h = 1), n || tt.emit("onScaleChange", { appId: o, scale: h }), this.safeUpdateAttributes(["scale"], { ...this.getAttributesValue(["scale"]), [o]: h }), o == Xv && this._updateMainViewWrapperSize(h), !0;
   }
   getScale() {
-    return this.getAttributesValue(["scale"]) || 1;
+    return this.getAttributesValue(["scale"]);
+  }
+  getAppScale(r) {
+    return this.getAttributesValue(["scale"])[r];
   }
   isDynamicPPT(r) {
     var o, l;

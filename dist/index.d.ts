@@ -1492,7 +1492,8 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     setScale(appId: string, scale: number): void;
     private _updateMainViewWrapperSize;
     private _setScale;
-    getScale(): number;
+    getScale(): Record<string, number> | undefined;
+    getAppScale(appId: string): number;
     private isDynamicPPT;
     private ensureAttributes;
     private _iframeBridge?;

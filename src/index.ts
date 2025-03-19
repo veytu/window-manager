@@ -1197,10 +1197,14 @@ export class WindowManager
         return true
     }
 
-    public getScale (): number {
-        return this.getAttributesValue(['scale']) || 1
+    public getScale (): Record<string, number> | undefined {
+        return this.getAttributesValue(['scale'])
     }
 
+    public getAppScale (appId: string): number {
+        return this.getAttributesValue(['scale'])[appId]
+    }
+ 
     private isDynamicPPT(scenes: SceneDefinition[]) {
         const sceneSrc = scenes[0]?.ppt?.src;
         return sceneSrc?.startsWith("pptx://");
