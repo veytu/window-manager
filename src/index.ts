@@ -31,7 +31,7 @@ import {
 import type { TELE_BOX_STATE, BoxManager } from "./BoxManager";
 import * as Errors from "./Utils/error";
 import type { Apps, Position } from "./AttributesDelegate";
-import type {
+import {
     Displayer,
     SceneDefinition,
     View,
@@ -1171,11 +1171,18 @@ export class WindowManager
         const currentScale = scale ?? this.getAttributesValue('scale')[mainViewField]
 
         setStyles({width: size?.width * currentScale, height: size?.height * currentScale})
-        this.room.moveCamera({
+        this.room.setCameraBound({
+            damping: 1,
             centerX: 0,
             centerY: 0,
-            scale: currentScale
+            width: size?.width * currentScale,
+            height: size?.height * currentScale,
+          })
+        this.room.moveCamera({
+            scale: currentScale,
+            animationMode: AnimationMode.Immediately
         })
+        this.room.disableCameraTransform = true
     }
 
     private _setScale (data: {appId: string, scale: number}, skipEmit?: boolean): boolean {
