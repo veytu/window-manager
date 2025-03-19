@@ -78,7 +78,6 @@ class ViewScroller {
     }
 
     private updateSize () {
-        console.log('onAppScrolling update size', this._scrollingElement.scrollHeight, this._scrollingElement.clientHeight)
         this.baseScrollTop =
             this._scrollingElement.scrollHeight - this._scrollingElement.clientHeight;
         this.baseScrollLeft =
@@ -100,13 +99,11 @@ class ViewScroller {
 
         const { x: left, y: top } = this.calcCoordToLocal();
 
-        console.log('onAppScrolling', {left, top})
         this.scrollLeft(left);
         this.scrollTop(top);
     }
 
     public setCoord(position: ScrollCoord): void {
-        console.log('onAppScrolling setCoord', position)
         this.crood.setValue({
             x: position.x || this.crood.value.x,
             y: position.y || this.crood.value.y,
@@ -139,7 +136,6 @@ class ViewScroller {
 
         const { x: CoordX, y: CoordY } = this.crood.value;
 
-        console.log('onAppScrolling calcCoordToLocal', {CoordX, CoordY, baseScrollLeft: this.baseScrollLeft, baseScrollTop: this.baseScrollTop})
         const newLocalCoord = { x: 0, y: 0 };
 
         if (CoordX) {
