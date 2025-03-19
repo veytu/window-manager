@@ -1175,6 +1175,8 @@ declare class ViewScroller {
     private baseScrollLeft;
     protected sizeObserver: ResizeObserver;
     protected callbackManager: CallbackManager;
+    private scrollFinished;
+    private lastScrollTop;
     constructor(config: ViewScrollerConfig);
     private updateSize;
     private onScroll;

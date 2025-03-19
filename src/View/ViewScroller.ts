@@ -41,6 +41,8 @@ class ViewScroller {
     private baseScrollLeft: number = 0;
     protected sizeObserver: ResizeObserver
     protected callbackManager: CallbackManager
+    private scrollFinished: number = -1
+    private lastScrollTop: number = -1
 
     constructor(config: ViewScrollerConfig) {
         this._sideEffect = new SideEffectManager();
@@ -90,9 +92,18 @@ class ViewScroller {
         this.dispatchScrollEvent({x, y})
     }
 
-    private dispatchScrollEvent = debounce(({x, y}: {x: number, y: number}) => {
-        this.manager.room?.dispatchMagixEvent(ScrollerScrollEventType, {appId: this.appId, x, y})
-    }, 100)
+    private dispatchScrollEvent ({x, y}: {x: number, y: number}) {
+        clearTimeout(this.scrollFinished);
+
+        this.scrollFinished = setTimeout(() => {
+            const currentScrollTop = Math.ceil(this._scrollingElement.scrollTop);
+            if (currentScrollTop === this.lastScrollTop) {
+                this.manager.room?.dispatchMagixEvent(ScrollerScrollEventType, {appId: this.appId, x, y})
+            } else {
+                this.lastScrollTop = currentScrollTop;
+            }
+        }, 200)
+    }
 
     private scroll(): void {
         if (!this._scrollingElement) return;
