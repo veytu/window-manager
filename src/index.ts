@@ -57,7 +57,7 @@ import type { PageController, AddPageParams, PageState } from "./Page";
 import { boxEmitter } from "./BoxEmitter";
 import { IframeBridge } from "./View/IframeBridge";
 import { setOptions } from "@netless/app-media-player";
-import { ScrollerManager } from "./ScrollerManager";
+import { ScrollerManager, ScrollerScrollEventType } from "./ScrollerManager";
 export * from "./View/IframeBridge";
 
 export type WindowMangerAttributes = {
@@ -317,6 +317,10 @@ export class WindowManager
         })
         manager?.room?.addMagixEventListener("onMainViewBackgroundColorChange", (data) => {
             manager?._setBackgroundColor(data.payload)
+        })
+
+        manager.room?.addMagixEventListener(ScrollerScrollEventType, (data) => {
+            internalEmitter.emit(data.payload)
         })
 
         internalEmitter.on('playgroundSizeChange', () => {
@@ -1306,6 +1310,9 @@ export class WindowManager
             const scaleMap: Record<string, number> = this.attributes['scale']
             Object.keys(scaleMap).forEach(item => {
                 this._setScale({appId: item, scale: scaleMap[item]})
+                setTimeout(() => {
+                    this.scrollerManager?.moveToCenter(item)
+                })
             })
         }
     }

@@ -54,12 +54,6 @@ class ViewScroller {
         
         this.crood = createVal<InternalCoord>(this.getAttribute());
 
-        this.scroll();
-
-        this.crood.reaction(() => {
-            this.scroll();
-        });
-
         const valConfig: ValConfig = {
             $crood: this.crood,
         };
@@ -74,6 +68,13 @@ class ViewScroller {
         this.callbackManager.addCallback(this.updateSize.bind(this))
         this.sizeObserver.observe(this._scrollingElement)
         this.sizeObserver.observe(this._scrollingElement.firstElementChild!)
+        this.crood.reaction(() => {
+            this.scroll();
+        })
+        
+        setTimeout(() => {
+            this.scroll();
+        })
     }
 
     private updateSize () {
@@ -122,6 +123,7 @@ class ViewScroller {
 
     private getAttribute() {
         const currentAttribute = this.manager.getAttributesValue([PageScrollerAttributeField]);
+        console.log('currentAttribute', currentAttribute)
 
         return currentAttribute?.[this.appId] || { x: 0, y: 0 };
     }

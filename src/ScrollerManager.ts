@@ -1,6 +1,7 @@
 import { Event } from "white-web-sdk";
 import { WindowManager } from ".";
 import ViewScroller, {type ViewScrollerConfig, type ScrollCoord} from "./View/ViewScroller";
+import { internalEmitter } from "./InternalEmitter";
 
 export const ScrollerScrollEventType = 'window-mananer-app-scrolling'
 
@@ -11,10 +12,11 @@ export class ScrollerManager {
     manager: WindowManager
   }) {
     this.manager = manager
-    this.manager.room?.addMagixEventListener(ScrollerScrollEventType, this.onAppScrolling.bind(this))
+    internalEmitter.on(ScrollerScrollEventType, this.onAppScrolling.bind(this))
   }
 
-  private onAppScrolling ({payload}: Event) {
+  private onAppScrolling (payload: {appId: string, x: number, y: number}) {
+    console.log('onAppScrolling', payload)
     const {
       appId,
       x,
