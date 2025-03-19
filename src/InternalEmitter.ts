@@ -30,7 +30,7 @@ export type EmitterEvent = {
     containerSizeRatioUpdate: number;
     onScaleChange: {appId: string, scale: number};
     onBackgroundImgChange: string | undefined;
-    'window-mananer-app-scrolling': {appId: string, x: number, y: number}
+    windowMananerAppScrolling: {appId: string, x: number, y: number}
 };
 
 export type EmitterType = Emittery<EmitterEvent>;

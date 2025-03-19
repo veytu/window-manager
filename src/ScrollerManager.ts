@@ -3,7 +3,7 @@ import { WindowManager } from ".";
 import ViewScroller, {type ViewScrollerConfig, type ScrollCoord} from "./View/ViewScroller";
 import { internalEmitter } from "./InternalEmitter";
 
-export const ScrollerScrollEventType = 'window-mananer-app-scrolling'
+export const ScrollerScrollEventType = 'windowMananerAppScrolling'
 
 export class ScrollerManager {
   private readonly manager: WindowManager

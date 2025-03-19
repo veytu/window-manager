@@ -474,7 +474,7 @@ type EmitterEvent = {
         scale: number;
     };
     onBackgroundImgChange: string | undefined;
-    'window-mananer-app-scrolling': {
+    windowMananerAppScrolling: {
         appId: string;
         x: number;
         y: number;
