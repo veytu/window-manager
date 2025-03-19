@@ -469,7 +469,10 @@ type EmitterEvent = {
     changePageState: undefined;
     writableChange: boolean;
     containerSizeRatioUpdate: number;
-    onScaleChange: number;
+    onScaleChange: {
+        appId: string;
+        scale: number;
+    };
     onBackgroundImgChange: string | undefined;
 };
 type EmitterType = Emittery<EmitterEvent>;
@@ -1294,6 +1297,7 @@ type MountParams = {
     supportAppliancePlugin?: boolean;
 };
 declare const reconnectRefresher: ReconnectRefresher;
+declare const mainViewField = "mainView";
 declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any> implements PageController {
     static kind: string;
     static displayer: Displayer;
@@ -1485,7 +1489,7 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     lockImages(locked: boolean): void;
     refresh(): void;
     setContainerSizeRatio(ratio: number): void;
-    setScale(scale: number): void;
+    setScale(appId: string, scale: number): void;
     private _updateMainViewWrapperSize;
     private _setScale;
     getScale(): number;
@@ -1504,4 +1508,4 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     private _initAttribute;
 }
 
-export { type AddAppOptions, type AddAppParams, type AddPageParams, AppContext, AppCreateError, type AppEmitterEvent, type AppInitState, type AppListenerKeys, AppManagerNotInitError, AppNotRegisterError, type AppPayload, type AppSyncAttributes, type ApplianceIcons, type BaseInsertParams, BindContainerRoomPhaseInvalidError, BoxManagerNotFoundError, BoxNotCreatedError, BuiltinApps, type CursorMovePayload, type CursorOptions, DomEvents, IframeBridge, type IframeBridgeAttributes, type IframeBridgeEvents, IframeEvents, type IframeSize, type InsertOptions, InvalidScenePath, type MountParams, type NetlessApp, type OnCreateInsertOption, type PageController, type PageRemoveService, type PageState, ParamsInvalidError, type PublicEvent, type RegisterEventData, type RegisterEvents, type RegisterParams, Storage, type StorageStateChangedEvent, type StorageStateChangedListener, WhiteWebSDKInvalidError, WindowManager, type WindowMangerAttributes, type apps, calculateNextIndex, reconnectRefresher, type setAppOptions };
+export { type AddAppOptions, type AddAppParams, type AddPageParams, AppContext, AppCreateError, type AppEmitterEvent, type AppInitState, type AppListenerKeys, AppManagerNotInitError, AppNotRegisterError, type AppPayload, type AppSyncAttributes, type ApplianceIcons, type BaseInsertParams, BindContainerRoomPhaseInvalidError, BoxManagerNotFoundError, BoxNotCreatedError, BuiltinApps, type CursorMovePayload, type CursorOptions, DomEvents, IframeBridge, type IframeBridgeAttributes, type IframeBridgeEvents, IframeEvents, type IframeSize, type InsertOptions, InvalidScenePath, type MountParams, type NetlessApp, type OnCreateInsertOption, type PageController, type PageRemoveService, type PageState, ParamsInvalidError, type PublicEvent, type RegisterEventData, type RegisterEvents, type RegisterParams, Storage, type StorageStateChangedEvent, type StorageStateChangedListener, WhiteWebSDKInvalidError, WindowManager, type WindowMangerAttributes, type apps, calculateNextIndex, mainViewField, reconnectRefresher, type setAppOptions };
