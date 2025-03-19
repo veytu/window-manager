@@ -57,7 +57,7 @@ import type { PageController, AddPageParams, PageState } from "./Page";
 import { boxEmitter } from "./BoxEmitter";
 import { IframeBridge } from "./View/IframeBridge";
 import { setOptions } from "@netless/app-media-player";
-import { ScrollerManager, ScrollerScrollEventType } from "./ScrollerManager";
+import { ScrollerManager } from "./ScrollerManager";
 export * from "./View/IframeBridge";
 
 export type WindowMangerAttributes = {
@@ -319,7 +319,7 @@ export class WindowManager
             manager?._setBackgroundColor(data.payload)
         })
 
-        manager.room?.addMagixEventListener(ScrollerScrollEventType, (data) => {
+        manager.room?.addMagixEventListener('windowMananerAppScrolling', (data) => {
             console.log('onAppScrolling', data)
             internalEmitter.emit(data.payload)
         })

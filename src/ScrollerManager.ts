@@ -1,4 +1,3 @@
-import { Event } from "white-web-sdk";
 import { WindowManager } from ".";
 import ViewScroller, {type ViewScrollerConfig, type ScrollCoord} from "./View/ViewScroller";
 import { internalEmitter } from "./InternalEmitter";
@@ -12,7 +11,7 @@ export class ScrollerManager {
     manager: WindowManager
   }) {
     this.manager = manager
-    internalEmitter.on(ScrollerScrollEventType, this.onAppScrolling.bind(this))
+    internalEmitter.on('windowMananerAppScrolling', this.onAppScrolling.bind(this))
   }
 
   private onAppScrolling (payload: {appId: string, x: number, y: number}) {
