@@ -11,7 +11,7 @@ export class ScrollerManager {
     manager: WindowManager
   }) {
     this.manager = manager
-    internalEmitter.on('windowMananerAppScrolling', this.onAppScrolling.bind(this))
+    internalEmitter.on(ScrollerScrollEventType, this.onAppScrolling)
   }
 
   private onAppScrolling (payload: {appId: string, x: number, y: number}) {
