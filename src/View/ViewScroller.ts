@@ -71,7 +71,7 @@ class ViewScroller {
         this.crood.reaction(() => {
             this.scroll();
         })
-        
+
         setTimeout(() => {
             this.scroll();
         })
@@ -87,7 +87,7 @@ class ViewScroller {
     private onScroll() {
         if (this.manager.readonly) return
         const {x, y} = this.calcLocalToCoord(this.getLocalCoord())
-
+        console.log('onAppScrolling onScroll', {appId: this.appId, x, y})
         this.manager.room?.dispatchMagixEvent(ScrollerScrollEventType, {appId: this.appId, x, y})
     }
 
