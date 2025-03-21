@@ -211,9 +211,9 @@
 }
 
 .telebox-collector-wrp {
-    position: absolute;
-    left: 20px;
-    bottom: 20px;
+    position: fixed;
+    left: 2vw;
+    bottom: 8vw;
 }
 .telebox-collector {
     position: relative;

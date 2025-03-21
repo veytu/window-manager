@@ -370,7 +370,7 @@ export class WindowManager
             internalEmitter
         );
         WindowManager.originWrapper = wrapper
-        WindowManager.wrapper = mainViewWrapper;
+        WindowManager.wrapper = wrapper;
         WindowManager.sizer = sizer;
         WindowManager.mainViewWrapper = mainViewWrapper;
         WindowManager.extendWrapper = extendWrapper
