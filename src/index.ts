@@ -1172,13 +1172,13 @@ export class WindowManager
         const currentScale = scale ?? this.getAttributesValue('scale')[mainViewField]
 
         setStyles({width: size?.width * currentScale, height: size?.height * currentScale})
-        this.room.moveCamera({
-            scale: currentScale,
-            animationMode: AnimationMode.Immediately,
-            centerX: 0,
-            centerY: 0
-        })
-        // this.room.disableCameraTransform = true
+        // this.room.moveCamera({
+        //     scale: currentScale,
+        //     animationMode: AnimationMode.Immediately,
+        //     centerX: 0,
+        //     centerY: 0
+        // })
+        this.room.disableCameraTransform = true
     }
 
     private _setScale (data: {appId: string, scale: number}, skipEmit?: boolean): boolean {
@@ -1200,13 +1200,6 @@ export class WindowManager
 
         if (appId == mainViewField) {
             this._updateMainViewWrapperSize(newScale)
-        } else {
-            this.appManager?.appProxies.get(appId)?.view?.moveCamera({
-                centerX: 0,
-                centerY: 0,
-                scale,
-                animationMode: AnimationMode.Immediately
-            })
         }
 
         this.scrollerManager?.moveToCenter(appId)
