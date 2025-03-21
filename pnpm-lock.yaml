@@ -36,7 +36,7 @@ devDependencies:
     version: 0.2.2
   '@netless/app-docs-viewer':
     specifier: github:veytu/app-docs-viewer
-    version: github.com/veytu/app-docs-viewer/23be9f1203d0ba1faf718ff9b67ea2b55055c663(jspdf@2.5.1)
+    version: github.com/veytu/app-docs-viewer/af7288449735ee9bb8727c08a159e6ab58837dbb(jspdf@2.5.1)
   '@netless/app-media-player':
     specifier: 0.1.0-beta.9
     version: 0.1.0-beta.9
@@ -5868,11 +5868,11 @@ packages:
       fd-slicer: 1.1.0
     dev: true
 
-  github.com/veytu/app-docs-viewer/23be9f1203d0ba1faf718ff9b67ea2b55055c663(jspdf@2.5.1):
-    resolution: {tarball: https://codeload.github.com/veytu/app-docs-viewer/tar.gz/23be9f1203d0ba1faf718ff9b67ea2b55055c663}
-    id: github.com/veytu/app-docs-viewer/23be9f1203d0ba1faf718ff9b67ea2b55055c663
+  github.com/veytu/app-docs-viewer/af7288449735ee9bb8727c08a159e6ab58837dbb(jspdf@2.5.1):
+    resolution: {tarball: https://codeload.github.com/veytu/app-docs-viewer/tar.gz/af7288449735ee9bb8727c08a159e6ab58837dbb}
+    id: github.com/veytu/app-docs-viewer/af7288449735ee9bb8727c08a159e6ab58837dbb
     name: '@netless/app-docs-viewer'
-    version: 0.2.19
+    version: 0.2.20
     peerDependencies:
       jspdf: 2.5.1
     peerDependenciesMeta:
