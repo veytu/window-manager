@@ -15,6 +15,7 @@ export const setupWrapper = (
     sizer: HTMLDivElement;
     mainViewElement: HTMLDivElement;
     mainViewWrapper: HTMLDivElement;
+    mainViewWrapperShadow: HTMLDivElement;
     extendWrapper: HTMLDivElement;
     mainViewScrollWrapper: HTMLDivElement;
 } => {
@@ -30,6 +31,9 @@ export const setupWrapper = (
     const mainViewScrollWrapper = document.createElement("div");
     mainViewScrollWrapper.className = "netless-window-manager-main-view-wrapper netless-window-manager-fancy-scrollbar"
 
+    const mainViewWrapperShadow = document.createElement("div");
+    mainViewWrapperShadow.className = "netless-window-manager-main-view-wrapper netless-window-manager-main-view-wrapper-shadow"
+
     const mainViewWrapper = document.createElement("div");
     mainViewWrapper.className = "netless-window-manager-main-view-wrapper netless-window-manager-main-view-wrp"
 
@@ -44,12 +48,13 @@ export const setupWrapper = (
     playground.appendChild(extendWrapper)
     sizer.appendChild(wrapper);
     mainViewWrapper.appendChild(mainViewElement);
+    mainViewScrollWrapper.appendChild(mainViewWrapperShadow)
     mainViewScrollWrapper.appendChild(mainViewWrapper);
     wrapper.appendChild(mainViewScrollWrapper);
     root.appendChild(playground);
     WindowManager.wrapper = wrapper;
 
-    return { playground, wrapper, sizer, mainViewElement, mainViewWrapper, extendWrapper, mainViewScrollWrapper };
+    return { playground, wrapper, sizer, mainViewElement, mainViewWrapperShadow, mainViewWrapper, extendWrapper, mainViewScrollWrapper };
 };
 
 export const checkVersion = () => {

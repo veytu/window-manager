@@ -175,6 +175,7 @@ export class WindowManager
     public static displayer: Displayer;
     public static wrapper?: HTMLElement;
     public static mainViewWrapper?: HTMLElement;
+    public static mainViewWrapperShadow?: HTMLElement
     public static sizer?: HTMLElement;
     public static playground?: HTMLElement;
     public static container?: HTMLElement;
@@ -348,7 +349,7 @@ export class WindowManager
         if (!WindowManager.container) {
             WindowManager.container = container;
         }
-        const { playground, wrapper, sizer, mainViewElement, mainViewWrapper, extendWrapper, mainViewScrollWrapper } = setupWrapper(container);
+        const { playground, wrapper, sizer, mainViewElement, mainViewWrapperShadow, mainViewWrapper, extendWrapper, mainViewScrollWrapper } = setupWrapper(container);
         WindowManager.playground = playground;
         if (chessboard) {
             sizer.classList.add("netless-window-manager-chess-sizer");
@@ -372,6 +373,7 @@ export class WindowManager
         WindowManager.mainViewWrapper = mainViewWrapper;
         WindowManager.extendWrapper = extendWrapper
         WindowManager.mainViewScrollWrapper = mainViewScrollWrapper
+        WindowManager.mainViewWrapperShadow = mainViewWrapperShadow
         return mainViewElement;
     }
 
@@ -1160,24 +1162,24 @@ export class WindowManager
     }
 
     private _updateMainViewWrapperSize (scale?: number) {
-        const setStyles = (styles: {width: number; height: number}) => {
-            if (!WindowManager.mainViewWrapper) return
-            WindowManager.mainViewWrapper.style.width = `${styles.width}px`
-            WindowManager.mainViewWrapper.style.height = `${styles.height}px`
-        }
+
         const size = WindowManager.wrapper?.getBoundingClientRect()
 
         if (!size) return false
-
         const currentScale = scale ?? this.getAttributesValue('scale')[mainViewField]
+        if (!WindowManager.mainViewWrapper || !WindowManager.mainViewWrapperShadow) return
+        WindowManager.mainViewWrapper.style.width = `${size?.width * currentScale}px`
+        WindowManager.mainViewWrapper.style.height = `${size?.height * currentScale}px`
 
-        setStyles({width: size?.width * currentScale, height: size?.height * currentScale})
-        // this.room.moveCamera({
-        //     scale: currentScale,
-        //     animationMode: AnimationMode.Immediately,
-        //     centerX: 0,
-        //     centerY: 0
-        // })
+        WindowManager.mainViewWrapperShadow.style.width = `${size?.width * currentScale}px`
+        WindowManager.mainViewWrapperShadow.style.height = `${size?.height * currentScale}px`
+
+        this.moveCamera({
+            animationMode: AnimationMode.Immediately,
+            scale: currentScale,
+            centerX: 0,
+            centerY: 0
+        })
         this.room.disableCameraTransform = true
     }
 
@@ -1202,7 +1204,9 @@ export class WindowManager
             this._updateMainViewWrapperSize(newScale)
         }
 
-        this.scrollerManager?.moveToCenter(appId)
+        if (newScale != 1) {
+            this.scrollerManager?.moveToCenter(appId)
+        }
 
         return true
     }

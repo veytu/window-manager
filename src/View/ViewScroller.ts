@@ -80,7 +80,7 @@ class ViewScroller {
         })
     }
 
-    private updateSize () {
+    private updateSize = () => {
         this.baseScrollTop =
             this._scrollingElement.scrollHeight - this._scrollingElement.clientHeight;
         this.baseScrollLeft =
@@ -102,8 +102,7 @@ class ViewScroller {
         if (!this._scrollingElement) return;
         const { x: left, y: top } = this.calcCoordToLocal();
 
-        this.scrollLeft(left);
-        this.scrollTop(top);
+        this._scrollingElement.scrollTo({ left, top, behavior: "instant"});
     }
 
     public setCoord(position: ScrollCoord): void {
@@ -166,14 +165,6 @@ class ViewScroller {
         }
 
         return newLocalCoord;
-    }
-
-    private scrollLeft(left: number) {
-        this._scrollingElement.scrollTo({ left, behavior: "auto" });
-    }
-
-    private scrollTop(top: number) {
-        this._scrollingElement.scrollTo({ top, behavior: "auto" });
     }
 
     public destroy(): void {

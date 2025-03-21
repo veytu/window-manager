@@ -1186,8 +1186,6 @@ declare class ViewScroller {
     private calcCoordToLocal;
     private getLocalCoord;
     calcLocalToCoord(position: ScrollCoord): InternalCoord;
-    private scrollLeft;
-    private scrollTop;
     destroy(): void;
 }
 
@@ -1309,6 +1307,7 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     static displayer: Displayer;
     static wrapper?: HTMLElement;
     static mainViewWrapper?: HTMLElement;
+    static mainViewWrapperShadow?: HTMLElement;
     static sizer?: HTMLElement;
     static playground?: HTMLElement;
     static container?: HTMLElement;
