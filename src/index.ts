@@ -368,7 +368,7 @@ export class WindowManager
             wrapper,
             internalEmitter
         );
-        WindowManager.wrapper = wrapper;
+        WindowManager.wrapper = mainViewWrapper;
         WindowManager.sizer = sizer;
         WindowManager.mainViewWrapper = mainViewWrapper;
         WindowManager.extendWrapper = extendWrapper
@@ -1170,7 +1170,8 @@ export class WindowManager
         if (!WindowManager.mainViewWrapper || !WindowManager.mainViewWrapperShadow) return
         WindowManager.mainViewWrapper.style.width = `${size?.width * currentScale}px`
         WindowManager.mainViewWrapper.style.height = `${size?.height * currentScale}px`
-
+        // WindowManager.mainViewWrapper.style.transformOrigin = '0 0'
+        // WindowManager.mainViewWrapper.style.transform = `scale(${currentScale})`
         WindowManager.mainViewWrapperShadow.style.width = `${size?.width * currentScale}px`
         WindowManager.mainViewWrapperShadow.style.height = `${size?.height * currentScale}px`
 
