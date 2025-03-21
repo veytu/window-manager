@@ -1305,6 +1305,7 @@ declare const mainViewField = "mainView";
 declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any> implements PageController {
     static kind: string;
     static displayer: Displayer;
+    static originWrapper?: HTMLElement;
     static wrapper?: HTMLElement;
     static mainViewWrapper?: HTMLElement;
     static mainViewWrapperShadow?: HTMLElement;

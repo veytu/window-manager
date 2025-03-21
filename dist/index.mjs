@@ -7172,9 +7172,9 @@ function yO() {
       if (_) {
         var xe = _.fileName, Ye = xe.replace(be, "");
         if (/^index\./.test(Ye)) {
-          var je = xe.match(be);
-          if (je) {
-            var tt = je[1];
+          var Ve = xe.match(be);
+          if (Ve) {
+            var tt = Ve[1];
             if (tt) {
               var Nt = tt.replace(be, "");
               Ye = Nt + "/" + Ye;
@@ -7285,10 +7285,10 @@ function yO() {
           var xe = Tt.ReactDebugCurrentFrame, Ye = xe.getStackAddendum();
           Ye !== "" && (_ += "%s", H = H.concat([Ye]));
         }
-        var je = H.map(function(gn) {
+        var Ve = H.map(function(gn) {
           return "" + gn;
         });
-        je.unshift("Warning: " + _), Function.prototype.apply.call(console[M], console, je);
+        Ve.unshift("Warning: " + _), Function.prototype.apply.call(console[M], console, Ve);
         try {
           var tt = 0, Nt = "Warning: " + _.replace(/%s/g, function() {
             return H[tt++];
@@ -7407,13 +7407,13 @@ function yO() {
         Jn[_] || (Ge('Component "%s" contains the string ref "%s". Support for string refs will be removed in a future major release. This case cannot be automatically converted to an arrow function. We ask you to manually fix this case by using useRef() or createRef() instead. Learn more about using refs safely here: https://fb.me/react-strict-mode-string-ref', Ze(he.current.type), M.ref), Jn[_] = !0);
       }
     }
-    var ci = function(M, _, H, X, xe, Ye, je) {
+    var ci = function(M, _, H, X, xe, Ye, Ve) {
       var tt = {
         $$typeof: h,
         type: M,
         key: _,
         ref: H,
-        props: je,
+        props: Ve,
         _owner: Ye
       };
       return tt._store = {}, Object.defineProperty(tt._store, "validated", {
@@ -7434,9 +7434,9 @@ function yO() {
       }), Object.freeze && (Object.freeze(tt.props), Object.freeze(tt)), tt;
     };
     function Mr(M, _, H) {
-      var X, xe = {}, Ye = null, je = null, tt = null, Nt = null;
+      var X, xe = {}, Ye = null, Ve = null, tt = null, Nt = null;
       if (_ != null) {
-        Ne(_) && (je = _.ref, Sn(_)), st(_) && (Ye = "" + _.key), tt = _.__self === void 0 ? null : _.__self, Nt = _.__source === void 0 ? null : _.__source;
+        Ne(_) && (Ve = _.ref, Sn(_)), st(_) && (Ye = "" + _.key), tt = _.__self === void 0 ? null : _.__self, Nt = _.__source === void 0 ? null : _.__source;
         for (X in _)
           bn.call(_, X) && !Ft.hasOwnProperty(X) && (xe[X] = _[X]);
       }
@@ -7453,11 +7453,11 @@ function yO() {
         for (X in ni)
           xe[X] === void 0 && (xe[X] = ni[X]);
       }
-      if (Ye || je) {
+      if (Ye || Ve) {
         var ii = typeof M == "function" ? M.displayName || M.name || "Unknown" : M;
-        Ye && We(xe, ii), je && jt(xe, ii);
+        Ye && We(xe, ii), Ve && jt(xe, ii);
       }
-      return ci(M, Ye, je, tt, Nt, he.current, xe);
+      return ci(M, Ye, Ve, tt, Nt, he.current, xe);
     }
     function jn(M, _) {
       var H = ci(M.type, _, M.ref, M._self, M._source, M._owner, M.props);
@@ -7466,9 +7466,9 @@ function yO() {
     function Gr(M, _, H) {
       if (M == null)
         throw Error("React.cloneElement(...): The argument must be a React element, but you passed " + M + ".");
-      var X, xe = r({}, M.props), Ye = M.key, je = M.ref, tt = M._self, Nt = M._source, gn = M._owner;
+      var X, xe = r({}, M.props), Ye = M.key, Ve = M.ref, tt = M._self, Nt = M._source, gn = M._owner;
       if (_ != null) {
-        Ne(_) && (je = _.ref, gn = he.current), st(_) && (Ye = "" + _.key);
+        Ne(_) && (Ve = _.ref, gn = he.current), st(_) && (Ye = "" + _.key);
         var xn;
         M.type && M.type.defaultProps && (xn = M.type.defaultProps);
         for (X in _)
@@ -7482,7 +7482,7 @@ function yO() {
           ni[ii] = arguments[ii + 2];
         xe.children = ni;
       }
-      return ci(M.type, Ye, je, tt, Nt, gn, xe);
+      return ci(M.type, Ye, Ve, tt, Nt, gn, xe);
     }
     function Ui(M) {
       return typeof M == "object" && M !== null && M.$$typeof === h;
@@ -7543,16 +7543,16 @@ function yO() {
           M,
           _ === "" ? Ma + qn(M, 0) : _
         ), 1;
-      var je, tt, Nt = 0, gn = _ === "" ? Ma : _ + Ea;
+      var Ve, tt, Nt = 0, gn = _ === "" ? Ma : _ + Ea;
       if (Array.isArray(M))
         for (var xn = 0; xn < M.length; xn++)
-          je = M[xn], tt = gn + qn(je, xn), Nt += Ir(je, tt, H, X);
+          Ve = M[xn], tt = gn + qn(Ve, xn), Nt += Ir(Ve, tt, H, X);
       else {
         var Mn = $e(M);
         if (typeof Mn == "function") {
           Mn === M.entries && (tr || Bt("Using Maps as children is deprecated and will be removed in a future major release. Consider converting children to an array of keyed ReactElements instead."), tr = !0);
           for (var ni = Mn.call(M), ii, So = 0; !(ii = ni.next()).done; )
-            je = ii.value, tt = gn + qn(je, So++), Nt += Ir(je, tt, H, X);
+            Ve = ii.value, tt = gn + qn(Ve, So++), Nt += Ir(Ve, tt, H, X);
         } else if (xe === "object") {
           var ta = "";
           ta = " If you meant to render a collection of children, use an array instead." + Se.getStackAddendum();
@@ -7579,7 +7579,7 @@ function yO() {
       vn(M, Aa, X), Er(X);
     }
     function rn(M, _, H) {
-      var X = M.result, xe = M.keyPrefix, Ye = M.func, je = M.context, tt = Ye.call(je, _, M.count++);
+      var X = M.result, xe = M.keyPrefix, Ye = M.func, Ve = M.context, tt = Ye.call(Ve, _, M.count++);
       Array.isArray(tt) ? Mi(tt, X, H, function(Nt) {
         return Nt;
       }) : tt != null && (Ui(tt) && (tt = jn(
@@ -7590,8 +7590,8 @@ function yO() {
     function Mi(M, _, H, X, xe) {
       var Ye = "";
       H != null && (Ye = Ia(H) + "/");
-      var je = Cs(_, Ye, X, xe);
-      vn(M, rn, je), Er(je);
+      var Ve = Cs(_, Ye, X, xe);
+      vn(M, rn, Ve), Er(Ve);
     }
     function kn(M, _, H) {
       if (M == null)
@@ -7642,32 +7642,32 @@ function yO() {
             get: function() {
               return xe || (xe = !0, Ge("Rendering <Context.Consumer.Provider> is not supported and will be removed in a future major release. Did you mean to render <Context.Provider> instead?")), H.Provider;
             },
-            set: function(je) {
-              H.Provider = je;
+            set: function(Ve) {
+              H.Provider = Ve;
             }
           },
           _currentValue: {
             get: function() {
               return H._currentValue;
             },
-            set: function(je) {
-              H._currentValue = je;
+            set: function(Ve) {
+              H._currentValue = Ve;
             }
           },
           _currentValue2: {
             get: function() {
               return H._currentValue2;
             },
-            set: function(je) {
-              H._currentValue2 = je;
+            set: function(Ve) {
+              H._currentValue2 = Ve;
             }
           },
           _threadCount: {
             get: function() {
               return H._threadCount;
             },
-            set: function(je) {
-              H._threadCount = je;
+            set: function(Ve) {
+              H._threadCount = Ve;
             }
           },
           Consumer: {
@@ -7847,8 +7847,8 @@ Check the top-level render call using <` + H + ">.");
         else if (M) {
           var xe = $e(M);
           if (typeof xe == "function" && xe !== M.entries)
-            for (var Ye = xe.call(M), je; !(je = Ye.next()).done; )
-              Ui(je.value) && ti(je.value, _);
+            for (var Ye = xe.call(M), Ve; !(Ve = Ye.next()).done; )
+              Ui(Ve.value) && ti(Ve.value, _);
         }
       }
     }
@@ -7887,8 +7887,8 @@ Check the top-level render call using <` + H + ">.");
         (M === void 0 || typeof M == "object" && M !== null && Object.keys(M).length === 0) && (xe += " You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.");
         var Ye = Jt(_);
         Ye ? xe += Ye : xe += Je();
-        var je;
-        M === null ? je = "null" : Array.isArray(M) ? je = "array" : M !== void 0 && M.$$typeof === h ? (je = "<" + (Ze(M.type) || "Unknown") + " />", xe = " Did you accidentally export a JSX literal instead of a component?") : je = typeof M, Ge("React.createElement: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s", je, xe);
+        var Ve;
+        M === null ? Ve = "null" : Array.isArray(M) ? Ve = "array" : M !== void 0 && M.$$typeof === h ? (Ve = "<" + (Ze(M.type) || "Unknown") + " />", xe = " Did you accidentally export a JSX literal instead of a component?") : Ve = typeof M, Ge("React.createElement: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s", Ve, xe);
       }
       var tt = Mr.apply(this, arguments);
       if (tt == null)
@@ -9263,7 +9263,7 @@ function SO() {
       c.set(i, null);
     }
   }
-  var _, H, X, xe = !1, Ye = [], je = null, tt = null, Nt = null, gn = /* @__PURE__ */ new Map(), xn = /* @__PURE__ */ new Map(), Mn = [], ni = "mousedown mouseup touchcancel touchend touchstart auxclick dblclick pointercancel pointerdown pointerup dragend dragstart drop compositionend compositionstart keydown keypress keyup input textInput close cancel copy cut paste click change contextmenu reset submit".split(" "), ii = "focus blur dragenter dragleave mouseover mouseout pointerover pointerout gotpointercapture lostpointercapture".split(" ");
+  var _, H, X, xe = !1, Ye = [], Ve = null, tt = null, Nt = null, gn = /* @__PURE__ */ new Map(), xn = /* @__PURE__ */ new Map(), Mn = [], ni = "mousedown mouseup touchcancel touchend touchstart auxclick dblclick pointercancel pointerdown pointerup dragend dragstart drop compositionend compositionstart keydown keypress keyup input textInput close cancel copy cut paste click change contextmenu reset submit".split(" "), ii = "focus blur dragenter dragleave mouseover mouseout pointerover pointerout gotpointercapture lostpointercapture".split(" ");
   function So(i, a) {
     var c = Yt(a);
     ni.forEach(function(f) {
@@ -9279,7 +9279,7 @@ function SO() {
     switch (i) {
       case "focus":
       case "blur":
-        je = null;
+        Ve = null;
         break;
       case "dragenter":
       case "dragleave":
@@ -9304,7 +9304,7 @@ function SO() {
   function vp(i, a, c, f, v) {
     switch (a) {
       case "focus":
-        return je = xo(je, i, a, c, f, v), !0;
+        return Ve = xo(Ve, i, a, c, f, v), !0;
       case "dragenter":
         return tt = xo(tt, i, a, c, f, v), !0;
       case "mouseover":
@@ -9360,7 +9360,7 @@ function SO() {
       var a = kr(i.topLevelType, i.eventSystemFlags, i.container, i.nativeEvent);
       a !== null ? i.blockedOn = a : Ye.shift();
     }
-    je !== null && Dr(je) && (je = null), tt !== null && Dr(tt) && (tt = null), Nt !== null && Dr(Nt) && (Nt = null), gn.forEach(gp), xn.forEach(gp);
+    Ve !== null && Dr(Ve) && (Ve = null), tt !== null && Dr(tt) && (tt = null), Nt !== null && Dr(Nt) && (Nt = null), gn.forEach(gp), xn.forEach(gp);
   }
   function Rs(i, a) {
     i.blockedOn === a && (i.blockedOn = null, xe || (xe = !0, o.unstable_scheduleCallback(o.unstable_NormalPriority, zd)));
@@ -9376,7 +9376,7 @@ function SO() {
         f.blockedOn === i && (f.blockedOn = null);
       }
     }
-    for (je !== null && Rs(je, i), tt !== null && Rs(tt, i), Nt !== null && Rs(Nt, i), gn.forEach(a), xn.forEach(a), c = 0; c < Mn.length; c++)
+    for (Ve !== null && Rs(Ve, i), tt !== null && Rs(tt, i), Nt !== null && Rs(Nt, i), gn.forEach(a), xn.forEach(a), c = 0; c < Mn.length; c++)
       f = Mn[c], f.blockedOn === i && (f.blockedOn = null);
     for (; 0 < Mn.length && (c = Mn[0], c.blockedOn === null); )
       Mg(c), c.blockedOn === null && Mn.shift();
@@ -14196,7 +14196,7 @@ function MO() {
       return `
     in ` + (e || "Unknown") + u;
     }
-    var X = typeof Symbol == "function" && Symbol.for, xe = X ? Symbol.for("react.element") : 60103, Ye = X ? Symbol.for("react.portal") : 60106, je = X ? Symbol.for("react.fragment") : 60107, tt = X ? Symbol.for("react.strict_mode") : 60108, Nt = X ? Symbol.for("react.profiler") : 60114, gn = X ? Symbol.for("react.provider") : 60109, xn = X ? Symbol.for("react.context") : 60110, Mn = X ? Symbol.for("react.concurrent_mode") : 60111, ni = X ? Symbol.for("react.forward_ref") : 60112, ii = X ? Symbol.for("react.suspense") : 60113, So = X ? Symbol.for("react.suspense_list") : 60120, ta = X ? Symbol.for("react.memo") : 60115, ir = X ? Symbol.for("react.lazy") : 60116, xo = X ? Symbol.for("react.block") : 60121, vp = typeof Symbol == "function" && Symbol.iterator, Mg = "@@iterator";
+    var X = typeof Symbol == "function" && Symbol.for, xe = X ? Symbol.for("react.element") : 60103, Ye = X ? Symbol.for("react.portal") : 60106, Ve = X ? Symbol.for("react.fragment") : 60107, tt = X ? Symbol.for("react.strict_mode") : 60108, Nt = X ? Symbol.for("react.profiler") : 60114, gn = X ? Symbol.for("react.provider") : 60109, xn = X ? Symbol.for("react.context") : 60110, Mn = X ? Symbol.for("react.concurrent_mode") : 60111, ni = X ? Symbol.for("react.forward_ref") : 60112, ii = X ? Symbol.for("react.suspense") : 60113, So = X ? Symbol.for("react.suspense_list") : 60120, ta = X ? Symbol.for("react.memo") : 60115, ir = X ? Symbol.for("react.lazy") : 60116, xo = X ? Symbol.for("react.block") : 60121, vp = typeof Symbol == "function" && Symbol.iterator, Mg = "@@iterator";
     function Dr(e) {
       if (e === null || typeof e != "object")
         return null;
@@ -14236,7 +14236,7 @@ Your code should look like:
       if (typeof e == "string")
         return e;
       switch (e) {
-        case je:
+        case Ve:
           return "Fragment";
         case Ye:
           return "Portal";
@@ -19503,7 +19503,7 @@ See https://fb.me/react-refs-must-have-owner for more information.`);
         if (typeof V == "object" && V !== null) {
           switch (V.$$typeof) {
             case xe:
-              return V.key === pe ? V.type === je ? k($, te, V.props.children, ve, pe) : E($, te, V, ve) : null;
+              return V.key === pe ? V.type === Ve ? k($, te, V.props.children, ve, pe) : E($, te, V, ve) : null;
             case Ye:
               return V.key === pe ? N($, te, V, ve) : null;
           }
@@ -19522,7 +19522,7 @@ See https://fb.me/react-refs-must-have-owner for more information.`);
           switch (ve.$$typeof) {
             case xe: {
               var yt = $.get(ve.key === null ? V : ve.key) || null;
-              return ve.type === je ? k(te, yt, ve.props.children, pe, ve.key) : E(te, yt, ve, pe);
+              return ve.type === Ve ? k(te, yt, ve.props.children, pe, ve.key) : E(te, yt, ve, pe);
             }
             case Ye: {
               var It = $.get(ve.key === null ? V : ve.key) || null;
@@ -19650,7 +19650,7 @@ See https://fb.me/react-refs-must-have-owner for more information.`);
           if (Ee.key === pe) {
             switch (Ee.tag) {
               case Tt: {
-                if (V.type === je) {
+                if (V.type === Ve) {
                   s($, Ee.sibling);
                   var yt = d(Ee, V.props.children);
                   return yt.return = $, yt._debugSource = V._source, yt._debugOwner = V._owner, yt;
@@ -19673,7 +19673,7 @@ See https://fb.me/react-refs-must-have-owner for more information.`);
             t($, Ee);
           Ee = Ee.sibling;
         }
-        if (V.type === je) {
+        if (V.type === Ve) {
           var Ht = il(V.props.children, $.mode, ve, V.key);
           return Ht.return = $, Ht;
         } else {
@@ -19700,7 +19700,7 @@ See https://fb.me/react-refs-must-have-owner for more information.`);
         return It.return = $, It;
       }
       function Qt($, te, V, ve) {
-        var pe = typeof V == "object" && V !== null && V.type === je && V.key === null;
+        var pe = typeof V == "object" && V !== null && V.type === Ve && V.key === null;
         pe && (V = V.props.children);
         var Ee = typeof V == "object" && V !== null;
         if (Ee)
@@ -23597,7 +23597,7 @@ For more info, visit https://fb.me/react-mock-scheduler`));
       else {
         e:
           switch (e) {
-            case je:
+            case Ve:
               return il(s.children, d, p, t);
             case Mn:
               b = Bt, d |= td | Hr | yn;
@@ -25053,26 +25053,26 @@ class aL {
     !o || (o.destroy(), this.scrollers = this.scrollers.filter((l) => l.appId != n));
   }
 }
-const sL = new K_({ emitter: et }), qv = "mainView", Ve = class extends rN {
+const sL = new K_({ emitter: et }), qv = "mainView", je = class extends rN {
   constructor(r) {
-    super(r), this.version = "1.0.46", this.dependencies = { dependencies: { "@juggle/resize-observer": "^3.3.1", "@netless/telebox-insider": "github:veytu/telebox-insider", emittery: "^0.9.2", lodash: "^4.17.21", "p-retry": "^4.6.1", uuid: "^7.0.3", "value-enhancer": "0.0.8", "video.js": ">=7" }, peerDependencies: { jspdf: "2.5.1", "white-web-sdk": "^2.16.52" }, devDependencies: { "@hyrious/dts": "^0.2.2", "@netless/app-docs-viewer": "github:veytu/app-docs-viewer", "@netless/app-media-player": "0.1.0-beta.9", "@rollup/plugin-commonjs": "^20.0.0", "@rollup/plugin-node-resolve": "^13.0.4", "@rollup/plugin-url": "^6.1.0", "@sveltejs/vite-plugin-svelte": "^1.4.0", "@tsconfig/svelte": "^2.0.1", "@types/debug": "^4.1.7", "@types/lodash": "^4.14.182", "@types/lodash-es": "^4.17.4", "@types/uuid": "^8.3.1", "@typescript-eslint/eslint-plugin": "^4.30.0", "@typescript-eslint/parser": "^4.30.0", "@vitest/ui": "^0.14.1", cypress: "^8.7.0", dotenv: "^10.0.0", eslint: "^7.32.0", "eslint-config-prettier": "^8.3.0", "eslint-plugin-svelte3": "^3.2.0", jsdom: "^19.0.0", jspdf: "^2.5.1", less: "^4.1.1", prettier: "^2.3.2", "prettier-plugin-svelte": "^2.4.0", "rollup-plugin-analyzer": "^4.0.0", "rollup-plugin-styles": "^3.14.1", "side-effect-manager": "0.1.5", svelte: "^3.42.4", typescript: "^4.5.5", vite: "^3.0.0", vitest: "^0.14.1", "white-web-sdk": "2.16.52" } }, this.emitter = Dt, this.viewMode = sl.Broadcaster, this.isReplay = lS(this.displayer), this._cursorUIDs = [], this._appReadonly = !1, this.containerSizeRatio = Ve.containerSizeRatio, Ve.displayer = r.displayer, window.NETLESS_DEPS = { dependencies: { "@juggle/resize-observer": "^3.3.1", "@netless/telebox-insider": "github:veytu/telebox-insider", emittery: "^0.9.2", lodash: "^4.17.21", "p-retry": "^4.6.1", uuid: "^7.0.3", "value-enhancer": "0.0.8", "video.js": ">=7" }, peerDependencies: { jspdf: "2.5.1", "white-web-sdk": "^2.16.52" }, devDependencies: { "@hyrious/dts": "^0.2.2", "@netless/app-docs-viewer": "github:veytu/app-docs-viewer", "@netless/app-media-player": "0.1.0-beta.9", "@rollup/plugin-commonjs": "^20.0.0", "@rollup/plugin-node-resolve": "^13.0.4", "@rollup/plugin-url": "^6.1.0", "@sveltejs/vite-plugin-svelte": "^1.4.0", "@tsconfig/svelte": "^2.0.1", "@types/debug": "^4.1.7", "@types/lodash": "^4.14.182", "@types/lodash-es": "^4.17.4", "@types/uuid": "^8.3.1", "@typescript-eslint/eslint-plugin": "^4.30.0", "@typescript-eslint/parser": "^4.30.0", "@vitest/ui": "^0.14.1", cypress: "^8.7.0", dotenv: "^10.0.0", eslint: "^7.32.0", "eslint-config-prettier": "^8.3.0", "eslint-plugin-svelte3": "^3.2.0", jsdom: "^19.0.0", jspdf: "^2.5.1", less: "^4.1.1", prettier: "^2.3.2", "prettier-plugin-svelte": "^2.4.0", "rollup-plugin-analyzer": "^4.0.0", "rollup-plugin-styles": "^3.14.1", "side-effect-manager": "0.1.5", svelte: "^3.42.4", typescript: "^4.5.5", vite: "^3.0.0", vitest: "^0.14.1", "white-web-sdk": "2.16.52" } };
+    super(r), this.version = "1.0.47", this.dependencies = { dependencies: { "@juggle/resize-observer": "^3.3.1", "@netless/telebox-insider": "github:veytu/telebox-insider", emittery: "^0.9.2", lodash: "^4.17.21", "p-retry": "^4.6.1", uuid: "^7.0.3", "value-enhancer": "0.0.8", "video.js": ">=7" }, peerDependencies: { jspdf: "2.5.1", "white-web-sdk": "^2.16.52" }, devDependencies: { "@hyrious/dts": "^0.2.2", "@netless/app-docs-viewer": "github:veytu/app-docs-viewer", "@netless/app-media-player": "0.1.0-beta.9", "@rollup/plugin-commonjs": "^20.0.0", "@rollup/plugin-node-resolve": "^13.0.4", "@rollup/plugin-url": "^6.1.0", "@sveltejs/vite-plugin-svelte": "^1.4.0", "@tsconfig/svelte": "^2.0.1", "@types/debug": "^4.1.7", "@types/lodash": "^4.14.182", "@types/lodash-es": "^4.17.4", "@types/uuid": "^8.3.1", "@typescript-eslint/eslint-plugin": "^4.30.0", "@typescript-eslint/parser": "^4.30.0", "@vitest/ui": "^0.14.1", cypress: "^8.7.0", dotenv: "^10.0.0", eslint: "^7.32.0", "eslint-config-prettier": "^8.3.0", "eslint-plugin-svelte3": "^3.2.0", jsdom: "^19.0.0", jspdf: "^2.5.1", less: "^4.1.1", prettier: "^2.3.2", "prettier-plugin-svelte": "^2.4.0", "rollup-plugin-analyzer": "^4.0.0", "rollup-plugin-styles": "^3.14.1", "side-effect-manager": "0.1.5", svelte: "^3.42.4", typescript: "^4.5.5", vite: "^3.0.0", vitest: "^0.14.1", "white-web-sdk": "2.16.52" } }, this.emitter = Dt, this.viewMode = sl.Broadcaster, this.isReplay = lS(this.displayer), this._cursorUIDs = [], this._appReadonly = !1, this.containerSizeRatio = je.containerSizeRatio, je.displayer = r.displayer, window.NETLESS_DEPS = { dependencies: { "@juggle/resize-observer": "^3.3.1", "@netless/telebox-insider": "github:veytu/telebox-insider", emittery: "^0.9.2", lodash: "^4.17.21", "p-retry": "^4.6.1", uuid: "^7.0.3", "value-enhancer": "0.0.8", "video.js": ">=7" }, peerDependencies: { jspdf: "2.5.1", "white-web-sdk": "^2.16.52" }, devDependencies: { "@hyrious/dts": "^0.2.2", "@netless/app-docs-viewer": "github:veytu/app-docs-viewer", "@netless/app-media-player": "0.1.0-beta.9", "@rollup/plugin-commonjs": "^20.0.0", "@rollup/plugin-node-resolve": "^13.0.4", "@rollup/plugin-url": "^6.1.0", "@sveltejs/vite-plugin-svelte": "^1.4.0", "@tsconfig/svelte": "^2.0.1", "@types/debug": "^4.1.7", "@types/lodash": "^4.14.182", "@types/lodash-es": "^4.17.4", "@types/uuid": "^8.3.1", "@typescript-eslint/eslint-plugin": "^4.30.0", "@typescript-eslint/parser": "^4.30.0", "@vitest/ui": "^0.14.1", cypress: "^8.7.0", dotenv: "^10.0.0", eslint: "^7.32.0", "eslint-config-prettier": "^8.3.0", "eslint-plugin-svelte3": "^3.2.0", jsdom: "^19.0.0", jspdf: "^2.5.1", less: "^4.1.1", prettier: "^2.3.2", "prettier-plugin-svelte": "^2.4.0", "rollup-plugin-analyzer": "^4.0.0", "rollup-plugin-styles": "^3.14.1", "side-effect-manager": "0.1.5", svelte: "^3.42.4", typescript: "^4.5.5", vite: "^3.0.0", vitest: "^0.14.1", "white-web-sdk": "2.16.52" } };
   }
   static onCreate(r) {
-    Ve._resolve(r);
+    je._resolve(r);
   }
   static async mount(r) {
     var w, g, S, C;
     const n = r.room;
-    Ve.container = r.container, Ve.supportAppliancePlugin = r.supportAppliancePlugin;
+    je.container = r.container, je.supportAppliancePlugin = r.supportAppliancePlugin;
     const o = r.containerSizeRatio, l = r.debug, h = r.cursor;
-    Ve.params = r, Ve.displayer = r.room, nk();
+    je.params = r, je.displayer = r.room, nk();
     let m;
     if (ol(n)) {
       if (n.phase !== ll.Connected)
         throw new Error("[WindowManager]: Room only Connected can be mount");
       n.phase === ll.Connected && n.isWritable && (n.disableSerialization = !1), m = await this.initManager(n);
     }
-    if (Ve.isCreated)
+    if (je.isCreated)
       throw new Error("[WindowManager]: Already created cannot be created again");
     if (this.debug = Boolean(l), this.debug && YE({ verbose: !0 }), Ca("Already insert room", m), ol(this.displayer)) {
       if (!m)
@@ -25080,19 +25080,19 @@ const sL = new K_({ emitter: et }), qv = "mainView", Ve = class extends rN {
     } else
       await yM(
         async (I) => {
-          if (m = n.getInvisiblePlugin(Ve.kind), !m)
+          if (m = n.getInvisiblePlugin(je.kind), !m)
             throw Ca(`manager is empty. retrying ${I}`), new Error();
         },
         { retries: 10, maxTimeout: 5e3 }
       );
     if (!m)
       throw new Error("[WindowManager]: create manager failed");
-    o && (Ve.containerSizeRatio = o), await m.ensureAttributes(), m._fullscreen = r.fullscreen, m.appManager = new ek(m), m.appManager.polling = r.polling || !1, m._pageState = new q_(m.appManager), m.cursorManager = new J_(
+    o && (je.containerSizeRatio = o), await m.ensureAttributes(), m._fullscreen = r.fullscreen, m.appManager = new ek(m), m.appManager.polling = r.polling || !1, m._pageState = new q_(m.appManager), m.cursorManager = new J_(
       m.appManager,
       Boolean(h),
       r.cursorOptions,
       r.applianceIcons
-    ), m.scrollerManager = new aL({ manager: m }), o && (m.containerSizeRatio = o), r.container && m.bindContainer(r.container), eP(n, m), et.emit("onCreated"), Ve.isCreated = !0;
+    ), m.scrollerManager = new aL({ manager: m }), o && (m.containerSizeRatio = o), r.container && m.bindContainer(r.container), eP(n, m), et.emit("onCreated"), je.isCreated = !0;
     try {
       await pN();
     } catch (I) {
@@ -25115,9 +25115,9 @@ const sL = new K_({ emitter: et }), qv = "mainView", Ve = class extends rN {
   }
   static initContainer(r, n, o) {
     const { chessboard: l, overwriteStyles: h, fullscreen: m } = o;
-    Ve.container || (Ve.container = n);
+    je.container || (je.container = n);
     const { playground: w, wrapper: g, sizer: S, mainViewElement: C, mainViewWrapperShadow: I, mainViewWrapper: A, extendWrapper: z, mainViewScrollWrapper: F } = tk(n);
-    if (Ve.playground = w, l && S.classList.add("netless-window-manager-chess-sizer"), m && S.classList.add("netless-window-manager-fullscreen"), h) {
+    if (je.playground = w, l && S.classList.add("netless-window-manager-chess-sizer"), m && S.classList.add("netless-window-manager-fullscreen"), h) {
       const j = document.createElement("style");
       j.textContent = h, w.appendChild(j);
     }
@@ -25126,7 +25126,7 @@ const sL = new K_({ emitter: et }), qv = "mainView", Ve = class extends rN {
       S,
       g,
       et
-    ), Ve.wrapper = A, Ve.sizer = S, Ve.mainViewWrapper = A, Ve.extendWrapper = z, Ve.mainViewScrollWrapper = F, Ve.mainViewWrapperShadow = I, C;
+    ), je.originWrapper = g, je.wrapper = A, je.sizer = S, je.mainViewWrapper = A, je.extendWrapper = z, je.mainViewScrollWrapper = F, je.mainViewWrapperShadow = I, C;
   }
   static get registered() {
     return qi.registered;
@@ -25135,22 +25135,22 @@ const sL = new K_({ emitter: et }), qv = "mainView", Ve = class extends rN {
     var n, o, l, h, m, w, g;
     if (ol(this.displayer) && this.room.phase !== ll.Connected)
       throw new UN();
-    if (Ve.isCreated && Ve.container)
-      Ve.container.firstChild && r.appendChild(Ve.container.firstChild);
-    else if (Ve.params) {
-      const S = Ve.params, C = Ve.initContainer(this, r, S);
+    if (je.isCreated && je.container)
+      je.container.firstChild && r.appendChild(je.container.firstChild);
+    else if (je.params) {
+      const S = je.params, C = je.initContainer(this, r, S);
       this.boxManager && this.boxManager.destroy();
       const I = y_(this, Dt, et, po, {
         collectorContainer: S.collectorContainer,
         collectorStyles: S.collectorStyles,
         prefersColorScheme: S.prefersColorScheme
       });
-      this.boxManager = I, (n = this.appManager) == null || n.setBoxManager(I), Ve.mainViewScrollWrapper && ((o = this.scrollerManager) == null || o.add({ appId: qv, scrollElement: Ve.mainViewScrollWrapper, manager: this })), this.bindMainView(C, S.disableCameraTransform), Ve.wrapper && ((l = this.cursorManager) == null || l.setupWrapper(Ve.wrapper));
+      this.boxManager = I, (n = this.appManager) == null || n.setBoxManager(I), je.mainViewScrollWrapper && ((o = this.scrollerManager) == null || o.add({ appId: qv, scrollElement: je.mainViewScrollWrapper, manager: this })), this.bindMainView(C, S.disableCameraTransform), je.wrapper && ((l = this.cursorManager) == null || l.setupWrapper(je.wrapper));
     }
-    et.emit("updateManagerRect"), (h = this.appManager) == null || h.refresh(), (m = this.appManager) == null || m.resetMaximized(), (w = this.appManager) == null || w.resetMinimized(), (g = this.appManager) == null || g.displayerWritableListener(!this.room.isWritable), Ve.container = r;
+    et.emit("updateManagerRect"), (h = this.appManager) == null || h.refresh(), (m = this.appManager) == null || m.resetMaximized(), (w = this.appManager) == null || w.resetMinimized(), (g = this.appManager) == null || g.displayerWritableListener(!this.room.isWritable), je.container = r;
   }
   bindCollectorContainer(r) {
-    Ve.isCreated && this.boxManager ? this.boxManager.setCollectorContainer(r) : Ve.params && (Ve.params.collectorContainer = r);
+    je.isCreated && this.boxManager ? this.boxManager.setCollectorContainer(r) : je.params && (je.params.collectorContainer = r);
   }
   static register(r) {
     return qi.register(r);
@@ -25299,7 +25299,7 @@ const sL = new K_({ emitter: et }), qv = "mainView", Ve = class extends rN {
   }
   setFullscreen(r) {
     var n;
-    this._fullscreen !== r && (this._fullscreen = r, (n = Ve.sizer) == null || n.classList.toggle("netless-window-manager-fullscreen", r), Dt.emit("fullscreenChange", r));
+    this._fullscreen !== r && (this._fullscreen = r, (n = je.sizer) == null || n.classList.toggle("netless-window-manager-fullscreen", r), Dt.emit("fullscreenChange", r));
   }
   get cursorUIDs() {
     return this._cursorUIDs;
@@ -25309,7 +25309,7 @@ const sL = new K_({ emitter: et }), qv = "mainView", Ve = class extends rN {
     if (this._cursorUIDs = r || [], this._cursorUIDs.length === 0)
       (n = this._cursorUIDsStyleDOM) == null || n.remove();
     else {
-      this._cursorUIDsStyleDOM || (this._cursorUIDsStyleDOM = document.createElement("style")), (o = Ve.playground) == null || o.appendChild(this._cursorUIDsStyleDOM);
+      this._cursorUIDsStyleDOM || (this._cursorUIDsStyleDOM = document.createElement("style")), (o = je.playground) == null || o.appendChild(this._cursorUIDsStyleDOM);
       let l = "[data-cursor-uid] { display: none }";
       for (const h of this._cursorUIDs)
         l += `
@@ -25454,7 +25454,7 @@ const sL = new K_({ emitter: et }), qv = "mainView", Ve = class extends rN {
     return Boolean(this._fullscreen);
   }
   get extendWrapper() {
-    return Ve.extendWrapper;
+    return je.extendWrapper;
   }
   queryAll() {
     var r;
@@ -25502,7 +25502,7 @@ const sL = new K_({ emitter: et }), qv = "mainView", Ve = class extends rN {
   }
   _destroy() {
     var r, n, o, l, h;
-    (r = this.containerResizeObserver) == null || r.disconnect(), (n = this.appManager) == null || n.destroy(), (o = this.cursorManager) == null || o.destroy(), Ve.container = void 0, Ve.wrapper = void 0, Ve.sizer = void 0, Ve.isCreated = !1, Ve.playground && ((l = Ve.playground.parentNode) == null || l.removeChild(Ve.playground)), Ve.params = void 0, (h = this._iframeBridge) == null || h.destroy(), this._iframeBridge = void 0, Ca("Destroyed");
+    (r = this.containerResizeObserver) == null || r.disconnect(), (n = this.appManager) == null || n.destroy(), (o = this.cursorManager) == null || o.destroy(), je.container = void 0, je.wrapper = void 0, je.sizer = void 0, je.isCreated = !1, je.playground && ((l = je.playground.parentNode) == null || l.removeChild(je.playground)), je.params = void 0, (h = this._iframeBridge) == null || h.destroy(), this._iframeBridge = void 0, Ca("Destroyed");
   }
   bindMainView(r, n) {
     var o;
@@ -25519,7 +25519,7 @@ const sL = new K_({ emitter: et }), qv = "mainView", Ve = class extends rN {
   }
   setAppReadonly(r) {
     var n;
-    this._appReadonly = r, (n = Ve.mainViewScrollWrapper) == null || n.classList.toggle("netless-window-manager-fancy-scrollbar-readonly", r);
+    this._appReadonly = r, (n = je.mainViewScrollWrapper) == null || n.classList.toggle("netless-window-manager-fancy-scrollbar-readonly", r);
   }
   safeSetAttributes(r) {
     var n;
@@ -25587,25 +25587,25 @@ const sL = new K_({ emitter: et }), qv = "mainView", Ve = class extends rN {
   }
   _refresh() {
     var r, n;
-    (r = this.appManager) == null || r.mainViewProxy.rebind(), Ve.container && this.bindContainer(Ve.container), (n = this.appManager) == null || n.refresher.refresh();
+    (r = this.appManager) == null || r.mainViewProxy.rebind(), je.container && this.bindContainer(je.container), (n = this.appManager) == null || n.refresher.refresh();
   }
   setContainerSizeRatio(r) {
     if (!jb(r) || !(r > 0))
       throw new Error(
         `[WindowManager]: updateContainerSizeRatio error, ratio must be a positive number. but got ${r}`
       );
-    Ve.containerSizeRatio = r, this.containerSizeRatio = r, et.emit("containerSizeRatioUpdate", r);
+    je.containerSizeRatio = r, this.containerSizeRatio = r, et.emit("containerSizeRatioUpdate", r);
   }
   setScale(r, n) {
     this.room.dispatchMagixEvent("onScaleChange", { appId: r, scale: n });
   }
   _updateMainViewWrapperSize(r) {
     var l;
-    const n = (l = Ve.wrapper) == null ? void 0 : l.getBoundingClientRect();
+    const n = (l = je.originWrapper) == null ? void 0 : l.getBoundingClientRect();
     if (!n)
       return !1;
     const o = r != null ? r : this.getAttributesValue("scale")[qv];
-    !Ve.mainViewWrapper || !Ve.mainViewWrapperShadow || (Ve.mainViewWrapper.style.width = `${(n == null ? void 0 : n.width) * o}px`, Ve.mainViewWrapper.style.height = `${(n == null ? void 0 : n.height) * o}px`, Ve.mainViewWrapperShadow.style.width = `${(n == null ? void 0 : n.width) * o}px`, Ve.mainViewWrapperShadow.style.height = `${(n == null ? void 0 : n.height) * o}px`, this.moveCamera({
+    !je.mainViewWrapper || !je.mainViewWrapperShadow || (je.mainViewWrapper.style.width = `${(n == null ? void 0 : n.width) * o}px`, je.mainViewWrapper.style.height = `${(n == null ? void 0 : n.height) * o}px`, je.mainViewWrapperShadow.style.width = `${(n == null ? void 0 : n.width) * o}px`, je.mainViewWrapperShadow.style.height = `${(n == null ? void 0 : n.height) * o}px`, this.moveCamera({
       animationMode: rp.Immediately,
       scale: o,
       centerX: 0,
@@ -25665,10 +25665,10 @@ const sL = new K_({ emitter: et }), qv = "mainView", Ve = class extends rN {
     this.room.dispatchMagixEvent("onMainViewBackgroundImgChange", ""), this.room.dispatchMagixEvent("onMainViewBackgroundColorChange", r);
   }
   _setBackgroundColor(r) {
-    !Ve.mainViewWrapper || (Ve.mainViewWrapper.style.backgroundColor = r, this.safeUpdateAttributes(["mainViewBackgroundColor"], r));
+    !je.mainViewWrapper || (je.mainViewWrapper.style.backgroundColor = r, this.safeUpdateAttributes(["mainViewBackgroundColor"], r));
   }
   _setBackgroundImg(r) {
-    !Ve.mainViewWrapper || (Ve.mainViewWrapper.style.backgroundImage = `url(${r})`, this.safeUpdateAttributes(["mainViewBackgroundImg"], r));
+    !je.mainViewWrapper || (je.mainViewWrapper.style.backgroundImage = `url(${r})`, this.safeUpdateAttributes(["mainViewBackgroundImg"], r));
   }
   _initAttribute() {
     if (this.attributes.mainViewBackgroundImg && this._setBackgroundImg(this.attributes.mainViewBackgroundImg), this.attributes.mainViewBackgroundColor && this._setBackgroundColor(this.attributes.mainViewBackgroundColor), this.attributes.scale) {
@@ -25682,7 +25682,7 @@ const sL = new K_({ emitter: et }), qv = "mainView", Ve = class extends rN {
     }
   }
 };
-let Wt = Ve;
+let Wt = je;
 Wt.kind = "WindowManager";
 Wt.debug = !1;
 Wt.containerSizeRatio = dN;

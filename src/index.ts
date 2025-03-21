@@ -173,6 +173,7 @@ export class WindowManager
 {
     public static kind = "WindowManager";
     public static displayer: Displayer;
+    public static originWrapper?: HTMLElement
     public static wrapper?: HTMLElement;
     public static mainViewWrapper?: HTMLElement;
     public static mainViewWrapperShadow?: HTMLElement
@@ -368,6 +369,7 @@ export class WindowManager
             wrapper,
             internalEmitter
         );
+        WindowManager.originWrapper = wrapper
         WindowManager.wrapper = mainViewWrapper;
         WindowManager.sizer = sizer;
         WindowManager.mainViewWrapper = mainViewWrapper;
@@ -1163,7 +1165,7 @@ export class WindowManager
 
     private _updateMainViewWrapperSize (scale?: number) {
 
-        const size = WindowManager.wrapper?.getBoundingClientRect()
+        const size = WindowManager.originWrapper?.getBoundingClientRect()
 
         if (!size) return false
         const currentScale = scale ?? this.getAttributesValue('scale')[mainViewField]
