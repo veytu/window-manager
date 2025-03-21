@@ -85,6 +85,7 @@ class ViewScroller {
             this._scrollingElement.scrollHeight - this._scrollingElement.clientHeight;
         this.baseScrollLeft =
             this._scrollingElement.scrollWidth - this._scrollingElement.clientWidth;
+        this.scroll()
     }
 
     private onScroll() {
@@ -99,7 +100,6 @@ class ViewScroller {
 
     private scroll(): void {
         if (!this._scrollingElement) return;
-
         const { x: left, y: top } = this.calcCoordToLocal();
 
         this.scrollLeft(left);
