@@ -1202,6 +1202,13 @@ export class WindowManager
 
         if (appId == mainViewField) {
             this._updateMainViewWrapperSize(newScale)
+        } else {
+            this.appManager?.appProxies.get(appId)?.view?.moveCamera({
+                centerX: 0,
+                centerY: 0,
+                scale,
+                animationMode: AnimationMode.Immediately
+            })
         }
 
         if (newScale != 1) {
