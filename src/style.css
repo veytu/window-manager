@@ -227,6 +227,7 @@
     scrollbar-width: auto;
 }
 
+
 .netless-window-manager-fancy-scrollbar::-webkit-scrollbar {
     height: 6px;
     width: 6px;
@@ -250,4 +251,8 @@
 
 .netless-window-manager-fancy-scrollbar::-webkit-scrollbar-thumb:horizontal {
     min-width: 50px;
+}
+
+.netless-window-manager-fancy-scrollbar-readonly::-webkit-scrollbar {
+    display: none;
 }

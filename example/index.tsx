@@ -346,6 +346,11 @@ const App = () => {
                 }}>
                     zoomin
                 </button>
+                <button className="side-button" onClick={() => {
+                    manager.setAppReadonly(!manager.appReadonly)
+                }}>
+                    appreadonly
+                </button>
                 <span>
                     {pageState.index}/{pageState.length}
                 </span>

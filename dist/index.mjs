@@ -994,9 +994,9 @@ class uS {
           C = this.getAppInitState(n);
           const le = (z = (A = (I = this.boxManager) == null ? void 0 : I.teleBoxManager) == null ? void 0 : A.maximizedBoxes) == null ? void 0 : z.includes(n), oe = (q = (U = (F = this.boxManager) == null ? void 0 : F.teleBoxManager) == null ? void 0 : U.minimizedBoxes) == null ? void 0 : q.includes(n);
           Object.assign(C || {}, { maximized: le, minimized: oe }), (Y = this.boxManager) == null || Y.updateBoxState(C);
-          const ke = (fe = this.boxManager) == null ? void 0 : fe.teleBoxManager.maximizedBoxes.filter((Fe) => {
+          const ke = (fe = this.boxManager) == null ? void 0 : fe.teleBoxManager.maximizedBoxes.filter(($e) => {
             var ze;
-            return !((ze = this == null ? void 0 : this.boxManager) != null && ze.teleBoxManager.minimizedBoxes.includes(Fe));
+            return !((ze = this == null ? void 0 : this.boxManager) != null && ze.teleBoxManager.minimizedBoxes.includes($e));
           });
           ke != null && ke.length && ((Z = (se = this.boxManager) == null ? void 0 : se.teleBoxManager) == null || Z.makeBoxTopFromMaximized());
         }
@@ -2849,7 +2849,7 @@ class d_ {
     zIndex: le = 100,
     namespace: oe = "telebox",
     titleBar: ke,
-    content: Fe,
+    content: $e,
     footer: ze,
     styles: G,
     containerRect: he = {
@@ -3034,7 +3034,7 @@ class d_ {
     }), Bt.reaction((Ne) => {
       this.titleBar.setReadonly(Ne);
     });
-    const Ft = ce(Fe), Vi = ce(ze), Ci = ce(G);
+    const Ft = ce($e), Vi = ce(ze), Ci = ce(G);
     ZM(this, {
       prefersColorScheme: Ze,
       darkMode: Se,
@@ -3839,7 +3839,7 @@ class g_ {
       const Ze = G.length > 0;
       (ie = Z.value) == null || ie.setVisible(Ze), (ct = this.collector) == null || ct.setMinimizedBoxes(G), Ze && (Oe = Z.value) != null && Oe.$collector && oe.setValue(le()), be || this.events.emit(mn.Minimized, G);
     });
-    const ke = this.wrapClassName("titlebar-icon-close"), Fe = (G) => {
+    const ke = this.wrapClassName("titlebar-icon-close"), $e = (G) => {
       var he;
       if (q.value)
         return;
@@ -3858,7 +3858,7 @@ class g_ {
           }
         }
     };
-    this._sideEffect.addEventListener(window, "mousedown", Fe, !0), this._sideEffect.addEventListener(window, "touchstart", Fe, !0), this.maxTitleBar = new m_({
+    this._sideEffect.addEventListener(window, "mousedown", $e, !0), this._sideEffect.addEventListener(window, "touchstart", $e, !0), this.maxTitleBar = new m_({
       darkMode: this.darkMode,
       readonly: q.value,
       namespace: this.namespace,
@@ -4649,7 +4649,7 @@ function P_(r) {
   };
 }
 function z_(r, n, s) {
-  let l, h, m, w, g, S, C, I, { uid: A } = n, { cursorName: z } = n, { tagName: F } = n, { backgroundColor: U } = n, { appliance: q } = n, { x: Y } = n, { y: fe } = n, { src: se } = n, { visible: Z } = n, { avatar: le } = n, { theme: oe } = n, { color: ke } = n, { cursorTagBackgroundColor: Fe } = n, { opacity: ze } = n, { pencilEraserSize: G } = n, { custom: he } = n;
+  let l, h, m, w, g, S, C, I, { uid: A } = n, { cursorName: z } = n, { tagName: F } = n, { backgroundColor: U } = n, { appliance: q } = n, { x: Y } = n, { y: fe } = n, { src: se } = n, { visible: Z } = n, { avatar: le } = n, { theme: oe } = n, { color: ke } = n, { cursorTagBackgroundColor: $e } = n, { opacity: ze } = n, { pencilEraserSize: G } = n, { custom: he } = n;
   const be = () => Object.entries({
     width: (l ? 19 : 28) + "px",
     height: (l ? 19 : 28) + "px",
@@ -4658,7 +4658,7 @@ function z_(r, n, s) {
     "margin-right": (l ? 4 : 0) + "px"
   }).map(([ie, ct]) => `${ie}: ${ct}`).join(";");
   return r.$$set = (ie) => {
-    "uid" in ie && s(0, A = ie.uid), "cursorName" in ie && s(1, z = ie.cursorName), "tagName" in ie && s(2, F = ie.tagName), "backgroundColor" in ie && s(3, U = ie.backgroundColor), "appliance" in ie && s(4, q = ie.appliance), "x" in ie && s(5, Y = ie.x), "y" in ie && s(6, fe = ie.y), "src" in ie && s(7, se = ie.src), "visible" in ie && s(21, Z = ie.visible), "avatar" in ie && s(8, le = ie.avatar), "theme" in ie && s(9, oe = ie.theme), "color" in ie && s(10, ke = ie.color), "cursorTagBackgroundColor" in ie && s(11, Fe = ie.cursorTagBackgroundColor), "opacity" in ie && s(12, ze = ie.opacity), "pencilEraserSize" in ie && s(22, G = ie.pencilEraserSize), "custom" in ie && s(13, he = ie.custom);
+    "uid" in ie && s(0, A = ie.uid), "cursorName" in ie && s(1, z = ie.cursorName), "tagName" in ie && s(2, F = ie.tagName), "backgroundColor" in ie && s(3, U = ie.backgroundColor), "appliance" in ie && s(4, q = ie.appliance), "x" in ie && s(5, Y = ie.x), "y" in ie && s(6, fe = ie.y), "src" in ie && s(7, se = ie.src), "visible" in ie && s(21, Z = ie.visible), "avatar" in ie && s(8, le = ie.avatar), "theme" in ie && s(9, oe = ie.theme), "color" in ie && s(10, ke = ie.color), "cursorTagBackgroundColor" in ie && s(11, $e = ie.cursorTagBackgroundColor), "opacity" in ie && s(12, ze = ie.opacity), "pencilEraserSize" in ie && s(22, G = ie.pencilEraserSize), "custom" in ie && s(13, he = ie.custom);
   }, r.$$.update = () => {
     r.$$.dirty & 2 && (l = !Xh(z)), r.$$.dirty & 4 && s(19, h = !Xh(F)), r.$$.dirty & 256 && s(18, m = !Xh(le)), r.$$.dirty & 2097152 && s(17, w = Z ? "" : "none"), r.$$.dirty & 16 && s(14, g = q === Nn.laserPointer), r.$$.dirty & 16400 && s(23, S = g || q === Nn.pencilEraser), r.$$.dirty & 8388608 && s(16, C = S ? "netless-window-manager-laserPointer-pencilEraser-offset" : ""), r.$$.dirty & 4194304 && s(15, I = G === 3 ? "netless-window-manager-pencilEraser-3-offset" : "");
   }, [
@@ -4673,7 +4673,7 @@ function z_(r, n, s) {
     le,
     oe,
     ke,
-    Fe,
+    $e,
     ze,
     he,
     g,
@@ -5360,7 +5360,7 @@ var _u = function(r) {
     return $v.get(r);
   if (sE(r))
     return $v.set(r, BT), BT;
-  var s = getComputedStyle(r), l = CS(r) && r.ownerSVGElement && r.getBBox(), h = !RP && s.boxSizing === "border-box", m = AP.test(s.writingMode || ""), w = !l && LT.test(s.overflowY || ""), g = !l && LT.test(s.overflowX || ""), S = l ? 0 : ys(s.paddingTop), C = l ? 0 : ys(s.paddingRight), I = l ? 0 : ys(s.paddingBottom), A = l ? 0 : ys(s.paddingLeft), z = l ? 0 : ys(s.borderTopWidth), F = l ? 0 : ys(s.borderRightWidth), U = l ? 0 : ys(s.borderBottomWidth), q = l ? 0 : ys(s.borderLeftWidth), Y = A + C, fe = S + I, se = q + F, Z = z + U, le = g ? r.offsetHeight - Z - r.clientHeight : 0, oe = w ? r.offsetWidth - se - r.clientWidth : 0, ke = h ? Y + se : 0, Fe = h ? fe + Z : 0, ze = l ? l.width : ys(s.width) - ke - oe, G = l ? l.height : ys(s.height) - Fe - le, he = ze + Y + oe + se, be = G + fe + le + Z, ie = _u({
+  var s = getComputedStyle(r), l = CS(r) && r.ownerSVGElement && r.getBBox(), h = !RP && s.boxSizing === "border-box", m = AP.test(s.writingMode || ""), w = !l && LT.test(s.overflowY || ""), g = !l && LT.test(s.overflowX || ""), S = l ? 0 : ys(s.paddingTop), C = l ? 0 : ys(s.paddingRight), I = l ? 0 : ys(s.paddingBottom), A = l ? 0 : ys(s.paddingLeft), z = l ? 0 : ys(s.borderTopWidth), F = l ? 0 : ys(s.borderRightWidth), U = l ? 0 : ys(s.borderBottomWidth), q = l ? 0 : ys(s.borderLeftWidth), Y = A + C, fe = S + I, se = q + F, Z = z + U, le = g ? r.offsetHeight - Z - r.clientHeight : 0, oe = w ? r.offsetWidth - se - r.clientWidth : 0, ke = h ? Y + se : 0, $e = h ? fe + Z : 0, ze = l ? l.width : ys(s.width) - ke - oe, G = l ? l.height : ys(s.height) - $e - le, he = ze + Y + oe + se, be = G + fe + le + Z, ie = _u({
     devicePixelContentBoxSize: Id(Math.round(ze * devicePixelRatio), Math.round(G * devicePixelRatio), m),
     borderBoxSize: Id(he, be, m),
     contentBoxSize: Id(ze, G, m),
@@ -6320,22 +6320,22 @@ class cO {
         compress: !0
       });
       for (const [oe, ke] of this.pages.entries()) {
-        const { width: Fe, height: ze, src: G } = ke;
-        U.width = Fe, U.height = ze;
-        const he = Fe > ze ? "l" : "p";
-        oe > 0 && Z.addPage([Fe, ze], he);
+        const { width: $e, height: ze, src: G } = ke;
+        U.width = $e, U.height = ze;
+        const he = $e > ze ? "l" : "p";
+        oe > 0 && Z.addPage([$e, ze], he);
         const be = await this.getBase64FromUrl(G), ie = document.createElement("img");
         ie.src = be, await new Promise((Ue) => ie.onload = Ue), q.drawImage(ie, 0, 0);
         const ct = U.toDataURL("image/jpeg", 0.6);
-        q.clearRect(0, 0, Fe, ze);
+        q.clearRect(0, 0, $e, ze);
         const Oe = {
-          centerX: Fe / 2,
+          centerX: $e / 2,
           centerY: ze / 2 + oe * ze,
           scale: 1
         }, ce = this.context.manager.windowManger;
-        ce._appliancePlugin ? await ce._appliancePlugin.screenshotToCanvasAsync(q, Y, Fe, ze, Oe) : this.whiteboardView.screenshotToCanvas(q, Y, Fe, ze, Oe);
+        ce._appliancePlugin ? await ce._appliancePlugin.screenshotToCanvasAsync(q, Y, $e, ze, Oe) : this.whiteboardView.screenshotToCanvas(q, Y, $e, ze, Oe);
         const Ze = U.toDataURL("image/png");
-        Z.addImage(ct, "JPEG", 0, 0, Fe, ze, "", "FAST"), Z.addImage(Ze, "PNG", 0, 0, Fe, ze, "", "FAST"), q.clearRect(0, 0, Fe, ze), Math.ceil((oe + 1) / this.pages.length * 100) < 100 && this.reportProgress(Math.ceil((oe + 1) / this.pages.length * 100), null);
+        Z.addImage(ct, "JPEG", 0, 0, $e, ze, "", "FAST"), Z.addImage(Ze, "PNG", 0, 0, $e, ze, "", "FAST"), q.clearRect(0, 0, $e, ze), Math.ceil((oe + 1) / this.pages.length * 100) < 100 && this.reportProgress(Math.ceil((oe + 1) / this.pages.length * 100), null);
       }
       const le = Z.output("arraybuffer");
       this.reportProgress(100, { pdf: le, title: this.box.title });
@@ -6892,12 +6892,12 @@ function mO() {
   }
   var le = Z.prototype = new se();
   le.constructor = Z, r(le, fe.prototype), le.isPureReactComponent = !0;
-  var oe = { current: null }, ke = Object.prototype.hasOwnProperty, Fe = { key: !0, ref: !0, __self: !0, __source: !0 };
+  var oe = { current: null }, ke = Object.prototype.hasOwnProperty, $e = { key: !0, ref: !0, __self: !0, __source: !0 };
   function ze(D, B, ee) {
     var Ce, ge = {}, it = null, Xe = null;
     if (B != null)
       for (Ce in B.ref !== void 0 && (Xe = B.ref), B.key !== void 0 && (it = "" + B.key), B)
-        ke.call(B, Ce) && !Fe.hasOwnProperty(Ce) && (ge[Ce] = B[Ce]);
+        ke.call(B, Ce) && !$e.hasOwnProperty(Ce) && (ge[Ce] = B[Ce]);
     var Be = arguments.length - 2;
     if (Be === 1)
       ge.children = ee;
@@ -7025,7 +7025,7 @@ function mO() {
       if (B.ref !== void 0 && (it = B.ref, Xe = oe.current), B.key !== void 0 && (ge = "" + B.key), D.type && D.type.defaultProps)
         var Be = D.type.defaultProps;
       for (dt in B)
-        ke.call(B, dt) && !Fe.hasOwnProperty(dt) && (Ce[dt] = B[dt] === void 0 && Be !== void 0 ? Be[dt] : B[dt]);
+        ke.call(B, dt) && !$e.hasOwnProperty(dt) && (Ce[dt] = B[dt] === void 0 && Be !== void 0 ? Be[dt] : B[dt]);
     }
     var dt = arguments.length - 2;
     if (dt === 1)
@@ -7152,7 +7152,7 @@ var tM;
 function yO() {
   return tM || (tM = 1, process.env.NODE_ENV !== "production" && function() {
     var r = Tg(), n = WE(), s = "16.14.0", l = typeof Symbol == "function" && Symbol.for, h = l ? Symbol.for("react.element") : 60103, m = l ? Symbol.for("react.portal") : 60106, w = l ? Symbol.for("react.fragment") : 60107, g = l ? Symbol.for("react.strict_mode") : 60108, S = l ? Symbol.for("react.profiler") : 60114, C = l ? Symbol.for("react.provider") : 60109, I = l ? Symbol.for("react.context") : 60110, A = l ? Symbol.for("react.concurrent_mode") : 60111, z = l ? Symbol.for("react.forward_ref") : 60112, F = l ? Symbol.for("react.suspense") : 60113, U = l ? Symbol.for("react.suspense_list") : 60120, q = l ? Symbol.for("react.memo") : 60115, Y = l ? Symbol.for("react.lazy") : 60116, fe = l ? Symbol.for("react.block") : 60121, se = l ? Symbol.for("react.fundamental") : 60117, Z = l ? Symbol.for("react.responder") : 60118, le = l ? Symbol.for("react.scope") : 60119, oe = typeof Symbol == "function" && Symbol.iterator, ke = "@@iterator";
-    function Fe(M) {
+    function $e(M) {
       if (M === null || typeof M != "object")
         return null;
       var _ = oe && M[oe] || M[ke];
@@ -7546,7 +7546,7 @@ function yO() {
         for (var xn = 0; xn < M.length; xn++)
           je = M[xn], tt = gn + qn(je, xn), Nt += Ir(je, tt, H, X);
       else {
-        var Mn = Fe(M);
+        var Mn = $e(M);
         if (typeof Mn == "function") {
           Mn === M.entries && (tr || Bt("Using Maps as children is deprecated and will be removed in a future major release. Consider converting children to an array of keyed ReactElements instead."), tr = !0);
           for (var ni = Mn.call(M), ii, So = 0; !(ii = ni.next()).done; )
@@ -7843,7 +7843,7 @@ Check the top-level render call using <` + H + ">.");
         else if (Ui(M))
           M._store && (M._store.validated = !0);
         else if (M) {
-          var xe = Fe(M);
+          var xe = $e(M);
           if (typeof xe == "function" && xe !== M.entries)
             for (var Ye = xe.call(M), je; !(je = Ye.next()).done; )
               Ui(je.value) && ti(je.value, _);
@@ -8012,7 +8012,7 @@ function wO() {
         F(se), se = -1;
       };
     }
-    function Fe(re, D) {
+    function $e(re, D) {
       var B = re.length;
       re.push(D);
       e:
@@ -8058,7 +8058,7 @@ function wO() {
         if (D.callback === null)
           G(ie);
         else if (D.startTime <= re)
-          G(ie), D.sortIndex = D.expirationTime, Fe(be, D);
+          G(ie), D.sortIndex = D.expirationTime, $e(be, D);
         else
           break;
         D = ze(ie);
@@ -8164,7 +8164,7 @@ function wO() {
         Ce = typeof Ce == "number" && 0 < Ce ? ee + Ce : ee, B = typeof B.timeout == "number" ? B.timeout : Bt(re);
       } else
         B = Bt(re), Ce = ee;
-      return B = Ce + B, re = { id: ct++, callback: D, priorityLevel: re, startTime: Ce, expirationTime: B, sortIndex: -1 }, Ce > ee ? (re.sortIndex = Ce, Fe(ie, re), ze(be) === null && re === ze(ie) && (Ue ? l() : Ue = !0, s(Qe, Ce - ee))) : (re.sortIndex = B, Fe(be, re), Se || Ze || (Se = !0, n(Tt))), re;
+      return B = Ce + B, re = { id: ct++, callback: D, priorityLevel: re, startTime: Ce, expirationTime: B, sortIndex: -1 }, Ce > ee ? (re.sortIndex = Ce, $e(ie, re), ze(be) === null && re === ze(ie) && (Ue ? l() : Ue = !0, s(Qe, Ce - ee))) : (re.sortIndex = B, $e(be, re), Se || Ze || (Se = !0, n(Tt))), re;
     }, r.unstable_shouldYield = function() {
       var re = r.unstable_now();
       Re(re);
@@ -8236,9 +8236,9 @@ function bO() {
             return F.now() - se;
           };
         }
-        var Z = !1, le = null, oe = -1, ke = 5, Fe = 0;
+        var Z = !1, le = null, oe = -1, ke = 5, $e = 0;
         w = function() {
-          return r.unstable_now() >= Fe;
+          return r.unstable_now() >= $e;
         }, g = function() {
         }, r.unstable_forceFrameRate = function(ne) {
           if (ne < 0 || ne > 125) {
@@ -8250,7 +8250,7 @@ function bO() {
         var ze = function() {
           if (le !== null) {
             var ne = r.unstable_now();
-            Fe = ne + ke;
+            $e = ne + ke;
             var de = !0;
             try {
               var Je = le(de, ne);
@@ -8625,9 +8625,9 @@ function SO() {
   function Z(i, a, c) {
     if (ke[i])
       throw Error(l(100, i));
-    ke[i] = a, Fe[i] = a.eventTypes[c].dependencies;
+    ke[i] = a, $e[i] = a.eventTypes[c].dependencies;
   }
-  var le = [], oe = {}, ke = {}, Fe = {};
+  var le = [], oe = {}, ke = {}, $e = {};
   function ze(i) {
     var a = !1, c;
     for (c in i)
@@ -9614,7 +9614,7 @@ function SO() {
   function ia(i, a) {
     i = i.nodeType === 9 || i.nodeType === 11 ? i : i.ownerDocument;
     var c = Yt(i);
-    a = Fe[a];
+    a = $e[a];
     for (var f = 0; f < a.length; f++)
       M(a[f], i, c);
   }
@@ -10125,7 +10125,7 @@ function SO() {
   var lf = { eventTypes: zr, extractEvents: function(i, a, c, f, v, x) {
     if (v = x || (f.window === f ? f.document : f.nodeType === 9 ? f : f.ownerDocument), !(x = !v)) {
       e: {
-        v = Yt(v), x = Fe.onSelect;
+        v = Yt(v), x = $e.onSelect;
         for (var T = 0; T < x.length; T++)
           if (!v.has(x[T])) {
             v = !1;
@@ -13359,7 +13359,7 @@ function CO() {
           id: s++,
           name: se,
           timestamp: Z
-        }, Fe = r.__interactionsRef.current, ze = new Set(Fe);
+        }, $e = r.__interactionsRef.current, ze = new Set($e);
         ze.add(ke), r.__interactionsRef.current = ze;
         var G = r.__subscriberRef.current, he;
         try {
@@ -13371,7 +13371,7 @@ function CO() {
             try {
               he = le();
             } finally {
-              r.__interactionsRef.current = Fe;
+              r.__interactionsRef.current = $e;
               try {
                 G !== null && G.onWorkStopped(ze, oe);
               } finally {
@@ -13388,7 +13388,7 @@ function CO() {
           ze.__count++;
         });
         var ke = !1;
-        function Fe() {
+        function $e() {
           var ze = r.__interactionsRef.current;
           r.__interactionsRef.current = le, oe = r.__subscriberRef.current;
           try {
@@ -13409,7 +13409,7 @@ function CO() {
             }));
           }
         }
-        return Fe.cancel = function() {
+        return $e.cancel = function() {
           oe = r.__subscriberRef.current;
           try {
             oe !== null && oe.onWorkCanceled(le, Z);
@@ -13418,7 +13418,7 @@ function CO() {
               G.__count--, oe && G.__count === 0 && oe.onInteractionScheduledWorkCompleted(G);
             });
           }
-        }, Fe;
+        }, $e;
       }
       var C = null;
       C = /* @__PURE__ */ new Set();
@@ -13462,8 +13462,8 @@ function CO() {
         if (C.forEach(function(ke) {
           try {
             ke.onWorkScheduled(se, Z);
-          } catch (Fe) {
-            le || (le = !0, oe = Fe);
+          } catch ($e) {
+            le || (le = !0, oe = $e);
           }
         }), le)
           throw oe;
@@ -13473,8 +13473,8 @@ function CO() {
         if (C.forEach(function(ke) {
           try {
             ke.onWorkStarted(se, Z);
-          } catch (Fe) {
-            le || (le = !0, oe = Fe);
+          } catch ($e) {
+            le || (le = !0, oe = $e);
           }
         }), le)
           throw oe;
@@ -13484,8 +13484,8 @@ function CO() {
         if (C.forEach(function(ke) {
           try {
             ke.onWorkStopped(se, Z);
-          } catch (Fe) {
-            le || (le = !0, oe = Fe);
+          } catch ($e) {
+            le || (le = !0, oe = $e);
           }
         }), le)
           throw oe;
@@ -13495,8 +13495,8 @@ function CO() {
         if (C.forEach(function(ke) {
           try {
             ke.onWorkCanceled(se, Z);
-          } catch (Fe) {
-            le || (le = !0, oe = Fe);
+          } catch ($e) {
+            le || (le = !0, oe = $e);
           }
         }), le)
           throw oe;
@@ -13624,9 +13624,9 @@ function MO() {
       } else
         throw Error("clearCaughtError was called but no error was captured. This error is likely caused by a bug in React. Please file an issue.");
     }
-    var Fe = null, ze = null, G = null;
+    var $e = null, ze = null, G = null;
     function he(e, t, o) {
-      Fe = e, ze = t, G = o, (!G || !ze) && g("EventPluginUtils.setComponentTree(...): Injected module is missing getNodeFromInstance or getInstanceFromNode.");
+      $e = e, ze = t, G = o, (!G || !ze) && g("EventPluginUtils.setComponentTree(...): Injected module is missing getNodeFromInstance or getInstanceFromNode.");
     }
     var be;
     be = function(e) {
@@ -13716,7 +13716,7 @@ function MO() {
           throw Error("setRestoreImplementation() needs to be called to handle a target for controlled events. This error is likely caused by a bug in React. Please file an issue.");
         var o = t.stateNode;
         if (o) {
-          var u = Fe(o);
+          var u = $e(o);
           Ea(t.stateNode, t.type, u);
         }
       }
@@ -17285,7 +17285,7 @@ Check the render method of \`` + e + "`." : "";
       var o, u = e.stateNode;
       if (!u)
         return null;
-      var d = Fe(u);
+      var d = $e(u);
       if (!d || (o = d[t], yI(t, e.type, d)))
         return null;
       if (!(!o || typeof o == "function"))
@@ -25058,26 +25058,26 @@ class aL {
     !s || (s.destroy(), this.scrollers = this.scrollers.filter((l) => l.appId != n));
   }
 }
-const sL = new K_({ emitter: et }), qv = "mainView", $e = class extends rN {
+const sL = new K_({ emitter: et }), qv = "mainView", Fe = class extends rN {
   constructor(r) {
-    super(r), this.version = "1.0.39", this.dependencies = { dependencies: { "@juggle/resize-observer": "^3.3.1", "@netless/telebox-insider": "github:veytu/telebox-insider", emittery: "^0.9.2", lodash: "^4.17.21", "p-retry": "^4.6.1", uuid: "^7.0.3", "value-enhancer": "0.0.8", "video.js": ">=7" }, peerDependencies: { jspdf: "2.5.1", "white-web-sdk": "^2.16.52" }, devDependencies: { "@hyrious/dts": "^0.2.2", "@netless/app-docs-viewer": "github:veytu/app-docs-viewer", "@netless/app-media-player": "0.1.0-beta.9", "@rollup/plugin-commonjs": "^20.0.0", "@rollup/plugin-node-resolve": "^13.0.4", "@rollup/plugin-url": "^6.1.0", "@sveltejs/vite-plugin-svelte": "^1.4.0", "@tsconfig/svelte": "^2.0.1", "@types/debug": "^4.1.7", "@types/lodash": "^4.14.182", "@types/lodash-es": "^4.17.4", "@types/uuid": "^8.3.1", "@typescript-eslint/eslint-plugin": "^4.30.0", "@typescript-eslint/parser": "^4.30.0", "@vitest/ui": "^0.14.1", cypress: "^8.7.0", dotenv: "^10.0.0", eslint: "^7.32.0", "eslint-config-prettier": "^8.3.0", "eslint-plugin-svelte3": "^3.2.0", jsdom: "^19.0.0", jspdf: "^2.5.1", less: "^4.1.1", prettier: "^2.3.2", "prettier-plugin-svelte": "^2.4.0", "rollup-plugin-analyzer": "^4.0.0", "rollup-plugin-styles": "^3.14.1", "side-effect-manager": "0.1.5", svelte: "^3.42.4", typescript: "^4.5.5", vite: "^3.0.0", vitest: "^0.14.1", "white-web-sdk": "2.16.52" } }, this.emitter = Dt, this.viewMode = sl.Broadcaster, this.isReplay = lS(this.displayer), this._cursorUIDs = [], this._appReadonly = !1, this.containerSizeRatio = $e.containerSizeRatio, $e.displayer = r.displayer, window.NETLESS_DEPS = { dependencies: { "@juggle/resize-observer": "^3.3.1", "@netless/telebox-insider": "github:veytu/telebox-insider", emittery: "^0.9.2", lodash: "^4.17.21", "p-retry": "^4.6.1", uuid: "^7.0.3", "value-enhancer": "0.0.8", "video.js": ">=7" }, peerDependencies: { jspdf: "2.5.1", "white-web-sdk": "^2.16.52" }, devDependencies: { "@hyrious/dts": "^0.2.2", "@netless/app-docs-viewer": "github:veytu/app-docs-viewer", "@netless/app-media-player": "0.1.0-beta.9", "@rollup/plugin-commonjs": "^20.0.0", "@rollup/plugin-node-resolve": "^13.0.4", "@rollup/plugin-url": "^6.1.0", "@sveltejs/vite-plugin-svelte": "^1.4.0", "@tsconfig/svelte": "^2.0.1", "@types/debug": "^4.1.7", "@types/lodash": "^4.14.182", "@types/lodash-es": "^4.17.4", "@types/uuid": "^8.3.1", "@typescript-eslint/eslint-plugin": "^4.30.0", "@typescript-eslint/parser": "^4.30.0", "@vitest/ui": "^0.14.1", cypress: "^8.7.0", dotenv: "^10.0.0", eslint: "^7.32.0", "eslint-config-prettier": "^8.3.0", "eslint-plugin-svelte3": "^3.2.0", jsdom: "^19.0.0", jspdf: "^2.5.1", less: "^4.1.1", prettier: "^2.3.2", "prettier-plugin-svelte": "^2.4.0", "rollup-plugin-analyzer": "^4.0.0", "rollup-plugin-styles": "^3.14.1", "side-effect-manager": "0.1.5", svelte: "^3.42.4", typescript: "^4.5.5", vite: "^3.0.0", vitest: "^0.14.1", "white-web-sdk": "2.16.52" } };
+    super(r), this.version = "1.0.40", this.dependencies = { dependencies: { "@juggle/resize-observer": "^3.3.1", "@netless/telebox-insider": "github:veytu/telebox-insider", emittery: "^0.9.2", lodash: "^4.17.21", "p-retry": "^4.6.1", uuid: "^7.0.3", "value-enhancer": "0.0.8", "video.js": ">=7" }, peerDependencies: { jspdf: "2.5.1", "white-web-sdk": "^2.16.52" }, devDependencies: { "@hyrious/dts": "^0.2.2", "@netless/app-docs-viewer": "github:veytu/app-docs-viewer", "@netless/app-media-player": "0.1.0-beta.9", "@rollup/plugin-commonjs": "^20.0.0", "@rollup/plugin-node-resolve": "^13.0.4", "@rollup/plugin-url": "^6.1.0", "@sveltejs/vite-plugin-svelte": "^1.4.0", "@tsconfig/svelte": "^2.0.1", "@types/debug": "^4.1.7", "@types/lodash": "^4.14.182", "@types/lodash-es": "^4.17.4", "@types/uuid": "^8.3.1", "@typescript-eslint/eslint-plugin": "^4.30.0", "@typescript-eslint/parser": "^4.30.0", "@vitest/ui": "^0.14.1", cypress: "^8.7.0", dotenv: "^10.0.0", eslint: "^7.32.0", "eslint-config-prettier": "^8.3.0", "eslint-plugin-svelte3": "^3.2.0", jsdom: "^19.0.0", jspdf: "^2.5.1", less: "^4.1.1", prettier: "^2.3.2", "prettier-plugin-svelte": "^2.4.0", "rollup-plugin-analyzer": "^4.0.0", "rollup-plugin-styles": "^3.14.1", "side-effect-manager": "0.1.5", svelte: "^3.42.4", typescript: "^4.5.5", vite: "^3.0.0", vitest: "^0.14.1", "white-web-sdk": "2.16.52" } }, this.emitter = Dt, this.viewMode = sl.Broadcaster, this.isReplay = lS(this.displayer), this._cursorUIDs = [], this._appReadonly = !1, this.containerSizeRatio = Fe.containerSizeRatio, Fe.displayer = r.displayer, window.NETLESS_DEPS = { dependencies: { "@juggle/resize-observer": "^3.3.1", "@netless/telebox-insider": "github:veytu/telebox-insider", emittery: "^0.9.2", lodash: "^4.17.21", "p-retry": "^4.6.1", uuid: "^7.0.3", "value-enhancer": "0.0.8", "video.js": ">=7" }, peerDependencies: { jspdf: "2.5.1", "white-web-sdk": "^2.16.52" }, devDependencies: { "@hyrious/dts": "^0.2.2", "@netless/app-docs-viewer": "github:veytu/app-docs-viewer", "@netless/app-media-player": "0.1.0-beta.9", "@rollup/plugin-commonjs": "^20.0.0", "@rollup/plugin-node-resolve": "^13.0.4", "@rollup/plugin-url": "^6.1.0", "@sveltejs/vite-plugin-svelte": "^1.4.0", "@tsconfig/svelte": "^2.0.1", "@types/debug": "^4.1.7", "@types/lodash": "^4.14.182", "@types/lodash-es": "^4.17.4", "@types/uuid": "^8.3.1", "@typescript-eslint/eslint-plugin": "^4.30.0", "@typescript-eslint/parser": "^4.30.0", "@vitest/ui": "^0.14.1", cypress: "^8.7.0", dotenv: "^10.0.0", eslint: "^7.32.0", "eslint-config-prettier": "^8.3.0", "eslint-plugin-svelte3": "^3.2.0", jsdom: "^19.0.0", jspdf: "^2.5.1", less: "^4.1.1", prettier: "^2.3.2", "prettier-plugin-svelte": "^2.4.0", "rollup-plugin-analyzer": "^4.0.0", "rollup-plugin-styles": "^3.14.1", "side-effect-manager": "0.1.5", svelte: "^3.42.4", typescript: "^4.5.5", vite: "^3.0.0", vitest: "^0.14.1", "white-web-sdk": "2.16.52" } };
   }
   static onCreate(r) {
-    $e._resolve(r);
+    Fe._resolve(r);
   }
   static async mount(r) {
     var w, g, S, C;
     const n = r.room;
-    $e.container = r.container, $e.supportAppliancePlugin = r.supportAppliancePlugin;
+    Fe.container = r.container, Fe.supportAppliancePlugin = r.supportAppliancePlugin;
     const s = r.containerSizeRatio, l = r.debug, h = r.cursor;
-    $e.params = r, $e.displayer = r.room, nk();
+    Fe.params = r, Fe.displayer = r.room, nk();
     let m;
     if (ol(n)) {
       if (n.phase !== ll.Connected)
         throw new Error("[WindowManager]: Room only Connected can be mount");
       n.phase === ll.Connected && n.isWritable && (n.disableSerialization = !1), m = await this.initManager(n);
     }
-    if ($e.isCreated)
+    if (Fe.isCreated)
       throw new Error("[WindowManager]: Already created cannot be created again");
     if (this.debug = Boolean(l), this.debug && YE({ verbose: !0 }), Ca("Already insert room", m), ol(this.displayer)) {
       if (!m)
@@ -25085,19 +25085,19 @@ const sL = new K_({ emitter: et }), qv = "mainView", $e = class extends rN {
     } else
       await yM(
         async (I) => {
-          if (m = n.getInvisiblePlugin($e.kind), !m)
+          if (m = n.getInvisiblePlugin(Fe.kind), !m)
             throw Ca(`manager is empty. retrying ${I}`), new Error();
         },
         { retries: 10, maxTimeout: 5e3 }
       );
     if (!m)
       throw new Error("[WindowManager]: create manager failed");
-    s && ($e.containerSizeRatio = s), await m.ensureAttributes(), m._fullscreen = r.fullscreen, m.appManager = new ek(m), m.appManager.polling = r.polling || !1, m._pageState = new q_(m.appManager), m.cursorManager = new J_(
+    s && (Fe.containerSizeRatio = s), await m.ensureAttributes(), m._fullscreen = r.fullscreen, m.appManager = new ek(m), m.appManager.polling = r.polling || !1, m._pageState = new q_(m.appManager), m.cursorManager = new J_(
       m.appManager,
       Boolean(h),
       r.cursorOptions,
       r.applianceIcons
-    ), m.scrollerManager = new aL({ manager: m }), s && (m.containerSizeRatio = s), r.container && m.bindContainer(r.container), eP(n, m), et.emit("onCreated"), $e.isCreated = !0;
+    ), m.scrollerManager = new aL({ manager: m }), s && (m.containerSizeRatio = s), r.container && m.bindContainer(r.container), eP(n, m), et.emit("onCreated"), Fe.isCreated = !0;
     try {
       await pN();
     } catch (I) {
@@ -25120,9 +25120,9 @@ const sL = new K_({ emitter: et }), qv = "mainView", $e = class extends rN {
   }
   static initContainer(r, n, s) {
     const { chessboard: l, overwriteStyles: h, fullscreen: m } = s;
-    $e.container || ($e.container = n);
+    Fe.container || (Fe.container = n);
     const { playground: w, wrapper: g, sizer: S, mainViewElement: C, mainViewWrapper: I, extendWrapper: A, mainViewScrollWrapper: z } = tk(n);
-    if ($e.playground = w, l && S.classList.add("netless-window-manager-chess-sizer"), m && S.classList.add("netless-window-manager-fullscreen"), h) {
+    if (Fe.playground = w, l && S.classList.add("netless-window-manager-chess-sizer"), m && S.classList.add("netless-window-manager-fullscreen"), h) {
       const F = document.createElement("style");
       F.textContent = h, w.appendChild(F);
     }
@@ -25131,7 +25131,7 @@ const sL = new K_({ emitter: et }), qv = "mainView", $e = class extends rN {
       S,
       g,
       et
-    ), $e.wrapper = g, $e.sizer = S, $e.mainViewWrapper = I, $e.extendWrapper = A, $e.mainViewScrollWrapper = z, C;
+    ), Fe.wrapper = g, Fe.sizer = S, Fe.mainViewWrapper = I, Fe.extendWrapper = A, Fe.mainViewScrollWrapper = z, C;
   }
   static get registered() {
     return qi.registered;
@@ -25140,22 +25140,22 @@ const sL = new K_({ emitter: et }), qv = "mainView", $e = class extends rN {
     var n, s, l, h, m, w, g;
     if (ol(this.displayer) && this.room.phase !== ll.Connected)
       throw new UN();
-    if ($e.isCreated && $e.container)
-      $e.container.firstChild && r.appendChild($e.container.firstChild);
-    else if ($e.params) {
-      const S = $e.params, C = $e.initContainer(this, r, S);
+    if (Fe.isCreated && Fe.container)
+      Fe.container.firstChild && r.appendChild(Fe.container.firstChild);
+    else if (Fe.params) {
+      const S = Fe.params, C = Fe.initContainer(this, r, S);
       this.boxManager && this.boxManager.destroy();
       const I = y_(this, Dt, et, po, {
         collectorContainer: S.collectorContainer,
         collectorStyles: S.collectorStyles,
         prefersColorScheme: S.prefersColorScheme
       });
-      this.boxManager = I, (n = this.appManager) == null || n.setBoxManager(I), $e.mainViewScrollWrapper && ((s = this.scrollerManager) == null || s.add({ appId: qv, scrollElement: $e.mainViewScrollWrapper, manager: this })), this.bindMainView(C, S.disableCameraTransform), $e.wrapper && ((l = this.cursorManager) == null || l.setupWrapper($e.wrapper));
+      this.boxManager = I, (n = this.appManager) == null || n.setBoxManager(I), Fe.mainViewScrollWrapper && ((s = this.scrollerManager) == null || s.add({ appId: qv, scrollElement: Fe.mainViewScrollWrapper, manager: this })), this.bindMainView(C, S.disableCameraTransform), Fe.wrapper && ((l = this.cursorManager) == null || l.setupWrapper(Fe.wrapper));
     }
-    et.emit("updateManagerRect"), (h = this.appManager) == null || h.refresh(), (m = this.appManager) == null || m.resetMaximized(), (w = this.appManager) == null || w.resetMinimized(), (g = this.appManager) == null || g.displayerWritableListener(!this.room.isWritable), $e.container = r;
+    et.emit("updateManagerRect"), (h = this.appManager) == null || h.refresh(), (m = this.appManager) == null || m.resetMaximized(), (w = this.appManager) == null || w.resetMinimized(), (g = this.appManager) == null || g.displayerWritableListener(!this.room.isWritable), Fe.container = r;
   }
   bindCollectorContainer(r) {
-    $e.isCreated && this.boxManager ? this.boxManager.setCollectorContainer(r) : $e.params && ($e.params.collectorContainer = r);
+    Fe.isCreated && this.boxManager ? this.boxManager.setCollectorContainer(r) : Fe.params && (Fe.params.collectorContainer = r);
   }
   static register(r) {
     return qi.register(r);
@@ -25304,7 +25304,7 @@ const sL = new K_({ emitter: et }), qv = "mainView", $e = class extends rN {
   }
   setFullscreen(r) {
     var n;
-    this._fullscreen !== r && (this._fullscreen = r, (n = $e.sizer) == null || n.classList.toggle("netless-window-manager-fullscreen", r), Dt.emit("fullscreenChange", r));
+    this._fullscreen !== r && (this._fullscreen = r, (n = Fe.sizer) == null || n.classList.toggle("netless-window-manager-fullscreen", r), Dt.emit("fullscreenChange", r));
   }
   get cursorUIDs() {
     return this._cursorUIDs;
@@ -25314,7 +25314,7 @@ const sL = new K_({ emitter: et }), qv = "mainView", $e = class extends rN {
     if (this._cursorUIDs = r || [], this._cursorUIDs.length === 0)
       (n = this._cursorUIDsStyleDOM) == null || n.remove();
     else {
-      this._cursorUIDsStyleDOM || (this._cursorUIDsStyleDOM = document.createElement("style")), (s = $e.playground) == null || s.appendChild(this._cursorUIDsStyleDOM);
+      this._cursorUIDsStyleDOM || (this._cursorUIDsStyleDOM = document.createElement("style")), (s = Fe.playground) == null || s.appendChild(this._cursorUIDsStyleDOM);
       let l = "[data-cursor-uid] { display: none }";
       for (const h of this._cursorUIDs)
         l += `
@@ -25459,7 +25459,7 @@ const sL = new K_({ emitter: et }), qv = "mainView", $e = class extends rN {
     return Boolean(this._fullscreen);
   }
   get extendWrapper() {
-    return $e.extendWrapper;
+    return Fe.extendWrapper;
   }
   queryAll() {
     var r;
@@ -25507,7 +25507,7 @@ const sL = new K_({ emitter: et }), qv = "mainView", $e = class extends rN {
   }
   _destroy() {
     var r, n, s, l, h;
-    (r = this.containerResizeObserver) == null || r.disconnect(), (n = this.appManager) == null || n.destroy(), (s = this.cursorManager) == null || s.destroy(), $e.container = void 0, $e.wrapper = void 0, $e.sizer = void 0, $e.isCreated = !1, $e.playground && ((l = $e.playground.parentNode) == null || l.removeChild($e.playground)), $e.params = void 0, (h = this._iframeBridge) == null || h.destroy(), this._iframeBridge = void 0, Ca("Destroyed");
+    (r = this.containerResizeObserver) == null || r.disconnect(), (n = this.appManager) == null || n.destroy(), (s = this.cursorManager) == null || s.destroy(), Fe.container = void 0, Fe.wrapper = void 0, Fe.sizer = void 0, Fe.isCreated = !1, Fe.playground && ((l = Fe.playground.parentNode) == null || l.removeChild(Fe.playground)), Fe.params = void 0, (h = this._iframeBridge) == null || h.destroy(), this._iframeBridge = void 0, Ca("Destroyed");
   }
   bindMainView(r, n) {
     var s;
@@ -25523,7 +25523,8 @@ const sL = new K_({ emitter: et }), qv = "mainView", $e = class extends rN {
     return this.displayer;
   }
   setAppReadonly(r) {
-    this._appReadonly = r;
+    var n;
+    this._appReadonly = r, (n = Fe.mainViewScrollWrapper) == null || n.classList.toggle("netless-window-manager-fancy-scrollbar-readonly", r);
   }
   safeSetAttributes(r) {
     var n;
@@ -25591,14 +25592,14 @@ const sL = new K_({ emitter: et }), qv = "mainView", $e = class extends rN {
   }
   _refresh() {
     var r, n;
-    (r = this.appManager) == null || r.mainViewProxy.rebind(), $e.container && this.bindContainer($e.container), (n = this.appManager) == null || n.refresher.refresh();
+    (r = this.appManager) == null || r.mainViewProxy.rebind(), Fe.container && this.bindContainer(Fe.container), (n = this.appManager) == null || n.refresher.refresh();
   }
   setContainerSizeRatio(r) {
     if (!jb(r) || !(r > 0))
       throw new Error(
         `[WindowManager]: updateContainerSizeRatio error, ratio must be a positive number. but got ${r}`
       );
-    $e.containerSizeRatio = r, this.containerSizeRatio = r, et.emit("containerSizeRatioUpdate", r);
+    Fe.containerSizeRatio = r, this.containerSizeRatio = r, et.emit("containerSizeRatioUpdate", r);
   }
   setScale(r, n) {
     this.room.dispatchMagixEvent("onScaleChange", { appId: r, scale: n });
@@ -25606,8 +25607,8 @@ const sL = new K_({ emitter: et }), qv = "mainView", $e = class extends rN {
   _updateMainViewWrapperSize(r) {
     var h;
     const n = (m) => {
-      !$e.mainViewWrapper || ($e.mainViewWrapper.style.width = `${m.width}px`, $e.mainViewWrapper.style.height = `${m.height}px`);
-    }, s = (h = $e.wrapper) == null ? void 0 : h.getBoundingClientRect();
+      !Fe.mainViewWrapper || (Fe.mainViewWrapper.style.width = `${m.width}px`, Fe.mainViewWrapper.style.height = `${m.height}px`);
+    }, s = (h = Fe.wrapper) == null ? void 0 : h.getBoundingClientRect();
     if (!s)
       return !1;
     const l = r != null ? r : this.getAttributesValue("scale")[qv];
@@ -25671,10 +25672,10 @@ const sL = new K_({ emitter: et }), qv = "mainView", $e = class extends rN {
     this.room.dispatchMagixEvent("onMainViewBackgroundImgChange", ""), this.room.dispatchMagixEvent("onMainViewBackgroundColorChange", r);
   }
   _setBackgroundColor(r) {
-    !$e.mainViewWrapper || ($e.mainViewWrapper.style.backgroundColor = r, this.safeUpdateAttributes(["mainViewBackgroundColor"], r));
+    !Fe.mainViewWrapper || (Fe.mainViewWrapper.style.backgroundColor = r, this.safeUpdateAttributes(["mainViewBackgroundColor"], r));
   }
   _setBackgroundImg(r) {
-    !$e.mainViewWrapper || ($e.mainViewWrapper.style.backgroundImage = `url(${r})`, this.safeUpdateAttributes(["mainViewBackgroundImg"], r));
+    !Fe.mainViewWrapper || (Fe.mainViewWrapper.style.backgroundImage = `url(${r})`, this.safeUpdateAttributes(["mainViewBackgroundImg"], r));
   }
   _initAttribute() {
     if (this.attributes.mainViewBackgroundImg && this._setBackgroundImg(this.attributes.mainViewBackgroundImg), this.attributes.mainViewBackgroundColor && this._setBackgroundColor(this.attributes.mainViewBackgroundColor), this.attributes.scale) {
@@ -25688,7 +25689,7 @@ const sL = new K_({ emitter: et }), qv = "mainView", $e = class extends rN {
     }
   }
 };
-let Wt = $e;
+let Wt = Fe;
 Wt.kind = "WindowManager";
 Wt.debug = !1;
 Wt.containerSizeRatio = dN;

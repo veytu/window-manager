@@ -1060,6 +1060,7 @@ export class WindowManager
 
     public setAppReadonly (readonly: boolean): void {
         this._appReadonly = readonly
+        WindowManager.mainViewScrollWrapper?.classList.toggle('netless-window-manager-fancy-scrollbar-readonly', readonly)
     }
 
     public safeSetAttributes(attributes: any): void {
