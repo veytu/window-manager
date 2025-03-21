@@ -15,7 +15,7 @@ import "../dist/style.css";
 import "./register";
 import "./index.css";
 import { DefaultHotKeys } from "white-web-sdk";
-import { WindowManager, BuiltinApps } from "../src";
+import { WindowManager, BuiltinApps, mainViewField } from "../src";
 import type {WindowManager as WindowManagerType} from '../src'
 
 const sdkToken = "NETLESSSDK_YWs9dEtEY055dDliNFZHRTFkeiZub25jZT02NDdkODY5MC1lOWMyLTExZWYtYmQ2OS01Nzc1NjRkMzRmOTcmcm9sZT0wJnNpZz1iY2U5NmJjM2FiMTcyNDJiOTRmMmQ2M2U2Y2I4ZTk4ZDFlZjBiMjYwYzJkYjAwNjMzNjQ1YjcyMGZhZGQ3OWNh"
@@ -334,7 +334,7 @@ const App = () => {
                     背景色
                 </button>
                 <button className="side-button" onClick={() => {
-                    manager.setScale(manager.getScale() + 0.5)
+                    manager.setScale(mainViewField, manager.getScale()?.[mainViewField] + 0.5)
                     setTimeout(() => {
                         manager.scrollerManager?.moveToCenter()
                     })
@@ -342,10 +342,7 @@ const App = () => {
                     zoomout
                 </button>
                 <button className="side-button" onClick={() => {
-                    manager.setScale(manager.getScale() - 0.5)
-                    setTimeout(() => {
-                        manager.scrollerManager?.moveToCenter()
-                    })
+                    manager.setScale(mainViewField, manager.getScale()?.[mainViewField] - 0.5)
                 }}>
                     zoomin
                 </button>

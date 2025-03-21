@@ -10,7 +10,7 @@ dependencies:
     version: 3.3.1
   '@netless/telebox-insider':
     specifier: github:veytu/telebox-insider
-    version: github.com/veytu/telebox-insider/fa3717001208b683a630957ceaf0c91ae7cce76e
+    version: github.com/veytu/telebox-insider/7c3e540cfb4a72c32fac11c3c7a344a0fd756eb7
   emittery:
     specifier: ^0.9.2
     version: 0.9.2
@@ -5885,8 +5885,8 @@ packages:
       vanilla-lazyload: 17.9.0
     dev: true
 
-  github.com/veytu/telebox-insider/fa3717001208b683a630957ceaf0c91ae7cce76e:
-    resolution: {tarball: https://codeload.github.com/veytu/telebox-insider/tar.gz/fa3717001208b683a630957ceaf0c91ae7cce76e}
+  github.com/veytu/telebox-insider/7c3e540cfb4a72c32fac11c3c7a344a0fd756eb7:
+    resolution: {tarball: https://codeload.github.com/veytu/telebox-insider/tar.gz/7c3e540cfb4a72c32fac11c3c7a344a0fd756eb7}
     name: '@netless/telebox-insider'
-    version: 0.2.38
+    version: 0.2.39
     dev: false
