@@ -31,8 +31,8 @@ export const setupWrapper = (
 
     const mainViewScrollWrapper = document.createElement("div");
 
-    mainViewScrollWrapper.className = `netless-window-manager-wrapper netless-window-manager-fancy-scrollbar ${Boolean(isAndroid() || isIOS()) && 'netless-window-manager-fancy-scrollbar-readonly'}`
-
+    mainViewScrollWrapper.className = "netless-window-manager-wrapper netless-window-manager-fancy-scrollbar"
+    mainViewScrollWrapper.classList.toggle('netless-window-manager-fancy-scrollbar-readonly', Boolean(isAndroid() || isIOS()))
     const mainViewWrapperShadow = document.createElement("div");
     mainViewWrapperShadow.className = "netless-window-manager-main-view-wrapper netless-window-manager-main-view-wrapper-shadow"
 
