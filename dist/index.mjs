@@ -25611,7 +25611,7 @@ const sL = new K_({ emitter: tt }), qv = "mainView", je = class extends rN {
       return !1;
     const o = r != null ? r : this.getAttributesValue("scale")[qv];
     !je.mainViewWrapper || !je.mainViewWrapperShadow || (je.mainViewWrapper.style.width = `${(n == null ? void 0 : n.width) * o}px`, je.mainViewWrapper.style.height = `${(n == null ? void 0 : n.height) * o}px`, je.mainViewWrapperShadow.style.width = `${(n == null ? void 0 : n.width) * o}px`, je.mainViewWrapperShadow.style.height = `${(n == null ? void 0 : n.height) * o}px`, this.moveCamera({
-      animationMode: rp.Continuous,
+      animationMode: rp.Immediately,
       scale: o,
       centerX: 0,
       centerY: 0

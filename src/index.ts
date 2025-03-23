@@ -1178,7 +1178,7 @@ export class WindowManager
         WindowManager.mainViewWrapperShadow.style.height = `${size?.height * currentScale}px`
 
         this.moveCamera({
-            animationMode: AnimationMode.Continuous,
+            animationMode: AnimationMode.Immediately,
             scale: currentScale,
             centerX: 0,
             centerY: 0
