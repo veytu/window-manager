@@ -1,6 +1,6 @@
 {
   "name": "@netless/window-manager",
-  "version": "1.0.58",
+  "version": "1.0.59",
   "description": "Multi-window mode for Netless Whiteboard",
   "author": "l1shen <lishen1635@gmail.com> (https://github.com/l1shen)",
   "license": "MIT",
@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@juggle/resize-observer": "^3.3.1",
+    "@netless/app-plyr": "github:veytu/app-plyr",
     "@netless/telebox-insider": "github:veytu/telebox-insider",
     "emittery": "^0.9.2",
     "lodash": "^4.17.21",

@@ -1206,6 +1206,7 @@ declare class ScrollerManager {
 declare const BuiltinApps: {
     DocsViewer: string;
     MediaPlayer: string;
+    Plyr: string;
 };
 
 type WindowMangerAttributes = {
