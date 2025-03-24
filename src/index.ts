@@ -58,6 +58,7 @@ import { boxEmitter } from "./BoxEmitter";
 import { IframeBridge } from "./View/IframeBridge";
 import { setOptions } from "@netless/app-media-player";
 import { ScrollerManager, ScrollerScrollEventType } from "./ScrollerManager";
+import { isAndroid, isIOS } from "./Utils/environment";
 export * from "./View/IframeBridge";
 
 export type WindowMangerAttributes = {
@@ -1186,7 +1187,7 @@ export class WindowManager
         this.room.disableCameraTransform = true
     }
 
-    private _setScale (data: {appId: string, scale: number}, skipEmit?: boolean): boolean {
+    private _setScale (data: {appId: string, scale: number}, skipEmit?: boolean, skipUpdate?: boolean): boolean {
         const {appId, scale} = data
         if (!isNumber(scale)) return false
         
@@ -1200,8 +1201,9 @@ export class WindowManager
             internalEmitter.emit("onScaleChange", {appId, scale: newScale})
         }
 
-        this.safeUpdateAttributes(["scale"], {...this.getAttributesValue(['scale']), [appId]: newScale})
-
+        if (!skipUpdate && !Boolean(isAndroid() || isIOS())) {
+            this.safeUpdateAttributes(["scale"], {...this.getAttributesValue(['scale']), [appId]: newScale})
+        }
 
         if (appId == mainViewField) {
             this._updateMainViewWrapperSize(newScale)
@@ -1329,10 +1331,7 @@ export class WindowManager
         if (!!this.attributes['scale']) {
             const scaleMap: Record<string, number> = this.attributes['scale']
             Object.keys(scaleMap).forEach(item => {
-                this._setScale({appId: item, scale: scaleMap[item]})
-                setTimeout(() => {
-                    this.scrollerManager?.moveToCenter(item)
-                })
+                this._setScale({appId: item, scale: scaleMap[item]}, false, true)
             })
         }
     }
