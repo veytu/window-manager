@@ -330,7 +330,9 @@ export class WindowManager
             manager?._updateMainViewWrapperSize()
         })
 
-        manager._initAttribute()
+        setTimeout(() => {
+            manager?._initAttribute()
+        })
         return manager;
     }
 
