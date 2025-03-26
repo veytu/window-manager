@@ -1167,12 +1167,11 @@ export class WindowManager
         if (!size) return false
         const currentScale = scale ?? this.getAttributesValue('scale')[mainViewField]
         if (!WindowManager.mainViewWrapper || !WindowManager.mainViewWrapperShadow) return
-        if (!(WindowManager.appReadonly && this.readonly) && !skipEmit) {
+        const skipUpdate = skipEmit || isAndroid() || isIOS() || WindowManager.appReadonly || this.readonly
+        if (!skipUpdate) {
             this.moveCamera({
                 animationMode: AnimationMode.Immediately,
-                scale: currentScale,
-                centerX: 0,
-                centerY: 0
+                scale: currentScale
             })
         }
         
@@ -1184,7 +1183,7 @@ export class WindowManager
         this.room.disableCameraTransform = true
     }
 
-    private _setScale (data: {appId: string, scale: number}, skipEmit?: boolean, skipUpdate?: boolean): boolean {
+    private _setScale (data: {appId: string, scale: number}, skipEmit?: boolean): boolean {
         const {appId, scale} = data
         if (!isNumber(scale)) return false
         
@@ -1193,29 +1192,26 @@ export class WindowManager
         if (newScale < 1) {
             newScale = 1
         }
+        const skipUpdate = skipEmit || isAndroid() || isIOS() || WindowManager.appReadonly || this.readonly
+        internalEmitter.emit("onScaleChange", {appId, scale: newScale})
 
-        if (!skipEmit) {
-            internalEmitter.emit("onScaleChange", {appId, scale: newScale})
-        }
-
-        if (!skipUpdate && !Boolean(isAndroid() || isIOS())) {
+        if (!skipUpdate) {
             this.safeUpdateAttributes(["scale"], {...this.getAttributesValue(['scale']), [appId]: newScale})
         }
 
         if (appId == mainViewField) {
-            this._updateMainViewWrapperSize(newScale)
+            this._updateMainViewWrapperSize(newScale, skipEmit)
         } else {
-            this.appManager?.appProxies.get(appId)?.view?.moveCamera({
-                centerX: 0,
-                centerY: 0,
-                scale,
-                animationMode: AnimationMode.Immediately
-            })
+            if (!skipUpdate) {
+                this.appManager?.appProxies.get(appId)?.view?.moveCamera({
+                    scale,
+                    animationMode: AnimationMode.Immediately
+                })
+            }
+            
         }
 
-        if (newScale != 1) {
-            this.scrollerManager?.moveToCenter(appId)
-        }
+        this.scrollerManager?.moveToCenter(appId)
 
         return true
     }
@@ -1263,6 +1259,10 @@ export class WindowManager
                 this.safeSetAttributes({mainViewBackgroundImg: ''})
             }
             if (!this.attributes['scale']) {
+
+                if (WindowManager.appReadonly || this.readonly) {
+                    return
+                }
                 this.safeSetAttributes({scale: {
                     [mainViewField]: 1
                 }})
@@ -1270,8 +1270,6 @@ export class WindowManager
                 setTimeout(() => {
                     this.moveCamera({
                         scale: 1,
-                        centerX: 0,
-                        centerY: 0,
                         animationMode: AnimationMode.Immediately
                     })
                 })
@@ -1337,7 +1335,7 @@ export class WindowManager
         if (!!this.attributes['scale']) {
             const scaleMap: Record<string, number> = this.attributes['scale']
             Object.keys(scaleMap).forEach(item => {
-                this._setScale({appId: item, scale: scaleMap[item]}, false, true)
+                this._setScale({appId: item, scale: scaleMap[item]}, false)
             })
         }
     }
