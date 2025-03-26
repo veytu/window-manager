@@ -185,6 +185,7 @@ export class WindowManager
     public static containerSizeRatio = DEFAULT_CONTAINER_RATIO;
     public static supportAppliancePlugin?: boolean;
     public static isCreated = false;
+    public static appReadonly: boolean = isAndroid() || isIOS()
     private static _resolve = (_manager: WindowManager) => void 0;
 
     private static extendWrapper?: HTMLElement
@@ -205,7 +206,6 @@ export class WindowManager
     private _fullscreen?: boolean;
     private _cursorUIDs: string[] = [];
     private _cursorUIDsStyleDOM?: HTMLStyleElement;
-    private _appReadonly: boolean = false;
 
     private boxManager?: BoxManager;
     private static params?: MountParams;
@@ -379,6 +379,8 @@ export class WindowManager
         WindowManager.extendWrapper = extendWrapper
         WindowManager.mainViewScrollWrapper = mainViewScrollWrapper
         WindowManager.mainViewWrapperShadow = mainViewWrapperShadow
+
+        WindowManager.mainViewScrollWrapper?.classList.toggle('netless-window-manager-fancy-scrollbar-readonly', WindowManager.appReadonly)
         return mainViewElement;
     }
 
@@ -1050,24 +1052,16 @@ export class WindowManager
         }
     }
 
-    public get appReadonly (): boolean {
-        if (isRoom(this.displayer)) {
-            return (
-                this._appReadonly &&
-                (this.displayer as Room).phase === RoomPhase.Connected
-            );
-        } else {
-            return false;
-        }
-    }
-
     public get room(): Room {
         return this.displayer as Room;
     }
 
+    public get appReadonly () {
+        return WindowManager.appReadonly
+    }
+
     public setAppReadonly (readonly: boolean): void {
-        this._appReadonly = readonly
-        WindowManager.mainViewScrollWrapper?.classList.toggle('netless-window-manager-fancy-scrollbar-readonly', readonly)
+        WindowManager.appReadonly = readonly
     }
 
     public safeSetAttributes(attributes: any): void {
@@ -1173,19 +1167,17 @@ export class WindowManager
         if (!size) return false
         const currentScale = scale ?? this.getAttributesValue('scale')[mainViewField]
         if (!WindowManager.mainViewWrapper || !WindowManager.mainViewWrapperShadow) return
-        WindowManager.mainViewWrapper.style.width = `${size?.width * currentScale}px`
-        WindowManager.mainViewWrapper.style.height = `${size?.height * currentScale}px`
-        // WindowManager.mainViewWrapper.style.transformOrigin = '0 0'
-        // WindowManager.mainViewWrapper.style.transform = `scale(${currentScale})`
-        WindowManager.mainViewWrapperShadow.style.width = `${size?.width * currentScale}px`
-        WindowManager.mainViewWrapperShadow.style.height = `${size?.height * currentScale}px`
-
         this.moveCamera({
             animationMode: AnimationMode.Immediately,
             scale: currentScale,
             centerX: 0,
             centerY: 0
         })
+        WindowManager.mainViewWrapper.style.width = `${size?.width * currentScale}px`
+        WindowManager.mainViewWrapper.style.height = `${size?.height * currentScale}px`
+        WindowManager.mainViewWrapperShadow.style.width = `${size?.width * currentScale}px`
+        WindowManager.mainViewWrapperShadow.style.height = `${size?.height * currentScale}px`
+
         this.room.disableCameraTransform = true
     }
 
@@ -1271,6 +1263,7 @@ export class WindowManager
                 this.safeSetAttributes({scale: {
                     [mainViewField]: 1
                 }})
+                this._setScale({appId: mainViewField, scale: 1})
             }
         }
     }

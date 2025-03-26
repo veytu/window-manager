@@ -268,8 +268,7 @@ export class BoxManager {
             },
             fence: false,
             prefersColorScheme: createTeleBoxManagerConfig?.prefersColorScheme,
-            appReadonly: this.manager.appReadonly
-            
+            appReadonly: WindowManager.appReadonly
         };
 
         const manager = new TeleBoxManager(initManagerState);

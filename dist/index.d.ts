@@ -1317,6 +1317,7 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     static containerSizeRatio: number;
     static supportAppliancePlugin?: boolean;
     static isCreated: boolean;
+    static appReadonly: boolean;
     private static _resolve;
     private static extendWrapper?;
     private static mainViewScrollWrapper?;
@@ -1334,7 +1335,6 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     private _fullscreen?;
     private _cursorUIDs;
     private _cursorUIDsStyleDOM?;
-    private _appReadonly;
     private boxManager?;
     private static params?;
     private containerResizeObserver?;
@@ -1476,8 +1476,8 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     private _destroy;
     private bindMainView;
     get canOperate(): boolean;
-    get appReadonly(): boolean;
     get room(): Room;
+    get appReadonly(): boolean;
     setAppReadonly(readonly: boolean): void;
     safeSetAttributes(attributes: any): void;
     safeUpdateAttributes(keys: string[], value: any): void;
