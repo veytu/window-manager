@@ -89,8 +89,10 @@ class ViewScroller {
     }
 
     private onScroll() {
-        if (this.manager.readonly) return
+        console.log('window manager scroll readonly', this.manager.readonly || WindowManager.appReadonly)
+        if (this.manager.readonly || WindowManager.appReadonly) return
         const {x, y} = this.calcLocalToCoord(this.getLocalCoord())
+
         this.dispatchScrollEvent({x, y})
     }
 
@@ -114,6 +116,9 @@ class ViewScroller {
     }
 
     private setAttribute() {
+        console.log('window manager scroll readonly', this.manager.readonly || WindowManager.appReadonly)
+        if (WindowManager.appReadonly || this.manager.readonly) return;
+
         const currentAttribute = this.manager.getAttributesValue([PageScrollerAttributeField]);
         if (currentAttribute) {
             this.manager.updateAttributes([PageScrollerAttributeField], {
