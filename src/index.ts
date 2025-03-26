@@ -327,7 +327,7 @@ export class WindowManager
         })
 
         internalEmitter.on('playgroundSizeChange', () => {
-            manager?._updateMainViewWrapperSize()
+            manager?._updateMainViewWrapperSize(manager.getAttributesValue('scale')[mainViewField], true)
         })
 
         setTimeout(() => {
@@ -1160,19 +1160,22 @@ export class WindowManager
         this.room.dispatchMagixEvent("onScaleChange", {appId, scale})
     }
 
-    private _updateMainViewWrapperSize (scale?: number) {
+    private _updateMainViewWrapperSize (scale?: number, skipEmit?: boolean) {
 
         const size = WindowManager.originWrapper?.getBoundingClientRect()
 
         if (!size) return false
         const currentScale = scale ?? this.getAttributesValue('scale')[mainViewField]
         if (!WindowManager.mainViewWrapper || !WindowManager.mainViewWrapperShadow) return
-        this.moveCamera({
-            animationMode: AnimationMode.Immediately,
-            scale: currentScale,
-            centerX: 0,
-            centerY: 0
-        })
+        if (!(WindowManager.appReadonly && this.readonly) && !skipEmit) {
+            this.moveCamera({
+                animationMode: AnimationMode.Immediately,
+                scale: currentScale,
+                centerX: 0,
+                centerY: 0
+            })
+        }
+        
         WindowManager.mainViewWrapper.style.width = `${size?.width * currentScale}px`
         WindowManager.mainViewWrapper.style.height = `${size?.height * currentScale}px`
         WindowManager.mainViewWrapperShadow.style.width = `${size?.width * currentScale}px`
