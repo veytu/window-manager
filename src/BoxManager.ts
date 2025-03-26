@@ -329,6 +329,8 @@ export class BoxManager {
                     width: state.width || 0.5,
                     height: state.height || 0.5,
                     zIndex: state.zIndex,
+                    maximized: state.maximized,
+                    minimized: state.minimized
                 },
                 false
             );
