@@ -1193,7 +1193,6 @@ export class WindowManager
             newScale = 1
         }
         const skipUpdate = skipEmit || isAndroid() || isIOS() || WindowManager.appReadonly || this.readonly
-        internalEmitter.emit("onScaleChange", {appId, scale: newScale})
 
         if (!skipUpdate) {
             this.safeUpdateAttributes(["scale"], {...this.getAttributesValue(['scale']), [appId]: newScale})
@@ -1202,6 +1201,7 @@ export class WindowManager
         if (appId == mainViewField) {
             this._updateMainViewWrapperSize(newScale, skipEmit)
         } else {
+            internalEmitter.emit("onScaleChange", {appId, scale: newScale})
             if (!skipUpdate) {
                 this.appManager?.appProxies.get(appId)?.view?.moveCamera({
                     scale,
@@ -1335,7 +1335,7 @@ export class WindowManager
         if (!!this.attributes['scale']) {
             const scaleMap: Record<string, number> = this.attributes['scale']
             Object.keys(scaleMap).forEach(item => {
-                this._setScale({appId: item, scale: scaleMap[item]}, false)
+                this._setScale({appId: item, scale: scaleMap[item]}, true)
             })
         }
     }
