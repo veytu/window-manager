@@ -1263,7 +1263,15 @@ export class WindowManager
                 this.safeSetAttributes({scale: {
                     [mainViewField]: 1
                 }})
-                this._setScale({appId: mainViewField, scale: 1})
+
+                setTimeout(() => {
+                    this.moveCamera({
+                        scale: 1,
+                        centerX: 0,
+                        centerY: 0,
+                        animationMode: AnimationMode.Immediately
+                    })
+                })
             }
         }
     }
