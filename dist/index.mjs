@@ -4298,7 +4298,7 @@ class T_ {
         width: l.width,
         height: l.height
       },
-      fence: !1,
+      fence: !0,
       prefersColorScheme: n == null ? void 0 : n.prefersColorScheme,
       appReadonly: St.appReadonly
     }, m = new x_(h);
