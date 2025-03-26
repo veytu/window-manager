@@ -249,6 +249,8 @@ export class AppProxy implements PageRemoveService {
         if (boxInitState) {
             if (!boxInitState?.x || !boxInitState.y) {
                 this.boxManager?.setBoxInitState(this.id);
+            } else {
+                this.boxManager?.updateBoxState(boxInitState)
             }
         }
     }
