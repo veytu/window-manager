@@ -1168,12 +1168,6 @@ export class WindowManager
         const currentScale = scale ?? this.getAttributesValue('scale')[mainViewField]
         if (!WindowManager.mainViewWrapper || !WindowManager.mainViewWrapperShadow) return
         const skipUpdate = skipEmit || isAndroid() || isIOS() || WindowManager.appReadonly || this.readonly
-        if (!skipUpdate) {
-            this.moveCamera({
-                animationMode: AnimationMode.Immediately,
-                scale: currentScale
-            })
-        }
         
         WindowManager.mainViewWrapper.style.width = `${size?.width * currentScale}px`
         WindowManager.mainViewWrapper.style.height = `${size?.height * currentScale}px`
@@ -1181,6 +1175,12 @@ export class WindowManager
         WindowManager.mainViewWrapperShadow.style.height = `${size?.height * currentScale}px`
 
         this.room.disableCameraTransform = true
+        if (!skipUpdate) {
+            this.moveCamera({
+                animationMode: AnimationMode.Immediately,
+                scale: currentScale
+            })
+        }
     }
 
     private _setScale (data: {appId: string, scale: number}, skipEmit?: boolean): boolean {
@@ -1270,6 +1270,8 @@ export class WindowManager
                 setTimeout(() => {
                     this.moveCamera({
                         scale: 1,
+                        centerX:0,
+                        centerY:0,
                         animationMode: AnimationMode.Immediately
                     })
                 })
