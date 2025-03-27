@@ -1178,7 +1178,9 @@ export class WindowManager
         if (!skipUpdate) {
             this.moveCamera({
                 animationMode: AnimationMode.Immediately,
-                scale: currentScale
+                scale: currentScale,
+                centerX: 0,
+                centerY: 0
             })
         }
     }
@@ -1205,7 +1207,9 @@ export class WindowManager
             if (!skipUpdate) {
                 this.appManager?.appProxies.get(appId)?.view?.moveCamera({
                     scale,
-                    animationMode: AnimationMode.Immediately
+                    animationMode: AnimationMode.Immediately,
+                    centerX: 0,
+                    centerY: 0
                 })
             }
             
@@ -1268,7 +1272,7 @@ export class WindowManager
                 }})
 
                 setTimeout(() => {
-                    console.log(this.camera)
+                    console.log('windowmanager moveCamera', this.camera)
                     // this.moveCamera({
                     //     scale: 1,
                     //     centerX:0,
