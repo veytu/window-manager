@@ -1,7 +1,7 @@
 import { AnimationMode, reaction, ViewMode } from "white-web-sdk";
 import { callbacks } from "../callback";
 import { createView } from "./ViewManager";
-import { debounce, get, isEmpty, isEqual } from "lodash";
+import { clamp, debounce, get, isEmpty, isEqual } from "lodash";
 import { internalEmitter } from "../InternalEmitter";
 import { Fields } from "../AttributesDelegate";
 import { setViewFocusScenePath } from "../Utils/Common";
@@ -287,7 +287,7 @@ export class MainViewProxy {
         if (!isEmpty(camera)) {
             if (isEqual(camera, this.view.camera)) return;
             const { centerX, centerY, scale } = camera;
-            const needScale = scale * (this.scale || 1);
+            const needScale = clamp(Math.round(scale * (this.scale || 1)), 1, 100);
             this.view.moveCamera({
                 centerX: centerX,
                 centerY: centerY,
