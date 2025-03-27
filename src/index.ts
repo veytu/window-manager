@@ -1268,12 +1268,13 @@ export class WindowManager
                 }})
 
                 setTimeout(() => {
-                    this.moveCamera({
-                        scale: 1,
-                        centerX:0,
-                        centerY:0,
-                        animationMode: AnimationMode.Immediately
-                    })
+                    console.log(this.camera)
+                    // this.moveCamera({
+                    //     scale: 1,
+                    //     centerX:0,
+                    //     centerY:0,
+                    //     animationMode: AnimationMode.Immediately
+                    // })
                 })
             }
         }
