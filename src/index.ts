@@ -1167,14 +1167,15 @@ export class WindowManager
         if (!size) return false
         const currentScale = scale ?? this.getAttributesValue('scale')[mainViewField]
         if (!WindowManager.mainViewWrapper || !WindowManager.mainViewWrapperShadow) return
-        const skipUpdate = skipEmit || isAndroid() || isIOS() || WindowManager.appReadonly || this.readonly
         
         if (!WindowManager.mainViewWrapper || !WindowManager.mainViewWrapperShadow) return
-            WindowManager.mainViewWrapper.style.width = `${size?.width * currentScale}px`
-            WindowManager.mainViewWrapper.style.height = `${size?.height * currentScale}px`
-            WindowManager.mainViewWrapperShadow.style.width = `${size?.width * currentScale}px`
-            WindowManager.mainViewWrapperShadow.style.height = `${size?.height * currentScale}px`
+
+        WindowManager.mainViewWrapper.style.width = `${size?.width * currentScale}px`
+        WindowManager.mainViewWrapper.style.height = `${size?.height * currentScale}px`
+        WindowManager.mainViewWrapperShadow.style.width = `${size?.width * currentScale}px`
+        WindowManager.mainViewWrapperShadow.style.height = `${size?.height * currentScale}px`
         
+        const skipUpdate = skipEmit || this.readonly || isIOS() || isAndroid()
 
         this.room.disableCameraTransform = true
 
@@ -1182,8 +1183,18 @@ export class WindowManager
             this.appManager?.mainViewProxy.moveCamera({
                 scale: currentScale,
                 centerX: 0,
-                centerY: 0
+                centerY: 0,
             })
+            if (!skipUpdate) {
+                this.appManager?.dispatchInternalEvent(Events.MoveCamera, {
+                    scale: currentScale,
+                    centerX: 0,
+                    centerY: 0,
+                });
+                setTimeout(() => {
+                    this.appManager?.mainViewProxy.setCameraAndSize();
+                }, 500);
+            }
         })
     }
 
