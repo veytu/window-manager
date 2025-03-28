@@ -1180,23 +1180,18 @@ export class WindowManager
         this.room.disableCameraTransform = true
 
         Promise.resolve().then(() => {
-            this.appManager?.mainViewProxy.moveCamera({
-                scale: currentScale,
-                centerX: 0,
-                centerY: 0,
-            })
             if (!skipUpdate) {
+                this.appManager?.mainViewProxy.moveCamera({
+                    scale: currentScale,
+                    centerX: 0,
+                    centerY: 0,
+                })
                 this.appManager?.dispatchInternalEvent(Events.MoveCamera, {
                     scale: currentScale,
                     centerX: 0,
                     centerY: 0,
                     animationMode: AnimationMode.Immediately,
                 });
-                setTimeout(() => {
-                    const camera = { ...this.mainView.camera, scale: currentScale, id: this.appManager?.uid! };
-                    const size = { ...this.mainView.size, id: this.appManager?.uid! };
-                    this.appManager?.mainViewProxy.setMainViewCameraAndSize(camera, size)
-                }, 500);
             }
         })
     }
