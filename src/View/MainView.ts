@@ -287,7 +287,7 @@ export class MainViewProxy {
         if (!isEmpty(camera)) {
             if (isEqual(camera, this.view.camera)) return;
             const { centerX, centerY, scale } = camera;
-            const needScale = clamp(Math.round(scale * (this.scale || 1)), 1, 100);
+            const needScale = scale * (this.scale || 1)
             this.view.moveCamera({
                 centerX: centerX,
                 centerY: centerY,

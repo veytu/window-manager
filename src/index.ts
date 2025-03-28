@@ -1176,11 +1176,13 @@ export class WindowManager
 
         this.room.disableCameraTransform = true
         if (!skipUpdate) {
-            this.moveCamera({
-                animationMode: AnimationMode.Immediately,
-                scale: currentScale,
-                centerX: 0,
-                centerY: 0
+            setTimeout(() => {
+                this.moveCamera({
+                    animationMode: AnimationMode.Immediately,
+                    scale: currentScale,
+                    centerX: 0,
+                    centerY: 0
+                })
             })
         }
     }
@@ -1205,11 +1207,13 @@ export class WindowManager
         } else {
             internalEmitter.emit("onScaleChange", {appId, scale: newScale})
             if (!skipUpdate) {
-                this.appManager?.appProxies.get(appId)?.view?.moveCamera({
-                    scale,
-                    animationMode: AnimationMode.Immediately,
-                    centerX: 0,
-                    centerY: 0
+                setTimeout(() => {
+                    this.appManager?.appProxies.get(appId)?.view?.moveCamera({
+                        scale,
+                        animationMode: AnimationMode.Immediately,
+                        centerX: 0,
+                        centerY: 0
+                    })
                 })
             }
             
@@ -1270,16 +1274,6 @@ export class WindowManager
                 this.safeSetAttributes({scale: {
                     [mainViewField]: 1
                 }})
-
-                setTimeout(() => {
-                    console.log('windowmanager moveCamera', this.camera)
-                    // this.moveCamera({
-                    //     scale: 1,
-                    //     centerX:0,
-                    //     centerY:0,
-                    //     animationMode: AnimationMode.Immediately
-                    // })
-                })
             }
         }
     }

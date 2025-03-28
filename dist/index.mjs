@@ -1,17 +1,17 @@
 import MM from "p-retry";
 import _d from "emittery";
-import { debounce as Ta, isEqual as og, omit as fS, isObject as xa, has as Wb, get as wn, size as tN, mapValues as nN, noop as EM, pick as iN, isEmpty as Kh, clamp as rN, isInteger as aN, orderBy as sN, isFunction as xd, isString as uT, isNumber as Fb, isNull as oN } from "lodash";
-import { ScenePathType as tg, UpdateEventKind as IM, listenUpdated as lg, unlistenUpdated as hS, reaction as wg, autorun as xs, toJS as lN, listenDisposed as uN, unlistenDisposed as cN, ViewMode as sl, AnimationMode as op, isPlayer as pS, isRoom as Du, WhiteVersion as dN, ApplianceNames as Dn, RoomPhase as Nu, PlayerPhase as cT, InvisiblePlugin as fN } from "white-web-sdk";
-import { v4 as hN } from "uuid";
-import { ResizeObserver as pN } from "@juggle/resize-observer";
+import { debounce as Ta, isEqual as og, omit as fS, isObject as xa, has as Wb, get as wn, size as tN, mapValues as nN, noop as EM, pick as iN, isEmpty as Kh, isInteger as rN, orderBy as aN, isFunction as xd, isString as uT, isNumber as Fb, isNull as sN } from "lodash";
+import { ScenePathType as tg, UpdateEventKind as IM, listenUpdated as lg, unlistenUpdated as hS, reaction as wg, autorun as xs, toJS as oN, listenDisposed as lN, unlistenDisposed as uN, ViewMode as sl, AnimationMode as op, isPlayer as pS, isRoom as Du, WhiteVersion as cN, ApplianceNames as Dn, RoomPhase as Nu, PlayerPhase as cT, InvisiblePlugin as dN } from "white-web-sdk";
+import { v4 as fN } from "uuid";
+import { ResizeObserver as hN } from "@juggle/resize-observer";
 import dT from "video.js";
 import $b from "@netless/app-plyr";
-import { createSideEffectBinder as mN, withValueEnhancer as vN } from "value-enhancer";
+import { createSideEffectBinder as pN, withValueEnhancer as mN } from "value-enhancer";
 var Xt = /* @__PURE__ */ ((r) => (r.AppMove = "AppMove", r.AppFocus = "AppFocus", r.AppResize = "AppResize", r.AppBoxStateChange = "AppBoxStateChange", r.GetAttributes = "GetAttributes", r.UpdateWindowManagerWrapper = "UpdateWindowManagerWrapper", r.InitReplay = "InitReplay", r.WindowCreated = "WindowCreated", r.SetMainViewScenePath = "SetMainViewScenePath", r.SetMainViewSceneIndex = "SetMainViewSceneIndex", r.SetAppFocusIndex = "SetAppFocusIndex", r.SwitchViewsToFreedom = "SwitchViewsToFreedom", r.MoveCamera = "MoveCamera", r.MoveCameraToContain = "MoveCameraToContain", r.CursorMove = "CursorMove", r.RootDirRemoved = "RootDirRemoved", r.Refresh = "Refresh", r.InitMainViewCamera = "InitMainViewCamera", r))(Xt || {});
 const Qb = "__WindowManger", yb = "__WindowMangerEnsureReconnected__";
 var Ji = /* @__PURE__ */ ((r) => (r.Size = "size", r.Position = "position", r.SceneIndex = "SceneIndex", r.ZIndex = "zIndex", r))(Ji || {}), AM = /* @__PURE__ */ ((r) => (r.setBoxSize = "setBoxSize", r.setBoxMinSize = "setBoxMinSize", r.destroy = "destroy", r))(AM || {}), Zb = /* @__PURE__ */ ((r) => (r.StartCreate = "StartCreate", r))(Zb || {}), Yb = /* @__PURE__ */ ((r) => (r.Leave = "leave", r.Normal = "normal", r))(Yb || {});
-const fT = "2.16.1", gN = 340 / 720, yN = 340 / 720, wN = 9 / 16, Tr = "/", RM = "/init", DM = 200, Nt = new _d();
-class bN {
+const fT = "2.16.1", vN = 340 / 720, gN = 340 / 720, yN = 9 / 16, Tr = "/", RM = "/init", DM = 200, Nt = new _d();
+class wN {
   constructor() {
     this.list = [], this.isEmit = !1, this.invoked = () => {
       this.currentInvoker = void 0, this.list.length === 0 && (this.clear(), this.emitReady());
@@ -49,17 +49,17 @@ class bN {
     this.timer && this.clear();
   }
 }
-const tt = new _d(), SN = "__WindowManagerAppCache";
+const tt = new _d(), bN = "__WindowManagerAppCache";
 let lp, hT;
-const xN = async () => {
-  lp = await MN();
-}, CN = (r, n) => {
+const SN = async () => {
+  lp = await TN();
+}, xN = (r, n) => {
   if (!!lp)
-    return IN(lp, { kind: r, sourceCode: n });
-}, TN = async (r) => lp ? await EN(lp, r) : null;
-function MN() {
+    return EN(lp, { kind: r, sourceCode: n });
+}, CN = async (r) => lp ? await MN(lp, r) : null;
+function TN() {
   return new Promise((r, n) => {
-    const a = indexedDB.open(SN, 2);
+    const a = indexedDB.open(bN, 2);
     a.onerror = (l) => {
       n(l);
     }, a.onupgradeneeded = (l) => {
@@ -71,7 +71,7 @@ function MN() {
     };
   });
 }
-function EN(r, n) {
+function MN(r, n) {
   return new Promise((a, l) => {
     const m = r.transaction(["apps"]).objectStore("apps").index("kind").get(n);
     m.onerror = (w) => l(w), m.onsuccess = () => {
@@ -79,36 +79,36 @@ function EN(r, n) {
     };
   });
 }
-function IN(r, n) {
+function EN(r, n) {
   return new Promise((a, l) => {
     const h = r.transaction(["apps"], "readwrite").objectStore("apps").add(n);
     h.onsuccess = () => a(), h.onerror = () => l();
   });
 }
-const AN = "NetlessApp", RN = 1e4, DN = async (r) => {
-  const n = await TN(r);
+const IN = "NetlessApp", AN = 1e4, RN = async (r) => {
+  const n = await CN(r);
   if (n)
     return n.sourceCode;
   {
-    const l = await (await _N(r, { timeout: RN })).text();
-    return await CN(r, l), l;
+    const l = await (await kN(r, { timeout: AN })).text();
+    return await xN(r, l), l;
   }
 }, pT = (r, n) => {
   let a = Function(r + `
 ;return ${n}`)();
   return typeof a > "u" && (a = window[n]), a;
-}, NN = async (r, n, a) => {
-  const l = a || AN + n;
+}, DN = async (r, n, a) => {
+  const l = a || IN + n;
   Nt.emit("loadApp", { kind: n, status: "start" });
   let h;
   try {
-    if (h = await DN(r), !h || h.length === 0)
+    if (h = await RN(r), !h || h.length === 0)
       throw Nt.emit("loadApp", { kind: n, status: "failed", reason: "script is empty." }), new Error("[WindowManager]: script is empty.");
   } catch (m) {
     throw Nt.emit("loadApp", { kind: n, status: "failed", reason: m.message }), m;
   }
-  return kN(h, l, n);
-}, kN = (r, n, a) => {
+  return NN(h, l, n);
+}, NN = (r, n, a) => {
   try {
     const l = pT(r, n);
     return Nt.emit("loadApp", { kind: a, status: "success" }), l;
@@ -122,7 +122,7 @@ const AN = "NetlessApp", RN = 1e4, DN = async (r) => {
     throw Nt.emit("loadApp", { kind: a, status: "failed", reason: l.message }), l;
   }
 };
-async function _N(r, n) {
+async function kN(r, n) {
   const { timeout: a = 1e4 } = n, l = new AbortController(), h = setTimeout(() => l.abort(), a), m = await fetch(r, {
     ...n,
     signal: l.signal,
@@ -132,7 +132,7 @@ async function _N(r, n) {
   });
   return clearTimeout(h), m;
 }
-class PN {
+class _N {
   constructor() {
     this.kindEmitters = /* @__PURE__ */ new Map(), this.registered = /* @__PURE__ */ new Map(), this.appClassesCache = /* @__PURE__ */ new Map(), this.appClasses = /* @__PURE__ */ new Map(), this.syncRegisterApp = null, this.onSyncRegisterAppChange = (n) => {
       this.register({ kind: n.kind, src: n.src });
@@ -146,7 +146,7 @@ class PN {
     const a = n.src;
     let l;
     if (typeof a == "string" && (l = async () => {
-      const h = await NN(a, n.kind, n.name);
+      const h = await DN(a, n.kind, n.name);
       return h.__esModule ? h.default : h;
     }, this.syncRegisterApp && this.syncRegisterApp({ kind: n.kind, src: a, name: n.name })), typeof a == "function" && (l = async () => {
       let h = await a();
@@ -178,10 +178,10 @@ class PN {
     return this.kindEmitters.get(n);
   }
 }
-const qi = new PN(), zN = async (r) => {
+const qi = new _N(), PN = async (r) => {
   var a, l;
   const n = await ((a = qi.appClasses.get(r)) == null ? void 0 : a());
-  return n && ((l = n.config) == null ? void 0 : l.singleton) ? r : `${r}-${hN().replace("-", "").slice(0, 8)}`;
+  return n && ((l = n.config) == null ? void 0 : l.singleton) ? r : `${r}-${fN().replace("-", "").slice(0, 8)}`;
 }, Pu = (r, n) => {
   if (r.focusScenePath !== n)
     return r.focusScenePath = n, r;
@@ -190,7 +190,7 @@ const qi = new PN(), zN = async (r) => {
     const a = n === "/" ? "" : n;
     r.setScenePath(a);
   }
-}, ON = (r, n, a) => {
+}, zN = (r, n, a) => {
   var l;
   if (r && n) {
     const m = (l = Ad(r)[n]) == null ? void 0 : l[a];
@@ -199,7 +199,7 @@ const qi = new PN(), zN = async (r) => {
   }
 }, Xb = (r, n, a) => {
   r && r.scenePathType(n) !== tg.None && r.removeScenes(n, a);
-}, LN = (r, n) => {
+}, ON = (r, n) => {
   tt.once(r).then(n);
 };
 Ta(
@@ -208,7 +208,7 @@ Ta(
   },
   200
 );
-const BN = (r, n, a = 0) => {
+const LN = (r, n, a = 0) => {
   const l = Ad(r)[n];
   if (!l)
     return;
@@ -223,16 +223,16 @@ const BN = (r, n, a = 0) => {
     if ((h = a[m].name) != null && h.includes("/"))
       throw new Error("scenes name can not have '/'");
   return r == null ? void 0 : r.putScenes(n, a, l);
-}, jN = (r) => r.startsWith("/"), wb = (r) => {
+}, BN = (r) => r.startsWith("/"), wb = (r) => {
   const n = r.split("/");
   n.pop();
   let a = n.join("/");
   return a === "" && (a = "/"), a;
-}, VN = (r) => r.endsWith("/") ? r.slice(0, -1) : r, mT = (r) => {
+}, jN = (r) => r.endsWith("/") ? r.slice(0, -1) : r, mT = (r) => {
   const n = r.split(".").map((a) => a.padStart(2, "0")).join("");
   return parseInt(n);
-}, NM = (r) => new Promise((n) => setTimeout(n, r)), UN = (r) => r.split("").reduce((a, l) => (l === Tr && (a += 1), a), 0) === 1;
-class HN {
+}, NM = (r) => new Promise((n) => setTimeout(n, r)), VN = (r) => r.split("").reduce((a, l) => (l === Tr && (a += 1), a), 0) === 1;
+class UN {
   constructor(n) {
     this.manager = n, this.displayer = this.manager.displayer, this.mainMagixEventListener = (a) => {
       if (a.authorId !== this.displayer.observerId) {
@@ -325,12 +325,12 @@ class HN {
     this.displayer.removeMagixEventListener(Qb, this.mainMagixEventListener);
   }
 }
-class WN extends Error {
+class HN extends Error {
   constructor() {
     super(...arguments), this.message = "[WindowManager]: app duplicate exists and cannot be created again";
   }
 }
-class xL extends Error {
+class SL extends Error {
   constructor(n) {
     super(`[WindowManager]: app ${n} need register or provide src`);
   }
@@ -340,39 +340,39 @@ class vs extends Error {
     super(...arguments), this.message = "[WindowManager]: AppManager must be initialized";
   }
 }
-class FN extends Error {
+class WN extends Error {
   constructor(n) {
     super(`[WindowManager]: white-web-sdk version must large than ${n}`);
   }
 }
-class $N extends Error {
+class FN extends Error {
   constructor() {
     super(...arguments), this.message = "[WindowManager]: kind must be a valid string";
   }
 }
-class QN extends Error {
+class $N extends Error {
   constructor() {
     super(...arguments), this.message = "[WindowManager]: box need created";
   }
 }
-class ZN extends Error {
+class QN extends Error {
   constructor() {
     super(...arguments), this.message = '[WindowManager]: ScenePath should start with "/"';
   }
 }
-class YN extends Error {
+class ZN extends Error {
   constructor() {
     super(...arguments), this.message = "[WindowManager]: boxManager not found";
   }
 }
-class GN extends Error {
+class YN extends Error {
   constructor() {
     super(...arguments), this.message = "[WindowManager]: room phase only Connected can be bindContainer";
   }
 }
-const kM = "!#%()*+,-./:;=?@[]^_`{|}~ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", XN = kM.length, vT = Array(20), Cd = () => {
+const kM = "!#%()*+,-./:;=?@[]^_`{|}~ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", GN = kM.length, vT = Array(20), Cd = () => {
   for (let r = 0; r < 20; r++)
-    vT[r] = kM.charAt(Math.random() * XN);
+    vT[r] = kM.charAt(Math.random() * GN);
   return vT.join("");
 };
 class Pd {
@@ -456,9 +456,9 @@ const _M = (r) => (n, a) => {
   return () => {
     l == null || l(), h();
   };
-}, JN = _M(IM.Removed);
+}, XN = _M(IM.Removed);
 _M(IM.Inserted);
-class qN {
+class JN {
   constructor() {
     this.listeners = /* @__PURE__ */ new Set();
   }
@@ -479,13 +479,13 @@ const bb = Object.keys;
 function gT(r) {
   return Boolean(Wb(r, "__isRef"));
 }
-function KN(r) {
+function qN(r) {
   return { k: Cd(), v: r, __isRef: !0 };
 }
 const ba = "_WM-STORAGE_";
 class yT {
   constructor(n, a, l) {
-    if (this._sideEffect = new Pd(), this._destroyed = !1, this._refMap = /* @__PURE__ */ new WeakMap(), this._lastValue = /* @__PURE__ */ new Map(), this.onStateChanged = new qN(), l && !xa(l))
+    if (this._sideEffect = new Pd(), this._destroyed = !1, this._refMap = /* @__PURE__ */ new WeakMap(), this._lastValue = /* @__PURE__ */ new Map(), this.onStateChanged = new JN(), l && !xa(l))
       throw new Error(`Default state for Storage ${a} is not an object.`);
     this._context = n, this.id = a || null, this._state = {};
     const h = this._getRawState(this._state);
@@ -539,7 +539,7 @@ class yT {
           let m = h;
           if (xa(h)) {
             let w = this._refMap.get(h);
-            w || (w = KN(h), this._refMap.set(h, w)), m = w;
+            w || (w = qN(h), this._refMap.set(h, w)), m = w;
           }
           this._setRawState(l, m);
         }
@@ -624,17 +624,17 @@ class yT {
     }
   }
 }
-class ek {
+class KN {
   constructor(n, a, l, h, m) {
     this.manager = n, this.boxManager = a, this.appId = l, this.appProxy = h, this.appOptions = m, this.mobxUtils = {
       autorun: xs,
       reaction: wg,
-      toJS: lN
+      toJS: oN
     }, this.objectUtils = {
       listenUpdated: lg,
       unlistenUpdated: hS,
-      listenDisposed: uN,
-      unlistenDisposed: cN
+      listenDisposed: lN,
+      unlistenDisposed: uN
     }, this.store = this.manager.store, this.isReplay = this.manager.isReplay, this.getDisplayer = () => this.manager.displayer, this.getAttributes = () => this.appProxy.attributes, this.getScenes = () => {
       const w = this.store.getAppAttributes(this.appId);
       return w != null && w.isDynamicPPT ? this.appProxy.scenes : w == null ? void 0 : w.options.scenes;
@@ -648,7 +648,7 @@ class ek {
       const w = this.boxManager.getBox(this.appId);
       if (w)
         return w;
-      throw new QN();
+      throw new $N();
     }, this.getRoom = () => this.manager.room, this.setAttributes = (w) => {
       this.manager.safeSetAttributes({ [this.appId]: w });
     }, this.updateAttributes = (w, g) => {
@@ -717,7 +717,7 @@ class ek {
     return this.manager.extendWrapper;
   }
 }
-class tk {
+class ek {
   constructor(n) {
     this.params = n, this.sceneNode = null, this.onSceneChange = (h) => {
       this.sceneNode = h, this.params.notifyPageStateChange();
@@ -750,7 +750,7 @@ class tk {
   }
 }
 var xi = /* @__PURE__ */ ((r) => (r.Apps = "apps", r.Focus = "focus", r.State = "state", r.BoxState = "boxState", r.MainViewCamera = "mainViewCamera", r.MainViewSize = "mainViewSize", r.Broadcaster = "broadcaster", r.Cursors = "cursors", r.Position = "position", r.CursorState = "cursorState", r.FullPath = "fullPath", r.Registered = "registered", r.IframeBridge = "iframeBridge", r))(xi || {});
-class nk {
+class tk {
   constructor(n) {
     this.context = n, this.setAppFocus = (a, l) => {
       l ? this.context.safeSetAttributes({ focus: a }) : this.context.safeSetAttributes({ focus: void 0 });
@@ -870,7 +870,7 @@ class nk {
     }
   }
 }
-const ik = new nk({
+const nk = new tk({
   getAttributes: () => {
     throw new Error("getAttributes not implemented");
   },
@@ -916,7 +916,7 @@ class mS {
       this.view && w && w !== ((g = this.view) == null ? void 0 : g.focusScenePath) && (Pu(this.view, w), Nt.emit("onAppScenePathChange", { appId: this.id, view: this.view }));
     }, 50), this.notifyPageStateChange = Ta(() => {
       this.appEmitter.emit("pageStateChange", this.pageState);
-    }, 50), this.kind = n.kind, this.id = l, this.stateKey = `${this.id}_state`, this.appProxies.set(this.id, this), this.appEmitter = new _d(), this.appListener = this.makeAppEventListener(this.id), this.isAddApp = h, this.initScenes(), (m = this.params.options) != null && m.scenePath && this.createView(), this._pageState = new tk({
+    }, 50), this.kind = n.kind, this.id = l, this.stateKey = `${this.id}_state`, this.appProxies.set(this.id, this), this.appEmitter = new _d(), this.appListener = this.makeAppEventListener(this.id), this.isAddApp = h, this.initScenes(), (m = this.params.options) != null && m.scenePath && this.createView(), this._pageState = new ek({
       displayer: this.manager.displayer,
       scenePath: this.scenePath,
       view: this.view,
@@ -950,7 +950,7 @@ class mS {
       return wn(this.appAttributes, [xi.FullPath]) || this.getFullScenePathFromScenes();
   }
   getFullScenePathFromScenes() {
-    const n = wn(this.appAttributes, ["state", "SceneIndex"], 0), a = ON(this.manager.room, this.scenePath, n);
+    const n = wn(this.appAttributes, ["state", "SceneIndex"], 0), a = zN(this.manager.room, this.scenePath, n);
     return a && this.setFullPath(a), a;
   }
   setFullPath(n) {
@@ -984,8 +984,8 @@ class mS {
   async setupApp(n, a, l, h, m) {
     var g;
     if (Ca("setupApp", n, l, h), !this.boxManager)
-      throw new YN();
-    const w = new ek(this.manager, this.boxManager, n, this, m);
+      throw new ZN();
+    const w = new KN(this.manager, this.boxManager, n, this, m);
     this.appContext = w;
     try {
       tt.once(`${n}${Xt.WindowCreated}`).then(async () => {
@@ -1164,7 +1164,7 @@ class mS {
     return this.destroy(!0, !0, !1);
   }
 }
-class rk {
+class ik {
   constructor(n) {
     this.displayer = n, this.views = /* @__PURE__ */ new Map();
   }
@@ -1200,14 +1200,14 @@ class rk {
 }
 const OM = (r) => {
   const n = r.views.createView();
-  return ak(n), n;
-}, ak = (r) => {
+  return rk(n), n;
+}, rk = (r) => {
   r.setCameraBound({
     maxContentMode: () => 10,
     minContentMode: () => 0.1
   });
 };
-class sk {
+class ak {
   constructor(n) {
     this.manager = n, this.polling = !1, this.started = !1, this.mainViewIsAddListener = !1, this.store = this.manager.store, this.viewMode = this.manager.windowManger.viewMode, this.sideEffectManager = new Pd(), this.syncCamera = () => {
       if (!this.polling || this.viewMode !== sl.Broadcaster)
@@ -1333,7 +1333,7 @@ class sk {
     if (!Kh(n)) {
       if (og(n, this.view.camera))
         return;
-      const { centerX: a, centerY: l, scale: h } = n, m = rN(Math.round(h * (this.scale || 1)), 1, 100);
+      const { centerX: a, centerY: l, scale: h } = n, m = h * (this.scale || 1);
       this.view.moveCamera({
         centerX: a,
         centerY: l,
@@ -1349,7 +1349,7 @@ class sk {
     this.removeMainViewListener(), this.stop(), this.sideEffectManager.flushAll();
   }
 }
-class ok {
+class sk {
   constructor(n) {
     this.context = n, this.addRedoUndoListeners = (a) => {
       if (a === void 0)
@@ -1395,16 +1395,16 @@ class ok {
     this.disposePrevFocusViewRedoUndoListeners(this.context.focus());
   }
 }
-class lk {
+class ok {
   constructor(n) {
-    this.windowManger = n, this.appProxies = /* @__PURE__ */ new Map(), this.appStatus = /* @__PURE__ */ new Map(), this.store = ik, this.isReplay = this.windowManger.isReplay, this.mainViewScenesLength = 0, this.callbacksNode = null, this.appCreateQueue = new bN(), this.sideEffectManager = new Pd(), this.sceneState = null, this.rootDirRemoving = !1, this.onRemoveScenes = async (a) => {
+    this.windowManger = n, this.appProxies = /* @__PURE__ */ new Map(), this.appStatus = /* @__PURE__ */ new Map(), this.store = nk, this.isReplay = this.windowManger.isReplay, this.mainViewScenesLength = 0, this.callbacksNode = null, this.appCreateQueue = new wN(), this.sideEffectManager = new Pd(), this.sceneState = null, this.rootDirRemoving = !1, this.onRemoveScenes = async (a) => {
       var h, m;
       const { scenePath: l } = a;
       if (l === Tr) {
         await this.onRootDirRemoved(), this.dispatchInternalEvent(Xt.RootDirRemoved);
         return;
       }
-      if (UN(l)) {
+      if (VN(l)) {
         let w = this.mainView.focusSceneIndex || 0, g = (h = this.callbacksNode) == null ? void 0 : h.scenes[w];
         g || (w = 0, g = (m = this.callbacksNode) == null ? void 0 : m.scenes[w]), g && this.setMainViewScenePath(`${Tr}${g}`), await this.setMainViewSceneIndex(w);
       } else
@@ -1487,7 +1487,7 @@ class lk {
         }
       ));
     }, this.addAppCloseListener = () => {
-      this.refresher.add("appsClose", () => JN(this.attributes.apps, () => {
+      this.refresher.add("appsClose", () => XN(this.attributes.apps, () => {
         this.onAppDelete(this.attributes.apps);
       }));
     }, this.onMainViewIndexChange = (a) => {
@@ -1536,7 +1536,7 @@ class lk {
       const a = this.store.getMainViewScenePath(), l = wb(a), h = Ad(this.displayer)[l];
       if (h.length) {
         const m = a.replace(l, "").replace("/", ""), w = h.findIndex((g) => g.name === m);
-        aN(w) && w >= 0 && this.safeSetAttributes({ _mainSceneIndex: w });
+        rN(w) && w >= 0 && this.safeSetAttributes({ _mainSceneIndex: w });
       }
     }, this.updateRootDirRemoving = (a) => {
       this.rootDirRemoving = a;
@@ -1544,7 +1544,7 @@ class lk {
       getAttributes: () => this.attributes,
       safeSetAttributes: (a) => this.safeSetAttributes(a),
       safeUpdateAttributes: (a, l) => this.safeUpdateAttributes(a, l)
-    }), this.mainViewProxy = new sk(this), this.viewManager = new rk(this.displayer), this.appListeners = new HN(this), this.displayer.callbacks.on(this.eventName, this.displayerStateListener), this.appListeners.addListeners(), this.refresher = fL, this.refresher.setRoom(this.room), this.refresher.setContext({ emitter: tt }), this.sideEffectManager.addDisposer(() => {
+    }), this.mainViewProxy = new ak(this), this.viewManager = new ik(this.displayer), this.appListeners = new UN(this), this.displayer.callbacks.on(this.eventName, this.displayerStateListener), this.appListeners.addListeners(), this.refresher = dL, this.refresher.setRoom(this.room), this.refresher.setContext({ emitter: tt }), this.sideEffectManager.addDisposer(() => {
       var a, l;
       this.appCreateQueue.destroy(), this.mainViewProxy.destroy(), this.refresher.destroy(), this.viewManager.destroy(), (a = this.boxManager) == null || a.destroy(), (l = this.callbacksNode) == null || l.dispose();
     }), tt.once("onCreated").then(() => this.onCreated()), tt.on("onReconnected", () => this.onReconnected()), pS(this.displayer) && (tt.on("seekStart", this.onPlayerSeekStart), tt.on("seek", this.onPlayerSeekDone)), tt.on("removeScenes", this.onRemoveScenes), tt.on("setReadonly", this.onReadonlyChanged), this.createRootDirScenesCallback(), qi.setSyncRegisterApp((a) => {
@@ -1627,7 +1627,7 @@ class lk {
       this.resetScenePath(a);
     }
     this.displayerWritableListener(!((n = this.room) != null && n.isWritable)), this.displayer.callbacks.on("onEnableWriteNowChanged", this.displayerWritableListener), this._prevFocused = this.attributes.focus, this.sideEffectManager.add(() => {
-      const a = new ok({
+      const a = new sk({
         mainView: () => this.mainViewProxy.view,
         focus: () => this.attributes.focus,
         getAppProxy: (l) => this.appProxies.get(l)
@@ -1642,7 +1642,7 @@ class lk {
     if (n && St.container) {
       const a = Object.keys(n);
       a.length === 0 && this.appCreateQueue.emitReady();
-      const h = sN(
+      const h = aN(
         a.map((m) => ({
           id: m,
           createdAt: n[m].createdAt
@@ -1706,7 +1706,7 @@ class lk {
   }
   async beforeAddApp(n, a) {
     var w, g;
-    const l = await zN(n.kind);
+    const l = await PN(n.kind);
     this.appStatus.set(l, Zb.StartCreate);
     const h = (w = n.attributes) != null ? w : {};
     this.safeUpdateAttributes([l], h), this.store.setupAppAttributes(n, l, a);
@@ -1755,7 +1755,7 @@ class lk {
       if (a === tg.Page)
         await this._setMainViewScenePath(n);
       else if (a === tg.Dir) {
-        const h = BN(this.displayer, n);
+        const h = LN(this.displayer, n);
         h && await this._setMainViewScenePath(h);
       }
     }
@@ -1819,7 +1819,7 @@ class lk {
 var TM;
 const tp = (TM = window.navigator) == null ? void 0 : TM.userAgent;
 tp == null || tp.match(/(Edge?)\/(\d+)/);
-const Rd = () => typeof navigator < "u" && typeof window < "u" && /iPad|iPhone|iPod/.test(tp), Dd = () => typeof navigator < "u" && /Android/.test(tp), uk = (r) => {
+const Rd = () => typeof navigator < "u" && typeof window < "u" && /iPad|iPhone|iPod/.test(tp), Dd = () => typeof navigator < "u" && /Android/.test(tp), lk = (r) => {
   const n = document.createElement("div");
   n.className = "netless-window-manager-playground";
   const a = document.createElement("div");
@@ -1836,9 +1836,9 @@ const Rd = () => typeof navigator < "u" && typeof window < "u" && /iPad|iPhone|i
   g.className = "netless-window-manager-main-view";
   const C = document.createElement("div");
   return C.style.display = "none", n.appendChild(a), n.appendChild(C), a.appendChild(l), w.appendChild(g), h.appendChild(m), h.appendChild(w), l.appendChild(h), r.appendChild(n), St.wrapper = l, { playground: n, wrapper: l, sizer: a, mainViewElement: g, mainViewWrapperShadow: m, mainViewWrapper: w, extendWrapper: C, mainViewScrollWrapper: h };
-}, ck = () => {
-  if (mT(dN) < mT(fT))
-    throw new FN(fT);
+}, uk = () => {
+  if (mT(cN) < mT(fT))
+    throw new WN(fT);
 }, Jb = (r, n) => {
   var m;
   const a = (r == null ? void 0 : r.state.roomMembers) || [];
@@ -1846,7 +1846,7 @@ const Rd = () => typeof navigator < "u" && typeof window < "u" && /iPad|iPhone|i
   for (const w of a)
     ((m = w.payload) == null ? void 0 : m.uid) === n && l < w.memberId && (l = w.memberId, h = w);
   return h;
-}, dk = async (r) => {
+}, ck = async (r) => {
   let n = r.getInvisiblePlugin(St.kind);
   if (n)
     return n;
@@ -1855,7 +1855,7 @@ const Rd = () => typeof navigator < "u" && typeof window < "u" && /iPad|iPhone|i
     St._resolve = a = S;
   });
   let h = !1;
-  const m = fk(r);
+  const m = dk(r);
   !r.isWritable && m && (h = !0, await MM(
     async (S) => {
       Ca(`switching to writable (x${S})`), await r.setWritable(!0);
@@ -1870,14 +1870,14 @@ const Rd = () => typeof navigator < "u" && typeof window < "u" && /iPad|iPhone|i
     n = r.getInvisiblePlugin(St.kind), n && (clearTimeout(g), clearTimeout(w), clearInterval(C), a(n), h && r.isWritable && setTimeout(() => r.setWritable(!1).catch(console.warn), 500));
   }, 200);
   return l;
-}, fk = (r) => {
+}, dk = (r) => {
   try {
     const n = atob(r.roomToken.slice(12)), a = n.indexOf("&role=");
     return +n[a + 6] < 2;
   } catch (n) {
     return console.error(n), !1;
   }
-}, hk = window.ResizeObserver || pN;
+}, fk = window.ResizeObserver || hN;
 class vS {
   constructor(n) {
     this.emitter = n;
@@ -1887,7 +1887,7 @@ class vS {
     return m.observePlaygroundSize(n, a, l), m;
   }
   observePlaygroundSize(n, a, l) {
-    this.updateSizer(n.getBoundingClientRect(), a, l), this.containerResizeObserver = new hk((h) => {
+    this.updateSizer(n.getBoundingClientRect(), a, l), this.containerResizeObserver = new fk((h) => {
       var w;
       const m = (w = h[0]) == null ? void 0 : w.contentRect;
       m && (this.updateSizer(m, a, l), this.emitter.emit("playgroundSizeChange", m));
@@ -2056,7 +2056,7 @@ var Sb = 0, BM = typeof window < "u" && window.requestAnimationFrame !== void 0 
   Sb = n + a, setTimeout(function() {
     return r(Sb);
   }, a);
-}, pk = function(r) {
+}, hk = function(r) {
   var n = [], a = [], l = 0, h = !1, m = 0, w = /* @__PURE__ */ new WeakSet(), g = /* @__PURE__ */ new WeakSet(), C = {
     cancel: function(S) {
       var I = a.indexOf(S);
@@ -2078,23 +2078,23 @@ var Sb = 0, BM = typeof window < "u" && window.requestAnimationFrame !== void 0 
     }
   };
   return C;
-}, mk = 40, wT = 1 / 60 * 1e3, ng = !0, cp = !1, qb = !1, Jh = {
+}, pk = 40, wT = 1 / 60 * 1e3, ng = !0, cp = !1, qb = !1, Jh = {
   delta: 0,
   timestamp: 0
-}, yS = ["read", "update", "preRender", "render", "postRender"], vk = function(r) {
+}, yS = ["read", "update", "preRender", "render", "postRender"], mk = function(r) {
   return cp = r;
 }, jM = /* @__PURE__ */ yS.reduce(function(r, n) {
-  return r[n] = pk(vk), r;
-}, {}), gk = /* @__PURE__ */ yS.reduce(function(r, n) {
+  return r[n] = hk(mk), r;
+}, {}), vk = /* @__PURE__ */ yS.reduce(function(r, n) {
   var a = jM[n];
   return r[n] = function(l, h, m) {
-    return h === void 0 && (h = !1), m === void 0 && (m = !1), cp || wk(), a.schedule(l, h, m), l;
+    return h === void 0 && (h = !1), m === void 0 && (m = !1), cp || yk(), a.schedule(l, h, m), l;
   }, r;
-}, {}), yk = function(r) {
+}, {}), gk = function(r) {
   return jM[r].process(Jh);
 }, VM = function(r) {
-  cp = !1, Jh.delta = ng ? wT : Math.max(Math.min(r - Jh.timestamp, mk), 1), ng || (wT = Jh.delta), Jh.timestamp = r, qb = !0, yS.forEach(yk), qb = !1, cp && (ng = !1, BM(VM));
-}, wk = function() {
+  cp = !1, Jh.delta = ng ? wT : Math.max(Math.min(r - Jh.timestamp, pk), 1), ng || (wT = Jh.delta), Jh.timestamp = r, qb = !0, yS.forEach(gk), qb = !1, cp && (ng = !1, BM(VM));
+}, yk = function() {
   cp = !0, ng = !0, qb || BM(VM);
 };
 /*! *****************************************************************************
@@ -2148,32 +2148,32 @@ var Yr = function() {
   return ip.parse(r) / 100;
 }, transform: function(r) {
   return ip.transform(r * 100);
-} }), bk = function(r) {
+} }), wk = function(r) {
   return r.substring(r.indexOf("(") + 1, r.lastIndexOf(")"));
-}, Sk = UM(0, 255), Kb = function(r) {
+}, bk = UM(0, 255), Kb = function(r) {
   return r.red !== void 0;
 }, eS = function(r) {
   return r.hue !== void 0;
 };
-function xk(r) {
-  return bk(r).replace(/(,|\/)/g, " ").split(/ \s*/);
+function Sk(r) {
+  return wk(r).replace(/(,|\/)/g, " ").split(/ \s*/);
 }
 var WM = function(r) {
   return function(n) {
     if (typeof n != "string")
       return n;
-    for (var a = {}, l = xk(n), h = 0; h < 4; h++)
+    for (var a = {}, l = Sk(n), h = 0; h < 4; h++)
       a[r[h]] = l[h] !== void 0 ? parseFloat(l[h]) : 1;
     return a;
   };
-}, Ck = function(r) {
+}, xk = function(r) {
   var n = r.red, a = r.green, l = r.blue, h = r.alpha, m = h === void 0 ? 1 : h;
   return "rgba(" + n + ", " + a + ", " + l + ", " + m + ")";
-}, Tk = function(r) {
+}, Ck = function(r) {
   var n = r.hue, a = r.saturation, l = r.lightness, h = r.alpha, m = h === void 0 ? 1 : h;
   return "hsla(" + n + ", " + a + ", " + l + ", " + m + ")";
 }, xb = Yr(Yr({}, bg), { transform: function(r) {
-  return Math.round(Sk(r));
+  return Math.round(bk(r));
 } });
 function bS(r, n) {
   return r.startsWith(n) && HM.test(r);
@@ -2185,7 +2185,7 @@ var rg = {
   parse: WM(["red", "green", "blue", "alpha"]),
   transform: function(r) {
     var n = r.red, a = r.green, l = r.blue, h = r.alpha, m = h === void 0 ? 1 : h;
-    return Ck({
+    return xk({
       red: xb.transform(n),
       green: xb.transform(a),
       blue: xb.transform(l),
@@ -2199,7 +2199,7 @@ var rg = {
   parse: WM(["hue", "saturation", "lightness", "alpha"]),
   transform: function(r) {
     var n = r.hue, a = r.saturation, l = r.lightness, h = r.alpha, m = h === void 0 ? 1 : h;
-    return Tk({
+    return Ck({
       hue: Math.round(n),
       saturation: ip.transform(ig(a)),
       lightness: ip.transform(ig(l)),
@@ -2234,7 +2234,7 @@ var rg = {
     function z(j, J) {
       j.startsWith("--") && (C.hasCSSVariable = !0);
       var Z = S[j];
-      S[j] = J, S[j] !== Z && (I.indexOf(j) === -1 && I.push(j), A || (A = !0, gk.render($.render)));
+      S[j] = J, S[j] !== Z && (I.indexOf(j) === -1 && I.push(j), A || (A = !0, vk.render($.render)));
     }
     var $ = {
       get: function(j, J) {
@@ -2256,13 +2256,13 @@ var rg = {
     };
     return $;
   };
-}, Mk = /([a-z])([A-Z])/g, Ek = "$1-$2", Sg = function(r) {
-  return r.replace(Mk, Ek).toLowerCase();
-}, FM = /* @__PURE__ */ new Map(), xS = /* @__PURE__ */ new Map(), $M = ["Webkit", "Moz", "O", "ms", ""], Ik = $M.length, Ak = typeof document < "u", Tb, QM = function(r, n) {
+}, Tk = /([a-z])([A-Z])/g, Mk = "$1-$2", Sg = function(r) {
+  return r.replace(Tk, Mk).toLowerCase();
+}, FM = /* @__PURE__ */ new Map(), xS = /* @__PURE__ */ new Map(), $M = ["Webkit", "Moz", "O", "ms", ""], Ek = $M.length, Ik = typeof document < "u", Tb, QM = function(r, n) {
   return xS.set(r, Sg(n));
-}, Rk = function(r) {
+}, Ak = function(r) {
   Tb = Tb || document.createElement("div");
-  for (var n = 0; n < Ik; n++) {
+  for (var n = 0; n < Ek; n++) {
     var a = $M[n], l = a === "", h = l ? r : a + r.charAt(0).toUpperCase() + r.slice(1);
     if (h in Tb.style || l) {
       if (l && r === "clipPath" && xS.has(r))
@@ -2270,30 +2270,30 @@ var rg = {
       FM.set(r, h), QM(r, (l ? "" : "-") + Sg(h));
     }
   }
-}, Dk = function(r) {
+}, Rk = function(r) {
   return QM(r, r);
 }, ZM = function(r, n) {
   n === void 0 && (n = !1);
   var a = n ? xS : FM;
-  return a.has(r) || (Ak ? Rk(r) : Dk(r)), a.get(r) || r;
-}, Nk = ["", "X", "Y", "Z"], kk = ["translate", "scale", "rotate", "skew", "transformPerspective"], tS = /* @__PURE__ */ kk.reduce(function(r, n) {
-  return Nk.reduce(function(a, l) {
+  return a.has(r) || (Ik ? Ak(r) : Rk(r)), a.get(r) || r;
+}, Dk = ["", "X", "Y", "Z"], Nk = ["translate", "scale", "rotate", "skew", "transformPerspective"], tS = /* @__PURE__ */ Nk.reduce(function(r, n) {
+  return Dk.reduce(function(a, l) {
     return a.push(n + l), a;
   }, r);
-}, ["x", "y", "z"]), _k = /* @__PURE__ */ tS.reduce(function(r, n) {
+}, ["x", "y", "z"]), kk = /* @__PURE__ */ tS.reduce(function(r, n) {
   return r[n] = !0, r;
 }, {});
 function CS(r) {
-  return _k[r] === !0;
+  return kk[r] === !0;
 }
-function Pk(r, n) {
+function _k(r, n) {
   return tS.indexOf(r) - tS.indexOf(n);
 }
-var zk = /* @__PURE__ */ new Set(["originX", "originY", "originZ"]);
-function Ok(r) {
-  return zk.has(r);
+var Pk = /* @__PURE__ */ new Set(["originX", "originY", "originZ"]);
+function zk(r) {
+  return Pk.has(r);
 }
-var xT = /* @__PURE__ */ up(/* @__PURE__ */ up({}, bg), { transform: Math.round }), Lk = {
+var xT = /* @__PURE__ */ up(/* @__PURE__ */ up({}, bg), { transform: Math.round }), Ok = {
   color: gs,
   backgroundColor: gs,
   outlineColor: gs,
@@ -2362,10 +2362,10 @@ var xT = /* @__PURE__ */ up(/* @__PURE__ */ up({}, bg), { transform: Math.round 
   strokeOpacity: np,
   numOctaves: xT
 }, TS = function(r) {
-  return Lk[r];
-}, Bk = function(r, n) {
+  return Ok[r];
+}, Lk = function(r, n) {
   return n && typeof r == "number" ? n.transform(r) : r;
-}, rp = "scrollLeft", ap = "scrollTop", YM = /* @__PURE__ */ new Set([rp, ap]), jk = /* @__PURE__ */ new Set([rp, ap, "transform"]), Vk = {
+}, rp = "scrollLeft", ap = "scrollTop", YM = /* @__PURE__ */ new Set([rp, ap]), Bk = /* @__PURE__ */ new Set([rp, ap, "transform"]), jk = {
   x: "translateX",
   y: "translateY",
   z: "translateZ"
@@ -2373,32 +2373,32 @@ var xT = /* @__PURE__ */ up(/* @__PURE__ */ up({}, bg), { transform: Math.round 
 function GM(r) {
   return typeof r == "function";
 }
-function Uk(r, n, a, l, h, m) {
+function Vk(r, n, a, l, h, m) {
   m === void 0 && (m = !0);
   var w = "", g = !1;
-  a.sort(Pk);
+  a.sort(_k);
   for (var C = a.length, S = 0; S < C; S++) {
     var I = a[S];
-    w += (Vk[I] || I) + "(" + n[I] + ") ", g = I === "z" ? !0 : g;
+    w += (jk[I] || I) + "(" + n[I] + ") ", g = I === "z" ? !0 : g;
   }
   return !g && h ? w += "translateZ(0)" : w = w.trim(), GM(r.transform) ? w = r.transform(n, l ? "" : w) : m && l && (w = "none"), w;
 }
-function Hk(r, n, a, l, h, m, w, g) {
+function Uk(r, n, a, l, h, m, w, g) {
   n === void 0 && (n = !0), a === void 0 && (a = {}), l === void 0 && (l = {}), h === void 0 && (h = {}), m === void 0 && (m = []), w === void 0 && (w = !1), g === void 0 && (g = !0);
   var C = !0, S = !1, I = !1;
   for (var A in r) {
-    var z = r[A], $ = TS(A), j = Bk(z, $);
-    CS(A) ? (S = !0, l[A] = j, m.push(A), C && ($.default && z !== $.default || !$.default && z !== 0) && (C = !1)) : Ok(A) ? (h[A] = j, I = !0) : (!jk.has(A) || !GM(j)) && (a[ZM(A, w)] = j);
+    var z = r[A], $ = TS(A), j = Lk(z, $);
+    CS(A) ? (S = !0, l[A] = j, m.push(A), C && ($.default && z !== $.default || !$.default && z !== 0) && (C = !1)) : zk(A) ? (h[A] = j, I = !0) : (!Bk.has(A) || !GM(j)) && (a[ZM(A, w)] = j);
   }
-  return (S || typeof r.transform == "function") && (a.transform = Uk(r, l, m, C, n, g)), I && (a.transformOrigin = (h.originX || "50%") + " " + (h.originY || "50%") + " " + (h.originZ || 0)), a;
+  return (S || typeof r.transform == "function") && (a.transform = Vk(r, l, m, C, n, g)), I && (a.transformOrigin = (h.originX || "50%") + " " + (h.originY || "50%") + " " + (h.originZ || 0)), a;
 }
 function MS(r) {
   var n = r === void 0 ? {} : r, a = n.enableHardwareAcceleration, l = a === void 0 ? !0 : a, h = n.isDashCase, m = h === void 0 ? !0 : h, w = n.allowTransformNone, g = w === void 0 ? !0 : w, C = {}, S = {}, I = {}, A = [];
   return function(z) {
-    return A.length = 0, Hk(z, l, C, S, I, A, m, g), C;
+    return A.length = 0, Uk(z, l, C, S, I, A, m, g), C;
   };
 }
-function Wk(r, n) {
+function Hk(r, n) {
   var a = n.element, l = n.preparseOutput, h = TS(r);
   if (CS(r))
     return h && h.default || 0;
@@ -2407,7 +2407,7 @@ function Wk(r, n) {
   var m = window.getComputedStyle(a, null).getPropertyValue(ZM(r, !0)) || 0;
   return l && h && h.test(m) && h.parse ? h.parse(m) : m;
 }
-function Fk(r, n, a) {
+function Wk(r, n, a) {
   var l = n.element, h = n.buildStyles, m = n.hasCSSVariable;
   if (Object.assign(l.style, h(r)), m)
     for (var w = a.length, g = 0; g < w; g++) {
@@ -2416,15 +2416,15 @@ function Fk(r, n, a) {
     }
   a.indexOf(rp) !== -1 && (l[rp] = r[rp]), a.indexOf(ap) !== -1 && (l[ap] = r[ap]);
 }
-var $k = /* @__PURE__ */ SS({
-  onRead: Wk,
-  onRender: Fk,
+var Fk = /* @__PURE__ */ SS({
+  onRead: Hk,
+  onRender: Wk,
   uncachedValues: YM
 });
-function Qk(r, n) {
+function $k(r, n) {
   n === void 0 && (n = {});
   var a = n.enableHardwareAcceleration, l = n.allowTransformNone, h = gS(n, ["enableHardwareAcceleration", "allowTransformNone"]);
-  return $k(up({ element: r, buildStyles: MS({
+  return Fk(up({ element: r, buildStyles: MS({
     enableHardwareAcceleration: a,
     allowTransformNone: l
   }), preparseOutput: !0 }, h));
@@ -2435,19 +2435,19 @@ var XM = /* @__PURE__ */ new Set(["baseFrequency", "diffuseConstant", "kernelMat
   };
 }, Mb = function(r, n) {
   return ct.transform(r * n);
-}, Zk = { x: 0, y: 0, width: 0, height: 0 };
+}, Qk = { x: 0, y: 0, width: 0, height: 0 };
 function TT(r, n, a) {
   return typeof r == "string" ? r : ct.transform(n + a * r);
 }
-function Yk(r, n, a) {
+function Zk(r, n, a) {
   return TT(n, r.x, r.width) + " " + TT(a, r.y, r.height);
 }
 var qM = {
   enableHardwareAcceleration: !1,
   isDashCase: !1
 };
-function Gk(r, n, a, l, h, m) {
-  n === void 0 && (n = Zk), l === void 0 && (l = MS(qM)), h === void 0 && (h = JM()), m === void 0 && (m = !0);
+function Yk(r, n, a, l, h, m) {
+  n === void 0 && (n = Qk), l === void 0 && (l = MS(qM)), h === void 0 && (h = JM()), m === void 0 && (m = !0);
   var w = r.attrX, g = r.attrY, C = r.originX, S = r.originY, I = r.pathLength, A = r.pathSpacing, z = A === void 0 ? 1 : A, $ = r.pathOffset, j = $ === void 0 ? 0 : $, J = gS(r, ["attrX", "attrY", "originX", "originY", "pathLength", "pathSpacing", "pathOffset"]), Z = l(J);
   for (var de in Z)
     if (de === "transform")
@@ -2456,26 +2456,26 @@ function Gk(r, n, a, l, h, m) {
       var oe = m && !XM.has(de) ? Sg(de) : de;
       h[oe] = Z[de];
     }
-  return (C !== void 0 || S !== void 0 || Z.transform) && (h.style.transformOrigin = Yk(n, C !== void 0 ? C : CT, S !== void 0 ? S : CT)), w !== void 0 && (h.x = w), g !== void 0 && (h.y = g), a !== void 0 && I !== void 0 && (h[m ? "stroke-dashoffset" : "strokeDashoffset"] = Mb(-j, a), h[m ? "stroke-dasharray" : "strokeDasharray"] = Mb(I, a) + " " + Mb(z, a)), h;
+  return (C !== void 0 || S !== void 0 || Z.transform) && (h.style.transformOrigin = Zk(n, C !== void 0 ? C : CT, S !== void 0 ? S : CT)), w !== void 0 && (h.x = w), g !== void 0 && (h.y = g), a !== void 0 && I !== void 0 && (h[m ? "stroke-dashoffset" : "strokeDashoffset"] = Mb(-j, a), h[m ? "stroke-dasharray" : "strokeDasharray"] = Mb(I, a) + " " + Mb(z, a)), h;
 }
-function Xk(r, n, a) {
+function Gk(r, n, a) {
   a === void 0 && (a = !0);
   var l = JM(), h = MS(qM);
   return function(m) {
-    return Gk(m, r, n, h, l, a);
+    return Yk(m, r, n, h, l, a);
   };
 }
-var Jk = function(r) {
+var Xk = function(r) {
   return typeof r.getBBox == "function" ? r.getBBox() : r.getBoundingClientRect();
-}, qk = function(r) {
+}, Jk = function(r) {
   try {
-    return Jk(r);
+    return Xk(r);
   } catch {
     return { x: 0, y: 0, width: 0, height: 0 };
   }
-}, Kk = function(r) {
+}, qk = function(r) {
   return r.tagName === "path";
-}, e_ = /* @__PURE__ */ SS({
+}, Kk = /* @__PURE__ */ SS({
   onRead: function(r, n) {
     var a = n.element;
     if (r = XM.has(r) ? r : Sg(r), CS(r)) {
@@ -2489,13 +2489,13 @@ var Jk = function(r) {
     for (var m in h)
       m === "style" ? Object.assign(a.style, h.style) : a.setAttribute(m, h[m]);
   }
-}), t_ = function(r) {
-  var n = qk(r), a = Kk(r) && r.getTotalLength ? r.getTotalLength() : void 0;
-  return e_({
+}), e_ = function(r) {
+  var n = Jk(r), a = qk(r) && r.getTotalLength ? r.getTotalLength() : void 0;
+  return Kk({
     element: r,
-    buildAttrs: Xk(n, a)
+    buildAttrs: Gk(n, a)
   });
-}, n_ = /* @__PURE__ */ SS({
+}, t_ = /* @__PURE__ */ SS({
   useCache: !1,
   onRead: function(r) {
     return r === "scrollTop" ? window.pageYOffset : window.pageXOffset;
@@ -2504,19 +2504,19 @@ var Jk = function(r) {
     var n = r.scrollTop, a = n === void 0 ? 0 : n, l = r.scrollLeft, h = l === void 0 ? 0 : l;
     return window.scrollTo(h, a);
   }
-}), nS = /* @__PURE__ */ new WeakMap(), i_ = function(r) {
+}), nS = /* @__PURE__ */ new WeakMap(), n_ = function(r) {
   return r instanceof HTMLElement || typeof r.click == "function";
-}, r_ = function(r) {
+}, i_ = function(r) {
   return r instanceof SVGElement || "ownerSVGElement" in r;
-}, a_ = function(r, n) {
+}, r_ = function(r, n) {
   var a;
-  return r === window ? a = n_(r) : i_(r) ? a = Qk(r, n) : r_(r) && (a = t_(r)), nS.set(r, a), a;
-}, s_ = function(r, n) {
-  return nS.has(r) ? nS.get(r) : a_(r, n);
+  return r === window ? a = t_(r) : n_(r) ? a = $k(r, n) : i_(r) && (a = e_(r)), nS.set(r, a), a;
+}, a_ = function(r, n) {
+  return nS.has(r) ? nS.get(r) : r_(r, n);
 };
-function o_(r, n) {
+function s_(r, n) {
   var a = typeof r == "string" ? document.querySelector(r) : r;
-  return s_(a, n);
+  return a_(a, n);
 }
 var ws = function(n, a, l, h) {
   var m = l ? l.call(h, n, a) : void 0;
@@ -2539,9 +2539,9 @@ var ws = function(n, a, l, h) {
   }
   return !0;
 };
-const KM = "!#%()*+,-./:;=?@[]^_`{|}~ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", l_ = KM.length, MT = Array(20), Td = () => {
+const KM = "!#%()*+,-./:;=?@[]^_`{|}~ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", o_ = KM.length, MT = Array(20), Td = () => {
   for (let r = 0; r < 20; r++)
-    MT[r] = KM.charAt(Math.random() * l_);
+    MT[r] = KM.charAt(Math.random() * o_);
   return MT.join("");
 };
 class dp {
@@ -2594,8 +2594,8 @@ class dp {
     }), this.disposers.clear();
   }
 }
-var u_ = Object.defineProperty, Eb = (typeof require < "u" && require, (r, n, a) => (((l, h, m) => {
-  h in l ? u_(l, h, { enumerable: !0, configurable: !0, writable: !0, value: m }) : l[h] = m;
+var l_ = Object.defineProperty, Eb = (typeof require < "u" && require, (r, n, a) => (((l, h, m) => {
+  h in l ? l_(l, h, { enumerable: !0, configurable: !0, writable: !0, value: m }) : l[h] = m;
 })(r, typeof n != "symbol" ? n + "" : n, a), a));
 class pp {
   constructor(n, a) {
@@ -2637,7 +2637,7 @@ class pp {
     return n === a;
   }
 }
-function c_(r, n, a, l) {
+function u_(r, n, a, l) {
   let h = r.map((w) => w.value);
   const m = new pp(n(h, void 0, l), a);
   return r.forEach((w, g) => {
@@ -2652,10 +2652,10 @@ function c_(r, n, a, l) {
 }
 function eE(r, n) {
   Object.keys(n).forEach((a) => {
-    d_(r, a, n[a]);
+    c_(r, a, n[a]);
   });
 }
-function d_(r, n, a) {
+function c_(r, n, a) {
   var l;
   return Object.defineProperties(r, { [n]: { get: () => a.value }, [`_${n}$`]: { value: a }, [`set${l = n, l[0].toUpperCase() + l.slice(1)}`]: { value: (h, m) => a.setValue(h, m) } }), r;
 }
@@ -2668,7 +2668,7 @@ function ES(r) {
       r.remove(l);
     }), a;
   };
-  return { bindSideEffect: n, combine: (a, l, h, m) => n(c_(a, l, h, m)), createVal: (a, l) => n(new pp(a, l)) };
+  return { bindSideEffect: n, combine: (a, l, h, m) => n(u_(a, l, h, m)), createVal: (a, l) => n(new pp(a, l)) };
 }
 var IS = /* @__PURE__ */ ((r) => (r.Light = "light", r.Dark = "dark", r.Auto = "auto", r))(IS || {}), nn = /* @__PURE__ */ ((r) => (r.Normal = "normal", r.Minimized = "minimized", r.Maximized = "maximized", r))(nn || {}), Xn = /* @__PURE__ */ ((r) => (r.DarkMode = "dark_mode", r.PrefersColorScheme = "prefers_color_scheme", r.Close = "close", r.Focus = "focus", r.Blur = "blur", r.Move = "move", r.Resize = "resize", r.IntrinsicMove = "intrinsic_move", r.IntrinsicResize = "intrinsic_resize", r.VisualResize = "visual_resize", r.ZIndex = "z_index", r.State = "state", r.Minimized = "minimized", r.Maximized = "maximized", r.Readonly = "readonly", r.Destroyed = "destroyed", r))(Xn || {}), Ki = /* @__PURE__ */ ((r) => (r.Close = "close", r.Maximize = "maximize", r.Minimize = "minimize", r))(Ki || {}), bs = /* @__PURE__ */ ((r) => (r.North = "n", r.South = "s", r.West = "w", r.East = "e", r.NorthWest = "nw", r.NorthEast = "ne", r.SouthEast = "se", r.SouthWest = "sw", r))(bs || {});
 const Ib = "dh";
@@ -2678,11 +2678,11 @@ function Xi(r, n, a) {
 function Ed(r) {
   r.stopPropagation(), r.cancelable && r.preventDefault();
 }
-let f_ = 1;
-function h_() {
-  return `New Box ${f_++}`;
+let d_ = 1;
+function f_() {
+  return `New Box ${d_++}`;
 }
-function p_(r) {
+function h_(r) {
   return Boolean(r);
 }
 function $v(r) {
@@ -2698,7 +2698,7 @@ function Fh(r, n) {
   const l = [...r];
   return l.splice(a, 1), l;
 }
-function m_(r, n, a) {
+function p_(r, n, a) {
   const l = new Set(n), h = new Set(a);
   return r.filter((m) => !l.has(m) && !h.has(m));
 }
@@ -2706,7 +2706,7 @@ const cg = () => typeof navigator < "u" && typeof window < "u" && /iPad|iPhone|i
 function IT(r) {
   return r.touches ? r.touches[0] : r;
 }
-function v_() {
+function m_() {
   return Date.now().toString().slice(6) + Math.random().toString().slice(2, 8);
 }
 class tE {
@@ -2833,10 +2833,10 @@ class tE {
     this.sideEffect.flushAll(), this.$titleBar && (this.$titleBar = void 0, this.$title = void 0, this.$btns.length = 0, this.onDragStart = void 0, this.onEvent = void 0);
   }
 }
-class g_ {
+class v_ {
   constructor({
-    id: n = v_(),
-    title: a = h_(),
+    id: n = m_(),
+    title: a = f_(),
     prefersColorScheme: l = IS.Light,
     darkMode: h,
     visible: m = !0,
@@ -3210,7 +3210,7 @@ class g_ {
       this.$box = document.createElement("div");
     }
     this._renderSideEffect.flushAll(), this.$box.classList.add(this.wrapClassName("box"));
-    const a = (A, z, $, j = p_) => this._renderSideEffect.add(() => {
+    const a = (A, z, $, j = h_) => this._renderSideEffect.add(() => {
       const J = this.wrapClassName($);
       return z.subscribe((Z) => {
         A.classList.toggle(J, j(Z));
@@ -3230,7 +3230,7 @@ class g_ {
         this.$box.style.zIndex = String(A);
       })
     );
-    const l = o_(this.$box);
+    const l = s_(this.$box);
     this.$box.dataset.teleBoxID = this.id, this.$box.style.width = this.absoluteWidth + "px", this.$box.style.height = this.absoluteHeight + "px";
     const h = this.x * this.containerRect.width + this.containerRect.x, m = this.y * this.containerRect.height + this.containerRect.y;
     this.$box.style.transform = `translate(${h - 10}px,${m - 10}px)`, this._valSideEffectBinder.combine(
@@ -3434,15 +3434,15 @@ class g_ {
 }
 function Ab() {
 }
-var y_ = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMjgiIHZpZXdCb3g9IjAgMCAyOCAyOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgY2xpcC1wYXRoPSJ1cmwoI2NsaXAwXzFfNDQyNDQpIj4KPGcgZmlsdGVyPSJ1cmwoI2ZpbHRlcjBfZF8xXzQ0MjQ0KSI+CjxwYXRoIGQ9Ik0xNC4wMDAyIDE2LjE5NTNDMTMuODI0NyAxNi4xOTUzIDEzLjY1MjIgMTYuMTQ5MSAxMy41MDAyIDE2LjA2MTVMNC41MDAxNyAxMC44NjQzQzQuMDIxNzggMTAuNTg3OSAzLjg1Nzk2IDkuOTc2MTIgNC4xMzQyOCA5LjQ5NzczQzQuMjIyMDQgOS4zNDU3OSA0LjM0ODIzIDkuMjE5NiA0LjUwMDE3IDkuMTMxODRMMTMuNTAwMiAzLjkzODQ4QzEzLjgwOTggMy43NjA3NCAxNC4xOTA1IDMuNzYwNzQgMTQuNTAwMiAzLjkzODQ4TDIzLjUwMDIgOS4xMzE4NEMyMy45Nzg2IDkuNDA4MTYgMjQuMTQyNCAxMC4wMiAyMy44NjYxIDEwLjQ5ODRDMjMuNzc4MyAxMC42NTAzIDIzLjY1MjEgMTAuNzc2NSAyMy41MDAyIDEwLjg2NDNMMTQuNTAwMiAxNi4wNjE1QzE0LjM0ODEgMTYuMTQ5MSAxNC4xNzU3IDE2LjE5NTMgMTQuMDAwMiAxNi4xOTUzWiIgZmlsbD0id2hpdGUiLz4KPC9nPgo8ZyBmaWx0ZXI9InVybCgjZmlsdGVyMV9kXzFfNDQyNDQpIj4KPHBhdGggZD0iTTIzLjUwMDIgMTMuMTMxOUwyMS41MzYxIDExLjk5ODVMMTQuNTAwMiAxNi4wNjE2QzE0LjE5MDcgMTYuMjQgMTMuODA5NiAxNi4yNCAxMy41MDAyIDE2LjA2MTZMNi40NjQyOCAxMS45OTg1TDQuNTAwMTcgMTMuMTMxOUM0LjAyMTc4IDEzLjQwODIgMy44NTc5NiAxNC4wMiA0LjEzNDI4IDE0LjQ5ODRDNC4yMjIwNCAxNC42NTA0IDQuMzQ4MjMgMTQuNzc2NiA0LjUwMDE3IDE0Ljg2NDNMMTMuNTAwMiAyMC4wNjE2QzEzLjgwOTYgMjAuMjQgMTQuMTkwNyAyMC4yNCAxNC41MDAyIDIwLjA2MTZMMjMuNTAwMiAxNC44NjQzQzIzLjk3ODYgMTQuNTg4IDI0LjE0MjQgMTMuOTc2MiAyMy44NjYxIDEzLjQ5NzhDMjMuNzc4MyAxMy4zNDU5IDIzLjY1MjEgMTMuMjE5NyAyMy41MDAyIDEzLjEzMTlaIiBmaWxsPSJ3aGl0ZSIgZmlsbC1vcGFjaXR5PSIwLjgiIHNoYXBlLXJlbmRlcmluZz0iY3Jpc3BFZGdlcyIvPgo8L2c+CjxnIGZpbHRlcj0idXJsKCNmaWx0ZXIyX2RfMV80NDI0NCkiPgo8cGF0aCBkPSJNMjMuNTAwMiAxNy4xMzE5TDIxLjUzNjEgMTUuOTk4NUwxNC41MDAyIDIwLjA2MTZDMTQuMTkwNyAyMC4yNCAxMy44MDk2IDIwLjI0IDEzLjUwMDIgMjAuMDYxNkw2LjQ2NDI4IDE1Ljk5ODVMNC41MDAxNyAxNy4xMzE5QzQuMDIxNzggMTcuNDA4MiAzLjg1Nzk2IDE4LjAyIDQuMTM0MjggMTguNDk4NEM0LjIyMjA0IDE4LjY1MDQgNC4zNDgyMyAxOC43NzY2IDQuNTAwMTcgMTguODY0M0wxMy41MDAyIDI0LjA2MTZDMTMuODA5NiAyNC4yNCAxNC4xOTA3IDI0LjI0IDE0LjUwMDIgMjQuMDYxNkwyMy41MDAyIDE4Ljg2NDNDMjMuOTc4NiAxOC41ODggMjQuMTQyNCAxNy45NzYyIDIzLjg2NjEgMTcuNDk3OEMyMy43NzgzIDE3LjM0NTkgMjMuNjUyMSAxNy4yMTk3IDIzLjUwMDIgMTcuMTMxOVoiIGZpbGw9IndoaXRlIiBmaWxsLW9wYWNpdHk9IjAuNiIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZ2VzIi8+CjwvZz4KPC9nPgo8ZGVmcz4KPGZpbHRlciBpZD0iZmlsdGVyMF9kXzFfNDQyNDQiIHg9IjMiIHk9IjMuODA1MTgiIHdpZHRoPSIyMiIgaGVpZ2h0PSIxNC4zOTAxIiBmaWx0ZXJVbml0cz0idXNlclNwYWNlT25Vc2UiIGNvbG9yLWludGVycG9sYXRpb24tZmlsdGVycz0ic1JHQiI+CjxmZUZsb29kIGZsb29kLW9wYWNpdHk9IjAiIHJlc3VsdD0iQmFja2dyb3VuZEltYWdlRml4Ii8+CjxmZUNvbG9yTWF0cml4IGluPSJTb3VyY2VBbHBoYSIgdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDEyNyAwIiByZXN1bHQ9ImhhcmRBbHBoYSIvPgo8ZmVPZmZzZXQgZHk9IjEiLz4KPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iMC41Ii8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwLjU1Mjk0MSAwIDAgMCAwIDAuNTYwNzg0IDAgMCAwIDAgMC42NTA5OCAwIDAgMCAwLjE1IDAiLz4KPGZlQmxlbmQgbW9kZT0ibm9ybWFsIiBpbjI9IkJhY2tncm91bmRJbWFnZUZpeCIgcmVzdWx0PSJlZmZlY3QxX2Ryb3BTaGFkb3dfMV80NDI0NCIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImVmZmVjdDFfZHJvcFNoYWRvd18xXzQ0MjQ0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXIxX2RfMV80NDI0NCIgeD0iMyIgeT0iMTEuOTk4NSIgd2lkdGg9IjIyIiBoZWlnaHQ9IjEwLjE5NjgiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMSIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIwLjUiLz4KPGZlQ29tcG9zaXRlIGluMj0iaGFyZEFscGhhIiBvcGVyYXRvcj0ib3V0Ii8+CjxmZUNvbG9yTWF0cml4IHR5cGU9Im1hdHJpeCIgdmFsdWVzPSIwIDAgMCAwIDAuNTUyOTQxIDAgMCAwIDAgMC41NjA3ODQgMCAwIDAgMCAwLjY1MDk4IDAgMCAwIDAuMTUgMCIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluMj0iQmFja2dyb3VuZEltYWdlRml4IiByZXN1bHQ9ImVmZmVjdDFfZHJvcFNoYWRvd18xXzQ0MjQ0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzFfNDQyNDQiIHJlc3VsdD0ic2hhcGUiLz4KPC9maWx0ZXI+CjxmaWx0ZXIgaWQ9ImZpbHRlcjJfZF8xXzQ0MjQ0IiB4PSIzIiB5PSIxNS45OTg1IiB3aWR0aD0iMjIiIGhlaWdodD0iMTAuMTk2OCIgZmlsdGVyVW5pdHM9InVzZXJTcGFjZU9uVXNlIiBjb2xvci1pbnRlcnBvbGF0aW9uLWZpbHRlcnM9InNSR0IiPgo8ZmVGbG9vZCBmbG9vZC1vcGFjaXR5PSIwIiByZXN1bHQ9IkJhY2tncm91bmRJbWFnZUZpeCIvPgo8ZmVDb2xvck1hdHJpeCBpbj0iU291cmNlQWxwaGEiIHR5cGU9Im1hdHJpeCIgdmFsdWVzPSIwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAxMjcgMCIgcmVzdWx0PSJoYXJkQWxwaGEiLz4KPGZlT2Zmc2V0IGR5PSIxIi8+CjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjAuNSIvPgo8ZmVDb21wb3NpdGUgaW4yPSJoYXJkQWxwaGEiIG9wZXJhdG9yPSJvdXQiLz4KPGZlQ29sb3JNYXRyaXggdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMC41NTI5NDEgMCAwIDAgMCAwLjU2MDc4NCAwIDAgMCAwIDAuNjUwOTggMCAwIDAgMC4xNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzFfNDQyNDQiLz4KPGZlQmxlbmQgbW9kZT0ibm9ybWFsIiBpbj0iU291cmNlR3JhcGhpYyIgaW4yPSJlZmZlY3QxX2Ryb3BTaGFkb3dfMV80NDI0NCIgcmVzdWx0PSJzaGFwZSIvPgo8L2ZpbHRlcj4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xXzQ0MjQ0Ij4KPHJlY3Qgd2lkdGg9IjI4IiBoZWlnaHQ9IjI4IiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo=";
+var g_ = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMjgiIHZpZXdCb3g9IjAgMCAyOCAyOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgY2xpcC1wYXRoPSJ1cmwoI2NsaXAwXzFfNDQyNDQpIj4KPGcgZmlsdGVyPSJ1cmwoI2ZpbHRlcjBfZF8xXzQ0MjQ0KSI+CjxwYXRoIGQ9Ik0xNC4wMDAyIDE2LjE5NTNDMTMuODI0NyAxNi4xOTUzIDEzLjY1MjIgMTYuMTQ5MSAxMy41MDAyIDE2LjA2MTVMNC41MDAxNyAxMC44NjQzQzQuMDIxNzggMTAuNTg3OSAzLjg1Nzk2IDkuOTc2MTIgNC4xMzQyOCA5LjQ5NzczQzQuMjIyMDQgOS4zNDU3OSA0LjM0ODIzIDkuMjE5NiA0LjUwMDE3IDkuMTMxODRMMTMuNTAwMiAzLjkzODQ4QzEzLjgwOTggMy43NjA3NCAxNC4xOTA1IDMuNzYwNzQgMTQuNTAwMiAzLjkzODQ4TDIzLjUwMDIgOS4xMzE4NEMyMy45Nzg2IDkuNDA4MTYgMjQuMTQyNCAxMC4wMiAyMy44NjYxIDEwLjQ5ODRDMjMuNzc4MyAxMC42NTAzIDIzLjY1MjEgMTAuNzc2NSAyMy41MDAyIDEwLjg2NDNMMTQuNTAwMiAxNi4wNjE1QzE0LjM0ODEgMTYuMTQ5MSAxNC4xNzU3IDE2LjE5NTMgMTQuMDAwMiAxNi4xOTUzWiIgZmlsbD0id2hpdGUiLz4KPC9nPgo8ZyBmaWx0ZXI9InVybCgjZmlsdGVyMV9kXzFfNDQyNDQpIj4KPHBhdGggZD0iTTIzLjUwMDIgMTMuMTMxOUwyMS41MzYxIDExLjk5ODVMMTQuNTAwMiAxNi4wNjE2QzE0LjE5MDcgMTYuMjQgMTMuODA5NiAxNi4yNCAxMy41MDAyIDE2LjA2MTZMNi40NjQyOCAxMS45OTg1TDQuNTAwMTcgMTMuMTMxOUM0LjAyMTc4IDEzLjQwODIgMy44NTc5NiAxNC4wMiA0LjEzNDI4IDE0LjQ5ODRDNC4yMjIwNCAxNC42NTA0IDQuMzQ4MjMgMTQuNzc2NiA0LjUwMDE3IDE0Ljg2NDNMMTMuNTAwMiAyMC4wNjE2QzEzLjgwOTYgMjAuMjQgMTQuMTkwNyAyMC4yNCAxNC41MDAyIDIwLjA2MTZMMjMuNTAwMiAxNC44NjQzQzIzLjk3ODYgMTQuNTg4IDI0LjE0MjQgMTMuOTc2MiAyMy44NjYxIDEzLjQ5NzhDMjMuNzc4MyAxMy4zNDU5IDIzLjY1MjEgMTMuMjE5NyAyMy41MDAyIDEzLjEzMTlaIiBmaWxsPSJ3aGl0ZSIgZmlsbC1vcGFjaXR5PSIwLjgiIHNoYXBlLXJlbmRlcmluZz0iY3Jpc3BFZGdlcyIvPgo8L2c+CjxnIGZpbHRlcj0idXJsKCNmaWx0ZXIyX2RfMV80NDI0NCkiPgo8cGF0aCBkPSJNMjMuNTAwMiAxNy4xMzE5TDIxLjUzNjEgMTUuOTk4NUwxNC41MDAyIDIwLjA2MTZDMTQuMTkwNyAyMC4yNCAxMy44MDk2IDIwLjI0IDEzLjUwMDIgMjAuMDYxNkw2LjQ2NDI4IDE1Ljk5ODVMNC41MDAxNyAxNy4xMzE5QzQuMDIxNzggMTcuNDA4MiAzLjg1Nzk2IDE4LjAyIDQuMTM0MjggMTguNDk4NEM0LjIyMjA0IDE4LjY1MDQgNC4zNDgyMyAxOC43NzY2IDQuNTAwMTcgMTguODY0M0wxMy41MDAyIDI0LjA2MTZDMTMuODA5NiAyNC4yNCAxNC4xOTA3IDI0LjI0IDE0LjUwMDIgMjQuMDYxNkwyMy41MDAyIDE4Ljg2NDNDMjMuOTc4NiAxOC41ODggMjQuMTQyNCAxNy45NzYyIDIzLjg2NjEgMTcuNDk3OEMyMy43NzgzIDE3LjM0NTkgMjMuNjUyMSAxNy4yMTk3IDIzLjUwMDIgMTcuMTMxOVoiIGZpbGw9IndoaXRlIiBmaWxsLW9wYWNpdHk9IjAuNiIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZ2VzIi8+CjwvZz4KPC9nPgo8ZGVmcz4KPGZpbHRlciBpZD0iZmlsdGVyMF9kXzFfNDQyNDQiIHg9IjMiIHk9IjMuODA1MTgiIHdpZHRoPSIyMiIgaGVpZ2h0PSIxNC4zOTAxIiBmaWx0ZXJVbml0cz0idXNlclNwYWNlT25Vc2UiIGNvbG9yLWludGVycG9sYXRpb24tZmlsdGVycz0ic1JHQiI+CjxmZUZsb29kIGZsb29kLW9wYWNpdHk9IjAiIHJlc3VsdD0iQmFja2dyb3VuZEltYWdlRml4Ii8+CjxmZUNvbG9yTWF0cml4IGluPSJTb3VyY2VBbHBoYSIgdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDEyNyAwIiByZXN1bHQ9ImhhcmRBbHBoYSIvPgo8ZmVPZmZzZXQgZHk9IjEiLz4KPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iMC41Ii8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwLjU1Mjk0MSAwIDAgMCAwIDAuNTYwNzg0IDAgMCAwIDAgMC42NTA5OCAwIDAgMCAwLjE1IDAiLz4KPGZlQmxlbmQgbW9kZT0ibm9ybWFsIiBpbjI9IkJhY2tncm91bmRJbWFnZUZpeCIgcmVzdWx0PSJlZmZlY3QxX2Ryb3BTaGFkb3dfMV80NDI0NCIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImVmZmVjdDFfZHJvcFNoYWRvd18xXzQ0MjQ0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXIxX2RfMV80NDI0NCIgeD0iMyIgeT0iMTEuOTk4NSIgd2lkdGg9IjIyIiBoZWlnaHQ9IjEwLjE5NjgiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMSIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIwLjUiLz4KPGZlQ29tcG9zaXRlIGluMj0iaGFyZEFscGhhIiBvcGVyYXRvcj0ib3V0Ii8+CjxmZUNvbG9yTWF0cml4IHR5cGU9Im1hdHJpeCIgdmFsdWVzPSIwIDAgMCAwIDAuNTUyOTQxIDAgMCAwIDAgMC41NjA3ODQgMCAwIDAgMCAwLjY1MDk4IDAgMCAwIDAuMTUgMCIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluMj0iQmFja2dyb3VuZEltYWdlRml4IiByZXN1bHQ9ImVmZmVjdDFfZHJvcFNoYWRvd18xXzQ0MjQ0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzFfNDQyNDQiIHJlc3VsdD0ic2hhcGUiLz4KPC9maWx0ZXI+CjxmaWx0ZXIgaWQ9ImZpbHRlcjJfZF8xXzQ0MjQ0IiB4PSIzIiB5PSIxNS45OTg1IiB3aWR0aD0iMjIiIGhlaWdodD0iMTAuMTk2OCIgZmlsdGVyVW5pdHM9InVzZXJTcGFjZU9uVXNlIiBjb2xvci1pbnRlcnBvbGF0aW9uLWZpbHRlcnM9InNSR0IiPgo8ZmVGbG9vZCBmbG9vZC1vcGFjaXR5PSIwIiByZXN1bHQ9IkJhY2tncm91bmRJbWFnZUZpeCIvPgo8ZmVDb2xvck1hdHJpeCBpbj0iU291cmNlQWxwaGEiIHR5cGU9Im1hdHJpeCIgdmFsdWVzPSIwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAxMjcgMCIgcmVzdWx0PSJoYXJkQWxwaGEiLz4KPGZlT2Zmc2V0IGR5PSIxIi8+CjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjAuNSIvPgo8ZmVDb21wb3NpdGUgaW4yPSJoYXJkQWxwaGEiIG9wZXJhdG9yPSJvdXQiLz4KPGZlQ29sb3JNYXRyaXggdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMC41NTI5NDEgMCAwIDAgMCAwLjU2MDc4NCAwIDAgMCAwIDAuNjUwOTggMCAwIDAgMC4xNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzFfNDQyNDQiLz4KPGZlQmxlbmQgbW9kZT0ibm9ybWFsIiBpbj0iU291cmNlR3JhcGhpYyIgaW4yPSJlZmZlY3QxX2Ryb3BTaGFkb3dfMV80NDI0NCIgcmVzdWx0PSJzaGFwZSIvPgo8L2ZpbHRlcj4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xXzQ0MjQ0Ij4KPHJlY3Qgd2lkdGg9IjI4IiBoZWlnaHQ9IjI4IiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo=";
 let $h, Qh;
-function w_(r, n = !1) {
+function y_(r, n = !1) {
   $h ? n ? Qh == null || Qh.push(r) : $h.push(r) : ($h = n ? [] : [r], Qh = n ? [r] : [], Promise.resolve().then(() => {
     const a = $h, l = Qh;
     $h = void 0, Qh = void 0, l == null || l.forEach((h) => h()), a == null || a.forEach((h) => h());
   }));
 }
-function b_(r) {
+function w_(r) {
   const n = r.cloneNode(!0);
   n.style.position = "absolute", n.style.top = "-99999px", n.style.float = "none", n.style.visibility = "hidden", n.style.display = "block", document.body.appendChild(n);
   const a = n.getBoundingClientRect();
@@ -3544,7 +3544,7 @@ class nE {
       const a = document.createElement("div");
       return a.className = this.wrapClassName("collector-hide"), a;
     }
-    return this.$collector || (this.$collector = document.createElement("button"), this.$collector.className = this.wrapClassName("collector"), this.$collector.style.backgroundImage = `url('${y_}')`, this.wrp$ = document.createElement("div"), this.count$ = document.createElement("div"), this.wrp$.className = this.wrapClassName("collector-wrp"), this.count$.className = this.wrapClassName("collector-count"), this.wrp$.appendChild(this.count$), this.wrp$.appendChild(this.$collector), this.wrp$.addEventListener("click", this.handleCollectorClick), this._visible && (this.wrp$.classList.toggle(this.wrapClassName("collector-visible")), this.renderTitles()), this._readonly && this.$collector.classList.add(this.wrapClassName("collector-readonly")), this.$collector.classList.add(
+    return this.$collector || (this.$collector = document.createElement("button"), this.$collector.className = this.wrapClassName("collector"), this.$collector.style.backgroundImage = `url('${g_}')`, this.wrp$ = document.createElement("div"), this.count$ = document.createElement("div"), this.wrp$.className = this.wrapClassName("collector-wrp"), this.count$.className = this.wrapClassName("collector-count"), this.wrp$.appendChild(this.count$), this.wrp$.appendChild(this.$collector), this.wrp$.addEventListener("click", this.handleCollectorClick), this._visible && (this.wrp$.classList.toggle(this.wrapClassName("collector-visible")), this.renderTitles()), this._readonly && this.$collector.classList.add(this.wrapClassName("collector-readonly")), this.$collector.classList.add(
       this.wrapClassName(this._darkMode ? "color-scheme-dark" : "color-scheme-light")
     ), this.setStyles(this.styles), n.appendChild(this.wrp$)), this.$collector;
   }
@@ -3593,11 +3593,11 @@ class nE {
     const C = (a = this.wrp$) == null ? void 0 : a.querySelector(
       `.${this.wrapClassName("collector-titles")}`
     );
-    return C ? (h = this.wrp$) == null || h.replaceChild(this.$titles, C) : (l = this.wrp$) == null || l.appendChild(this.$titles), w_(() => {
+    return C ? (h = this.wrp$) == null || h.replaceChild(this.$titles, C) : (l = this.wrp$) == null || l.appendChild(this.$titles), y_(() => {
       var S, I;
       if (!this.$titles || !this.wrp$ || !this.root)
         return;
-      const A = (S = this.wrp$) == null ? void 0 : S.getBoundingClientRect(), z = (I = this.root) == null ? void 0 : I.getBoundingClientRect(), $ = b_(this.$titles);
+      const A = (S = this.wrp$) == null ? void 0 : S.getBoundingClientRect(), z = (I = this.root) == null ? void 0 : I.getBoundingClientRect(), $ = w_(this.$titles);
       A.top - z.top > $.height;
       const j = -$.height - 10;
       this.$titles.style.top = `${j}px`, this.$titles.style.left = "0px";
@@ -3611,7 +3611,7 @@ class nE {
   }
 }
 var mn = /* @__PURE__ */ ((r) => (r.Focused = "focused", r.Blurred = "blurred", r.Created = "created", r.Removed = "removed", r.State = "state", r.Maximized = "maximized", r.Minimized = "minimized", r.Move = "move", r.Resize = "resize", r.IntrinsicMove = "intrinsic_move", r.IntrinsicResize = "intrinsic_resize", r.VisualResize = "visual_resize", r.ZIndex = "z_index", r.PrefersColorScheme = "prefers_color_scheme", r.DarkMode = "dark_mode", r))(mn || {});
-class S_ extends tE {
+class b_ extends tE {
   constructor(n) {
     super(n), this.boxes = n.boxes, this.focusedBox = n.focusedBox, this.containerRect = n.containerRect, this.darkMode = n.darkMode, this.maximizedBoxes$ = n.maximizedBoxes$, this.minimizedBoxes$ = n.minimizedBoxes$;
   }
@@ -3700,7 +3700,7 @@ class S_ extends tE {
     }), this.$titles;
   }
 }
-function x_() {
+function S_() {
   let r = /* @__PURE__ */ new Set();
   function n(w) {
     return r.add(w), () => {
@@ -3729,7 +3729,7 @@ function x_() {
     removeAll: m
   };
 }
-class C_ {
+class x_ {
   constructor({
     root: n = document.body,
     prefersColorScheme: a = IS.Light,
@@ -3749,7 +3749,7 @@ class C_ {
   } = {}) {
     this.externalEvents = new ug(), this.events = new ug(), this.appReadonly = !1, this._sideEffect = new dp();
     const { combine: A, createVal: z } = ES(this._sideEffect);
-    this.callbackManager = x_(), this.sizeObserver = new ResizeObserver(this.callbackManager.runCallbacks), this.elementObserverMap = /* @__PURE__ */ new Map(), this.root = n, this.namespace = w, this.appReadonly = I, this.boxes$ = z([]), this.topBox$ = this.boxes$.derive((ee) => {
+    this.callbackManager = S_(), this.sizeObserver = new ResizeObserver(this.callbackManager.runCallbacks), this.elementObserverMap = /* @__PURE__ */ new Map(), this.root = n, this.namespace = w, this.appReadonly = I, this.boxes$ = z([]), this.topBox$ = this.boxes$.derive((ee) => {
       if (ee.length > 0)
         return ee.reduce(
           (q, Qe) => q.zIndex > Qe.zIndex ? q : Qe
@@ -3865,7 +3865,7 @@ class C_ {
           }
         }
     };
-    this._sideEffect.addEventListener(window, "mousedown", ze, !0), this._sideEffect.addEventListener(window, "touchstart", ze, !0), this.maxTitleBar = new S_({
+    this._sideEffect.addEventListener(window, "mousedown", ze, !0), this._sideEffect.addEventListener(window, "touchstart", ze, !0), this.maxTitleBar = new b_({
       darkMode: this.darkMode,
       readonly: Z.value,
       namespace: this.namespace,
@@ -3967,7 +3967,7 @@ class C_ {
     return this;
   }
   create(n = {}, a = !0) {
-    const l = n.id || Td(), h = this.maximizedBoxes$.value.includes(l), m = this.maximizedBoxes$.value.includes(l), w = new g_({
+    const l = n.id || Td(), h = this.maximizedBoxes$.value.includes(l), m = this.maximizedBoxes$.value.includes(l), w = new v_({
       zIndex: this.topBox ? this.topBox.zIndex + 1 : 100,
       ...a ? this.smartPosition(n) : n,
       darkMode: this.darkMode,
@@ -4120,7 +4120,7 @@ class C_ {
   makeBoxTop(n, a = !1) {
     if (this.topBox && n !== this.topBox)
       if (this.maximizedBoxes$.value.includes(n.id)) {
-        const l = this.topBox.zIndex + 1, h = m_(
+        const l = this.topBox.zIndex + 1, h = p_(
           this.boxes$.value.map((w) => w.id),
           this.maximizedBoxes$.value,
           this.minimizedBoxes$.value
@@ -4156,7 +4156,7 @@ class C_ {
     return typeof n == "string" ? this.boxes.find((a) => a.id === n) : n;
   }
 }
-const T_ = (r, n, a, l, h) => new M_(
+const C_ = (r, n, a, l, h) => new T_(
   {
     safeSetAttributes: (m) => r.safeSetAttributes(m),
     getMainView: () => r.mainView,
@@ -4184,7 +4184,7 @@ const T_ = (r, n, a, l, h) => new M_(
   },
   h
 );
-class M_ {
+class T_ {
   constructor(n, a) {
     this.context = n, this.createTeleBoxManagerConfig = a;
     const { emitter: l, callbacks: h, boxEmitter: m, manager: w } = n;
@@ -4262,7 +4262,7 @@ class M_ {
     var I, A, z, $;
     if (!this.teleBoxManager)
       return;
-    let { minwidth: a = gN, minheight: l = yN } = (I = n.app.config) != null ? I : {};
+    let { minwidth: a = vN, minheight: l = gN } = (I = n.app.config) != null ? I : {};
     const { width: h, height: m } = (A = n.app.config) != null ? A : {}, w = ((z = n.options) == null ? void 0 : z.title) || n.appId, g = this.teleBoxManager.containerRect;
     a > 1 && (a = a / g.width), l > 1 && (l = l / g.height);
     const C = {
@@ -4297,7 +4297,7 @@ class M_ {
       fence: !0,
       prefersColorScheme: n == null ? void 0 : n.prefersColorScheme,
       appReadonly: St.appReadonly
-    }, m = new C_(h);
+    }, m = new x_(h);
     this.teleBoxManager && this.teleBoxManager.destroy(), this.teleBoxManager = m;
     const w = (n == null ? void 0 : n.collectorContainer) || St.wrapper;
     return w && this.setCollectorContainer(w), m;
@@ -4433,17 +4433,17 @@ function AT() {
 function xg(r) {
   r.forEach(iE);
 }
-function E_(r) {
+function M_(r) {
   return typeof r == "function";
 }
-function I_(r, n) {
+function E_(r, n) {
   return r != r ? n == n : r !== n || r && typeof r == "object" || typeof r == "function";
 }
 let Qv;
 function hg(r, n) {
   return Qv || (Qv = document.createElement("a")), Qv.href = n, r === Qv.href;
 }
-function A_(r) {
+function I_(r) {
   return Object.keys(r).length === 0;
 }
 function vo(r, n) {
@@ -4467,7 +4467,7 @@ function iS() {
 function Rn(r, n, a) {
   a == null ? r.removeAttribute(n) : r.getAttribute(n) !== a && r.setAttribute(n, a);
 }
-function R_(r) {
+function A_(r) {
   return Array.from(r.childNodes);
 }
 function rE(r, n) {
@@ -4480,10 +4480,10 @@ let aE;
 function pg(r) {
   aE = r;
 }
-const qh = [], RT = [], ag = [], DT = [], D_ = Promise.resolve();
+const qh = [], RT = [], ag = [], DT = [], R_ = Promise.resolve();
 let rS = !1;
-function N_() {
-  rS || (rS = !0, D_.then(sE));
+function D_() {
+  rS || (rS = !0, R_.then(sE));
 }
 function aS(r) {
   ag.push(r);
@@ -4496,7 +4496,7 @@ function sE() {
     do {
       for (let r = 0; r < qh.length; r += 1) {
         const n = qh[r];
-        pg(n), k_(n.$$);
+        pg(n), N_(n.$$);
       }
       for (pg(null), qh.length = 0; RT.length; )
         RT.pop()();
@@ -4511,32 +4511,32 @@ function sE() {
     rS = !1, Rb = !1, Db.clear();
   }
 }
-function k_(r) {
+function N_(r) {
   if (r.fragment !== null) {
     r.update(), xg(r.before_update);
     const n = r.dirty;
     r.dirty = [-1], r.fragment && r.fragment.p(r.ctx, n), r.after_update.forEach(aS);
   }
 }
-const __ = /* @__PURE__ */ new Set();
-function P_(r, n) {
-  r && r.i && (__.delete(r), r.i(n));
+const k_ = /* @__PURE__ */ new Set();
+function __(r, n) {
+  r && r.i && (k_.delete(r), r.i(n));
 }
-function z_(r, n, a, l) {
+function P_(r, n, a, l) {
   const { fragment: h, on_mount: m, on_destroy: w, after_update: g } = r.$$;
   h && h.m(n, a), l || aS(() => {
-    const C = m.map(iE).filter(E_);
+    const C = m.map(iE).filter(M_);
     w ? w.push(...C) : xg(C), r.$$.on_mount = [];
   }), g.forEach(aS);
 }
-function O_(r, n) {
+function z_(r, n) {
   const a = r.$$;
   a.fragment !== null && (xg(a.on_destroy), a.fragment && a.fragment.d(n), a.on_destroy = a.fragment = null, a.ctx = []);
 }
-function L_(r, n) {
-  r.$$.dirty[0] === -1 && (qh.push(r), N_(), r.$$.dirty.fill(0)), r.$$.dirty[n / 31 | 0] |= 1 << n % 31;
+function O_(r, n) {
+  r.$$.dirty[0] === -1 && (qh.push(r), D_(), r.$$.dirty.fill(0)), r.$$.dirty[n / 31 | 0] |= 1 << n % 31;
 }
-function B_(r, n, a, l, h, m, w, g = [-1]) {
+function L_(r, n, a, l, h, m, w, g = [-1]) {
   const C = aE;
   pg(r);
   const S = r.$$ = {
@@ -4561,20 +4561,20 @@ function B_(r, n, a, l, h, m, w, g = [-1]) {
   let I = !1;
   if (S.ctx = a ? a(r, n.props || {}, (A, z, ...$) => {
     const j = $.length ? $[0] : z;
-    return S.ctx && h(S.ctx[A], S.ctx[A] = j) && (!S.skip_bound && S.bound[A] && S.bound[A](j), I && L_(r, A)), z;
+    return S.ctx && h(S.ctx[A], S.ctx[A] = j) && (!S.skip_bound && S.bound[A] && S.bound[A](j), I && O_(r, A)), z;
   }) : [], S.update(), I = !0, xg(S.before_update), S.fragment = l ? l(S.ctx) : !1, n.target) {
     if (n.hydrate) {
-      const A = R_(n.target);
+      const A = A_(n.target);
       S.fragment && S.fragment.l(A), A.forEach(mp);
     } else
       S.fragment && S.fragment.c();
-    n.intro && P_(r.$$.fragment), z_(r, n.target, n.anchor, n.customElement), sE();
+    n.intro && __(r.$$.fragment), P_(r, n.target, n.anchor, n.customElement), sE();
   }
   pg(C);
 }
-class j_ {
+class B_ {
   $destroy() {
-    O_(this, 1), this.$destroy = fg;
+    z_(this, 1), this.$destroy = fg;
   }
   $on(n, a) {
     const l = this.$$.callbacks[n] || (this.$$.callbacks[n] = []);
@@ -4584,7 +4584,7 @@ class j_ {
     };
   }
   $set(n) {
-    this.$$set && !A_(n) && (this.$$.skip_bound = !0, this.$$set(n), this.$$.skip_bound = !1);
+    this.$$set && !I_(n) && (this.$$.skip_bound = !0, this.$$set(n), this.$$.skip_bound = !1);
   }
 }
 function NT(r) {
@@ -4638,7 +4638,7 @@ function _T(r) {
     }
   };
 }
-function V_(r) {
+function j_(r) {
   let n, a, l, h, m, w, g, C = !r[14] && NT(r);
   return {
     c() {
@@ -4657,7 +4657,7 @@ function V_(r) {
     }
   };
 }
-function U_(r, n, a) {
+function V_(r, n, a) {
   let l, h, m, w, g, C, S, I, { uid: A } = n, { cursorName: z } = n, { tagName: $ } = n, { backgroundColor: j } = n, { appliance: J } = n, { x: Z } = n, { y: de } = n, { src: oe } = n, { visible: Y } = n, { avatar: re } = n, { theme: le } = n, { color: Ae } = n, { cursorTagBackgroundColor: $e } = n, { opacity: ze } = n, { pencilEraserSize: Ze } = n, { custom: ee } = n;
   const we = () => Object.entries({
     width: (l ? 19 : 28) + "px",
@@ -4697,9 +4697,9 @@ function U_(r, n, a) {
     C
   ];
 }
-class H_ extends j_ {
+class U_ extends B_ {
   constructor(n) {
-    super(), B_(this, n, U_, V_, I_, {
+    super(), L_(this, n, V_, j_, E_, {
       uid: 0,
       cursorName: 1,
       tagName: 2,
@@ -4729,7 +4729,7 @@ function Md(r) {
 function Ru(r) {
   return `url("${r}") 12 12, auto`;
 }
-function W_(r) {
+function H_(r) {
   let n = "";
   for (const a in r)
     n += `.netless-whiteboard.${a} {cursor: ${r[a]}}
@@ -4737,9 +4737,9 @@ function W_(r) {
   return n;
 }
 const Zv = document.createElement("style");
-function F_(r) {
+function W_(r) {
   const [n, a, l] = r.strokeColor, h = ((1 << 24) + (n << 16) + (a << 8) + l).toString(16).slice(1);
-  return Zv.textContent = W_({
+  return Zv.textContent = H_({
     "cursor-pencil": Ru(lE(h)),
     "cursor-eraser": Ru(oE),
     "cursor-rectangle": Ru(Md(h)),
@@ -4751,7 +4751,7 @@ function F_(r) {
     Zv.parentNode != null && document.head.removeChild(Zv);
   };
 }
-const $_ = /* @__PURE__ */ new Set([
+const F_ = /* @__PURE__ */ new Set([
   Dn.rectangle,
   Dn.ellipse,
   Dn.straight,
@@ -4763,10 +4763,10 @@ function PT(r, n) {
     return lE(n);
   if (r === Dn.eraser)
     return oE;
-  if ($_.has(r))
+  if (F_.has(r))
     return Md(n);
 }
-class Q_ {
+class $_ {
   constructor(n, a, l, h) {
     this.manager = n, this.memberId = a, this.cursorManager = l, this.wrapper = h, this.style = "default", this.move = (m) => {
       var w;
@@ -4848,7 +4848,7 @@ class Q_ {
     }, 1e3 * 10);
   }
   async createCursor() {
-    this.member && this.wrapper && (this.component = new H_({
+    this.member && this.wrapper && (this.component = new U_({
       target: this.wrapper,
       props: this.initProps()
     }));
@@ -4913,18 +4913,18 @@ class Q_ {
     this.component && (this.component.$set({ visible: !1 }), this.destroy());
   }
 }
-const Z_ = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAAA0CAYAAADFeBvrAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAYISURBVHgB7ZpNSCtXFIBPEuvz+dMGpYUKD/sWFX+Qti6kK7Hqpm6e9q0rIoIUFUShPLV10VZx4+JZqa9v20LBhdq9fyBUCtKNPH8qYl2IOw3G38Rkek4y15y5uTOZJDOWggcOSSYzN/ebc+45554JwIM8iBCPyTEP+86T4vyMfsRN4b+nQTKIJp0vzuGvlpID7os8EQNEIBD4oKio6Bm9DwaDv/v9/n/076JgbtWUYPchwrW8qD7UnOvr6wFNkpubm+/wu7f0c7y6mrnlvQufxB0Iau7V1dX3BDA/P6/V1dVpzc3N2uLiIofK1c8VYHys/wRKBUN3/hGHqaysNOjc3FwMis6hc0FtLTHuvYLxCCZgci8uLn4wg5Gh6Fy8Jk+/NkcCAlAAuUkoW4g0B+d5tLS05O/r67O8eGxsDNra2uDy8nKsoKCAwCIQDxQa0yTxgrvCYXyTk5Ml+Orf2dlJeeHIyAigFSE/P38ELfUNqNdSkjgF5FF89jL1TU1NlQwODl5gZPujp6cHWltbUw7Koc7Pz8mkZpHPFeFrJuZeqLnoMoPoZqe0JjDP/IZgnyLUG/o8NDRkuo5Ua2pjY6MC4oFCFf1cA0oKzRSOp6enRfTaGh0d/QxBt+1CUVgnOTs7+xrHfQzGyOcKkK3QTJMnQffZ6e/v/xwttmsHqqmpKXbdycnJCxy7ABLh3FEgVZ6hZJhnFZoFFMF0d3c/w7v+dyookXBnZ2c/xvHfhriVcvXfdBRItsxjnOhYqjwjoAimq6vrCysoGofk+Ph4Esd/F/UdiFtJAGUd2DygTpp5dmBUUJ2dnc9VUALm8PDwJY7/BPU9VD8k3M4RC6kskxZMKigKIMLN9vf3p3H8DyWgfEhEOwOQD9IXOTz7EObbwsLC4YWFBRgeHrY9ECXYo6MjaGlpKWlsbPxkYGDgRW1tbSEWquVlZWXBzc3Nl1VVVa8hXiXc6ioqBqGaPDk7AACJTRZ3NS9lcUp86cJwoSQ7Pj4Op6enfxUXF3/V0NCQv7q6GsCvwrqGUG/01xAD4+VQTOxaSF43d5bBOisrGBJRCtXX17+/trb268rKSgASFgmz97KFkmo6OztWuVyPweiWGc4WRkhFRQVEIpHg8vJyQAIQVlLBROVxvBYQHsXnO8tk62ZcyN0wecLBwcEvYHSzEPscBqOLCRhLC4n9uqaA8UAWAcAKhtbQ3t7eTHl5+Y9gtAp3twhT056CDMQ7MRzIFTeTYKb1yYYVQFH9VdzsqNmYKpfTJBDX3Ixgdnd3XyHMT2AMALJlBBSPaMpNngrIsTyTCgaj288YDGakictrxizvKFNOjgSSBLS+vv6UYHDb7DgMVgsChjTEgCIKGG4ZU+EWkgNBzN1qamq+pAMTExPgFMzW1tZrhHkFyWE5KxgSszx0527RaDRmOSpRshEOU11dPQPG8CwHARHJlMnTSrwSRFIlfXt7m3V5ngJGuJtqzaQtZkFBVNJezN5ZAdmwjKo2k9tVtrcI3OXk4tPgcg7ChCDZ1URgMOu72Xa5VFHOkymQhWVU60YVmjN6wiC7k6p+S1syCACOwJBYFaexV+yhBekNPsMBO6KAEeE4BMaCU67RsoYhSbXgaT//ht709vZCaWmp6YkEbLFmVJWzas04+iBL7EKpm0J7duqu0B7+CTUpNJuyvb1NCfMj1CqI9wLKUOlOUMeG+gGFkHii4HizUF4z/KFUrPsJ8WbEIyx7nnZ0dDynME6BAuce09iFHo+GrnmGltltb2//E4wVAN82y7vOjKOZXSBhJdHNiT3TYWD8OY2PTUJkdd7MkJMnT5wZVQF2RFX6yBMUdzPMvvfqxz3sXHF+GNT9ANXit/10O1sgHkZvdQAOKvs9B5L7ARELGAAXLSTvM8QExTE+YbHe+HURhZp1aRyF4CJXClbbWwGketgkW9VsY+YaiBCVhfgE+XvxRwgZSM4jUVCDZFQ9pytmXR8hUTB2gnidx4XffVWydN0yQjwmx/jkAZJBrIBI5J7ZvQGZWUgVSuU/EqmOAzicKNMVu816DdRWUV1/7xAP8n+SfwF3Du3NF2sYhwAAAABJRU5ErkJggg==", Y_ = "data:image/png;base64,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", G_ = "data:image/png;base64,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", X_ = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iNDBweCIgaGVpZ2h0PSI0MHB4IiB2aWV3Qm94PSIwIDAgNDAgNDAiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDYwLjEgKDg4MTMzKSAtIGh0dHBzOi8vc2tldGNoLmNvbSAtLT4KICAgIDx0aXRsZT5zaGFwZS1jdXJzb3I8L3RpdGxlPgogICAgPGRlc2M+Q3JlYXRlZCB3aXRoIFNrZXRjaC48L2Rlc2M+CiAgICA8ZGVmcz4KICAgICAgICA8cGF0aCBkPSJNMjAsMjEuNSBDMjAuMjQ1NDU5OSwyMS41IDIwLjQ0OTYwODQsMjEuNjc2ODc1MiAyMC40OTE5NDQzLDIxLjkxMDEyNDQgTDIwLjUsMjIgTDIwLjUsMjcgQzIwLjUsMjcuMjc2MTQyNCAyMC4yNzYxNDI0LDI3LjUgMjAsMjcuNSBDMTkuNzU0NTQwMSwyNy41IDE5LjU1MDM5MTYsMjcuMzIzMTI0OCAxOS41MDgwNTU3LDI3LjA4OTg3NTYgTDE5LjUsMjcgTDE5LjUsMjIgQzE5LjUsMjEuNzIzODU3NiAxOS43MjM4NTc2LDIxLjUgMjAsMjEuNSBaIE0yNywxOS41IEMyNy4yNzYxNDI0LDE5LjUgMjcuNSwxOS43MjM4NTc2IDI3LjUsMjAgQzI3LjUsMjAuMjQ1NDU5OSAyNy4zMjMxMjQ4LDIwLjQ0OTYwODQgMjcuMDg5ODc1NiwyMC40OTE5NDQzIEwyNywyMC41IEwyMiwyMC41IEMyMS43MjM4NTc2LDIwLjUgMjEuNSwyMC4yNzYxNDI0IDIxLjUsMjAgQzIxLjUsMTkuNzU0NTQwMSAyMS42NzY4NzUyLDE5LjU1MDM5MTYgMjEuOTEwMTI0NCwxOS41MDgwNTU3IEwyMiwxOS41IEwyNywxOS41IFogTTE4LDE5LjUgQzE4LjI3NjE0MjQsMTkuNSAxOC41LDE5LjcyMzg1NzYgMTguNSwyMCBDMTguNSwyMC4yNDU0NTk5IDE4LjMyMzEyNDgsMjAuNDQ5NjA4NCAxOC4wODk4NzU2LDIwLjQ5MTk0NDMgTDE4LDIwLjUgTDEzLDIwLjUgQzEyLjcyMzg1NzYsMjAuNSAxMi41LDIwLjI3NjE0MjQgMTIuNSwyMCBDMTIuNSwxOS43NTQ1NDAxIDEyLjY3Njg3NTIsMTkuNTUwMzkxNiAxMi45MTAxMjQ0LDE5LjUwODA1NTcgTDEzLDE5LjUgTDE4LDE5LjUgWiBNMjAsMTIuNSBDMjAuMjQ1NDU5OSwxMi41IDIwLjQ0OTYwODQsMTIuNjc2ODc1MiAyMC40OTE5NDQzLDEyLjkxMDEyNDQgTDIwLjUsMTMgTDIwLjUsMTggQzIwLjUsMTguMjc2MTQyNCAyMC4yNzYxNDI0LDE4LjUgMjAsMTguNSBDMTkuNzU0NTQwMSwxOC41IDE5LjU1MDM5MTYsMTguMzIzMTI0OCAxOS41MDgwNTU3LDE4LjA4OTg3NTYgTDE5LjUsMTggTDE5LjUsMTMgQzE5LjUsMTIuNzIzODU3NiAxOS43MjM4NTc2LDEyLjUgMjAsMTIuNSBaIiBpZD0icGF0aC0xIj48L3BhdGg+CiAgICAgICAgPGZpbHRlciB4PSItNjQuNiUiIHk9Ii01OS41JSIgd2lkdGg9IjIyOS4zJSIgaGVpZ2h0PSIyNDYuMSUiIGZpbHRlclVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgaWQ9ImZpbHRlci0yIj4KICAgICAgICAgICAgPGZlTW9ycGhvbG9neSByYWRpdXM9IjEiIG9wZXJhdG9yPSJkaWxhdGUiIGluPSJTb3VyY2VBbHBoYSIgcmVzdWx0PSJzaGFkb3dTcHJlYWRPdXRlcjEiPjwvZmVNb3JwaG9sb2d5PgogICAgICAgICAgICA8ZmVPZmZzZXQgZHg9IjAiIGR5PSIyIiBpbj0ic2hhZG93U3ByZWFkT3V0ZXIxIiByZXN1bHQ9InNoYWRvd09mZnNldE91dGVyMSI+PC9mZU9mZnNldD4KICAgICAgICAgICAgPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iMyIgaW49InNoYWRvd09mZnNldE91dGVyMSIgcmVzdWx0PSJzaGFkb3dCbHVyT3V0ZXIxIj48L2ZlR2F1c3NpYW5CbHVyPgogICAgICAgICAgICA8ZmVDb21wb3NpdGUgaW49InNoYWRvd0JsdXJPdXRlcjEiIGluMj0iU291cmNlQWxwaGEiIG9wZXJhdG9yPSJvdXQiIHJlc3VsdD0ic2hhZG93Qmx1ck91dGVyMSI+PC9mZUNvbXBvc2l0ZT4KICAgICAgICAgICAgPGZlQ29sb3JNYXRyaXggdmFsdWVzPSIwIDAgMCAwIDAgICAwIDAgMCAwIDAgICAwIDAgMCAwIDAgIDAgMCAwIDAuMTYgMCIgdHlwZT0ibWF0cml4IiBpbj0ic2hhZG93Qmx1ck91dGVyMSI+PC9mZUNvbG9yTWF0cml4PgogICAgICAgIDwvZmlsdGVyPgogICAgPC9kZWZzPgogICAgPGcgaWQ9Iumhtemdoi00IiBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj4KICAgICAgICA8ZyBpZD0iV2hpdGVib2FyZC1HdWlkZWxpbmVzIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMzQ0LjAwMDAwMCwgLTc1MS4wMDAwMDApIj4KICAgICAgICAgICAgPGcgaWQ9InNoYXBlLWN1cnNvciIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzQ0LjAwMDAwMCwgNzUxLjAwMDAwMCkiPgogICAgICAgICAgICAgICAgPHJlY3QgaWQ9IuefqeW9ouWkh+S7vS00NCIgZmlsbD0iI0ZGRkZGRiIgb3BhY2l0eT0iMC4wMSIgeD0iMCIgeT0iMCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMiI+PC9yZWN0PgogICAgICAgICAgICAgICAgPGcgaWQ9IuW9oueKtue7k+WQiCIgZmlsbC1ydWxlPSJub256ZXJvIj4KICAgICAgICAgICAgICAgICAgICA8dXNlIGZpbGw9ImJsYWNrIiBmaWxsLW9wYWNpdHk9IjEiIGZpbHRlcj0idXJsKCNmaWx0ZXItMikiIHhsaW5rOmhyZWY9IiNwYXRoLTEiPjwvdXNlPgogICAgICAgICAgICAgICAgICAgIDxwYXRoIHN0cm9rZT0iI0ZGRkZGRiIgc3Ryb2tlLXdpZHRoPSIxIiBkPSJNMjAsMjEgQzIwLjQ4NTQxMDMsMjEgMjAuODk4MDg1LDIxLjM0Nzk5OTMgMjAuOTg5OTQ3OSwyMS44NjU0ODc3IEwyMSwyMiBMMjEsMjcgQzIxLDI3LjU1MjI4NDcgMjAuNTUyMjg0NywyOCAyMCwyOCBDMTkuNTE0NTg5NywyOCAxOS4xMDE5MTUsMjcuNjUyMDAwNyAxOS4wMTAwNTIxLDI3LjEzNDUxMjMgTDE5LDI3IEwxOSwyMiBDMTksMjEuNDQ3NzE1MyAxOS40NDc3MTUzLDIxIDIwLDIxIFogTTI3LDE5IEMyNy41NTIyODQ3LDE5IDI4LDE5LjQ0NzcxNTMgMjgsMjAgQzI4LDIwLjQ4NTQxMDMgMjcuNjUyMDAwNywyMC44OTgwODUgMjcuMTM0NTEyMywyMC45ODk5NDc5IEwyNywyMSBMMjIsMjEgQzIxLjQ0NzcxNTMsMjEgMjEsMjAuNTUyMjg0NyAyMSwyMCBDMjEsMTkuNTE0NTg5NyAyMS4zNDc5OTkzLDE5LjEwMTkxNSAyMS44NjU0ODc3LDE5LjAxMDA1MjEgTDIyLDE5IEwyNywxOSBaIE0xOCwxOSBDMTguNTUyMjg0NywxOSAxOSwxOS40NDc3MTUzIDE5LDIwIEMxOSwyMC40ODU0MTAzIDE4LjY1MjAwMDcsMjAuODk4MDg1IDE4LjEzNDUxMjMsMjAuOTg5OTQ3OSBMMTgsMjEgTDEzLDIxIEMxMi40NDc3MTUzLDIxIDEyLDIwLjU1MjI4NDcgMTIsMjAgQzEyLDE5LjUxNDU4OTcgMTIuMzQ3OTk5MywxOS4xMDE5MTUgMTIuODY1NDg3NywxOS4wMTAwNTIxIEwxMywxOSBMMTgsMTkgWiBNMjAsMTIgQzIwLjQ4NTQxMDMsMTIgMjAuODk4MDg1LDEyLjM0Nzk5OTMgMjAuOTg5OTQ3OSwxMi44NjU0ODc3IEwyMSwxMyBMMjEsMTggQzIxLDE4LjU1MjI4NDcgMjAuNTUyMjg0NywxOSAyMCwxOSBDMTkuNTE0NTg5NywxOSAxOS4xMDE5MTUsMTguNjUyMDAwNyAxOS4wMTAwNTIxLDE4LjEzNDUxMjMgTDE5LDE4IEwxOSwxMyBDMTksMTIuNDQ3NzE1MyAxOS40NDc3MTUzLDEyIDIwLDEyIFoiIGZpbGw9IiMyMTIzMjQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PC9wYXRoPgogICAgICAgICAgICAgICAgPC9nPgogICAgICAgICAgICAgICAgPHJlY3QgaWQ9IuefqeW9oiIgZmlsbD0iI0ZGRkZGRiIgeD0iMTguNSIgeT0iMTciIHdpZHRoPSIzIiBoZWlnaHQ9IjYiPjwvcmVjdD4KICAgICAgICAgICAgICAgIDxyZWN0IGlkPSLnn6nlvaIiIGZpbGw9IiNGRkZGRkYiIHg9IjE3IiB5PSIxOC41IiB3aWR0aD0iNiIgaGVpZ2h0PSIzIj48L3JlY3Q+CiAgICAgICAgICAgICAgICA8cGF0aCBkPSJNMjAsMjEuNSBDMjAuMjQ1NDU5OSwyMS41IDIwLjQ0OTYwODQsMjEuNjc2ODc1MiAyMC40OTE5NDQzLDIxLjkxMDEyNDQgTDIwLjUsMjIgTDIwLjUsMjcgQzIwLjUsMjcuMjc2MTQyNCAyMC4yNzYxNDI0LDI3LjUgMjAsMjcuNSBDMTkuNzU0NTQwMSwyNy41IDE5LjU1MDM5MTYsMjcuMzIzMTI0OCAxOS41MDgwNTU3LDI3LjA4OTg3NTYgTDE5LjUsMjcgTDE5LjUsMjIgQzE5LjUsMjEuNzIzODU3NiAxOS43MjM4NTc2LDIxLjUgMjAsMjEuNSBaIE0yNywxOS41IEMyNy4yNzYxNDI0LDE5LjUgMjcuNSwxOS43MjM4NTc2IDI3LjUsMjAgQzI3LjUsMjAuMjQ1NDU5OSAyNy4zMjMxMjQ4LDIwLjQ0OTYwODQgMjcuMDg5ODc1NiwyMC40OTE5NDQzIEwyNywyMC41IEwyMiwyMC41IEMyMS43MjM4NTc2LDIwLjUgMjEuNSwyMC4yNzYxNDI0IDIxLjUsMjAgQzIxLjUsMTkuNzU0NTQwMSAyMS42NzY4NzUyLDE5LjU1MDM5MTYgMjEuOTEwMTI0NCwxOS41MDgwNTU3IEwyMiwxOS41IEwyNywxOS41IFogTTE4LDE5LjUgQzE4LjI3NjE0MjQsMTkuNSAxOC41LDE5LjcyMzg1NzYgMTguNSwyMCBDMTguNSwyMC4yNDU0NTk5IDE4LjMyMzEyNDgsMjAuNDQ5NjA4NCAxOC4wODk4NzU2LDIwLjQ5MTk0NDMgTDE4LDIwLjUgTDEzLDIwLjUgQzEyLjcyMzg1NzYsMjAuNSAxMi41LDIwLjI3NjE0MjQgMTIuNSwyMCBDMTIuNSwxOS43NTQ1NDAxIDEyLjY3Njg3NTIsMTkuNTUwMzkxNiAxMi45MTAxMjQ0LDE5LjUwODA1NTcgTDEzLDE5LjUgTDE4LDE5LjUgWiBNMjAsMTIuNSBDMjAuMjQ1NDU5OSwxMi41IDIwLjQ0OTYwODQsMTIuNjc2ODc1MiAyMC40OTE5NDQzLDEyLjkxMDEyNDQgTDIwLjUsMTMgTDIwLjUsMTggQzIwLjUsMTguMjc2MTQyNCAyMC4yNzYxNDI0LDE4LjUgMjAsMTguNSBDMTkuNzU0NTQwMSwxOC41IDE5LjU1MDM5MTYsMTguMzIzMTI0OCAxOS41MDgwNTU3LDE4LjA4OTg3NTYgTDE5LjUsMTggTDE5LjUsMTMgQzE5LjUsMTIuNzIzODU3NiAxOS43MjM4NTc2LDEyLjUgMjAsMTIuNSBaIiBpZD0i5b2i54q257uT5ZCIIiBmaWxsPSIjMjEyMzI0IiBmaWxsLXJ1bGU9Im5vbnplcm8iPjwvcGF0aD4KICAgICAgICAgICAgPC9nPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+", J_ = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iNDdweCIgaGVpZ2h0PSI0MHB4IiB2aWV3Qm94PSIwIDAgNDcgNDAiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDYwLjEgKDg4MTMzKSAtIGh0dHBzOi8vc2tldGNoLmNvbSAtLT4KICAgIDx0aXRsZT50ZXh0LWN1cnNvcjwvdGl0bGU+CiAgICA8ZGVzYz5DcmVhdGVkIHdpdGggU2tldGNoLjwvZGVzYz4KICAgIDxkZWZzPgogICAgICAgIDxwYXRoIGQ9Ik0xNiwyNi41IEMxNS43MjM4NTc2LDI2LjUgMTUuNSwyNi4yNzYxNDI0IDE1LjUsMjYgQzE1LjUsMjUuNzU0NTQwMSAxNS42NzY4NzUyLDI1LjU1MDM5MTYgMTUuOTEwMTI0NCwyNS41MDgwNTU3IEwxNiwyNS41IEwxOS41LDI1LjUgTDE5LjUsMTQuNSBMMTYsMTQuNSBDMTUuNzIzODU3NiwxNC41IDE1LjUsMTQuMjc2MTQyNCAxNS41LDE0IEMxNS41LDEzLjc1NDU0MDEgMTUuNjc2ODc1MiwxMy41NTAzOTE2IDE1LjkxMDEyNDQsMTMuNTA4MDU1NyBMMTYsMTMuNSBMMjQsMTMuNSBDMjQuMjc2MTQyNCwxMy41IDI0LjUsMTMuNzIzODU3NiAyNC41LDE0IEMyNC41LDE0LjI0NTQ1OTkgMjQuMzIzMTI0OCwxNC40NDk2MDg0IDI0LjA4OTg3NTYsMTQuNDkxOTQ0MyBMMjQsMTQuNSBMMjAuNSwxNC41IEwyMC41LDI1LjUgTDI0LDI1LjUgQzI0LjI3NjE0MjQsMjUuNSAyNC41LDI1LjcyMzg1NzYgMjQuNSwyNiBDMjQuNSwyNi4yNDU0NTk5IDI0LjMyMzEyNDgsMjYuNDQ5NjA4NCAyNC4wODk4NzU2LDI2LjQ5MTk0NDMgTDI0LDI2LjUgTDE2LDI2LjUgWiIgaWQ9InBhdGgtMSI+PC9wYXRoPgogICAgICAgIDxmaWx0ZXIgeD0iLTI4NC4wJSIgeT0iLTgxLjUlIiB3aWR0aD0iNjY4LjElIiBoZWlnaHQ9IjI5My45JSIgZmlsdGVyVW5pdHM9Im9iamVjdEJvdW5kaW5nQm94IiBpZD0iZmlsdGVyLTIiPgogICAgICAgICAgICA8ZmVNb3JwaG9sb2d5IHJhZGl1cz0iMSIgb3BlcmF0b3I9ImRpbGF0ZSIgaW49IlNvdXJjZUFscGhhIiByZXN1bHQ9InNoYWRvd1NwcmVhZE91dGVyMSI+PC9mZU1vcnBob2xvZ3k+CiAgICAgICAgICAgIDxmZU9mZnNldCBkeD0iMCIgZHk9IjIiIGluPSJzaGFkb3dTcHJlYWRPdXRlcjEiIHJlc3VsdD0ic2hhZG93T2Zmc2V0T3V0ZXIxIj48L2ZlT2Zmc2V0PgogICAgICAgICAgICA8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIzIiBpbj0ic2hhZG93T2Zmc2V0T3V0ZXIxIiByZXN1bHQ9InNoYWRvd0JsdXJPdXRlcjEiPjwvZmVHYXVzc2lhbkJsdXI+CiAgICAgICAgICAgIDxmZUNvbXBvc2l0ZSBpbj0ic2hhZG93Qmx1ck91dGVyMSIgaW4yPSJTb3VyY2VBbHBoYSIgb3BlcmF0b3I9Im91dCIgcmVzdWx0PSJzaGFkb3dCbHVyT3V0ZXIxIj48L2ZlQ29tcG9zaXRlPgogICAgICAgICAgICA8ZmVDb2xvck1hdHJpeCB2YWx1ZXM9IjAgMCAwIDAgMCAgIDAgMCAwIDAgMCAgIDAgMCAwIDAgMCAgMCAwIDAgMC4xNiAwIiB0eXBlPSJtYXRyaXgiIGluPSJzaGFkb3dCbHVyT3V0ZXIxIj48L2ZlQ29sb3JNYXRyaXg+CiAgICAgICAgPC9maWx0ZXI+CiAgICA8L2RlZnM+CiAgICA8ZyBpZD0i6aG16Z2iLTQiIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPgogICAgICAgIDxnIGlkPSJXaGl0ZWJvYXJkLUd1aWRlbGluZXMiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0zODguMDAwMDAwLCAtNjcyLjAwMDAwMCkiPgogICAgICAgICAgICA8ZyBpZD0idGV4dC1jdXJzb3IiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDM5Mi4wMDAwMDAsIDY3Mi4wMDAwMDApIj4KICAgICAgICAgICAgICAgIDxyZWN0IGlkPSLnn6nlvaLlpIfku70tNDAiIGZpbGw9IiNGRkZGRkYiIG9wYWNpdHk9IjAuMDEiIHg9IjAiIHk9IjAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcng9IjIiPjwvcmVjdD4KICAgICAgICAgICAgICAgIDxnIGlkPSLlvaLnirbnu5PlkIgiIGZpbGwtcnVsZT0ibm9uemVybyI+CiAgICAgICAgICAgICAgICAgICAgPHVzZSBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIxIiBmaWx0ZXI9InVybCgjZmlsdGVyLTIpIiB4bGluazpocmVmPSIjcGF0aC0xIj48L3VzZT4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMSIgZD0iTTE5LDI1IEwxOSwxNSBMMTYsMTUgQzE1LjQ0NzcxNTMsMTUgMTUsMTQuNTUyMjg0NyAxNSwxNCBDMTUsMTMuNTE0NTg5NyAxNS4zNDc5OTkzLDEzLjEwMTkxNSAxNS44NjU0ODc3LDEzLjAxMDA1MjEgTDE2LDEzIEwyNCwxMyBDMjQuNTUyMjg0NywxMyAyNSwxMy40NDc3MTUzIDI1LDE0IEMyNSwxNC40ODU0MTAzIDI0LjY1MjAwMDcsMTQuODk4MDg1IDI0LjEzNDUxMjMsMTQuOTg5OTQ3OSBMMjQsMTUgTDIxLDE1IEwyMSwyNSBMMjQsMjUgQzI0LjU1MjI4NDcsMjUgMjUsMjUuNDQ3NzE1MyAyNSwyNiBDMjUsMjYuNDg1NDEwMyAyNC42NTIwMDA3LDI2Ljg5ODA4NSAyNC4xMzQ1MTIzLDI2Ljk4OTk0NzkgTDI0LDI3IEwxNiwyNyBDMTUuNDQ3NzE1MywyNyAxNSwyNi41NTIyODQ3IDE1LDI2IEMxNSwyNS41MTQ1ODk3IDE1LjM0Nzk5OTMsMjUuMTAxOTE1IDE1Ljg2NTQ4NzcsMjUuMDEwMDUyMSBMMTYsMjUgTDE5LDI1IFoiIGZpbGw9IiMyMTIzMjQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PC9wYXRoPgogICAgICAgICAgICAgICAgPC9nPgogICAgICAgICAgICA8L2c+CiAgICAgICAgPC9nPgogICAgPC9nPgo8L3N2Zz4=", q_ = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMjhweCIgaGVpZ2h0PSIyOHB4IiB2aWV3Qm94PSIwIDAgMjggMjgiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDU1LjEgKDc4MTM2KSAtIGh0dHBzOi8vc2tldGNoYXBwLmNvbSAtLT4KICAgIDx0aXRsZT7nvJbnu4QgMjwvdGl0bGU+CiAgICA8ZGVzYz5DcmVhdGVkIHdpdGggU2tldGNoLjwvZGVzYz4KICAgIDxkZWZzPgogICAgICAgIDxmaWx0ZXIgeD0iLTEyMC4wJSIgeT0iLTEyMC4wJSIgd2lkdGg9IjM0MC4wJSIgaGVpZ2h0PSIzNDAuMCUiIGZpbHRlclVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgaWQ9ImZpbHRlci0xIj4KICAgICAgICAgICAgPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iNCIgaW49IlNvdXJjZUdyYXBoaWMiPjwvZmVHYXVzc2lhbkJsdXI+CiAgICAgICAgPC9maWx0ZXI+CiAgICA8L2RlZnM+CiAgICA8ZyBpZD0i6aG16Z2iMSIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGcgaWQ9Iue8lue7hC0yIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg5LjAwMDAwMCwgOS4wMDAwMDApIiBmaWxsPSIjRkYwMTAwIj4KICAgICAgICAgICAgPGNpcmNsZSBpZD0i5qSt5ZyG5b2iIiBmaWx0ZXI9InVybCgjZmlsdGVyLTEpIiBjeD0iNSIgY3k9IjUiIHI9IjUiPjwvY2lyY2xlPgogICAgICAgICAgICA8cGF0aCBkPSJNNSw4IEM2LjY1Njg1NDI1LDggOCw2LjY1Njg1NDI1IDgsNSBDOCwzLjM0MzE0NTc1IDYuNjU2ODU0MjUsMiA1LDIgQzMuMzQzMTQ1NzUsMiAyLDMuMzQzMTQ1NzUgMiw1IEMyLDYuNjU2ODU0MjUgMy4zNDMxNDU3NSw4IDUsOCBaIE01LDYuMjg1NzE0MjkgQzQuMjg5OTE5NjEsNi4yODU3MTQyOSAzLjcxNDI4NTcxLDUuNzEwMDgwMzkgMy43MTQyODU3MSw1IEMzLjcxNDI4NTcxLDQuMjg5OTE5NjEgNC4yODk5MTk2MSwzLjcxNDI4NTcxIDUsMy43MTQyODU3MSBDNS43MTAwODAzOSwzLjcxNDI4NTcxIDYuMjg1NzE0MjksNC4yODk5MTk2MSA2LjI4NTcxNDI5LDUgQzYuMjg1NzE0MjksNS43MTAwODAzOSA1LjcxMDA4MDM5LDYuMjg1NzE0MjkgNSw2LjI4NTcxNDI5IFoiIGlkPSLmpK3lnIblvaIiIGZpbGwtcnVsZT0ibm9uemVybyI+PC9wYXRoPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+", K_ = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMjYiIHZpZXdCb3g9IjAgMCAxOCAyNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3QgeD0iMC41IiB5PSIwLjUiIHdpZHRoPSIxNyIgaGVpZ2h0PSIyNSIgcng9IjMuNSIgZmlsbD0iYmxhY2siIGZpbGwtb3BhY2l0eT0iMC4zNSIgc3Ryb2tlPSJ3aGl0ZSIvPgo8L3N2Zz4K", eP = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjYiIGhlaWdodD0iMzQiIHZpZXdCb3g9IjAgMCAyNiAzNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3QgeD0iMC41IiB5PSIwLjUiIHdpZHRoPSIyNSIgaGVpZ2h0PSIzMyIgcng9IjMuNSIgZmlsbD0iYmxhY2siIGZpbGwtb3BhY2l0eT0iMC4zNSIgc3Ryb2tlPSJ3aGl0ZSIvPgo8L3N2Zz4K", tP = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzQiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCAzNCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3QgeD0iMC41IiB5PSIwLjUiIHdpZHRoPSIzMyIgaGVpZ2h0PSI0OSIgcng9IjMuNSIgZmlsbD0iYmxhY2siIGZpbGwtb3BhY2l0eT0iMC4zNSIgc3Ryb2tlPSJ3aGl0ZSIvPgo8L3N2Zz4K", nP = {
-  [Dn.pencil]: Z_,
-  [Dn.selector]: Y_,
-  [Dn.eraser]: G_,
-  [Dn.shape]: X_,
-  [Dn.text]: J_,
-  [Dn.laserPointer]: q_,
-  pencilEraser1: K_,
-  pencilEraser2: eP,
-  pencilEraser3: tP
+const Q_ = "data:image/png;base64,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", Z_ = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADEAAAAxCAYAAABznEEcAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAZoSURBVHgB7VlLSCRXFL3ljNEhEXTGhMQJmOjCz8ZNVLKICz9xIYhCNi7UgINkGEk2En8hW5cBUQNxo05GAoKikuCAmvGzGMdPcCUGjDPxD/4Vv/3JvWW97luvq7ur+hMZ8MKlqrteNfe8e965970GuLVbC5kpJr53+hjHx9yY3TUxJgLMAQG4ITARfp5T4Mri4uL9q6urnxwOxz/oY5eXl1/Pzs7e195X2FX4jZsIhAK7gx5ps9m6nGj9/f3OtbU1pzAE0318fPwVjYHrrN7R3AjU/wpOBwA9Cmf/9ejoqDMtLU31iooKGdA+ATo4OMiXAEWAHhBAGEApXj4rPAik0vPt7e0vCgoKPH4gMzMTSktLIS8vD2JiYgABvcHMTZyennbHxsaOg3udOJmLzwqEYB0ZgRCZENm4u7e39yQuLq65srISZmZmvP5Ybm4u5OfnQ0lJyXWUCAgzNLS+vt6SnJz8WgvYwV5xSlcRgyVg3ha2Dkxzc3MvfZmVlQW+bGxsDBobGyE7O1u94uJPjIqKqklKSvrbbrfPnp+ff7e8vJwMnlSTKWfJjDKhywJo6wLp0YcZ+dyIUr7s4cOHLsrRlQwBTSBFuzc2NiZYhjjVAIyzZBqEwgCQv0OOM/gNzuiP/ijlDxBRjgClpqa6AF1cXDydmpoaLCws3JcAGYHyC4JMzoKaibKysvienp6FtrY2IA/WCFB5ebkqCHSvARo8Ozt7igIxwIJ2gJ+seFMnDoIyEUV+dHT0G3qWVUr5M043DdAB0m2IKZwAYpgZX+qkywR6NFbuR0iDxmAoZRUQKRxSLTMnJ8eIaqqSeVMnIYUOdu+sq6vrp4f+VCoYo8khZaNs01VRlERUu2/BrWAA7sl2Anink1Ao18JGjyY/PDx8hq1GZqgp5c2mp6chMjLy2b179x7hRzvoqeUUwXIzqq4O5nZsNUaEbIbLqPLTou/s7FTvT05OpsA9sXJG1AVsZDwjutqBIN6gUlWjxod8XRBNKXgsrqpqYZfwEqX9h8TExD7wbFm8LmzxHQ0QHSlXKZVSqFC/hkqlaKapTaGgCQTK7PHW1lb/wsLC86KiokkccoV+qV1tcE0pO7AWxmhTxBszDzqRr66ujqanp2cRpQLNBgUsCh8BwQ54bn5+/s+mpqa+4eHhfS1gb52vwuP0trPjhSZCBtLQ0NA3MDDQQIFYAUHBYhuvzjpVbJr1lZWVP3p7e19UVVXNgHumXYrI4uBx6Yqevz02b0FcRQ8CoBQF3dXVpQLZ3d39C7n+ora29vfJyclDYFnWgFyxK3cxhss/+KoT/N6DVkQpKypFGUCp3Ozo6HgSHx//GLW/BwHsg57zl5pzADajwLn52mPL1ZHPloMoRYPMFL6EhAR18e7s7MxVV1fPsAAp4Avteq7dC/c1+wKI4g+EfGzDM+EYHBw8RDrNiA2QL6upqVGvKJ2/gHu2L1nA5wwEB2YDfSYMO1x/px0cgEc2zBY+eo67u6H29vZ/wU2VC8l58JxKNjDOgojNEp08aFVfX++3l6JMEdDx8fEB0FNIBsDXBc8ArwuW1EkeI1RKdLWmCx+1DhkZGRvR0dFfSsHKxYtnW0iqvJAN9xNm6MR/QO5sfapUSkqKmqW5ubmfwVgyZdpw/vPZl2kUEAinBMSUStG+gwra0NDQSynQKyloIxnlewafjDFLJzLRBJqiFMnqyMgIbG5uDuD996Dnv8iAPOMAPmbcm5lVJwA/vZRMKZGZlpaWVtAvUL4GZMqE1fjRJrUd76LHoX+InlhcXPwZnWW2tra6jjrpiBM3UK/weQr6J+gfodMh9HtwncG7YLA3CMSsLmxx5WuDCt8B7vZeicInTjCWlpb6wc15mfey7oc9E8LElpVmMgb9AXoC+qcTExOPKRu4NlTHs6Q10GfhgfYOvRsJQZ76BWMKuDtaolQs+gfoH6Mn436gDg+e+5BKXUQx/C5Je/a+NpbeiQJPKgUdlNXx/BCBKxVdxW5Q0I3XBqFKRhU4KLtjYawi3csuTKdc4FnIXNvKUJkVEGRG20QZAAUpA5DbaYAQLmQzfzxyk/ffdnCD4NWVnGdE7kQBQvQHC5lVEDxgMaM29lkxGCNLKrDnIbFAMkFmBIaDkHstU41coGZ1TZD5UjReCGUAYbNgdNqoXZB/T67yYbFAMiGML3BhYeH8rb0t9h/zgcTBcTNGiQAAAABJRU5ErkJggg==", Y_ = "data:image/png;base64,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", G_ = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iNDBweCIgaGVpZ2h0PSI0MHB4IiB2aWV3Qm94PSIwIDAgNDAgNDAiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDYwLjEgKDg4MTMzKSAtIGh0dHBzOi8vc2tldGNoLmNvbSAtLT4KICAgIDx0aXRsZT5zaGFwZS1jdXJzb3I8L3RpdGxlPgogICAgPGRlc2M+Q3JlYXRlZCB3aXRoIFNrZXRjaC48L2Rlc2M+CiAgICA8ZGVmcz4KICAgICAgICA8cGF0aCBkPSJNMjAsMjEuNSBDMjAuMjQ1NDU5OSwyMS41IDIwLjQ0OTYwODQsMjEuNjc2ODc1MiAyMC40OTE5NDQzLDIxLjkxMDEyNDQgTDIwLjUsMjIgTDIwLjUsMjcgQzIwLjUsMjcuMjc2MTQyNCAyMC4yNzYxNDI0LDI3LjUgMjAsMjcuNSBDMTkuNzU0NTQwMSwyNy41IDE5LjU1MDM5MTYsMjcuMzIzMTI0OCAxOS41MDgwNTU3LDI3LjA4OTg3NTYgTDE5LjUsMjcgTDE5LjUsMjIgQzE5LjUsMjEuNzIzODU3NiAxOS43MjM4NTc2LDIxLjUgMjAsMjEuNSBaIE0yNywxOS41IEMyNy4yNzYxNDI0LDE5LjUgMjcuNSwxOS43MjM4NTc2IDI3LjUsMjAgQzI3LjUsMjAuMjQ1NDU5OSAyNy4zMjMxMjQ4LDIwLjQ0OTYwODQgMjcuMDg5ODc1NiwyMC40OTE5NDQzIEwyNywyMC41IEwyMiwyMC41IEMyMS43MjM4NTc2LDIwLjUgMjEuNSwyMC4yNzYxNDI0IDIxLjUsMjAgQzIxLjUsMTkuNzU0NTQwMSAyMS42NzY4NzUyLDE5LjU1MDM5MTYgMjEuOTEwMTI0NCwxOS41MDgwNTU3IEwyMiwxOS41IEwyNywxOS41IFogTTE4LDE5LjUgQzE4LjI3NjE0MjQsMTkuNSAxOC41LDE5LjcyMzg1NzYgMTguNSwyMCBDMTguNSwyMC4yNDU0NTk5IDE4LjMyMzEyNDgsMjAuNDQ5NjA4NCAxOC4wODk4NzU2LDIwLjQ5MTk0NDMgTDE4LDIwLjUgTDEzLDIwLjUgQzEyLjcyMzg1NzYsMjAuNSAxMi41LDIwLjI3NjE0MjQgMTIuNSwyMCBDMTIuNSwxOS43NTQ1NDAxIDEyLjY3Njg3NTIsMTkuNTUwMzkxNiAxMi45MTAxMjQ0LDE5LjUwODA1NTcgTDEzLDE5LjUgTDE4LDE5LjUgWiBNMjAsMTIuNSBDMjAuMjQ1NDU5OSwxMi41IDIwLjQ0OTYwODQsMTIuNjc2ODc1MiAyMC40OTE5NDQzLDEyLjkxMDEyNDQgTDIwLjUsMTMgTDIwLjUsMTggQzIwLjUsMTguMjc2MTQyNCAyMC4yNzYxNDI0LDE4LjUgMjAsMTguNSBDMTkuNzU0NTQwMSwxOC41IDE5LjU1MDM5MTYsMTguMzIzMTI0OCAxOS41MDgwNTU3LDE4LjA4OTg3NTYgTDE5LjUsMTggTDE5LjUsMTMgQzE5LjUsMTIuNzIzODU3NiAxOS43MjM4NTc2LDEyLjUgMjAsMTIuNSBaIiBpZD0icGF0aC0xIj48L3BhdGg+CiAgICAgICAgPGZpbHRlciB4PSItNjQuNiUiIHk9Ii01OS41JSIgd2lkdGg9IjIyOS4zJSIgaGVpZ2h0PSIyNDYuMSUiIGZpbHRlclVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgaWQ9ImZpbHRlci0yIj4KICAgICAgICAgICAgPGZlTW9ycGhvbG9neSByYWRpdXM9IjEiIG9wZXJhdG9yPSJkaWxhdGUiIGluPSJTb3VyY2VBbHBoYSIgcmVzdWx0PSJzaGFkb3dTcHJlYWRPdXRlcjEiPjwvZmVNb3JwaG9sb2d5PgogICAgICAgICAgICA8ZmVPZmZzZXQgZHg9IjAiIGR5PSIyIiBpbj0ic2hhZG93U3ByZWFkT3V0ZXIxIiByZXN1bHQ9InNoYWRvd09mZnNldE91dGVyMSI+PC9mZU9mZnNldD4KICAgICAgICAgICAgPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iMyIgaW49InNoYWRvd09mZnNldE91dGVyMSIgcmVzdWx0PSJzaGFkb3dCbHVyT3V0ZXIxIj48L2ZlR2F1c3NpYW5CbHVyPgogICAgICAgICAgICA8ZmVDb21wb3NpdGUgaW49InNoYWRvd0JsdXJPdXRlcjEiIGluMj0iU291cmNlQWxwaGEiIG9wZXJhdG9yPSJvdXQiIHJlc3VsdD0ic2hhZG93Qmx1ck91dGVyMSI+PC9mZUNvbXBvc2l0ZT4KICAgICAgICAgICAgPGZlQ29sb3JNYXRyaXggdmFsdWVzPSIwIDAgMCAwIDAgICAwIDAgMCAwIDAgICAwIDAgMCAwIDAgIDAgMCAwIDAuMTYgMCIgdHlwZT0ibWF0cml4IiBpbj0ic2hhZG93Qmx1ck91dGVyMSI+PC9mZUNvbG9yTWF0cml4PgogICAgICAgIDwvZmlsdGVyPgogICAgPC9kZWZzPgogICAgPGcgaWQ9Iumhtemdoi00IiBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj4KICAgICAgICA8ZyBpZD0iV2hpdGVib2FyZC1HdWlkZWxpbmVzIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMzQ0LjAwMDAwMCwgLTc1MS4wMDAwMDApIj4KICAgICAgICAgICAgPGcgaWQ9InNoYXBlLWN1cnNvciIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzQ0LjAwMDAwMCwgNzUxLjAwMDAwMCkiPgogICAgICAgICAgICAgICAgPHJlY3QgaWQ9IuefqeW9ouWkh+S7vS00NCIgZmlsbD0iI0ZGRkZGRiIgb3BhY2l0eT0iMC4wMSIgeD0iMCIgeT0iMCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMiI+PC9yZWN0PgogICAgICAgICAgICAgICAgPGcgaWQ9IuW9oueKtue7k+WQiCIgZmlsbC1ydWxlPSJub256ZXJvIj4KICAgICAgICAgICAgICAgICAgICA8dXNlIGZpbGw9ImJsYWNrIiBmaWxsLW9wYWNpdHk9IjEiIGZpbHRlcj0idXJsKCNmaWx0ZXItMikiIHhsaW5rOmhyZWY9IiNwYXRoLTEiPjwvdXNlPgogICAgICAgICAgICAgICAgICAgIDxwYXRoIHN0cm9rZT0iI0ZGRkZGRiIgc3Ryb2tlLXdpZHRoPSIxIiBkPSJNMjAsMjEgQzIwLjQ4NTQxMDMsMjEgMjAuODk4MDg1LDIxLjM0Nzk5OTMgMjAuOTg5OTQ3OSwyMS44NjU0ODc3IEwyMSwyMiBMMjEsMjcgQzIxLDI3LjU1MjI4NDcgMjAuNTUyMjg0NywyOCAyMCwyOCBDMTkuNTE0NTg5NywyOCAxOS4xMDE5MTUsMjcuNjUyMDAwNyAxOS4wMTAwNTIxLDI3LjEzNDUxMjMgTDE5LDI3IEwxOSwyMiBDMTksMjEuNDQ3NzE1MyAxOS40NDc3MTUzLDIxIDIwLDIxIFogTTI3LDE5IEMyNy41NTIyODQ3LDE5IDI4LDE5LjQ0NzcxNTMgMjgsMjAgQzI4LDIwLjQ4NTQxMDMgMjcuNjUyMDAwNywyMC44OTgwODUgMjcuMTM0NTEyMywyMC45ODk5NDc5IEwyNywyMSBMMjIsMjEgQzIxLjQ0NzcxNTMsMjEgMjEsMjAuNTUyMjg0NyAyMSwyMCBDMjEsMTkuNTE0NTg5NyAyMS4zNDc5OTkzLDE5LjEwMTkxNSAyMS44NjU0ODc3LDE5LjAxMDA1MjEgTDIyLDE5IEwyNywxOSBaIE0xOCwxOSBDMTguNTUyMjg0NywxOSAxOSwxOS40NDc3MTUzIDE5LDIwIEMxOSwyMC40ODU0MTAzIDE4LjY1MjAwMDcsMjAuODk4MDg1IDE4LjEzNDUxMjMsMjAuOTg5OTQ3OSBMMTgsMjEgTDEzLDIxIEMxMi40NDc3MTUzLDIxIDEyLDIwLjU1MjI4NDcgMTIsMjAgQzEyLDE5LjUxNDU4OTcgMTIuMzQ3OTk5MywxOS4xMDE5MTUgMTIuODY1NDg3NywxOS4wMTAwNTIxIEwxMywxOSBMMTgsMTkgWiBNMjAsMTIgQzIwLjQ4NTQxMDMsMTIgMjAuODk4MDg1LDEyLjM0Nzk5OTMgMjAuOTg5OTQ3OSwxMi44NjU0ODc3IEwyMSwxMyBMMjEsMTggQzIxLDE4LjU1MjI4NDcgMjAuNTUyMjg0NywxOSAyMCwxOSBDMTkuNTE0NTg5NywxOSAxOS4xMDE5MTUsMTguNjUyMDAwNyAxOS4wMTAwNTIxLDE4LjEzNDUxMjMgTDE5LDE4IEwxOSwxMyBDMTksMTIuNDQ3NzE1MyAxOS40NDc3MTUzLDEyIDIwLDEyIFoiIGZpbGw9IiMyMTIzMjQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PC9wYXRoPgogICAgICAgICAgICAgICAgPC9nPgogICAgICAgICAgICAgICAgPHJlY3QgaWQ9IuefqeW9oiIgZmlsbD0iI0ZGRkZGRiIgeD0iMTguNSIgeT0iMTciIHdpZHRoPSIzIiBoZWlnaHQ9IjYiPjwvcmVjdD4KICAgICAgICAgICAgICAgIDxyZWN0IGlkPSLnn6nlvaIiIGZpbGw9IiNGRkZGRkYiIHg9IjE3IiB5PSIxOC41IiB3aWR0aD0iNiIgaGVpZ2h0PSIzIj48L3JlY3Q+CiAgICAgICAgICAgICAgICA8cGF0aCBkPSJNMjAsMjEuNSBDMjAuMjQ1NDU5OSwyMS41IDIwLjQ0OTYwODQsMjEuNjc2ODc1MiAyMC40OTE5NDQzLDIxLjkxMDEyNDQgTDIwLjUsMjIgTDIwLjUsMjcgQzIwLjUsMjcuMjc2MTQyNCAyMC4yNzYxNDI0LDI3LjUgMjAsMjcuNSBDMTkuNzU0NTQwMSwyNy41IDE5LjU1MDM5MTYsMjcuMzIzMTI0OCAxOS41MDgwNTU3LDI3LjA4OTg3NTYgTDE5LjUsMjcgTDE5LjUsMjIgQzE5LjUsMjEuNzIzODU3NiAxOS43MjM4NTc2LDIxLjUgMjAsMjEuNSBaIE0yNywxOS41IEMyNy4yNzYxNDI0LDE5LjUgMjcuNSwxOS43MjM4NTc2IDI3LjUsMjAgQzI3LjUsMjAuMjQ1NDU5OSAyNy4zMjMxMjQ4LDIwLjQ0OTYwODQgMjcuMDg5ODc1NiwyMC40OTE5NDQzIEwyNywyMC41IEwyMiwyMC41IEMyMS43MjM4NTc2LDIwLjUgMjEuNSwyMC4yNzYxNDI0IDIxLjUsMjAgQzIxLjUsMTkuNzU0NTQwMSAyMS42NzY4NzUyLDE5LjU1MDM5MTYgMjEuOTEwMTI0NCwxOS41MDgwNTU3IEwyMiwxOS41IEwyNywxOS41IFogTTE4LDE5LjUgQzE4LjI3NjE0MjQsMTkuNSAxOC41LDE5LjcyMzg1NzYgMTguNSwyMCBDMTguNSwyMC4yNDU0NTk5IDE4LjMyMzEyNDgsMjAuNDQ5NjA4NCAxOC4wODk4NzU2LDIwLjQ5MTk0NDMgTDE4LDIwLjUgTDEzLDIwLjUgQzEyLjcyMzg1NzYsMjAuNSAxMi41LDIwLjI3NjE0MjQgMTIuNSwyMCBDMTIuNSwxOS43NTQ1NDAxIDEyLjY3Njg3NTIsMTkuNTUwMzkxNiAxMi45MTAxMjQ0LDE5LjUwODA1NTcgTDEzLDE5LjUgTDE4LDE5LjUgWiBNMjAsMTIuNSBDMjAuMjQ1NDU5OSwxMi41IDIwLjQ0OTYwODQsMTIuNjc2ODc1MiAyMC40OTE5NDQzLDEyLjkxMDEyNDQgTDIwLjUsMTMgTDIwLjUsMTggQzIwLjUsMTguMjc2MTQyNCAyMC4yNzYxNDI0LDE4LjUgMjAsMTguNSBDMTkuNzU0NTQwMSwxOC41IDE5LjU1MDM5MTYsMTguMzIzMTI0OCAxOS41MDgwNTU3LDE4LjA4OTg3NTYgTDE5LjUsMTggTDE5LjUsMTMgQzE5LjUsMTIuNzIzODU3NiAxOS43MjM4NTc2LDEyLjUgMjAsMTIuNSBaIiBpZD0i5b2i54q257uT5ZCIIiBmaWxsPSIjMjEyMzI0IiBmaWxsLXJ1bGU9Im5vbnplcm8iPjwvcGF0aD4KICAgICAgICAgICAgPC9nPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+", X_ = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iNDdweCIgaGVpZ2h0PSI0MHB4IiB2aWV3Qm94PSIwIDAgNDcgNDAiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDYwLjEgKDg4MTMzKSAtIGh0dHBzOi8vc2tldGNoLmNvbSAtLT4KICAgIDx0aXRsZT50ZXh0LWN1cnNvcjwvdGl0bGU+CiAgICA8ZGVzYz5DcmVhdGVkIHdpdGggU2tldGNoLjwvZGVzYz4KICAgIDxkZWZzPgogICAgICAgIDxwYXRoIGQ9Ik0xNiwyNi41IEMxNS43MjM4NTc2LDI2LjUgMTUuNSwyNi4yNzYxNDI0IDE1LjUsMjYgQzE1LjUsMjUuNzU0NTQwMSAxNS42NzY4NzUyLDI1LjU1MDM5MTYgMTUuOTEwMTI0NCwyNS41MDgwNTU3IEwxNiwyNS41IEwxOS41LDI1LjUgTDE5LjUsMTQuNSBMMTYsMTQuNSBDMTUuNzIzODU3NiwxNC41IDE1LjUsMTQuMjc2MTQyNCAxNS41LDE0IEMxNS41LDEzLjc1NDU0MDEgMTUuNjc2ODc1MiwxMy41NTAzOTE2IDE1LjkxMDEyNDQsMTMuNTA4MDU1NyBMMTYsMTMuNSBMMjQsMTMuNSBDMjQuMjc2MTQyNCwxMy41IDI0LjUsMTMuNzIzODU3NiAyNC41LDE0IEMyNC41LDE0LjI0NTQ1OTkgMjQuMzIzMTI0OCwxNC40NDk2MDg0IDI0LjA4OTg3NTYsMTQuNDkxOTQ0MyBMMjQsMTQuNSBMMjAuNSwxNC41IEwyMC41LDI1LjUgTDI0LDI1LjUgQzI0LjI3NjE0MjQsMjUuNSAyNC41LDI1LjcyMzg1NzYgMjQuNSwyNiBDMjQuNSwyNi4yNDU0NTk5IDI0LjMyMzEyNDgsMjYuNDQ5NjA4NCAyNC4wODk4NzU2LDI2LjQ5MTk0NDMgTDI0LDI2LjUgTDE2LDI2LjUgWiIgaWQ9InBhdGgtMSI+PC9wYXRoPgogICAgICAgIDxmaWx0ZXIgeD0iLTI4NC4wJSIgeT0iLTgxLjUlIiB3aWR0aD0iNjY4LjElIiBoZWlnaHQ9IjI5My45JSIgZmlsdGVyVW5pdHM9Im9iamVjdEJvdW5kaW5nQm94IiBpZD0iZmlsdGVyLTIiPgogICAgICAgICAgICA8ZmVNb3JwaG9sb2d5IHJhZGl1cz0iMSIgb3BlcmF0b3I9ImRpbGF0ZSIgaW49IlNvdXJjZUFscGhhIiByZXN1bHQ9InNoYWRvd1NwcmVhZE91dGVyMSI+PC9mZU1vcnBob2xvZ3k+CiAgICAgICAgICAgIDxmZU9mZnNldCBkeD0iMCIgZHk9IjIiIGluPSJzaGFkb3dTcHJlYWRPdXRlcjEiIHJlc3VsdD0ic2hhZG93T2Zmc2V0T3V0ZXIxIj48L2ZlT2Zmc2V0PgogICAgICAgICAgICA8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIzIiBpbj0ic2hhZG93T2Zmc2V0T3V0ZXIxIiByZXN1bHQ9InNoYWRvd0JsdXJPdXRlcjEiPjwvZmVHYXVzc2lhbkJsdXI+CiAgICAgICAgICAgIDxmZUNvbXBvc2l0ZSBpbj0ic2hhZG93Qmx1ck91dGVyMSIgaW4yPSJTb3VyY2VBbHBoYSIgb3BlcmF0b3I9Im91dCIgcmVzdWx0PSJzaGFkb3dCbHVyT3V0ZXIxIj48L2ZlQ29tcG9zaXRlPgogICAgICAgICAgICA8ZmVDb2xvck1hdHJpeCB2YWx1ZXM9IjAgMCAwIDAgMCAgIDAgMCAwIDAgMCAgIDAgMCAwIDAgMCAgMCAwIDAgMC4xNiAwIiB0eXBlPSJtYXRyaXgiIGluPSJzaGFkb3dCbHVyT3V0ZXIxIj48L2ZlQ29sb3JNYXRyaXg+CiAgICAgICAgPC9maWx0ZXI+CiAgICA8L2RlZnM+CiAgICA8ZyBpZD0i6aG16Z2iLTQiIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPgogICAgICAgIDxnIGlkPSJXaGl0ZWJvYXJkLUd1aWRlbGluZXMiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0zODguMDAwMDAwLCAtNjcyLjAwMDAwMCkiPgogICAgICAgICAgICA8ZyBpZD0idGV4dC1jdXJzb3IiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDM5Mi4wMDAwMDAsIDY3Mi4wMDAwMDApIj4KICAgICAgICAgICAgICAgIDxyZWN0IGlkPSLnn6nlvaLlpIfku70tNDAiIGZpbGw9IiNGRkZGRkYiIG9wYWNpdHk9IjAuMDEiIHg9IjAiIHk9IjAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcng9IjIiPjwvcmVjdD4KICAgICAgICAgICAgICAgIDxnIGlkPSLlvaLnirbnu5PlkIgiIGZpbGwtcnVsZT0ibm9uemVybyI+CiAgICAgICAgICAgICAgICAgICAgPHVzZSBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIxIiBmaWx0ZXI9InVybCgjZmlsdGVyLTIpIiB4bGluazpocmVmPSIjcGF0aC0xIj48L3VzZT4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMSIgZD0iTTE5LDI1IEwxOSwxNSBMMTYsMTUgQzE1LjQ0NzcxNTMsMTUgMTUsMTQuNTUyMjg0NyAxNSwxNCBDMTUsMTMuNTE0NTg5NyAxNS4zNDc5OTkzLDEzLjEwMTkxNSAxNS44NjU0ODc3LDEzLjAxMDA1MjEgTDE2LDEzIEwyNCwxMyBDMjQuNTUyMjg0NywxMyAyNSwxMy40NDc3MTUzIDI1LDE0IEMyNSwxNC40ODU0MTAzIDI0LjY1MjAwMDcsMTQuODk4MDg1IDI0LjEzNDUxMjMsMTQuOTg5OTQ3OSBMMjQsMTUgTDIxLDE1IEwyMSwyNSBMMjQsMjUgQzI0LjU1MjI4NDcsMjUgMjUsMjUuNDQ3NzE1MyAyNSwyNiBDMjUsMjYuNDg1NDEwMyAyNC42NTIwMDA3LDI2Ljg5ODA4NSAyNC4xMzQ1MTIzLDI2Ljk4OTk0NzkgTDI0LDI3IEwxNiwyNyBDMTUuNDQ3NzE1MywyNyAxNSwyNi41NTIyODQ3IDE1LDI2IEMxNSwyNS41MTQ1ODk3IDE1LjM0Nzk5OTMsMjUuMTAxOTE1IDE1Ljg2NTQ4NzcsMjUuMDEwMDUyMSBMMTYsMjUgTDE5LDI1IFoiIGZpbGw9IiMyMTIzMjQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PC9wYXRoPgogICAgICAgICAgICAgICAgPC9nPgogICAgICAgICAgICA8L2c+CiAgICAgICAgPC9nPgogICAgPC9nPgo8L3N2Zz4=", J_ = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMjhweCIgaGVpZ2h0PSIyOHB4IiB2aWV3Qm94PSIwIDAgMjggMjgiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDU1LjEgKDc4MTM2KSAtIGh0dHBzOi8vc2tldGNoYXBwLmNvbSAtLT4KICAgIDx0aXRsZT7nvJbnu4QgMjwvdGl0bGU+CiAgICA8ZGVzYz5DcmVhdGVkIHdpdGggU2tldGNoLjwvZGVzYz4KICAgIDxkZWZzPgogICAgICAgIDxmaWx0ZXIgeD0iLTEyMC4wJSIgeT0iLTEyMC4wJSIgd2lkdGg9IjM0MC4wJSIgaGVpZ2h0PSIzNDAuMCUiIGZpbHRlclVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgaWQ9ImZpbHRlci0xIj4KICAgICAgICAgICAgPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iNCIgaW49IlNvdXJjZUdyYXBoaWMiPjwvZmVHYXVzc2lhbkJsdXI+CiAgICAgICAgPC9maWx0ZXI+CiAgICA8L2RlZnM+CiAgICA8ZyBpZD0i6aG16Z2iMSIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGcgaWQ9Iue8lue7hC0yIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg5LjAwMDAwMCwgOS4wMDAwMDApIiBmaWxsPSIjRkYwMTAwIj4KICAgICAgICAgICAgPGNpcmNsZSBpZD0i5qSt5ZyG5b2iIiBmaWx0ZXI9InVybCgjZmlsdGVyLTEpIiBjeD0iNSIgY3k9IjUiIHI9IjUiPjwvY2lyY2xlPgogICAgICAgICAgICA8cGF0aCBkPSJNNSw4IEM2LjY1Njg1NDI1LDggOCw2LjY1Njg1NDI1IDgsNSBDOCwzLjM0MzE0NTc1IDYuNjU2ODU0MjUsMiA1LDIgQzMuMzQzMTQ1NzUsMiAyLDMuMzQzMTQ1NzUgMiw1IEMyLDYuNjU2ODU0MjUgMy4zNDMxNDU3NSw4IDUsOCBaIE01LDYuMjg1NzE0MjkgQzQuMjg5OTE5NjEsNi4yODU3MTQyOSAzLjcxNDI4NTcxLDUuNzEwMDgwMzkgMy43MTQyODU3MSw1IEMzLjcxNDI4NTcxLDQuMjg5OTE5NjEgNC4yODk5MTk2MSwzLjcxNDI4NTcxIDUsMy43MTQyODU3MSBDNS43MTAwODAzOSwzLjcxNDI4NTcxIDYuMjg1NzE0MjksNC4yODk5MTk2MSA2LjI4NTcxNDI5LDUgQzYuMjg1NzE0MjksNS43MTAwODAzOSA1LjcxMDA4MDM5LDYuMjg1NzE0MjkgNSw2LjI4NTcxNDI5IFoiIGlkPSLmpK3lnIblvaIiIGZpbGwtcnVsZT0ibm9uemVybyI+PC9wYXRoPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+", q_ = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMjYiIHZpZXdCb3g9IjAgMCAxOCAyNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3QgeD0iMC41IiB5PSIwLjUiIHdpZHRoPSIxNyIgaGVpZ2h0PSIyNSIgcng9IjMuNSIgZmlsbD0iYmxhY2siIGZpbGwtb3BhY2l0eT0iMC4zNSIgc3Ryb2tlPSJ3aGl0ZSIvPgo8L3N2Zz4K", K_ = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjYiIGhlaWdodD0iMzQiIHZpZXdCb3g9IjAgMCAyNiAzNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3QgeD0iMC41IiB5PSIwLjUiIHdpZHRoPSIyNSIgaGVpZ2h0PSIzMyIgcng9IjMuNSIgZmlsbD0iYmxhY2siIGZpbGwtb3BhY2l0eT0iMC4zNSIgc3Ryb2tlPSJ3aGl0ZSIvPgo8L3N2Zz4K", eP = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzQiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCAzNCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3QgeD0iMC41IiB5PSIwLjUiIHdpZHRoPSIzMyIgaGVpZ2h0PSI0OSIgcng9IjMuNSIgZmlsbD0iYmxhY2siIGZpbGwtb3BhY2l0eT0iMC4zNSIgc3Ryb2tlPSJ3aGl0ZSIvPgo8L3N2Zz4K", tP = {
+  [Dn.pencil]: Q_,
+  [Dn.selector]: Z_,
+  [Dn.eraser]: Y_,
+  [Dn.shape]: G_,
+  [Dn.text]: X_,
+  [Dn.laserPointer]: J_,
+  pencilEraser1: q_,
+  pencilEraser2: K_,
+  pencilEraser3: eP
 }, zT = "local-cursor";
-class iP {
+class nP {
   constructor(n, a, l, h) {
     var g;
     this.manager = n, this.enableCursor = a, this.cursorInstances = /* @__PURE__ */ new Map(), this.userApplianceIcons = {}, this.sideEffectManager = new Pd(), this.store = this.manager.store, this.leaveFlag = !0, this._style = "default", this.onCursorMove = (C) => {
@@ -4937,7 +4937,7 @@ class iP {
       }
     }, this.initCursorInstance = (C) => {
       let S = this.cursorInstances.get(C);
-      return S || (S = new Q_(this.manager, C, this, St.wrapper), this.cursorInstances.set(C, S)), S;
+      return S || (S = new $_(this.manager, C, this, St.wrapper), this.cursorInstances.set(C, S)), S;
     }, this.mouseMoveListener_ = (C, S) => {
       const I = this.getType(C);
       this.updateCursor(I, C.clientX, C.clientY), S && this.showPencilEraserIfNeeded(I, C.clientX, C.clientY);
@@ -4989,7 +4989,7 @@ class iP {
     }), h && (this.userApplianceIcons = h), this.style = (l == null ? void 0 : l.style) || "default";
   }
   get applianceIcons() {
-    return { ...nP, ...this.userApplianceIcons };
+    return { ...tP, ...this.userApplianceIcons };
   }
   get style() {
     return this._style;
@@ -5001,7 +5001,7 @@ class iP {
   }
   enableCustomCursor() {
     this.sideEffectManager.add(
-      () => F_(this.manager.getMemberState()),
+      () => W_(this.manager.getMemberState()),
       zT
     );
   }
@@ -5071,7 +5071,7 @@ class iP {
     }), this.cursorInstances.clear());
   }
 }
-class rP {
+class iP {
   constructor(n) {
     this.manager = n, tt.on("changePageState", () => {
       Nt.emit("pageStateChange", this.toObject());
@@ -5090,7 +5090,7 @@ class rP {
     };
   }
 }
-class aP {
+class rP {
   constructor(n) {
     this.ctx = n, this.reactors = /* @__PURE__ */ new Map(), this.disposers = /* @__PURE__ */ new Map(), this.onPhaseChanged = async (a) => {
       var l, h;
@@ -5140,9 +5140,9 @@ class aP {
     (n = this.room) == null || n.callbacks.off("onPhaseChanged", this.onPhaseChanged), (a = this.room) == null || a.removeMagixEventListener(yb, this.onReconnected), this.releaseDisposers();
   }
 }
-const sP = (r, n) => {
+const aP = (r, n) => {
   if (pS(r))
-    lP(r);
+    oP(r);
   else {
     if (r = r, Object.getOwnPropertyDescriptor(r, "disableCameraTransform"))
       return;
@@ -5161,9 +5161,9 @@ const sP = (r, n) => {
       get() {
         return n.canRedoSteps;
       }
-    }), r.moveCamera = (l) => n.moveCamera(l), r.moveCameraToContain = (...l) => n.moveCameraToContain(...l), r.convertToPointInWorld = (...l) => n.mainView.convertToPointInWorld(...l), r.setCameraBound = (...l) => n.mainView.setCameraBound(...l), r.scenePreview = (...l) => n.mainView.scenePreview(...l), r.fillSceneSnapshot = (...l) => n.mainView.fillSceneSnapshot(...l), r.generateScreenshot = (...l) => n.mainView.generateScreenshot(...l), r.setMemberState = (...l) => n.mainView.setMemberState(...l), r.redo = () => n.redo(), r.undo = () => n.undo(), r.cleanCurrentScene = () => n.cleanCurrentScene(), r.delete = () => n.delete(), r.copy = () => n.copy(), r.paste = () => n.paste(), r.duplicate = () => n.duplicate(), r.insertImage = (...l) => n.insertImage(...l), r.completeImageUpload = (...l) => n.completeImageUpload(...l), r.insertText = (...l) => n.insertText(...l), r.lockImage = (...l) => n.lockImage(...l), r.lockImages = (...l) => n.lockImages(...l), oP(r, n);
+    }), r.moveCamera = (l) => n.moveCamera(l), r.moveCameraToContain = (...l) => n.moveCameraToContain(...l), r.convertToPointInWorld = (...l) => n.mainView.convertToPointInWorld(...l), r.setCameraBound = (...l) => n.mainView.setCameraBound(...l), r.scenePreview = (...l) => n.mainView.scenePreview(...l), r.fillSceneSnapshot = (...l) => n.mainView.fillSceneSnapshot(...l), r.generateScreenshot = (...l) => n.mainView.generateScreenshot(...l), r.setMemberState = (...l) => n.mainView.setMemberState(...l), r.redo = () => n.redo(), r.undo = () => n.undo(), r.cleanCurrentScene = () => n.cleanCurrentScene(), r.delete = () => n.delete(), r.copy = () => n.copy(), r.paste = () => n.paste(), r.duplicate = () => n.duplicate(), r.insertImage = (...l) => n.insertImage(...l), r.completeImageUpload = (...l) => n.completeImageUpload(...l), r.insertText = (...l) => n.insertText(...l), r.lockImage = (...l) => n.lockImage(...l), r.lockImages = (...l) => n.lockImages(...l), sP(r, n);
   }
-}, oP = (r, n) => {
+}, sP = (r, n) => {
   const a = r.removeScenes;
   r.removeScenes = (l, h) => {
     var w;
@@ -5171,7 +5171,7 @@ const sP = (r, n) => {
     const m = a.call(r, l);
     return tt.emit("removeScenes", { scenePath: l, index: h }), m;
   };
-}, lP = (r) => {
+}, oP = (r) => {
   const n = r.seekToProgressTime;
   async function a(l) {
     await tt.emit("seekStart");
@@ -5180,37 +5180,37 @@ const sP = (r, n) => {
   }
   r.seekToProgressTime = a;
 };
-var uP = Object.defineProperty, cP = Object.defineProperties, dP = Object.getOwnPropertyDescriptors, OT = Object.getOwnPropertySymbols, fP = Object.prototype.hasOwnProperty, hP = Object.prototype.propertyIsEnumerable, LT = (r, n, a) => n in r ? uP(r, n, { enumerable: !0, configurable: !0, writable: !0, value: a }) : r[n] = a, uE = (r, n) => {
+var lP = Object.defineProperty, uP = Object.defineProperties, cP = Object.getOwnPropertyDescriptors, OT = Object.getOwnPropertySymbols, dP = Object.prototype.hasOwnProperty, fP = Object.prototype.propertyIsEnumerable, LT = (r, n, a) => n in r ? lP(r, n, { enumerable: !0, configurable: !0, writable: !0, value: a }) : r[n] = a, uE = (r, n) => {
   for (var a in n || (n = {}))
-    fP.call(n, a) && LT(r, a, n[a]);
+    dP.call(n, a) && LT(r, a, n[a]);
   if (OT)
     for (var a of OT(n))
-      hP.call(n, a) && LT(r, a, n[a]);
+      fP.call(n, a) && LT(r, a, n[a]);
   return r;
-}, cE = (r, n) => cP(r, dP(n)), BT, pP = /* @__PURE__ */ (() => `.netless-app-docs-viewer-content{position:relative;height:100%;overflow:hidden}.netless-app-docs-viewer-preview-mask{display:block;position:absolute;z-index:200;top:0;left:0;width:100%;height:100%}.netless-app-docs-viewer-preview{display:flex;flex-direction:column;align-items:center;z-index:300;top:0;right:0;width:23%;padding:12px;box-shadow:-4.8px -3.2px 20px #20233826;transition:transform .4s;background:#f5f5fc;border-radius:4px;-webkit-box-shadow:-4.8px -3.2px 20px rgba(32,35,56,.15);height:100%;position:absolute}.netless-app-docs-viewer-preview-active .netless-app-docs-viewer-preview-mask{display:block}.netless-app-docs-viewer-preview-active .netless-app-docs-viewer-preview{transform:translate(0);opacity:1}.netless-app-docs-viewer-preview-head{display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:10px}.netless-app-docs-viewer-preview-head>h3{color:#484c70;font-weight:400;font-size:14px;width:calc(100% - 20px);overflow:hidden;-o-text-overflow:ellipsis;text-overflow:ellipsis;white-space:nowrap}.netless-app-docs-viewer-preview-head .netless-app-docs-viewer-close{width:25px;height:25px;padding:0;outline:none;border:none;background:#fff;display:flex;justify-content:center;align-items:center;border-radius:100%;cursor:pointer}.netless-app-docs-viewer-preview-head .netless-app-docs-viewer-close button{width:22px;height:22px;padding:0;outline:none;border:none;background:center/cover no-repeat;background-image:url(./icons/close.svg)}.netless-app-docs-viewer-preview-page{position:relative;display:flex;width:100%;margin-bottom:10px;font-size:0;color:transparent;outline:none;border-radius:4px;transition:border-color .3s;user-select:none;align-items:flex-end}.netless-app-docs-viewer-preview-page>img{width:calc(90% - 10px);height:auto;box-sizing:border-box;border:2px solid rgba(0,0,0,.5);border-radius:2px;background-color:#fff}.netless-app-docs-viewer-preview-page>img.netless-app-docs-viewer-active{border-color:#ff5353}.netless-app-docs-viewer-preview-page-name{text-align:right;font-size:12px;color:#8d8fa6;user-select:none;margin-right:10px;width:5%}.netless-app-docs-viewer-footer{box-sizing:border-box;height:40px;display:flex;align-items:center;padding:0 16px;color:#191919;background:#ebecfa}.netless-app-docs-viewer-float-footer{width:100%;min-height:40px;position:absolute;left:0;bottom:0;z-index:2000;transition:opacity .4s;color:#191919}.netless-app-docs-viewer-footer-btn{box-sizing:border-box;width:26px;height:26px;font-size:0;margin:0;padding:3px;border:none;border-radius:4px;outline:none;color:currentColor;background:transparent;transition:background .4s;cursor:pointer;user-select:none;-webkit-tap-highlight-color:rgba(0,0,0,0);color:#8d8fa6}.netless-app-docs-viewer-footer-btn.netless-app-docs-viewer-footer-btn-disable{color:#c6c7d2;cursor:not-allowed}.netless-app-docs-viewer-footer-btn.netless-app-docs-viewer-footer-btn-disable .arrow{fill:#c6c7d2}.netless-app-docs-viewer-footer-btn .arrow{fill:#8d8fa6}.netless-app-docs-viewer-footer-btn:hover{background-color:#1b1f4d0a}@media (hover: none){.netless-app-docs-viewer-footer-btn:hover{background:transparent!important}}.netless-app-docs-viewer-footer-btn>svg{width:100%;height:100%}.netless-app-docs-viewer-footer-btn>svg:nth-of-type(2){display:none}.netless-app-docs-viewer-footer-btn.netless-app-docs-viewer-footer-btn-playing>svg:nth-of-type(1){display:none}.netless-app-docs-viewer-footer-btn.netless-app-docs-viewer-footer-btn-playing>svg:nth-of-type(2){display:initial}.netless-app-docs-viewer-hide{display:none}.netless-app-docs-viewer-page-jumps{flex:1;display:flex;justify-content:center;align-items:center;gap:8px}.netless-app-docs-viewer-page-number{font-size:14px;color:#8d8fa6;user-select:none;white-space:nowrap;word-break:keep-all}.netless-app-docs-viewer-page-number-input{border:none;outline:none;width:3em;margin:0;padding:0 2px;text-align:right;font-size:13px;line-height:1;font-weight:400;font-family:inherit;border-radius:2px;color:currentColor;background:transparent;transition:background .4s;user-select:text;-webkit-tap-highlight-color:rgba(0,0,0,0)}.netless-app-docs-viewer-readonly .netless-app-docs-viewer-footer-btn{cursor:not-allowed}.netless-app-docs-viewer-readonly .netless-app-docs-viewer-footer-btn:hover{background:transparent}.netless-app-docs-viewer-readonly .netless-app-docs-viewer-page-number-input{cursor:not-allowed}.netless-app-docs-viewer-readonly .netless-app-docs-viewer-page-number-input:hover,.netless-app-docs-viewer-readonly .netless-app-docs-viewer-page-number-input:focus,.netless-app-docs-viewer-readonly .netless-app-docs-viewer-page-number-input:active{background:transparent;box-shadow:none}.netless-app-docs-viewer-readonly .netless-app-docs-viewer-page-number-input:disabled{color:inherit}.netless-app-docs-viewer-readonly.netless-app-docs-viewer-float-footer{display:none}.telebox-color-scheme-dark .netless-app-docs-viewer-page-number-input{color:#a6a6a8}.telebox-color-scheme-dark .netless-app-docs-viewer-page-number-input:active,.telebox-color-scheme-dark .netless-app-docs-viewer-page-number-input:focus,.telebox-color-scheme-dark .netless-app-docs-viewer-page-number-input:hover{color:#222}.telebox-color-scheme-dark .netless-app-docs-viewer-footer{color:#a6a6a8;background:#2d2d33;border-top:none}.telebox-color-scheme-dark .netless-app-docs-viewer-footer-btn:hover{background:#212126}.telebox-color-scheme-dark .netless-app-docs-viewer-preview{background:rgba(50,50,50,.9)}.netless-app-docs-viewer-static-scrollbar{position:absolute;top:0;right:0;z-index:2147483647;width:8px;min-height:30px;margin:0;padding:0;border:none;outline:none;border-radius:4px;background:rgba(68,78,96,.4);box-shadow:1px 1px 8px #ffffffb3;opacity:0;transition:background .4s,opacity .4s 3s,transform .2s;user-select:none}.netless-app-docs-viewer-static-scrollbar.netless-app-docs-viewer-static-scrollbar-dragging{background:rgba(68,78,96,.6);opacity:1;transition:background .4s,opacity .4s 3s!important}.netless-app-docs-viewer-static-scrollbar:hover,.netless-app-docs-viewer-static-scrollbar:focus{background:rgba(68,78,96,.5)}.netless-app-docs-viewer-static-scrollbar:active{background:rgba(68,78,96,.6)}.netless-app-docs-viewer-content:hover .netless-app-docs-viewer-static-scrollbar{opacity:1;transition:background .4s,opacity .4s,transform .2s}.netless-app-docs-viewer-readonly .netless-app-docs-viewer-static-scrollbar{display:none}.netless-app-docs-viewer-static-pages:hover .netless-app-docs-viewer-static-scrollbar{opacity:1;transition:background .4s,opacity .4s,transform .2s}.page-renderer-pages-container{position:relative;overflow:hidden}.page-renderer-page{position:absolute;top:0;left:0;background-position:center;background-size:cover;background-repeat:no-repeat}.page-renderer-pages-container.is-hwa .page-renderer-page{will-change:transform}.page-renderer-page-img{display:block;width:100%;height:auto;user-select:none}.netless-app-docs-viewer-static-pages{overflow:hidden;position:relative;height:100%;user-select:none}.netless-app-docs-viewer-static-page{display:block;width:100%;height:auto;user-select:none}.netless-app-docs-viewer-static-wb-view,.netless-app-docs-viewer-dynamic-wb-view{position:absolute;top:0;left:0;width:100%;height:100%;z-index:100;overflow:auto}.netless-app-docs-viewer-dynamic-wb-view .cursor-clicker .ppt-event-source{cursor:pointer}
+}, cE = (r, n) => uP(r, cP(n)), BT, hP = /* @__PURE__ */ (() => `.netless-app-docs-viewer-content{position:relative;height:100%;overflow:hidden}.netless-app-docs-viewer-preview-mask{display:block;position:absolute;z-index:200;top:0;left:0;width:100%;height:100%}.netless-app-docs-viewer-preview{display:flex;flex-direction:column;align-items:center;z-index:300;top:0;right:0;width:23%;padding:12px;box-shadow:-4.8px -3.2px 20px #20233826;transition:transform .4s;background:#f5f5fc;border-radius:4px;-webkit-box-shadow:-4.8px -3.2px 20px rgba(32,35,56,.15);height:100%;position:absolute}.netless-app-docs-viewer-preview-active .netless-app-docs-viewer-preview-mask{display:block}.netless-app-docs-viewer-preview-active .netless-app-docs-viewer-preview{transform:translate(0);opacity:1}.netless-app-docs-viewer-preview-head{display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:10px}.netless-app-docs-viewer-preview-head>h3{color:#484c70;font-weight:400;font-size:14px;width:calc(100% - 20px);overflow:hidden;-o-text-overflow:ellipsis;text-overflow:ellipsis;white-space:nowrap}.netless-app-docs-viewer-preview-head .netless-app-docs-viewer-close{width:25px;height:25px;padding:0;outline:none;border:none;background:#fff;display:flex;justify-content:center;align-items:center;border-radius:100%;cursor:pointer}.netless-app-docs-viewer-preview-head .netless-app-docs-viewer-close button{width:22px;height:22px;padding:0;outline:none;border:none;background:center/cover no-repeat;background-image:url(./icons/close.svg)}.netless-app-docs-viewer-preview-page{position:relative;display:flex;width:100%;margin-bottom:10px;font-size:0;color:transparent;outline:none;border-radius:4px;transition:border-color .3s;user-select:none;align-items:flex-end}.netless-app-docs-viewer-preview-page>img{width:calc(90% - 10px);height:auto;box-sizing:border-box;border:2px solid rgba(0,0,0,.5);border-radius:2px;background-color:#fff}.netless-app-docs-viewer-preview-page>img.netless-app-docs-viewer-active{border-color:#ff5353}.netless-app-docs-viewer-preview-page-name{text-align:right;font-size:12px;color:#8d8fa6;user-select:none;margin-right:10px;width:5%}.netless-app-docs-viewer-footer{box-sizing:border-box;height:40px;display:flex;align-items:center;padding:0 16px;color:#191919;background:#ebecfa}.netless-app-docs-viewer-float-footer{width:100%;min-height:40px;position:absolute;left:0;bottom:0;z-index:2000;transition:opacity .4s;color:#191919}.netless-app-docs-viewer-footer-btn{box-sizing:border-box;width:26px;height:26px;font-size:0;margin:0;padding:3px;border:none;border-radius:4px;outline:none;color:currentColor;background:transparent;transition:background .4s;cursor:pointer;user-select:none;-webkit-tap-highlight-color:rgba(0,0,0,0);color:#8d8fa6}.netless-app-docs-viewer-footer-btn.netless-app-docs-viewer-footer-btn-disable{color:#c6c7d2;cursor:not-allowed}.netless-app-docs-viewer-footer-btn.netless-app-docs-viewer-footer-btn-disable .arrow{fill:#c6c7d2}.netless-app-docs-viewer-footer-btn .arrow{fill:#8d8fa6}.netless-app-docs-viewer-footer-btn:hover{background-color:#1b1f4d0a}@media (hover: none){.netless-app-docs-viewer-footer-btn:hover{background:transparent!important}}.netless-app-docs-viewer-footer-btn>svg{width:100%;height:100%}.netless-app-docs-viewer-footer-btn>svg:nth-of-type(2){display:none}.netless-app-docs-viewer-footer-btn.netless-app-docs-viewer-footer-btn-playing>svg:nth-of-type(1){display:none}.netless-app-docs-viewer-footer-btn.netless-app-docs-viewer-footer-btn-playing>svg:nth-of-type(2){display:initial}.netless-app-docs-viewer-hide{display:none}.netless-app-docs-viewer-page-jumps{flex:1;display:flex;justify-content:center;align-items:center;gap:8px}.netless-app-docs-viewer-page-number{font-size:14px;color:#8d8fa6;user-select:none;white-space:nowrap;word-break:keep-all}.netless-app-docs-viewer-page-number-input{border:none;outline:none;width:3em;margin:0;padding:0 2px;text-align:right;font-size:13px;line-height:1;font-weight:400;font-family:inherit;border-radius:2px;color:currentColor;background:transparent;transition:background .4s;user-select:text;-webkit-tap-highlight-color:rgba(0,0,0,0)}.netless-app-docs-viewer-readonly .netless-app-docs-viewer-footer-btn{cursor:not-allowed}.netless-app-docs-viewer-readonly .netless-app-docs-viewer-footer-btn:hover{background:transparent}.netless-app-docs-viewer-readonly .netless-app-docs-viewer-page-number-input{cursor:not-allowed}.netless-app-docs-viewer-readonly .netless-app-docs-viewer-page-number-input:hover,.netless-app-docs-viewer-readonly .netless-app-docs-viewer-page-number-input:focus,.netless-app-docs-viewer-readonly .netless-app-docs-viewer-page-number-input:active{background:transparent;box-shadow:none}.netless-app-docs-viewer-readonly .netless-app-docs-viewer-page-number-input:disabled{color:inherit}.netless-app-docs-viewer-readonly.netless-app-docs-viewer-float-footer{display:none}.telebox-color-scheme-dark .netless-app-docs-viewer-page-number-input{color:#a6a6a8}.telebox-color-scheme-dark .netless-app-docs-viewer-page-number-input:active,.telebox-color-scheme-dark .netless-app-docs-viewer-page-number-input:focus,.telebox-color-scheme-dark .netless-app-docs-viewer-page-number-input:hover{color:#222}.telebox-color-scheme-dark .netless-app-docs-viewer-footer{color:#a6a6a8;background:#2d2d33;border-top:none}.telebox-color-scheme-dark .netless-app-docs-viewer-footer-btn:hover{background:#212126}.telebox-color-scheme-dark .netless-app-docs-viewer-preview{background:rgba(50,50,50,.9)}.netless-app-docs-viewer-static-scrollbar{position:absolute;top:0;right:0;z-index:2147483647;width:8px;min-height:30px;margin:0;padding:0;border:none;outline:none;border-radius:4px;background:rgba(68,78,96,.4);box-shadow:1px 1px 8px #ffffffb3;opacity:0;transition:background .4s,opacity .4s 3s,transform .2s;user-select:none}.netless-app-docs-viewer-static-scrollbar.netless-app-docs-viewer-static-scrollbar-dragging{background:rgba(68,78,96,.6);opacity:1;transition:background .4s,opacity .4s 3s!important}.netless-app-docs-viewer-static-scrollbar:hover,.netless-app-docs-viewer-static-scrollbar:focus{background:rgba(68,78,96,.5)}.netless-app-docs-viewer-static-scrollbar:active{background:rgba(68,78,96,.6)}.netless-app-docs-viewer-content:hover .netless-app-docs-viewer-static-scrollbar{opacity:1;transition:background .4s,opacity .4s,transform .2s}.netless-app-docs-viewer-readonly .netless-app-docs-viewer-static-scrollbar{display:none}.netless-app-docs-viewer-static-pages:hover .netless-app-docs-viewer-static-scrollbar{opacity:1;transition:background .4s,opacity .4s,transform .2s}.page-renderer-pages-container{position:relative;overflow:hidden}.page-renderer-page{position:absolute;top:0;left:0;background-position:center;background-size:cover;background-repeat:no-repeat}.page-renderer-pages-container.is-hwa .page-renderer-page{will-change:transform}.page-renderer-page-img{display:block;width:100%;height:auto;user-select:none}.netless-app-docs-viewer-static-pages{overflow:hidden;position:relative;height:100%;user-select:none}.netless-app-docs-viewer-static-page{display:block;width:100%;height:auto;user-select:none}.netless-app-docs-viewer-static-wb-view,.netless-app-docs-viewer-dynamic-wb-view{position:absolute;top:0;left:0;width:100%;height:100%;z-index:100;overflow:auto}.netless-app-docs-viewer-dynamic-wb-view .cursor-clicker .ppt-event-source{cursor:pointer}
 `)();
-const mP = (r, n, a, l) => {
+const pP = (r, n, a, l) => {
   if (a === "length" || a === "prototype" || a === "arguments" || a === "caller")
     return;
   const h = Object.getOwnPropertyDescriptor(r, a), m = Object.getOwnPropertyDescriptor(n, a);
-  !vP(h, m) && l || Object.defineProperty(r, a, m);
-}, vP = function(r, n) {
+  !mP(h, m) && l || Object.defineProperty(r, a, m);
+}, mP = function(r, n) {
   return r === void 0 || r.configurable || r.writable === n.writable && r.enumerable === n.enumerable && r.configurable === n.configurable && (r.writable || r.value === n.value);
-}, gP = (r, n) => {
+}, vP = (r, n) => {
   const a = Object.getPrototypeOf(n);
   a !== Object.getPrototypeOf(r) && Object.setPrototypeOf(r, a);
-}, yP = (r, n) => `/* Wrapped ${r}*/
-${n}`, wP = Object.getOwnPropertyDescriptor(Function.prototype, "toString"), bP = Object.getOwnPropertyDescriptor(Function.prototype.toString, "name"), SP = (r, n, a) => {
-  const l = a === "" ? "" : `with ${a.trim()}() `, h = yP.bind(null, l, n.toString());
-  Object.defineProperty(h, "name", bP), Object.defineProperty(r, "toString", cE(uE({}, wP), { value: h }));
+}, gP = (r, n) => `/* Wrapped ${r}*/
+${n}`, yP = Object.getOwnPropertyDescriptor(Function.prototype, "toString"), wP = Object.getOwnPropertyDescriptor(Function.prototype.toString, "name"), bP = (r, n, a) => {
+  const l = a === "" ? "" : `with ${a.trim()}() `, h = gP.bind(null, l, n.toString());
+  Object.defineProperty(h, "name", wP), Object.defineProperty(r, "toString", cE(uE({}, yP), { value: h }));
 };
-function xP(r, n, { ignoreNonConfigurable: a = !1 } = {}) {
+function SP(r, n, { ignoreNonConfigurable: a = !1 } = {}) {
   const { name: l } = r;
   for (const h of Reflect.ownKeys(n))
-    mP(r, n, h, a);
-  return gP(r, n), SP(r, n, l), r;
+    pP(r, n, h, a);
+  return vP(r, n), bP(r, n, l), r;
 }
-const CP = (r, n = {}) => {
+const xP = (r, n = {}) => {
   if (typeof r != "function")
     throw new TypeError(`Expected the first argument to be a function, got \`${typeof r}\``);
   const {
@@ -5230,12 +5230,12 @@ const CP = (r, n = {}) => {
     }, j = h && !w;
     return clearTimeout(w), w = setTimeout(z, a), l > 0 && l !== Number.Infinity && !g && (g = setTimeout($, l)), j && (C = r.apply(A, I)), C;
   };
-  return xP(S, r), S.cancel = () => {
+  return SP(S, r), S.cancel = () => {
     w && (clearTimeout(w), w = void 0), g && (clearTimeout(g), g = void 0);
   }, S;
-}, TP = "!#%()*+,-./:;=?@[]^_`{|}~ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", MP = 87, EP = 20, jT = [], IP = () => {
-  for (let r = 0; r < EP; r++)
-    jT[r] = TP.charAt(Math.random() * MP);
+}, CP = "!#%()*+,-./:;=?@[]^_`{|}~ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", TP = 87, MP = 20, jT = [], EP = () => {
+  for (let r = 0; r < MP; r++)
+    jT[r] = CP.charAt(Math.random() * TP);
   return jT.join("");
 };
 function dE(r) {
@@ -5250,7 +5250,7 @@ class Tg {
     this.push = this.addDisposer, this.disposers = /* @__PURE__ */ new Map();
   }
   addDisposer(n, a = this.genUID()) {
-    return this.flush(a), this.disposers.set(a, Array.isArray(n) ? AP(n) : n), a;
+    return this.flush(a), this.disposers.set(a, Array.isArray(n) ? IP(n) : n), a;
   }
   add(n, a = this.genUID()) {
     const l = n();
@@ -5283,23 +5283,23 @@ class Tg {
   genUID() {
     let n;
     do
-      n = IP();
+      n = EP();
     while (this.disposers.has(n));
     return n;
   }
 }
-function AP(r) {
+function IP(r) {
   return () => r.forEach(dE);
 }
-var ku = [], RP = function() {
+var ku = [], AP = function() {
   return ku.some(function(r) {
     return r.activeTargets.length > 0;
   });
-}, DP = function() {
+}, RP = function() {
   return ku.some(function(r) {
     return r.skippedTargets.length > 0;
   });
-}, VT = "ResizeObserver loop completed with undelivered notifications.", NP = function() {
+}, VT = "ResizeObserver loop completed with undelivered notifications.", DP = function() {
   var r;
   typeof ErrorEvent == "function" ? r = new ErrorEvent("error", {
     message: VT
@@ -5310,7 +5310,7 @@ var ku = [], RP = function() {
 })(fp || (fp = {}));
 var _u = function(r) {
   return Object.freeze(r);
-}, kP = function() {
+}, NP = function() {
   function r(n, a) {
     this.inlineSize = n, this.blockSize = a, _u(this);
   }
@@ -5340,7 +5340,7 @@ var _u = function(r) {
     return !0;
   var l = (a = (n = r) === null || n === void 0 ? void 0 : n.ownerDocument) === null || a === void 0 ? void 0 : a.defaultView;
   return !!(l && r instanceof l.Element);
-}, _P = function(r) {
+}, kP = function(r) {
   switch (r.tagName) {
     case "INPUT":
       if (r.type !== "image")
@@ -5355,10 +5355,10 @@ var _u = function(r) {
       return !0;
   }
   return !1;
-}, sp = typeof window < "u" ? window : {}, Yv = /* @__PURE__ */ new WeakMap(), HT = /auto|scroll/, PP = /^tb|vertical/, zP = /msie|trident/i.test(sp.navigator && sp.navigator.userAgent), ys = function(r) {
+}, sp = typeof window < "u" ? window : {}, Yv = /* @__PURE__ */ new WeakMap(), HT = /auto|scroll/, _P = /^tb|vertical/, PP = /msie|trident/i.test(sp.navigator && sp.navigator.userAgent), ys = function(r) {
   return parseFloat(r || "0");
 }, Id = function(r, n, a) {
-  return r === void 0 && (r = 0), n === void 0 && (n = 0), a === void 0 && (a = !1), new kP((a ? n : r) || 0, (a ? r : n) || 0);
+  return r === void 0 && (r = 0), n === void 0 && (n = 0), a === void 0 && (a = !1), new NP((a ? n : r) || 0, (a ? r : n) || 0);
 }, WT = _u({
   devicePixelContentBoxSize: Id(),
   borderBoxSize: Id(),
@@ -5369,7 +5369,7 @@ var _u = function(r) {
     return Yv.get(r);
   if (hE(r))
     return Yv.set(r, WT), WT;
-  var a = getComputedStyle(r), l = RS(r) && r.ownerSVGElement && r.getBBox(), h = !zP && a.boxSizing === "border-box", m = PP.test(a.writingMode || ""), w = !l && HT.test(a.overflowY || ""), g = !l && HT.test(a.overflowX || ""), C = l ? 0 : ys(a.paddingTop), S = l ? 0 : ys(a.paddingRight), I = l ? 0 : ys(a.paddingBottom), A = l ? 0 : ys(a.paddingLeft), z = l ? 0 : ys(a.borderTopWidth), $ = l ? 0 : ys(a.borderRightWidth), j = l ? 0 : ys(a.borderBottomWidth), J = l ? 0 : ys(a.borderLeftWidth), Z = A + S, de = C + I, oe = J + $, Y = z + j, re = g ? r.offsetHeight - Y - r.clientHeight : 0, le = w ? r.offsetWidth - oe - r.clientWidth : 0, Ae = h ? Z + oe : 0, $e = h ? de + Y : 0, ze = l ? l.width : ys(a.width) - Ae - le, Ze = l ? l.height : ys(a.height) - $e - re, ee = ze + Z + le + oe, we = Ze + de + re + Y, q = _u({
+  var a = getComputedStyle(r), l = RS(r) && r.ownerSVGElement && r.getBBox(), h = !PP && a.boxSizing === "border-box", m = _P.test(a.writingMode || ""), w = !l && HT.test(a.overflowY || ""), g = !l && HT.test(a.overflowX || ""), C = l ? 0 : ys(a.paddingTop), S = l ? 0 : ys(a.paddingRight), I = l ? 0 : ys(a.paddingBottom), A = l ? 0 : ys(a.paddingLeft), z = l ? 0 : ys(a.borderTopWidth), $ = l ? 0 : ys(a.borderRightWidth), j = l ? 0 : ys(a.borderBottomWidth), J = l ? 0 : ys(a.borderLeftWidth), Z = A + S, de = C + I, oe = J + $, Y = z + j, re = g ? r.offsetHeight - Y - r.clientHeight : 0, le = w ? r.offsetWidth - oe - r.clientWidth : 0, Ae = h ? Z + oe : 0, $e = h ? de + Y : 0, ze = l ? l.width : ys(a.width) - Ae - le, Ze = l ? l.height : ys(a.height) - $e - re, ee = ze + Z + le + oe, we = Ze + de + re + Y, q = _u({
     devicePixelContentBoxSize: Id(Math.round(ze * devicePixelRatio), Math.round(Ze * devicePixelRatio), m),
     borderBoxSize: Id(ee, we, m),
     contentBoxSize: Id(ze, Ze, m),
@@ -5386,7 +5386,7 @@ var _u = function(r) {
     default:
       return m;
   }
-}, OP = function() {
+}, zP = function() {
   function r(n) {
     var a = pE(n);
     this.target = n, this.contentRect = a.contentRect, this.borderBoxSize = _u([a.borderBoxSize]), this.contentBoxSize = _u([a.contentBoxSize]), this.devicePixelContentBoxSize = _u([a.devicePixelContentBoxSize]);
@@ -5398,13 +5398,13 @@ var _u = function(r) {
   for (var n = 0, a = r.parentNode; a; )
     n += 1, a = a.parentNode;
   return n;
-}, LP = function() {
+}, OP = function() {
   var r = 1 / 0, n = [];
   ku.forEach(function(w) {
     if (w.activeTargets.length !== 0) {
       var g = [];
       w.activeTargets.forEach(function(S) {
-        var I = new OP(S.target), A = vE(S.target);
+        var I = new zP(S.target), A = vE(S.target);
         g.push(I), S.lastReportedSize = mE(S.target, S.observedBox), A < r && (r = A);
       }), n.push(function() {
         w.callback.call(w.observer, g, w.observer);
@@ -5422,32 +5422,32 @@ var _u = function(r) {
       h.isActive() && (vE(h.target) > r ? a.activeTargets.push(h) : a.skippedTargets.push(h));
     });
   });
-}, BP = function() {
+}, LP = function() {
   var r = 0;
-  for (FT(r); RP(); )
-    r = LP(), FT(r);
-  return DP() && NP(), r > 0;
-}, Nb, gE = [], jP = function() {
+  for (FT(r); AP(); )
+    r = OP(), FT(r);
+  return RP() && DP(), r > 0;
+}, Nb, gE = [], BP = function() {
   return gE.splice(0).forEach(function(r) {
     return r();
   });
-}, VP = function(r) {
+}, jP = function(r) {
   if (!Nb) {
     var n = 0, a = document.createTextNode(""), l = { characterData: !0 };
     new MutationObserver(function() {
-      return jP();
+      return BP();
     }).observe(a, l), Nb = function() {
       a.textContent = "" + (n ? n-- : n++);
     };
   }
   gE.push(r), Nb();
-}, UP = function(r) {
-  VP(function() {
+}, VP = function(r) {
+  jP(function() {
     requestAnimationFrame(r);
   });
-}, sg = 0, HP = function() {
+}, sg = 0, UP = function() {
   return !!sg;
-}, WP = 250, FP = { attributes: !0, characterData: !0, childList: !0, subtree: !0 }, $T = [
+}, HP = 250, WP = { attributes: !0, characterData: !0, childList: !0, subtree: !0 }, $T = [
   "resize",
   "load",
   "transitionend",
@@ -5464,7 +5464,7 @@ var _u = function(r) {
   "focus"
 ], QT = function(r) {
   return r === void 0 && (r = 0), Date.now() + r;
-}, kb = !1, $P = function() {
+}, kb = !1, FP = function() {
   function r() {
     var n = this;
     this.stopped = !0, this.listener = function() {
@@ -5473,15 +5473,15 @@ var _u = function(r) {
   }
   return r.prototype.run = function(n) {
     var a = this;
-    if (n === void 0 && (n = WP), !kb) {
+    if (n === void 0 && (n = HP), !kb) {
       kb = !0;
       var l = QT(n);
-      UP(function() {
+      VP(function() {
         var h = !1;
         try {
-          h = BP();
+          h = LP();
         } finally {
-          if (kb = !1, n = l - QT(), !HP())
+          if (kb = !1, n = l - QT(), !UP())
             return;
           h ? a.run(1e3) : n > 0 ? a.run(n) : a.start();
         }
@@ -5491,7 +5491,7 @@ var _u = function(r) {
     this.stop(), this.run();
   }, r.prototype.observe = function() {
     var n = this, a = function() {
-      return n.observer && n.observer.observe(document.body, FP);
+      return n.observer && n.observer.observe(document.body, WP);
     };
     document.body ? a() : sp.addEventListener("DOMContentLoaded", a);
   }, r.prototype.start = function() {
@@ -5505,11 +5505,11 @@ var _u = function(r) {
       return sp.removeEventListener(a, n.listener, !0);
     }), this.stopped = !0);
   }, r;
-}(), sS = new $P(), ZT = function(r) {
+}(), sS = new FP(), ZT = function(r) {
   !sg && r > 0 && sS.start(), sg += r, !sg && sS.stop();
-}, QP = function(r) {
-  return !RS(r) && !_P(r) && getComputedStyle(r).display === "inline";
-}, ZP = function() {
+}, $P = function(r) {
+  return !RS(r) && !kP(r) && getComputedStyle(r).display === "inline";
+}, QP = function() {
   function r(n, a) {
     this.target = n, this.observedBox = a || fp.CONTENT_BOX, this.lastReportedSize = {
       inlineSize: 0,
@@ -5518,9 +5518,9 @@ var _u = function(r) {
   }
   return r.prototype.isActive = function() {
     var n = mE(this.target, this.observedBox, !0);
-    return QP(this.target) && (this.lastReportedSize = n), this.lastReportedSize.inlineSize !== n.inlineSize || this.lastReportedSize.blockSize !== n.blockSize;
+    return $P(this.target) && (this.lastReportedSize = n), this.lastReportedSize.inlineSize !== n.inlineSize || this.lastReportedSize.blockSize !== n.blockSize;
   }, r;
-}(), YP = function() {
+}(), ZP = function() {
   function r(n, a) {
     this.activeTargets = [], this.skippedTargets = [], this.observationTargets = [], this.observer = n, this.callback = a;
   }
@@ -5534,11 +5534,11 @@ var _u = function(r) {
   function r() {
   }
   return r.connect = function(n, a) {
-    var l = new YP(n, a);
+    var l = new ZP(n, a);
     Gv.set(n, l);
   }, r.observe = function(n, a, l) {
     var h = Gv.get(n), m = h.observationTargets.length === 0;
-    YT(h.observationTargets, a) < 0 && (m && ku.push(h), h.observationTargets.push(new ZP(a, l && l.box)), ZT(1), sS.schedule());
+    YT(h.observationTargets, a) < 0 && (m && ku.push(h), h.observationTargets.push(new QP(a, l && l.box)), ZT(1), sS.schedule());
   }, r.unobserve = function(n, a) {
     var l = Gv.get(n), h = YT(l.observationTargets, a), m = l.observationTargets.length === 1;
     h >= 0 && (m && ku.splice(ku.indexOf(l), 1), l.observationTargets.splice(h, 1), ZT(-1));
@@ -5548,7 +5548,7 @@ var _u = function(r) {
       return a.unobserve(n, h.target);
     }), l.activeTargets.splice(0, l.activeTargets.length);
   }, r;
-}(), GP = function() {
+}(), YP = function() {
   function r(n) {
     if (arguments.length === 0)
       throw new TypeError("Failed to construct 'ResizeObserver': 1 argument required, but only 0 present.");
@@ -5574,7 +5574,7 @@ var _u = function(r) {
     return "function ResizeObserver () { [polyfill code] }";
   }, r;
 }();
-function XP(r) {
+function GP(r) {
   const n = "http://www.w3.org/2000/svg", a = document.createElementNS(n, "svg");
   return a.setAttribute("class", `${r}-footer-icon-arrow-left`), a.setAttribute("viewBox", "0 0 20 20"), a.innerHTML = `<g clip-path="url(#clip0_11800_99864)">
 <path fill-rule="evenodd" clip-rule="evenodd" d="M11.5283 4.86182L12.4711 5.80463L8.22849 10.0473L12.4711 14.2899L11.5283 15.2327L6.34287 10.0473L11.5283 4.86182Z" class="arrow" />
@@ -5585,7 +5585,7 @@ function XP(r) {
 </clipPath>
 </defs>`, a;
 }
-function JP(r) {
+function XP(r) {
   const n = "http://www.w3.org/2000/svg", a = document.createElementNS(n, "svg");
   return a.setAttribute("class", `${r}-footer-icon-arrow-right`), a.setAttribute("viewBox", "0 0 20 20"), a.innerHTML = `<g clip-path="url(#clip0_11800_99870)">
 <path fill-rule="evenodd" clip-rule="evenodd" d="M8.1377 4.86182L7.19489 5.80463L11.4375 10.0473L7.19489 14.2899L8.1377 15.2327L13.3231 10.0473L8.1377 4.86182Z" class="arrow" />
@@ -5596,19 +5596,19 @@ function JP(r) {
 </clipPath>
 </defs>`, a;
 }
-function qP(r) {
+function JP(r) {
   const n = "http://www.w3.org/2000/svg", a = document.createElementNS(n, "svg");
   a.setAttribute("class", `${r}-footer-icon-play`), a.setAttribute("viewBox", "0 0 500 500");
   const l = document.createElementNS(n, "path");
   return l.setAttribute("fill", "currentColor"), l.setAttribute("d", "M418.158 257.419L174.663 413.33c-6.017 3.919-15.708 3.772-21.291-.29-2.791-2.018-4.295-4.483-4.295-7.084V94.109c0-5.65 6.883-10.289 15.271-10.289 4.298 0 8.391 1.307 11.181 3.332l242.629 155.484c6.016 3.917 6.451 10.292.649 14.491-.216.154-.432.154-.649.292zM170.621 391.288l223.116-141.301L170.71 107.753l-.089 283.535z"), a.appendChild(l), a;
 }
-function KP(r) {
+function qP(r) {
   const n = "http://www.w3.org/2000/svg", a = document.createElementNS(n, "svg");
   a.setAttribute("class", `${r}-footer-icon-pause`), a.setAttribute("viewBox", "0 0 500 500");
   const l = document.createElementNS(n, "path");
   return l.setAttribute("fill", "currentColor"), l.setAttribute("d", "M312.491 78.261c0-6.159 4.893-11.213 11.04-11.213 6.158 0 11.211 5.054 11.211 11.213v343.478c0 6.159-5.053 11.213-11.211 11.213-6.147 0-11.04-5.054-11.04-11.213V78.261zM165.257 78.261c0-6.159 4.893-11.213 11.04-11.213 6.158 0 11.211 5.054 11.211 11.213v343.478c0 6.159-5.053 11.213-11.211 11.213-6.147 0-11.04-5.054-11.04-11.213V78.261z"), a.appendChild(l), a;
 }
-const ul = typeof window < "u", yE = ul && !("onscroll" in window) || typeof navigator < "u" && /(gle|ing|ro)bot|crawl|spider/i.test(navigator.userAgent), wE = ul && "IntersectionObserver" in window, bE = ul && "classList" in document.createElement("p"), SE = ul && window.devicePixelRatio > 1, ez = {
+const ul = typeof window < "u", yE = ul && !("onscroll" in window) || typeof navigator < "u" && /(gle|ing|ro)bot|crawl|spider/i.test(navigator.userAgent), wE = ul && "IntersectionObserver" in window, bE = ul && "classList" in document.createElement("p"), SE = ul && window.devicePixelRatio > 1, KP = {
   elements_selector: ".lazy",
   container: yE || ul ? document : null,
   threshold: 300,
@@ -5641,7 +5641,7 @@ const ul = typeof window < "u", yE = ul && !("onscroll" in window) || typeof nav
   callback_cancel: null,
   use_native: !1,
   restore_on_error: !1
-}, xE = (r) => Object.assign({}, ez, r), GT = function(r, n) {
+}, xE = (r) => Object.assign({}, KP, r), GT = function(r, n) {
   let a;
   const l = "LazyLoad::Initialized", h = new r(n);
   try {
@@ -5650,21 +5650,21 @@ const ul = typeof window < "u", yE = ul && !("onscroll" in window) || typeof nav
     a = document.createEvent("CustomEvent"), a.initCustomEvent(l, !1, !1, { instance: h });
   }
   window.dispatchEvent(a);
-}, tz = (r, n) => {
+}, ez = (r, n) => {
   if (!!n)
     if (!n.length)
       GT(r, n);
     else
       for (let a = 0, l; l = n[a]; a += 1)
         GT(r, l);
-}, go = "src", DS = "srcset", NS = "sizes", CE = "poster", vp = "llOriginalAttrs", TE = "data", kS = "loading", ME = "loaded", EE = "applied", nz = "entered", _S = "error", IE = "native", AE = "data-", RE = "ll-status", er = (r, n) => r.getAttribute(AE + n), iz = (r, n, a) => {
+}, go = "src", DS = "srcset", NS = "sizes", CE = "poster", vp = "llOriginalAttrs", TE = "data", kS = "loading", ME = "loaded", EE = "applied", tz = "entered", _S = "error", IE = "native", AE = "data-", RE = "ll-status", er = (r, n) => r.getAttribute(AE + n), nz = (r, n, a) => {
   var l = AE + n;
   if (a === null) {
     r.removeAttribute(l);
     return;
   }
   r.setAttribute(l, a);
-}, gp = (r) => er(r, RE), Ou = (r, n) => iz(r, RE, n), Mg = (r) => Ou(r, null), PS = (r) => gp(r) === null, rz = (r) => gp(r) === kS, az = (r) => gp(r) === _S, zS = (r) => gp(r) === IE, sz = [kS, ME, EE, _S], oz = (r) => sz.indexOf(gp(r)) >= 0, cl = (r, n, a, l) => {
+}, gp = (r) => er(r, RE), Ou = (r, n) => nz(r, RE, n), Mg = (r) => Ou(r, null), PS = (r) => gp(r) === null, iz = (r) => gp(r) === kS, rz = (r) => gp(r) === _S, zS = (r) => gp(r) === IE, az = [kS, ME, EE, _S], sz = (r) => az.indexOf(gp(r)) >= 0, cl = (r, n, a, l) => {
   if (!!r) {
     if (l !== void 0) {
       r(n, a, l);
@@ -5688,26 +5688,26 @@ const ul = typeof window < "u", yE = ul && !("onscroll" in window) || typeof nav
     return;
   }
   r.className = r.className.replace(new RegExp("(^|\\s+)" + n + "(\\s+|$)"), " ").replace(/^\s+/, "").replace(/\s+$/, "");
-}, lz = (r) => {
+}, oz = (r) => {
   r.llTempImage = document.createElement("IMG");
-}, uz = (r) => {
+}, lz = (r) => {
   delete r.llTempImage;
 }, DE = (r) => r.llTempImage, Eg = (r, n) => {
   if (!n)
     return;
   const a = n._observer;
   !a || a.unobserve(r);
-}, cz = (r) => {
+}, uz = (r) => {
   r.disconnect();
-}, dz = (r, n, a) => {
+}, cz = (r, n, a) => {
   n.unobserve_entered && Eg(r, a);
 }, OS = (r, n) => {
   !r || (r.loadingCount += n);
-}, fz = (r) => {
+}, dz = (r) => {
   !r || (r.toLoadCount -= 1);
 }, NE = (r, n) => {
   !r || (r.toLoadCount = n);
-}, hz = (r) => r.loadingCount > 0, pz = (r) => r.toLoadCount > 0, kE = (r) => {
+}, fz = (r) => r.loadingCount > 0, hz = (r) => r.toLoadCount > 0, kE = (r) => {
   let n = [];
   for (let a = 0, l; l = r.children[a]; a += 1)
     l.tagName === "SOURCE" && n.push(l);
@@ -5726,9 +5726,9 @@ const ul = typeof window < "u", yE = ul && !("onscroll" in window) || typeof nav
   n.forEach((l) => {
     a[l] = r.getAttribute(l);
   }), r[vp] = a;
-}, mz = (r) => {
+}, pz = (r) => {
   Ag(r) || (r[vp] = { backgroundImage: r.style.backgroundImage });
-}, vz = (r, n, a) => {
+}, mz = (r, n, a) => {
   if (!a) {
     r.removeAttribute(n);
     return;
@@ -5739,9 +5739,9 @@ const ul = typeof window < "u", yE = ul && !("onscroll" in window) || typeof nav
     return;
   const a = OE(r);
   n.forEach((l) => {
-    vz(r, l, a[l]);
+    mz(r, l, a[l]);
   });
-}, gz = (r) => {
+}, vz = (r) => {
   if (!Ag(r))
     return;
   const n = OE(r);
@@ -5754,25 +5754,25 @@ const ul = typeof window < "u", yE = ul && !("onscroll" in window) || typeof nav
   !a || r.setAttribute(n, a);
 }, XT = (r, n) => {
   ll(r, NS, er(r, n.data_sizes)), ll(r, DS, er(r, n.data_srcset)), ll(r, go, er(r, n.data_src));
-}, yz = (r, n) => {
+}, gz = (r, n) => {
   LS(r, (a) => {
     Nd(a, hp), XT(a, n);
   }), Nd(r, hp), XT(r, n);
-}, wz = (r, n) => {
+}, yz = (r, n) => {
   Nd(r, Ig), ll(r, go, er(r, n.data_src));
-}, bz = (r, n) => {
+}, wz = (r, n) => {
   _E(r, (a) => {
     Nd(a, Ig), ll(a, go, er(a, n.data_src));
   }), Nd(r, PE), ll(r, CE, er(r, n.data_poster)), ll(r, go, er(r, n.data_src)), r.load();
-}, Sz = (r, n) => {
+}, bz = (r, n) => {
   Nd(r, zE), ll(r, TE, er(r, n.data_src));
-}, xz = (r, n, a) => {
+}, Sz = (r, n, a) => {
   const l = er(r, n.data_bg), h = er(r, n.data_bg_hidpi), m = SE && h ? h : l;
   !m || (r.style.backgroundImage = `url("${m}")`, DE(r).setAttribute(go, m), jE(r, n, a));
-}, Cz = (r, n, a) => {
+}, xz = (r, n, a) => {
   const l = er(r, n.data_bg_multi), h = er(r, n.data_bg_multi_hidpi), m = SE && h ? h : l;
   !m || (r.style.backgroundImage = m, BE(r, n, a));
-}, Tz = (r, n, a) => {
+}, Cz = (r, n, a) => {
   const l = er(r, n.data_bg_set);
   if (!l)
     return;
@@ -5780,23 +5780,23 @@ const ul = typeof window < "u", yE = ul && !("onscroll" in window) || typeof nav
   let m = h.map((w) => `image-set(${w})`);
   r.style.backgroundImage = m.join(), r.style.backgroundImage === "" && (m = h.map((w) => `-webkit-image-set(${w})`), r.style.backgroundImage = m.join()), BE(r, n, a);
 }, VE = {
-  IMG: yz,
-  IFRAME: wz,
-  VIDEO: bz,
-  OBJECT: Sz
-}, Mz = (r, n) => {
+  IMG: gz,
+  IFRAME: yz,
+  VIDEO: wz,
+  OBJECT: bz
+}, Tz = (r, n) => {
   const a = VE[r.tagName];
   !a || a(r, n);
-}, Ez = (r, n, a) => {
+}, Mz = (r, n, a) => {
   const l = VE[r.tagName];
   !l || (l(r, n), jE(r, n, a));
-}, Iz = ["IMG", "IFRAME", "VIDEO", "OBJECT"], Az = (r) => Iz.indexOf(r.tagName) > -1, UE = (r, n) => {
-  n && !hz(n) && !pz(n) && cl(r.callback_finish, n);
+}, Ez = ["IMG", "IFRAME", "VIDEO", "OBJECT"], Iz = (r) => Ez.indexOf(r.tagName) > -1, UE = (r, n) => {
+  n && !fz(n) && !hz(n) && cl(r.callback_finish, n);
 }, JT = (r, n, a) => {
   r.addEventListener(n, a), r.llEvLisnrs[n] = a;
-}, Rz = (r, n, a) => {
+}, Az = (r, n, a) => {
   r.removeEventListener(n, a);
-}, BS = (r) => !!r.llEvLisnrs, Dz = (r, n, a) => {
+}, BS = (r) => !!r.llEvLisnrs, Rz = (r, n, a) => {
   BS(r) || (r.llEvLisnrs = {});
   const l = r.tagName === "VIDEO" ? "loadeddata" : "load";
   JT(r, l, n), JT(r, "error", a);
@@ -5806,37 +5806,37 @@ const ul = typeof window < "u", yE = ul && !("onscroll" in window) || typeof nav
   const n = r.llEvLisnrs;
   for (let a in n) {
     const l = n[a];
-    Rz(r, a, l);
+    Az(r, a, l);
   }
   delete r.llEvLisnrs;
 }, HE = (r, n, a) => {
-  uz(r), OS(a, -1), fz(a), Ss(r, n.class_loading), n.unobserve_completed && Eg(r, a);
-}, Nz = (r, n, a, l) => {
+  lz(r), OS(a, -1), dz(a), Ss(r, n.class_loading), n.unobserve_completed && Eg(r, a);
+}, Dz = (r, n, a, l) => {
   const h = zS(n);
   HE(n, a, l), zd(n, a.class_loaded), Ou(n, ME), cl(a.callback_loaded, n, l), h || UE(a, l);
-}, kz = (r, n, a, l) => {
+}, Nz = (r, n, a, l) => {
   const h = zS(n);
   HE(n, a, l), zd(n, a.class_error), Ou(n, _S), cl(a.callback_error, n, l), a.restore_on_error && zu(n, hp), h || UE(a, l);
 }, jS = (r, n, a) => {
   const l = DE(r) || r;
   if (BS(l))
     return;
-  Dz(l, (w) => {
-    Nz(w, r, n, a), oS(l);
+  Rz(l, (w) => {
+    Dz(w, r, n, a), oS(l);
   }, (w) => {
-    kz(w, r, n, a), oS(l);
+    Nz(w, r, n, a), oS(l);
   });
+}, kz = (r, n, a) => {
+  oz(r), jS(r, n, a), pz(r), Sz(r, n, a), xz(r, n, a), Cz(r, n, a);
 }, _z = (r, n, a) => {
-  lz(r), jS(r, n, a), mz(r), xz(r, n, a), Cz(r, n, a), Tz(r, n, a);
-}, Pz = (r, n, a) => {
-  jS(r, n, a), Ez(r, n, a);
+  jS(r, n, a), Mz(r, n, a);
 }, VS = (r, n, a) => {
-  Az(r) ? Pz(r, n, a) : _z(r, n, a);
-}, zz = (r, n, a) => {
-  r.setAttribute("loading", "lazy"), jS(r, n, a), Mz(r, n), Ou(r, IE);
+  Iz(r) ? _z(r, n, a) : kz(r, n, a);
+}, Pz = (r, n, a) => {
+  r.setAttribute("loading", "lazy"), jS(r, n, a), Tz(r, n), Ou(r, IE);
 }, qT = (r) => {
   r.removeAttribute(go), r.removeAttribute(DS), r.removeAttribute(NS);
-}, Oz = (r) => {
+}, zz = (r) => {
   LS(r, (n) => {
     qT(n);
   }), qT(r);
@@ -5844,69 +5844,69 @@ const ul = typeof window < "u", yE = ul && !("onscroll" in window) || typeof nav
   LS(r, (n) => {
     zu(n, hp);
   }), zu(r, hp);
-}, Lz = (r) => {
+}, Oz = (r) => {
   _E(r, (n) => {
     zu(n, Ig);
   }), zu(r, PE), r.load();
-}, Bz = (r) => {
+}, Lz = (r) => {
   zu(r, Ig);
-}, jz = (r) => {
+}, Bz = (r) => {
   zu(r, zE);
-}, Vz = {
+}, jz = {
   IMG: WE,
-  IFRAME: Bz,
-  VIDEO: Lz,
-  OBJECT: jz
-}, Uz = (r) => {
-  const n = Vz[r.tagName];
+  IFRAME: Lz,
+  VIDEO: Oz,
+  OBJECT: Bz
+}, Vz = (r) => {
+  const n = jz[r.tagName];
   if (!n) {
-    gz(r);
+    vz(r);
     return;
   }
   n(r);
-}, Hz = (r, n) => {
+}, Uz = (r, n) => {
   PS(r) || zS(r) || (Ss(r, n.class_entered), Ss(r, n.class_exited), Ss(r, n.class_applied), Ss(r, n.class_loading), Ss(r, n.class_loaded), Ss(r, n.class_error));
-}, Wz = (r, n) => {
-  Uz(r), Hz(r, n), Mg(r), LE(r);
+}, Hz = (r, n) => {
+  Vz(r), Uz(r, n), Mg(r), LE(r);
+}, Wz = (r, n, a, l) => {
+  !a.cancel_on_exit || !iz(r) || r.tagName === "IMG" && (oS(r), zz(r), WE(r), Ss(r, a.class_loading), OS(l, -1), Mg(r), cl(a.callback_cancel, r, n, l));
 }, Fz = (r, n, a, l) => {
-  !a.cancel_on_exit || !rz(r) || r.tagName === "IMG" && (oS(r), Oz(r), WE(r), Ss(r, a.class_loading), OS(l, -1), Mg(r), cl(a.callback_cancel, r, n, l));
+  const h = sz(r);
+  Ou(r, tz), zd(r, a.class_entered), Ss(r, a.class_exited), cz(r, a, l), cl(a.callback_enter, r, n, l), !h && VS(r, a, l);
 }, $z = (r, n, a, l) => {
-  const h = oz(r);
-  Ou(r, nz), zd(r, a.class_entered), Ss(r, a.class_exited), dz(r, a, l), cl(a.callback_enter, r, n, l), !h && VS(r, a, l);
-}, Qz = (r, n, a, l) => {
-  PS(r) || (zd(r, a.class_exited), Fz(r, n, a, l), cl(a.callback_exit, r, n, l));
-}, Zz = ["IMG", "IFRAME", "VIDEO"], FE = (r) => r.use_native && "loading" in HTMLImageElement.prototype, Yz = (r, n, a) => {
+  PS(r) || (zd(r, a.class_exited), Wz(r, n, a, l), cl(a.callback_exit, r, n, l));
+}, Qz = ["IMG", "IFRAME", "VIDEO"], FE = (r) => r.use_native && "loading" in HTMLImageElement.prototype, Zz = (r, n, a) => {
   r.forEach((l) => {
-    Zz.indexOf(l.tagName) !== -1 && zz(l, n, a);
+    Qz.indexOf(l.tagName) !== -1 && Pz(l, n, a);
   }), NE(a, 0);
-}, Gz = (r) => r.isIntersecting || r.intersectionRatio > 0, Xz = (r) => ({
+}, Yz = (r) => r.isIntersecting || r.intersectionRatio > 0, Gz = (r) => ({
   root: r.container === document ? null : r.container,
   rootMargin: r.thresholds || r.threshold + "px"
-}), Jz = (r, n, a) => {
-  r.forEach((l) => Gz(l) ? $z(l.target, l, n, a) : Qz(l.target, l, n, a));
-}, qz = (r, n) => {
+}), Xz = (r, n, a) => {
+  r.forEach((l) => Yz(l) ? Fz(l.target, l, n, a) : $z(l.target, l, n, a));
+}, Jz = (r, n) => {
   n.forEach((a) => {
     r.observe(a);
   });
+}, qz = (r, n) => {
+  uz(r), Jz(r, n);
 }, Kz = (r, n) => {
-  cz(r), qz(r, n);
-}, eO = (r, n) => {
   !wE || FE(r) || (n._observer = new IntersectionObserver((a) => {
-    Jz(a, r, n);
-  }, Xz(r)));
-}, $E = (r) => Array.prototype.slice.call(r), mg = (r) => r.container.querySelectorAll(r.elements_selector), tO = (r) => $E(r).filter(PS), nO = (r) => az(r), iO = (r) => $E(r).filter(nO), KT = (r, n) => tO(r || mg(n)), rO = (r, n) => {
-  iO(mg(r)).forEach((l) => {
+    Xz(a, r, n);
+  }, Gz(r)));
+}, $E = (r) => Array.prototype.slice.call(r), mg = (r) => r.container.querySelectorAll(r.elements_selector), eO = (r) => $E(r).filter(PS), tO = (r) => rz(r), nO = (r) => $E(r).filter(tO), KT = (r, n) => eO(r || mg(n)), iO = (r, n) => {
+  nO(mg(r)).forEach((l) => {
     Ss(l, r.class_error), Mg(l);
   }), n.update();
-}, aO = (r, n) => {
+}, rO = (r, n) => {
   !ul || (n._onlineHandler = () => {
-    rO(r, n);
+    iO(r, n);
   }, window.addEventListener("online", n._onlineHandler));
-}, sO = (r) => {
+}, aO = (r) => {
   !ul || window.removeEventListener("online", r._onlineHandler);
 }, yp = function(r, n) {
   const a = xE(r);
-  this._settings = a, this.loadingCount = 0, eO(a, this), aO(a, this), this.update(n);
+  this._settings = a, this.loadingCount = 0, Kz(a, this), rO(a, this), this.update(n);
 };
 yp.prototype = {
   update: function(r) {
@@ -5916,13 +5916,13 @@ yp.prototype = {
       return;
     }
     if (FE(n)) {
-      Yz(a, n, this);
+      Zz(a, n, this);
       return;
     }
-    Kz(this._observer, a);
+    qz(this._observer, a);
   },
   destroy: function() {
-    this._observer && this._observer.disconnect(), sO(this), mg(this._settings).forEach((r) => {
+    this._observer && this._observer.disconnect(), aO(this), mg(this._settings).forEach((r) => {
       LE(r);
     }), delete this._observer, delete this._settings, delete this._onlineHandler, delete this.loadingCount, delete this.toLoadCount;
   },
@@ -5935,7 +5935,7 @@ yp.prototype = {
   restoreAll: function() {
     const r = this._settings;
     mg(r).forEach((n) => {
-      Wz(n, r);
+      Hz(n, r);
     });
   }
 };
@@ -5946,7 +5946,7 @@ yp.load = (r, n) => {
 yp.resetStatus = (r) => {
   Mg(r);
 };
-ul && tz(yp, window.lazyLoadOptions);
+ul && ez(yp, window.lazyLoadOptions);
 const vg = (BT = window.navigator) == null ? void 0 : BT.userAgent;
 vg == null || vg.match(/(Edge?)\/(\d+)/);
 const eM = () => typeof navigator < "u" && typeof window < "u" && /iPad|iPhone|iPod/.test(vg), tM = () => typeof navigator < "u" && /Android/.test(vg);
@@ -6045,11 +6045,11 @@ class QE {
       n.className = this.wrapClassName("footer"), this.$footer = n, this.readonly && n.classList.add(this.wrapClassName("readonly")), this.isSmallBox && n.classList.add(this.wrapClassName("float-footer"));
       const a = document.createElement("div");
       a.className = this.wrapClassName("page-jumps");
-      const l = this.renderFooterBtn("btn-page-back", XP(this.namespace));
+      const l = this.renderFooterBtn("btn-page-back", GP(this.namespace));
       if (this.sideEffect.addEventListener(l, "click", () => {
         this.readonly || this.onNewPageIndex(this.pageIndex - 1);
       }), a.appendChild(l), this.$btnPageBack = l, this.onPlay) {
-        const C = this.renderFooterBtn("btn-page-play", qP(this.namespace), KP(this.namespace)), S = () => {
+        const C = this.renderFooterBtn("btn-page-play", JP(this.namespace), qP(this.namespace)), S = () => {
           this.sideEffect.setTimeout(() => {
             C.classList.toggle(this.wrapClassName("footer-btn-playing"), !1);
           }, 500, "returnPlay");
@@ -6065,7 +6065,7 @@ class QE {
       m.className = this.wrapClassName("page-number-input"), m.textContent = String(this.pageIndex + 1), this.$pageNumberInput = m;
       const w = document.createElement("span");
       w.textContent = " / " + this.pages.length, h.appendChild(m), h.appendChild(w), a.appendChild(h);
-      const g = this.renderFooterBtn("btn-page-next", JP(this.namespace));
+      const g = this.renderFooterBtn("btn-page-next", XP(this.namespace));
       this.sideEffect.addEventListener(g, "click", () => {
         this.readonly || this.onNewPageIndex(this.pageIndex + 1);
       }), a.appendChild(g), this.$btnPageNext = g, !this.context.getIsAppReadonly() && !eM() && !tM() && this.$footer.appendChild(a);
@@ -6112,7 +6112,7 @@ function YE(r) {
   const n = r.tagName;
   return n === "INPUT" || n === "TEXTAREA" || n === "SELECT";
 }
-class oO {
+class sO {
   constructor(n) {
     var a, l, h;
     this.velocity = 0, this.paused = !0, this._animationFrameID = null, this._loopTimestamp = 0, this.looper = (m) => {
@@ -6138,7 +6138,7 @@ class oO {
     Math.abs(l - 0) < 0.01 && Math.abs(h - this.target) < 0.01 ? (this.current = this.target, this.velocity = 0) : (this.current = h, this.velocity = l);
   }
 }
-class lO {
+class oO {
   constructor(n, a, l, h) {
     this.scale = 1, this.lastVisit = Date.now(), this.pageOffsetY = 0, this.pageOffsetX = 0, this.visible = !0, this.index = n, this.page = a, this.scale = l, this.pageOffsetX = (h - a.width) / 2;
     const m = document.createElement("div");
@@ -6156,8 +6156,8 @@ class lO {
     n !== this.visible && (this.visible = n, this.$page.style.opacity = n ? "1" : "0");
   }
 }
-const uO = window.requestIdleCallback || ((r) => window.setTimeout(r, 5e3)), cO = window.cancelIdleCallback || window.clearTimeout;
-class dO {
+const lO = window.requestIdleCallback || ((r) => window.setTimeout(r, 5e3)), uO = window.cancelIdleCallback || window.clearTimeout;
+class cO {
   constructor(n, a, l) {
     this.pages = n, this.pagesIntrinsicWidth = a, this.scale = l, this.els = /* @__PURE__ */ new Map(), this.maxElCount = 200, this.gcTimer = null, this.gc = () => {
       if (this.gcTimer = null, this.els.size > this.maxElCount) {
@@ -6169,16 +6169,16 @@ class dO {
   }
   getEl(n) {
     let a = this.els.get(n);
-    return a || (a = new lO(n, this.pages[n], this.scale, this.pagesIntrinsicWidth), this.els.set(n, a)), a.lastVisit = Date.now(), this.els.size > this.maxElCount && this.gcTimer === null && (this.gcTimer = uO(this.gc)), a;
+    return a || (a = new oO(n, this.pages[n], this.scale, this.pagesIntrinsicWidth), this.els.set(n, a)), a.lastVisit = Date.now(), this.els.size > this.maxElCount && this.gcTimer === null && (this.gcTimer = lO(this.gc)), a;
   }
   setScale(n) {
     n !== this.scale && (this.scale = n, this.els.forEach((a) => a.setScale(n)));
   }
   destroy() {
-    this.els.clear(), this.gcTimer !== null && (cO(this.gcTimer), this.gcTimer = null);
+    this.els.clear(), this.gcTimer !== null && (uO(this.gcTimer), this.gcTimer = null);
   }
 }
-class fO {
+class dO {
   constructor(n) {
     this._hwaTimeout = NaN, this._turnOffHWA = () => {
       window.clearTimeout(this._hwaTimeout), this._hwaTimeout = NaN, this.$pages.classList.toggle("is-hwa", !1);
@@ -6194,7 +6194,7 @@ class fO {
     });
     const a = Array(this.pages.length);
     let l = 1 / 0, h = 0;
-    this.pagesIntrinsicHeight = this.pages.reduce((m, w, g) => (a[g] = m, w.width > h && (h = w.width), w.height <= l && (l = w.height), m + w.height), 0), this.pagesIntrinsicWidth = h, this.pagesMinHeight = l, this.pagesIntrinsicYs = a, this.scale = this._calcScale(), this.threshold = this._calcThreshold(), this.onPageIndexChanged = n.onPageIndexChanged, this.pageScrollIndex = 0, this.pagesScrollTop !== 0 && (this.pageScrollIndex = this.findScrollPageIndex(), this.onPageIndexChanged && this.pageScrollIndex > 0 && this.onPageIndexChanged(this.pageScrollIndex)), this.pageElManager = new dO(this.pages, h, this.scale), this.$pages = this.renderPages();
+    this.pagesIntrinsicHeight = this.pages.reduce((m, w, g) => (a[g] = m, w.width > h && (h = w.width), w.height <= l && (l = w.height), m + w.height), 0), this.pagesIntrinsicWidth = h, this.pagesMinHeight = l, this.pagesIntrinsicYs = a, this.scale = this._calcScale(), this.threshold = this._calcThreshold(), this.onPageIndexChanged = n.onPageIndexChanged, this.pageScrollIndex = 0, this.pagesScrollTop !== 0 && (this.pageScrollIndex = this.findScrollPageIndex(), this.onPageIndexChanged && this.pageScrollIndex > 0 && this.onPageIndexChanged(this.pageScrollIndex)), this.pageElManager = new cO(this.pages, h, this.scale), this.$pages = this.renderPages();
   }
   setContainerSize(n, a) {
     n > 0 && a > 0 && (n !== this.containerWidth || a !== this.containerHeight) && (this.containerWidth = n, this.containerHeight = a, this.$pages.style.width = `${this.containerWidth}px`, this.$pages.style.height = `${this.containerHeight}px`, this.scale = this._calcScale(), this.threshold = this._calcThreshold(), this.pageElManager.setScale(this.scale), this.$pages.parentElement && this.pagesScrollTo(this.pagesScrollTop, !0));
@@ -6243,10 +6243,10 @@ class fO {
     this._hwaTimeout ? window.clearTimeout(this._hwaTimeout) : this.$pages.classList.toggle("is-hwa", !0), this._hwaTimeout = window.setTimeout(this._turnOffHWA, 1e3);
   }
 }
-const hO = 30;
-class pO {
+const fO = 30;
+class hO {
   constructor(n) {
-    this.sideEffect = new Tg(), this.pagesScrollTop = n.pagesScrollTop || 0, this.containerWidth = n.containerWidth || 1, this.containerHeight = n.containerHeight || 1, this.pagesWidth = n.pagesWidth || 1, this.pagesHeight = n.pagesHeight || 1, this.scale = this._calcScale(), this.scrollbarMinHeight = n.scrollbarMinHeight || hO, this.scrollbarHeight = this._calcScrollbarHeight(), this.readonly = n.readonly, this.wrapClassName = n.wrapClassName, this.onDragScroll = n.onDragScroll, this.$scrollbar = this.renderScrollbar();
+    this.sideEffect = new Tg(), this.pagesScrollTop = n.pagesScrollTop || 0, this.containerWidth = n.containerWidth || 1, this.containerHeight = n.containerHeight || 1, this.pagesWidth = n.pagesWidth || 1, this.pagesHeight = n.pagesHeight || 1, this.scale = this._calcScale(), this.scrollbarMinHeight = n.scrollbarMinHeight || fO, this.scrollbarHeight = this._calcScrollbarHeight(), this.readonly = n.readonly, this.wrapClassName = n.wrapClassName, this.onDragScroll = n.onDragScroll, this.$scrollbar = this.renderScrollbar();
   }
   mount(n) {
     n.appendChild(this.$scrollbar), this.pagesScrollTo(this.pagesScrollTop, !0);
@@ -6304,8 +6304,8 @@ class pO {
     Math.abs(n - this.scrollbarHeight) > 1e-3 && (this.scrollbarHeight = n, this.$scrollbar.style.height = `${n}px`);
   }
 }
-const mO = window.ResizeObserver || GP, Zh = 640;
-class vO {
+const pO = window.ResizeObserver || YP, Zh = 640;
+class mO {
   constructor({
     context: n,
     whiteboardView: a,
@@ -6365,13 +6365,13 @@ class vO {
       onNewPageIndex: this.onNewPageIndex
     });
     const { width: z, height: $ } = this.whiteboardView.size;
-    this.pageRenderer = new fO({
+    this.pageRenderer = new dO({
       pagesScrollTop: w,
       pages: this.pages,
       containerWidth: z,
       containerHeight: $,
       onPageIndexChanged: this.viewer.setPageIndex.bind(this.viewer)
-    }), this.scrollbar = new pO({
+    }), this.scrollbar = new hO({
       pagesScrollTop: this.pageRenderer.pagesScrollTop,
       containerWidth: z,
       containerHeight: $,
@@ -6382,7 +6382,7 @@ class vO {
       onDragScroll: (j) => {
         this.pageScrollTo(j), this.updateUserScroll();
       }
-    }), this.pageScrollStepper = new oO({
+    }), this.pageScrollStepper = new sO({
       start: this.pageRenderer.pagesScrollTop,
       onStep: (j) => {
         this.pageScrollTo(j);
@@ -6395,7 +6395,7 @@ class vO {
       wait: 80
     });
     return this.sideEffect.add(() => {
-      const a = new mO(n);
+      const a = new pO(n);
       return a.observe(this.viewer.$content), () => a.disconnect();
     }), this.sideEffect.setTimeout(() => {
       this.userScrolling || this.pageScrollTo(this.pageRenderer.pagesScrollTop);
@@ -6539,7 +6539,7 @@ class vO {
     }, { capture: !0 });
   }
   debounce(n, a, l) {
-    const h = CP(n, a);
+    const h = xP(n, a);
     return this.sideEffect.addDisposer(() => h.cancel(), l), h;
   }
   wrapClassName(n) {
@@ -6572,7 +6572,7 @@ class vO {
     });
   }
 }
-class gO {
+class vO {
   constructor({ context: n, whiteboardView: a, box: l, pages: h }) {
     this.sideEffect = new Tg(), this.onPlayPPT = () => {
       const m = this.context.getRoom();
@@ -6710,8 +6710,8 @@ class gO {
     return "netless-app-docs-viewer-dynamic-" + n;
   }
 }
-const yO = "DocsViewer", lS = {
-  kind: yO,
+const gO = "DocsViewer", lS = {
+  kind: gO,
   setup(r) {
     const n = r.getBox(), a = r.getScenes();
     if (!a)
@@ -6727,13 +6727,13 @@ const yO = "DocsViewer", lS = {
     } : null).filter((m) => Boolean(m));
     if (h.length <= 0)
       throw new Error("[Docs Viewer]: empty scenes.");
-    return n.mountStyles(pP), h[0].src.startsWith("ppt") ? bO(r, l, n, h) : wO(r, l, n, h);
+    return n.mountStyles(hP), h[0].src.startsWith("ppt") ? wO(r, l, n, h) : yO(r, l, n, h);
   }
 };
-function wO(r, n, a, l) {
+function yO(r, n, a, l) {
   var h;
   n.disableCameraTransform = !r.getIsWritable();
-  const m = new vO({
+  const m = new mO({
     context: r,
     whiteboardView: n,
     readonly: !r.getIsWritable(),
@@ -6766,9 +6766,9 @@ function wO(r, n, a, l) {
     }
   };
 }
-function bO(r, n, a, l) {
+function wO(r, n, a, l) {
   n.disableCameraTransform = !0;
-  const h = new gO({
+  const h = new vO({
     context: r,
     whiteboardView: n,
     box: a,
@@ -6870,7 +6870,7 @@ function Rg() {
  * LICENSE file in the root directory of this source tree.
  */
 var rM;
-function SO() {
+function bO() {
   if (rM)
     return Ut;
   rM = 1;
@@ -7091,7 +7091,7 @@ function SO() {
   }, Ut.version = "16.14.0", Ut;
 }
 var Ht = {}, Pb, aM;
-function xO() {
+function SO() {
   if (aM)
     return Pb;
   aM = 1;
@@ -7099,7 +7099,7 @@ function xO() {
   return Pb = r, Pb;
 }
 var zb, sM;
-function CO() {
+function xO() {
   return sM || (sM = 1, zb = Function.call.bind(Object.prototype.hasOwnProperty)), zb;
 }
 var Ob, oM;
@@ -7110,7 +7110,7 @@ function XE() {
   var r = function() {
   };
   if (process.env.NODE_ENV !== "production") {
-    var n = xO(), a = {}, l = CO();
+    var n = SO(), a = {}, l = xO();
     r = function(m) {
       var w = "Warning: " + m;
       typeof console < "u" && console.error(w);
@@ -7161,7 +7161,7 @@ function XE() {
  * LICENSE file in the root directory of this source tree.
  */
 var lM;
-function TO() {
+function CO() {
   return lM || (lM = 1, process.env.NODE_ENV !== "production" && function() {
     var r = Rg(), n = XE(), a = "16.14.0", l = typeof Symbol == "function" && Symbol.for, h = l ? Symbol.for("react.element") : 60103, m = l ? Symbol.for("react.portal") : 60106, w = l ? Symbol.for("react.fragment") : 60107, g = l ? Symbol.for("react.strict_mode") : 60108, C = l ? Symbol.for("react.profiler") : 60114, S = l ? Symbol.for("react.provider") : 60109, I = l ? Symbol.for("react.context") : 60110, A = l ? Symbol.for("react.concurrent_mode") : 60111, z = l ? Symbol.for("react.forward_ref") : 60112, $ = l ? Symbol.for("react.suspense") : 60113, j = l ? Symbol.for("react.suspense_list") : 60120, J = l ? Symbol.for("react.memo") : 60115, Z = l ? Symbol.for("react.lazy") : 60116, de = l ? Symbol.for("react.block") : 60121, oe = l ? Symbol.for("react.fundamental") : 60117, Y = l ? Symbol.for("react.responder") : 60118, re = l ? Symbol.for("react.scope") : 60119, le = typeof Symbol == "function" && Symbol.iterator, Ae = "@@iterator";
     function $e(M) {
@@ -7941,7 +7941,7 @@ Check the top-level render call using <` + H + ">.");
   }()), Ht;
 }
 (function(r) {
-  process.env.NODE_ENV === "production" ? r.exports = SO() : r.exports = TO();
+  process.env.NODE_ENV === "production" ? r.exports = bO() : r.exports = CO();
 })(dl);
 const bt = /* @__PURE__ */ GE(dl.exports);
 var JE = { exports: {} }, xr = {}, Lb = { exports: {} }, Bb = {};
@@ -7954,7 +7954,7 @@ var JE = { exports: {} }, xr = {}, Lb = { exports: {} }, Bb = {};
  * LICENSE file in the root directory of this source tree.
  */
 var uM;
-function MO() {
+function TO() {
   return uM || (uM = 1, function(r) {
     var n, a, l, h, m;
     if (typeof window > "u" || typeof MessageChannel != "function") {
@@ -8206,7 +8206,7 @@ var jb = {};
  * LICENSE file in the root directory of this source tree.
  */
 var cM;
-function EO() {
+function MO() {
   return cM || (cM = 1, function(r) {
     process.env.NODE_ENV !== "production" && function() {
       var n = !1, a = !0, l, h, m, w, g;
@@ -8552,7 +8552,7 @@ function EO() {
 var dM;
 function qE() {
   return dM || (dM = 1, function(r) {
-    process.env.NODE_ENV === "production" ? r.exports = MO() : r.exports = EO();
+    process.env.NODE_ENV === "production" ? r.exports = TO() : r.exports = MO();
   }(Lb)), Lb.exports;
 }
 /** @license React v16.14.0
@@ -8564,7 +8564,7 @@ function qE() {
  * LICENSE file in the root directory of this source tree.
  */
 var fM;
-function IO() {
+function EO() {
   if (fM)
     return xr;
   fM = 1;
@@ -13312,7 +13312,7 @@ var Cr = {}, Vb = { exports: {} }, Sa = {};
  * LICENSE file in the root directory of this source tree.
  */
 var hM;
-function AO() {
+function IO() {
   if (hM)
     return Sa;
   hM = 1;
@@ -13341,7 +13341,7 @@ var Ub = {};
  * LICENSE file in the root directory of this source tree.
  */
 var pM;
-function RO() {
+function AO() {
   return pM || (pM = 1, function(r) {
     process.env.NODE_ENV !== "production" && function() {
       var n = 0, a = 0, l = 0;
@@ -13518,9 +13518,9 @@ function RO() {
   }(Ub)), Ub;
 }
 var mM;
-function DO() {
+function RO() {
   return mM || (mM = 1, function(r) {
-    process.env.NODE_ENV === "production" ? r.exports = AO() : r.exports = RO();
+    process.env.NODE_ENV === "production" ? r.exports = IO() : r.exports = AO();
   }(Vb)), Vb.exports;
 }
 /** @license React v16.14.0
@@ -13532,9 +13532,9 @@ function DO() {
  * LICENSE file in the root directory of this source tree.
  */
 var vM;
-function NO() {
+function DO() {
   return vM || (vM = 1, process.env.NODE_ENV !== "production" && function() {
-    var r = dl.exports, n = Rg(), a = qE(), l = XE(), h = DO(), m = r.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
+    var r = dl.exports, n = Rg(), a = qE(), l = XE(), h = RO(), m = r.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
     m.hasOwnProperty("ReactCurrentDispatcher") || (m.ReactCurrentDispatcher = {
       current: null
     }), m.hasOwnProperty("ReactCurrentBatchConfig") || (m.ReactCurrentBatchConfig = {
@@ -24072,15 +24072,15 @@ You might need to use a local HTTP server (instead of file://): https://fb.me/re
       }
     }
   }
-  process.env.NODE_ENV === "production" ? (n(), r.exports = IO()) : r.exports = NO();
+  process.env.NODE_ENV === "production" ? (n(), r.exports = EO()) : r.exports = DO();
 })(JE);
 const gM = /* @__PURE__ */ GE(JE.exports);
-var kO = Object.defineProperty, _O = Object.defineProperties, PO = Object.getOwnPropertyDescriptors, yM = Object.getOwnPropertySymbols, zO = Object.prototype.hasOwnProperty, OO = Object.prototype.propertyIsEnumerable, wM = (r, n, a) => n in r ? kO(r, n, { enumerable: !0, configurable: !0, writable: !0, value: a }) : r[n] = a, Mr = (r, n) => {
+var NO = Object.defineProperty, kO = Object.defineProperties, _O = Object.getOwnPropertyDescriptors, yM = Object.getOwnPropertySymbols, PO = Object.prototype.hasOwnProperty, zO = Object.prototype.propertyIsEnumerable, wM = (r, n, a) => n in r ? NO(r, n, { enumerable: !0, configurable: !0, writable: !0, value: a }) : r[n] = a, Mr = (r, n) => {
   for (var a in n || (n = {}))
-    zO.call(n, a) && wM(r, a, n[a]);
+    PO.call(n, a) && wM(r, a, n[a]);
   if (yM)
     for (var a of yM(n))
-      OO.call(n, a) && wM(r, a, n[a]);
+      zO.call(n, a) && wM(r, a, n[a]);
   return r;
 };
 const KE = { src: "", currentTime: 0, hostTime: 0, muted: !1, paused: !0, volume: 1 }, eI = { currentTimeMaxError: 1, syncInterval: 1e3, retryInterval: 15e3, verbose: !1, log: console.log.bind(console) };
@@ -24099,42 +24099,42 @@ function Jv(r, n) {
   }(n);
   return a ? r.currentTime + (a - r.hostTime) / 1e3 : r.currentTime;
 }
-const LO = navigator.userAgent.includes("Safari"), BO = [".aac", ".mid", ".midi", ".mp3", ".ogg", ".oga", ".wav", ".weba"];
-var jO = typeof global == "object" && global && global.Object === Object && global, VO = typeof self == "object" && self && self.Object === Object && self, nI = jO || VO || Function("return this")(), gg = nI.Symbol, iI = Object.prototype, UO = iI.hasOwnProperty, HO = iI.toString, Yh = gg ? gg.toStringTag : void 0, WO = Object.prototype.toString, bM = gg ? gg.toStringTag : void 0;
-function FO(r) {
+const OO = navigator.userAgent.includes("Safari"), LO = [".aac", ".mid", ".midi", ".mp3", ".ogg", ".oga", ".wav", ".weba"];
+var BO = typeof global == "object" && global && global.Object === Object && global, jO = typeof self == "object" && self && self.Object === Object && self, nI = BO || jO || Function("return this")(), gg = nI.Symbol, iI = Object.prototype, VO = iI.hasOwnProperty, UO = iI.toString, Yh = gg ? gg.toStringTag : void 0, HO = Object.prototype.toString, bM = gg ? gg.toStringTag : void 0;
+function WO(r) {
   return r == null ? r === void 0 ? "[object Undefined]" : "[object Null]" : bM && bM in Object(r) ? function(n) {
-    var a = UO.call(n, Yh), l = n[Yh];
+    var a = VO.call(n, Yh), l = n[Yh];
     try {
       n[Yh] = void 0;
       var h = !0;
     } catch {
     }
-    var m = HO.call(n);
+    var m = UO.call(n);
     return h && (a ? n[Yh] = l : delete n[Yh]), m;
   }(r) : function(n) {
-    return WO.call(n);
+    return HO.call(n);
   }(r);
 }
-var $O = /\s/, QO = /^\s+/;
-function ZO(r) {
+var FO = /\s/, $O = /^\s+/;
+function QO(r) {
   return r && r.slice(0, function(n) {
-    for (var a = n.length; a-- && $O.test(n.charAt(a)); )
+    for (var a = n.length; a-- && FO.test(n.charAt(a)); )
       ;
     return a;
-  }(r) + 1).replace(QO, "");
+  }(r) + 1).replace($O, "");
 }
 function uS(r) {
   var n = typeof r;
   return r != null && (n == "object" || n == "function");
 }
-var YO = /^[-+]0x[0-9a-f]+$/i, GO = /^0b[01]+$/i, XO = /^0o[0-7]+$/i, JO = parseInt;
+var ZO = /^[-+]0x[0-9a-f]+$/i, YO = /^0b[01]+$/i, GO = /^0o[0-7]+$/i, XO = parseInt;
 function SM(r) {
   if (typeof r == "number")
     return r;
   if (function(l) {
     return typeof l == "symbol" || function(h) {
       return h != null && typeof h == "object";
-    }(l) && FO(l) == "[object Symbol]";
+    }(l) && WO(l) == "[object Symbol]";
   }(r))
     return NaN;
   if (uS(r)) {
@@ -24143,13 +24143,13 @@ function SM(r) {
   }
   if (typeof r != "string")
     return r === 0 ? r : +r;
-  r = ZO(r);
-  var a = GO.test(r);
-  return a || XO.test(r) ? JO(r.slice(2), a ? 2 : 8) : YO.test(r) ? NaN : +r;
+  r = QO(r);
+  var a = YO.test(r);
+  return a || GO.test(r) ? XO(r.slice(2), a ? 2 : 8) : ZO.test(r) ? NaN : +r;
 }
 var Hb = function() {
   return nI.Date.now();
-}, qO = Math.max, KO = Math.min;
+}, JO = Math.max, qO = Math.min;
 function qv(r, n, a) {
   var l, h, m, w, g, C, S = 0, I = !1, A = !1, z = !0;
   if (typeof r != "function")
@@ -24171,7 +24171,7 @@ function qv(r, n, a) {
       return de(Y);
     g = setTimeout(Z, function(re) {
       var le = n - (re - C);
-      return A ? KO(le, m - (re - S)) : le;
+      return A ? qO(le, m - (re - S)) : le;
     }(Y));
   }
   function de(Y) {
@@ -24187,7 +24187,7 @@ function qv(r, n, a) {
     }
     return g === void 0 && (g = setTimeout(Z, n)), w;
   }
-  return n = SM(n) || 0, uS(a) && (I = !!a.leading, m = (A = "maxWait" in a) ? qO(SM(a.maxWait) || 0, n) : m, z = "trailing" in a ? !!a.trailing : z), oe.cancel = function() {
+  return n = SM(n) || 0, uS(a) && (I = !!a.leading, m = (A = "maxWait" in a) ? JO(SM(a.maxWait) || 0, n) : m, z = "trailing" in a ? !!a.trailing : z), oe.cancel = function() {
     g !== void 0 && clearTimeout(g), S = 0, l = C = h = g = void 0;
   }, oe.flush = function() {
     return g === void 0 ? w : de(Hb());
@@ -24287,7 +24287,7 @@ class xM extends dl.exports.Component {
     }, onMouseUp: this.onMouseUp, onTouchEnd: this.onMouseUp }, bt.createElement("div", { className: "main" }, this.renderBufferProgress(), this.renderHoverProgress(), this.renderProgress())), this.drawHoverTime(), this.renderThumb());
   }
 }
-class eL extends dl.exports.Component {
+class KO extends dl.exports.Component {
   constructor(n) {
     super(n), this.stageVolume = 0, this.updateVolumeTimer = 0, this.onVolumeSeeking = !1, this.onClickOperationButton = () => {
       const { paused: a } = this.props;
@@ -24337,14 +24337,14 @@ function CM(r) {
 function Gh(r) {
   return r <= 9 ? `0${r}` : `${r}`;
 }
-let tL = 99999;
+let eL = 99999;
 var cS, Sd;
 (Sd = cS || (cS = {}))[Sd.Idle = 0] = "Idle", Sd[Sd.Playing = 1] = "Playing", Sd[Sd.Paused = 2] = "Paused";
 let ji = {};
 function Gn(r, ...n) {
   mo.verbose && console.log(`[RTCEffect] ${r}`, ...n);
 }
-function nL(r, n, a) {
+function tL(r, n, a) {
   function l(m) {
     ji[m].playState === 0 ? (r.playEffect(m, a, 0, 1, 0, 100, !1, 0).then(() => {
       Gn(">>> Play Success", { playingId: m });
@@ -24358,7 +24358,7 @@ function nL(r, n, a) {
     const w = ((m = n == null ? void 0 : n.tagAttributes) == null ? void 0 : m.src) || "";
     w.endsWith("mp3") || w.endsWith("wav") || w.endsWith("m4a") || (Gn(">>> Mute js player", { src: w }), n.muted(!0), n.muted = (C) => !1);
     const g = function() {
-      const C = tL--, S = { playState: cS.Idle, previousVideoJSAdvance: 0, previousSeekTargetTime: 0, previousBeginSeekTime: 0 };
+      const C = eL--, S = { playState: cS.Idle, previousVideoJSAdvance: 0, previousSeekTargetTime: 0, previousBeginSeekTime: 0 };
       return ji[C] = S, C;
     }();
     Gn(">>> Setup", { playingId: g, src: w }), r.addListener("error", (C) => {
@@ -24416,7 +24416,7 @@ function nL(r, n, a) {
     });
   });
 }
-class iL extends dl.exports.Component {
+class nL extends dl.exports.Component {
   constructor() {
     super(...arguments), this.putAttributes = (n) => {
       const { context: a } = this.props, l = a.getAttributes() || {};
@@ -24426,10 +24426,10 @@ class iL extends dl.exports.Component {
   }
   render() {
     const { context: n } = this.props, a = n.getRoom(), l = a ? void 0 : n.getDisplayer(), h = this.putAttributes;
-    return bt.createElement(rL, { room: a, player: l, context: n, plugin: { putAttributes: h } });
+    return bt.createElement(iL, { room: a, player: l, context: n, plugin: { putAttributes: h } });
   }
 }
-class rL extends dl.exports.Component {
+class iL extends dl.exports.Component {
   constructor(n) {
     super(n), this.alertMask = null, this.container = bt.createRef(), this.controllerHiddenTimer = 0, this.syncPlayerTimer = 0, this.retryCount = 0, this.decreaseRetryTimer = 0, this.noSoundSyncCount = 0, this.showController = () => {
       this.setState({ controllerVisible: !0 }), this.debounceHidingController();
@@ -24470,7 +24470,7 @@ class rL extends dl.exports.Component {
     }, this.catchPlayFail = (a) => {
       var l, h;
       const m = String(a);
-      if (LO && m.includes("NotAllowedError") || m.includes("interact"))
+      if (OO && m.includes("NotAllowedError") || m.includes("interact"))
         (l = this.player) == null || l.autoplay("any"), this.setState({ NoSound: !0 });
       else {
         const w = (h = this.player) == null ? void 0 : h.error();
@@ -24492,7 +24492,7 @@ class rL extends dl.exports.Component {
       const S = dT(g);
       this.player = S, window.player = S, S.one("loadedmetadata", this.gracefullyUpdate);
       const I = window.__mediaPlayerAudioEffectClient;
-      I !== void 0 && nL(I, S, h), S.on("ready", () => {
+      I !== void 0 && tL(I, S, h), S.on("ready", () => {
         var A;
         (A = mo.onPlayer) == null || A.call(mo, S), S.on("timeupdate", this.gracefullyUpdate), S.on("volumechange", this.gracefullyUpdate), S.on("seeked", this.gracefullyUpdate), S.on("play", this.gracefullyUpdate), S.on("pause", this.gracefullyUpdate), S.on("ended", this.resetPlayer);
       }), S.on("error", this.catchPlayFail), this.setState({ MediaError: !1 });
@@ -24511,7 +24511,7 @@ class rL extends dl.exports.Component {
     if (a) {
       if (a = Mr(Mr({}, KE), a), this.player) {
         let h = Jv(a, this.props), m = this.player.duration();
-        !a.paused && h > m && (l = Mr({}, a), a = _O(l, PO({ currentTime: 0, paused: !0 })), this.resetPlayer());
+        !a.paused && h > m && (l = Mr({}, a), a = kO(l, _O({ currentTime: 0, paused: !0 })), this.resetPlayer());
       }
       var l;
       return a;
@@ -24519,7 +24519,7 @@ class rL extends dl.exports.Component {
   }
   isShowingPoster() {
     const n = this.getAttributes();
-    return !(n != null && n.src) || BO.some((a) => n.src.endsWith(a));
+    return !(n != null && n.src) || LO.some((a) => n.src.endsWith(a));
   }
   render() {
     var n, a;
@@ -24529,7 +24529,7 @@ class rL extends dl.exports.Component {
     if (!l)
       return null;
     const h = 1e3 * (((n = this.player) == null ? void 0 : n.duration()) || 1e3), m = ((a = this.player) == null ? void 0 : a.bufferedPercent()) || 0;
-    return bt.createElement("div", { className: this.isEnabled() ? "vjs-p" : "vjs-p disabled", onMouseEnter: this.showController, onMouseMove: this.showController }, bt.createElement("div", { className: "video-js-plugin-player", ref: this.container }), this.isShowingPoster() && bt.createElement("div", { className: "video-js-plugin-poster" }, l.poster && bt.createElement("img", { src: l.poster, alt: "", draggable: !1 })), bt.createElement(eL, { duration: h, volume: l.volume, setVolume: this.setVolume, paused: l.paused, play: this.play, pause: this.pause, currentTime: 1e3 * Jv(l, this.props), setCurrentTime: this.setCurrentTime, buffered: h * m, visible: !0 }), this.state.NoSound && bt.createElement("div", { ref: this.setupAlert, className: "videojs-plugin-muted-alert" }), this.state.MediaError && bt.createElement("div", { className: "videojs-plugin-recovery-mode" }, bt.createElement("button", { ref: this.setupReload }, "Reload Player")));
+    return bt.createElement("div", { className: this.isEnabled() ? "vjs-p" : "vjs-p disabled", onMouseEnter: this.showController, onMouseMove: this.showController }, bt.createElement("div", { className: "video-js-plugin-player", ref: this.container }), this.isShowingPoster() && bt.createElement("div", { className: "video-js-plugin-poster" }, l.poster && bt.createElement("img", { src: l.poster, alt: "", draggable: !1 })), bt.createElement(KO, { duration: h, volume: l.volume, setVolume: this.setVolume, paused: l.paused, play: this.play, pause: this.pause, currentTime: 1e3 * Jv(l, this.props), setCurrentTime: this.setCurrentTime, buffered: h * m, visible: !0 }), this.state.NoSound && bt.createElement("div", { ref: this.setupAlert, className: "videojs-plugin-muted-alert" }), this.state.MediaError && bt.createElement("div", { className: "videojs-plugin-recovery-mode" }, bt.createElement("button", { ref: this.setupReload }, "Reload Player")));
   }
   debug(n, ...a) {
     mo.verbose && mo.log(`[MediaPlayer] ${n}`, ...a);
@@ -24554,10 +24554,10 @@ const dS = { kind: "MediaPlayer", setup(r) {
   a.mountStyles(`.vjs-p{display:flex;flex-grow:1}.vjs-p *{pointer-events:auto}.vjs-p.disabled *{pointer-events:none}.vjs-p .video-js-plugin-poster{position:absolute;top:0;left:0;right:0;bottom:0;background-image:url(data:image/png;base64,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);background-repeat:repeat-x;background-position:0 50%;display:flex;align-items:center;justify-content:center}.vjs-p .video-js-plugin-poster img{box-shadow:0 0 5px 10px #0006}.vjs-p .player-controller,.vjs-p .videojs-plugin-muted-alert{pointer-events:auto}.vjs-p.disabled .videojs-plugin-close-icon,.vjs-p.disabled .player-controller{pointer-events:none}.vjs-p .video-js-plugin-player{position:absolute;top:0;left:0;right:0;bottom:0}.video-js,[data-vjs-player]{width:100%;height:100%}.vjs-p .videojs-plugin-muted-alert{pointer-events:auto;cursor:pointer;position:absolute;top:0;left:0;right:0;bottom:0;z-index:43}.vjs-p .videojs-plugin-muted-alert:before{pointer-events:auto;cursor:pointer;position:absolute;top:0;left:0;right:0;bottom:0;z-index:43;content:"\\f104";background:rgba(0,0,0,.3);font-family:VideoJS;font-size:2em;display:flex;align-items:center;justify-content:center;color:#fff}.vjs-p .videojs-plugin-recovery-mode{pointer-events:auto;cursor:pointer;position:absolute;top:0;left:0;right:0;bottom:0;z-index:44}.vjs-p .videojs-plugin-recovery-mode button{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}.vjs-p .seek-slider{position:relative;width:100%}.vjs-p .seek-slider:focus{outline:none}.vjs-p .seek-slider .track{padding:10px 0;cursor:pointer;outline:none}.vjs-p .seek-slider .track:focus{border:0;outline:none}.vjs-p .seek-slider .track .main{width:100%;height:3px;background-color:#ffffff4d;border-radius:30px;position:absolute;left:0;top:8.5px;transition:transform .4s;outline:none}.vjs-p .seek-slider .track .main:focus{border:0;outline:none}.vjs-p .seek-slider .track .main .buffered{position:absolute;background-color:#ffffff4d;width:100%;height:100%;transform:scaleX(.8);z-index:2;transform-origin:0 0}.vjs-p .seek-slider .track .main .seek-hover{position:absolute;background-color:#ffffff80;width:100%;height:100%;z-index:1;transform:scaleX(.6);transform-origin:0 0;opacity:0;transition:opacity .4s}.vjs-p .seek-slider .track .main .connect{position:absolute;background-color:#fff;width:100%;height:100%;z-index:3;left:0;transform:scaleX(.13);transform-origin:0 0}.vjs-p .seek-slider .track.active .main{transform:scaleY(2)}.vjs-p .seek-slider .thumb{pointer-events:none;position:absolute;width:12px;height:12px;left:-6px;top:4px;z-index:4;transform:translate(100px)}.vjs-p .seek-slider .thumb .handler{border-radius:100%;width:100%;height:100%;background-color:#fff;opacity:0;transform:scale(.4);cursor:pointer;transition:transform .2s;pointer-events:none}.vjs-p .seek-slider .thumb.active .handler{opacity:1;transform:scale(1)}.vjs-p .seek-slider .hover-time{position:absolute;background-color:#0000004d;line-height:18px;font-size:16px;color:#ddd;top:-25px;left:0;padding:5px 10px;border-radius:5px;box-shadow:0 0 5px #0000004d;opacity:0;transform:translate(150px);pointer-events:none}.vjs-p .seek-slider .hover-time.active{opacity:1}.vjs-p .seek-slider:hover .track .main .seek-hover{opacity:1}.vjs-p .player-controller{position:absolute;z-index:100;bottom:0px;left:0;width:100%;display:flex;flex-direction:column;justify-content:center;align-items:stretch;height:64px;background-image:linear-gradient(0deg,#000,transparent);transition:opacity .2s;color:#fff}.vjs-p .player-menu-box{display:flex;align-items:center;justify-content:center;flex-direction:column;margin-bottom:40px}.vjs-p .player-menu-cell{width:100%;text-align:center;font-size:12px;color:#7a7b7c}.vjs-p .player-multiple-play{width:64px;height:120px}.vjs-p .player-controller-actions-left{display:flex;justify-content:center;align-items:center;flex-shrink:0}.vjs-p .player-right-box{font-size:14px;color:#7a7b7c;cursor:pointer;margin-right:12px}.vjs-p .player-controller-actions{display:flex;flex-direction:row;justify-content:space-between;align-items:center;padding-left:8px;padding-right:8px;margin-top:2px}.vjs-p .player-mid-box-time{font-size:9px;display:flex;justify-content:center;align-items:center;color:#fff;flex-shrink:0;margin-right:8px;font-family:monospace}.vjs-p .player-controller-play{display:flex;align-items:center;justify-content:center;cursor:pointer;padding-right:4px}.vjs-p .player-controller-progress{width:calc(100% - 28px);margin-left:14px;display:flex;align-items:center;justify-content:center;margin-top:8px}.vjs-p .player-volume{display:flex;align-items:center;justify-content:center;cursor:pointer;margin-right:16px;margin-left:8px}.vjs-p .player-volume-slider{width:60px;margin-right:12px;display:flex;align-items:center}.vjs-p .player-volume-box{display:flex;flex-direction:row}.netless-app-media-player-container{display:flex;position:relative;height:100%}
 `);
   const l = document.createElement("div");
-  l.classList.add("netless-app-media-player-container"), gM.render(bt.createElement(iL, { context: r }), l), a.mountContent(l), r.emitter.on("destroy", () => {
+  l.classList.add("netless-app-media-player-container"), gM.render(bt.createElement(nL, { context: r }), l), a.mountContent(l), r.emitter.on("destroy", () => {
     console.log("[MediaPlayer]: destroy"), gM.unmountComponentAtNode(l);
   });
-} }, aL = () => {
+} }, rL = () => {
   St.debug && tI({ verbose: !0 }), St.register({
     kind: lS.kind,
     src: lS
@@ -24568,12 +24568,12 @@ const dS = { kind: "MediaPlayer", setup(r) {
     kind: $b.kind,
     src: $b
   });
-}, CL = {
+}, xL = {
   DocsViewer: lS.kind,
   MediaPlayer: dS.kind,
   Plyr: $b.kind
 };
-var sL = /* @__PURE__ */ ((r) => (r.Init = "Init", r.AttributesUpdate = "AttributesUpdate", r.SetAttributes = "SetAttributes", r.RegisterMagixEvent = "RegisterMagixEvent", r.RemoveMagixEvent = "RemoveMagixEvent", r.RemoveAllMagixEvent = "RemoveAllMagixEvent", r.RoomStateChanged = "RoomStateChanged", r.DispatchMagixEvent = "DispatchMagixEvent", r.ReciveMagixEvent = "ReciveMagixEvent", r.NextPage = "NextPage", r.PrevPage = "PrevPage", r.SDKCreate = "SDKCreate", r.OnCreate = "OnCreate", r.SetPage = "SetPage", r.GetAttributes = "GetAttributes", r.Ready = "Ready", r.Destory = "Destory", r.StartCreate = "StartCreate", r.WrapperDidUpdate = "WrapperDidUpdate", r.DispayIframe = "DispayIframe", r.HideIframe = "HideIframe", r.GetRootRect = "GetRootRect", r.ReplayRootRect = "ReplayRootRect", r.PageTo = "PageTo", r))(sL || {}), oL = /* @__PURE__ */ ((r) => (r.WrapperDidMount = "WrapperDidMount", r.IframeLoad = "IframeLoad", r))(oL || {});
+var aL = /* @__PURE__ */ ((r) => (r.Init = "Init", r.AttributesUpdate = "AttributesUpdate", r.SetAttributes = "SetAttributes", r.RegisterMagixEvent = "RegisterMagixEvent", r.RemoveMagixEvent = "RemoveMagixEvent", r.RemoveAllMagixEvent = "RemoveAllMagixEvent", r.RoomStateChanged = "RoomStateChanged", r.DispatchMagixEvent = "DispatchMagixEvent", r.ReciveMagixEvent = "ReciveMagixEvent", r.NextPage = "NextPage", r.PrevPage = "PrevPage", r.SDKCreate = "SDKCreate", r.OnCreate = "OnCreate", r.SetPage = "SetPage", r.GetAttributes = "GetAttributes", r.Ready = "Ready", r.Destory = "Destory", r.StartCreate = "StartCreate", r.WrapperDidUpdate = "WrapperDidUpdate", r.DispayIframe = "DispayIframe", r.HideIframe = "HideIframe", r.GetRootRect = "GetRootRect", r.ReplayRootRect = "ReplayRootRect", r.PageTo = "PageTo", r))(aL || {}), sL = /* @__PURE__ */ ((r) => (r.WrapperDidMount = "WrapperDidMount", r.IframeLoad = "IframeLoad", r))(sL || {});
 const al = {
   Ready: "Ready",
   RootRect: "ReplayRootRect",
@@ -24583,7 +24583,7 @@ const al = {
   DisplayerState: "displayerState",
   Show: "show",
   Hide: "hide"
-}, lL = (r, n) => new Array(r).fill(0).map((a, l) => n(l)), dn = class {
+}, oL = (r, n) => new Array(r).fill(0).map((a, l) => n(l)), dn = class {
   constructor(r, n) {
     this.manager = r, this.appManager = n, this.magixEventMap = /* @__PURE__ */ new Map(), this.cssList = [], this.allowAppliances = ["clicker"], this.bridgeDisposer = EM, this.rootRect = null, this.sideEffectManager = new Pd(), this.execListenIframe = Ta((a) => {
       this.listenIframe(a);
@@ -24709,7 +24709,7 @@ const al = {
       return;
     const n = r.payload, a = this.displayer, l = a.entireScenes()[this.attributes.displaySceneDir];
     if (!l || l.length !== n) {
-      const h = lL(n, (m) => ({
+      const h = oL(n, (m) => ({
         name: String(m + 1)
       }));
       a.putScenes(this.attributes.displaySceneDir, h), this.manager.setMainViewScenePath(this.attributes.displaySceneDir);
@@ -24925,7 +24925,7 @@ Od.hiddenClass = "netless-iframe-brdige-hidden";
 Od.emitter = new _d();
 Od.displayer = null;
 Od.alreadyCreate = !1;
-function uL() {
+function lL() {
   let r = /* @__PURE__ */ new Set();
   function n(w) {
     return r.add(w), () => {
@@ -24955,7 +24955,7 @@ function uL() {
   };
 }
 const Kv = "scrollData", eg = (r) => Fb(r) && !Number.isNaN(r);
-class cL {
+class uL {
   constructor(n) {
     this.baseScrollTop = 0, this.baseScrollLeft = 0, this.updateSize = () => {
       this.baseScrollTop = this._scrollingElement.scrollHeight - this._scrollingElement.clientHeight, this.baseScrollLeft = this._scrollingElement.scrollWidth - this._scrollingElement.clientWidth, this.scroll();
@@ -24963,12 +24963,12 @@ class cL {
       var w;
       (w = this.manager.room) == null || w.dispatchMagixEvent(yg, { appId: this.appId, x: h, y: m });
     }, 200), this._sideEffect = new Pd();
-    const { createVal: a } = mN(this._sideEffect);
+    const { createVal: a } = pN(this._sideEffect);
     this._scrollingElement = n.scrollElement, this.manager = n.manager, this.appId = n.appId, this.crood = a(this.getAttribute());
     const l = {
       $crood: this.crood
     };
-    vN(this, l), this.updateSize(), this._sideEffect.addEventListener(this._scrollingElement, "scroll", this.onScroll.bind(this), !0), this.callbackManager = uL(), this.sizeObserver = new ResizeObserver(this.callbackManager.runCallbacks), this.callbackManager.addCallback(this.updateSize.bind(this)), this.sizeObserver.observe(this._scrollingElement), this.sizeObserver.observe(this._scrollingElement.firstElementChild), this.crood.reaction(() => {
+    mN(this, l), this.updateSize(), this._sideEffect.addEventListener(this._scrollingElement, "scroll", this.onScroll.bind(this), !0), this.callbackManager = lL(), this.sizeObserver = new ResizeObserver(this.callbackManager.runCallbacks), this.callbackManager.addCallback(this.updateSize.bind(this)), this.sizeObserver.observe(this._scrollingElement), this.sizeObserver.observe(this._scrollingElement.firstElementChild), this.crood.reaction(() => {
       this.scroll();
     }), setTimeout(() => {
       this.updateSize(), this.scroll();
@@ -25030,7 +25030,7 @@ class cL {
   }
 }
 const yg = "windowMananerAppScrolling";
-class dL {
+class cL {
   constructor({ manager: n }) {
     this.scrollers = [], this.manager = n, tt.on(yg, this.onAppScrolling.bind(this));
   }
@@ -25045,7 +25045,7 @@ class dL {
   add(n) {
     if (this.scrollers.find((l) => l.appId == n.appId))
       return;
-    const a = new cL(n);
+    const a = new uL(n);
     this.scrollers.push(a);
   }
   scrollTo(n, a) {
@@ -25069,9 +25069,9 @@ class dL {
     !a || (a.destroy(), this.scrollers = this.scrollers.filter((l) => l.appId != n));
   }
 }
-const fL = new aP({ emitter: tt }), Xh = "mainView", ke = class extends fN {
+const dL = new rP({ emitter: tt }), Xh = "mainView", ke = class extends dN {
   constructor(r) {
-    super(r), this.version = "1.0.86", this.dependencies = { dependencies: { "@juggle/resize-observer": "^3.3.1", "@netless/app-plyr": "github:veytu/app-plyr", "@netless/telebox-insider": "github:veytu/telebox-insider", emittery: "^0.9.2", lodash: "^4.17.21", "p-retry": "^4.6.1", uuid: "^7.0.3", "value-enhancer": "0.0.8", "video.js": ">=7" }, peerDependencies: { jspdf: "2.5.1", "white-web-sdk": "^2.16.52" }, devDependencies: { "@hyrious/dts": "^0.2.2", "@netless/app-docs-viewer": "github:veytu/app-docs-viewer", "@netless/app-media-player": "0.1.0-beta.9", "@rollup/plugin-commonjs": "^20.0.0", "@rollup/plugin-node-resolve": "^13.0.4", "@rollup/plugin-url": "^6.1.0", "@sveltejs/vite-plugin-svelte": "^1.4.0", "@tsconfig/svelte": "^2.0.1", "@types/debug": "^4.1.7", "@types/lodash": "^4.14.182", "@types/lodash-es": "^4.17.4", "@types/uuid": "^8.3.1", "@typescript-eslint/eslint-plugin": "^4.30.0", "@typescript-eslint/parser": "^4.30.0", "@vitest/ui": "^0.14.1", cypress: "^8.7.0", dotenv: "^10.0.0", eslint: "^7.32.0", "eslint-config-prettier": "^8.3.0", "eslint-plugin-svelte3": "^3.2.0", jsdom: "^19.0.0", jspdf: "^2.5.1", less: "^4.1.1", prettier: "^2.3.2", "prettier-plugin-svelte": "^2.4.0", "rollup-plugin-analyzer": "^4.0.0", "rollup-plugin-styles": "^3.14.1", "side-effect-manager": "0.1.5", svelte: "^3.42.4", typescript: "^4.5.5", vite: "^3.0.0", vitest: "^0.14.1", "white-web-sdk": "2.16.52" } }, this.emitter = Nt, this.viewMode = sl.Broadcaster, this.isReplay = pS(this.displayer), this._cursorUIDs = [], this.containerSizeRatio = ke.containerSizeRatio, ke.displayer = r.displayer, window.NETLESS_DEPS = { dependencies: { "@juggle/resize-observer": "^3.3.1", "@netless/app-plyr": "github:veytu/app-plyr", "@netless/telebox-insider": "github:veytu/telebox-insider", emittery: "^0.9.2", lodash: "^4.17.21", "p-retry": "^4.6.1", uuid: "^7.0.3", "value-enhancer": "0.0.8", "video.js": ">=7" }, peerDependencies: { jspdf: "2.5.1", "white-web-sdk": "^2.16.52" }, devDependencies: { "@hyrious/dts": "^0.2.2", "@netless/app-docs-viewer": "github:veytu/app-docs-viewer", "@netless/app-media-player": "0.1.0-beta.9", "@rollup/plugin-commonjs": "^20.0.0", "@rollup/plugin-node-resolve": "^13.0.4", "@rollup/plugin-url": "^6.1.0", "@sveltejs/vite-plugin-svelte": "^1.4.0", "@tsconfig/svelte": "^2.0.1", "@types/debug": "^4.1.7", "@types/lodash": "^4.14.182", "@types/lodash-es": "^4.17.4", "@types/uuid": "^8.3.1", "@typescript-eslint/eslint-plugin": "^4.30.0", "@typescript-eslint/parser": "^4.30.0", "@vitest/ui": "^0.14.1", cypress: "^8.7.0", dotenv: "^10.0.0", eslint: "^7.32.0", "eslint-config-prettier": "^8.3.0", "eslint-plugin-svelte3": "^3.2.0", jsdom: "^19.0.0", jspdf: "^2.5.1", less: "^4.1.1", prettier: "^2.3.2", "prettier-plugin-svelte": "^2.4.0", "rollup-plugin-analyzer": "^4.0.0", "rollup-plugin-styles": "^3.14.1", "side-effect-manager": "0.1.5", svelte: "^3.42.4", typescript: "^4.5.5", vite: "^3.0.0", vitest: "^0.14.1", "white-web-sdk": "2.16.52" } };
+    super(r), this.version = "1.0.87", this.dependencies = { dependencies: { "@juggle/resize-observer": "^3.3.1", "@netless/app-plyr": "github:veytu/app-plyr", "@netless/telebox-insider": "github:veytu/telebox-insider", emittery: "^0.9.2", lodash: "^4.17.21", "p-retry": "^4.6.1", uuid: "^7.0.3", "value-enhancer": "0.0.8", "video.js": ">=7" }, peerDependencies: { jspdf: "2.5.1", "white-web-sdk": "^2.16.52" }, devDependencies: { "@hyrious/dts": "^0.2.2", "@netless/app-docs-viewer": "github:veytu/app-docs-viewer", "@netless/app-media-player": "0.1.0-beta.9", "@rollup/plugin-commonjs": "^20.0.0", "@rollup/plugin-node-resolve": "^13.0.4", "@rollup/plugin-url": "^6.1.0", "@sveltejs/vite-plugin-svelte": "^1.4.0", "@tsconfig/svelte": "^2.0.1", "@types/debug": "^4.1.7", "@types/lodash": "^4.14.182", "@types/lodash-es": "^4.17.4", "@types/uuid": "^8.3.1", "@typescript-eslint/eslint-plugin": "^4.30.0", "@typescript-eslint/parser": "^4.30.0", "@vitest/ui": "^0.14.1", cypress: "^8.7.0", dotenv: "^10.0.0", eslint: "^7.32.0", "eslint-config-prettier": "^8.3.0", "eslint-plugin-svelte3": "^3.2.0", jsdom: "^19.0.0", jspdf: "^2.5.1", less: "^4.1.1", prettier: "^2.3.2", "prettier-plugin-svelte": "^2.4.0", "rollup-plugin-analyzer": "^4.0.0", "rollup-plugin-styles": "^3.14.1", "side-effect-manager": "0.1.5", svelte: "^3.42.4", typescript: "^4.5.5", vite: "^3.0.0", vitest: "^0.14.1", "white-web-sdk": "2.16.52" } }, this.emitter = Nt, this.viewMode = sl.Broadcaster, this.isReplay = pS(this.displayer), this._cursorUIDs = [], this.containerSizeRatio = ke.containerSizeRatio, ke.displayer = r.displayer, window.NETLESS_DEPS = { dependencies: { "@juggle/resize-observer": "^3.3.1", "@netless/app-plyr": "github:veytu/app-plyr", "@netless/telebox-insider": "github:veytu/telebox-insider", emittery: "^0.9.2", lodash: "^4.17.21", "p-retry": "^4.6.1", uuid: "^7.0.3", "value-enhancer": "0.0.8", "video.js": ">=7" }, peerDependencies: { jspdf: "2.5.1", "white-web-sdk": "^2.16.52" }, devDependencies: { "@hyrious/dts": "^0.2.2", "@netless/app-docs-viewer": "github:veytu/app-docs-viewer", "@netless/app-media-player": "0.1.0-beta.9", "@rollup/plugin-commonjs": "^20.0.0", "@rollup/plugin-node-resolve": "^13.0.4", "@rollup/plugin-url": "^6.1.0", "@sveltejs/vite-plugin-svelte": "^1.4.0", "@tsconfig/svelte": "^2.0.1", "@types/debug": "^4.1.7", "@types/lodash": "^4.14.182", "@types/lodash-es": "^4.17.4", "@types/uuid": "^8.3.1", "@typescript-eslint/eslint-plugin": "^4.30.0", "@typescript-eslint/parser": "^4.30.0", "@vitest/ui": "^0.14.1", cypress: "^8.7.0", dotenv: "^10.0.0", eslint: "^7.32.0", "eslint-config-prettier": "^8.3.0", "eslint-plugin-svelte3": "^3.2.0", jsdom: "^19.0.0", jspdf: "^2.5.1", less: "^4.1.1", prettier: "^2.3.2", "prettier-plugin-svelte": "^2.4.0", "rollup-plugin-analyzer": "^4.0.0", "rollup-plugin-styles": "^3.14.1", "side-effect-manager": "0.1.5", svelte: "^3.42.4", typescript: "^4.5.5", vite: "^3.0.0", vitest: "^0.14.1", "white-web-sdk": "2.16.52" } };
   }
   static onCreate(r) {
     ke._resolve(r);
@@ -25081,7 +25081,7 @@ const fL = new aP({ emitter: tt }), Xh = "mainView", ke = class extends fN {
     const n = r.room;
     ke.container = r.container, ke.supportAppliancePlugin = r.supportAppliancePlugin;
     const a = r.containerSizeRatio, l = r.debug, h = r.cursor;
-    ke.params = r, ke.displayer = r.room, ck();
+    ke.params = r, ke.displayer = r.room, uk();
     let m;
     if (Du(n)) {
       if (n.phase !== Nu.Connected)
@@ -25103,14 +25103,14 @@ const fL = new aP({ emitter: tt }), Xh = "mainView", ke = class extends fN {
       );
     if (!m)
       throw new Error("[WindowManager]: create manager failed");
-    a && (ke.containerSizeRatio = a), await m.ensureAttributes(), m._fullscreen = r.fullscreen, m.appManager = new lk(m), m.appManager.polling = r.polling || !1, m._pageState = new rP(m.appManager), m.cursorManager = new iP(
+    a && (ke.containerSizeRatio = a), await m.ensureAttributes(), m._fullscreen = r.fullscreen, m.appManager = new ok(m), m.appManager.polling = r.polling || !1, m._pageState = new iP(m.appManager), m.cursorManager = new nP(
       m.appManager,
       Boolean(h),
       r.cursorOptions,
       r.applianceIcons
-    ), m.scrollerManager = new dL({ manager: m }), a && (m.containerSizeRatio = a), r.container && m.bindContainer(r.container), sP(n, m), tt.emit("onCreated"), ke.isCreated = !0;
+    ), m.scrollerManager = new cL({ manager: m }), a && (m.containerSizeRatio = a), r.container && m.bindContainer(r.container), aP(n, m), tt.emit("onCreated"), ke.isCreated = !0;
     try {
-      await xN();
+      await SN();
     } catch (I) {
       console.warn("[WindowManager]: indexedDB open failed"), console.log(I);
     }
@@ -25129,13 +25129,13 @@ const fL = new aP({ emitter: tt }), Xh = "mainView", ke = class extends fN {
     }), m;
   }
   static initManager(r) {
-    return dk(r);
+    return ck(r);
   }
   static initContainer(r, n, a) {
     var j;
     const { chessboard: l, overwriteStyles: h, fullscreen: m } = a;
     ke.container || (ke.container = n);
-    const { playground: w, wrapper: g, sizer: C, mainViewElement: S, mainViewWrapperShadow: I, mainViewWrapper: A, extendWrapper: z, mainViewScrollWrapper: $ } = uk(n);
+    const { playground: w, wrapper: g, sizer: C, mainViewElement: S, mainViewWrapperShadow: I, mainViewWrapper: A, extendWrapper: z, mainViewScrollWrapper: $ } = lk(n);
     if (ke.playground = w, l && C.classList.add("netless-window-manager-chess-sizer"), m && C.classList.add("netless-window-manager-fullscreen"), h) {
       const J = document.createElement("style");
       J.textContent = h, w.appendChild(J);
@@ -25153,13 +25153,13 @@ const fL = new aP({ emitter: tt }), Xh = "mainView", ke = class extends fN {
   bindContainer(r) {
     var n, a, l, h, m, w, g;
     if (Du(this.displayer) && this.room.phase !== Nu.Connected)
-      throw new GN();
+      throw new YN();
     if (ke.isCreated && ke.container)
       ke.container.firstChild && r.appendChild(ke.container.firstChild);
     else if (ke.params) {
       const C = ke.params, S = ke.initContainer(this, r, C);
       this.boxManager && this.boxManager.destroy();
-      const I = T_(this, Nt, tt, po, {
+      const I = C_(this, Nt, tt, po, {
         collectorContainer: C.collectorContainer,
         collectorStyles: C.collectorStyles,
         prefersColorScheme: C.prefersColorScheme
@@ -25195,13 +25195,13 @@ const fL = new aP({ emitter: tt }), Xh = "mainView", ke = class extends fN {
     var n, a, l;
     if (this.appManager) {
       if (!r.kind || typeof r.kind != "string")
-        throw new $N();
+        throw new FN();
       r.src && typeof r.src == "string" && qi.register({ kind: r.kind, src: r.src });
       const h = await ((n = qi.appClasses.get(r.kind)) == null ? void 0 : n());
       if (h && ((a = h.config) == null ? void 0 : a.singleton) && this.appManager.appProxies.has(r.kind))
-        throw new WN();
+        throw new HN();
       const m = this.setupScenePath(r, this.appManager);
-      return m === void 0 ? void 0 : ((l = r == null ? void 0 : r.options) != null && l.scenePath && (r.options.scenePath = VN(r.options.scenePath)), await this.appManager.addApp(r, Boolean(m)));
+      return m === void 0 ? void 0 : ((l = r == null ? void 0 : r.options) != null && l.scenePath && (r.options.scenePath = jN(r.options.scenePath)), await this.appManager.addApp(r, Boolean(m)));
     } else
       throw new vs();
   }
@@ -25210,8 +25210,8 @@ const fL = new aP({ emitter: tt }), Xh = "mainView", ke = class extends fN {
     if (r.options) {
       const { scenePath: l, scenes: h } = r.options;
       if (l) {
-        if (!jN(l))
-          throw new ZN();
+        if (!BN(l))
+          throw new QN();
         const m = Object.keys(this.apps || {});
         for (const w of m) {
           const g = n.store.getAppScenePath(w);
@@ -25285,7 +25285,7 @@ const fL = new aP({ emitter: tt }), Xh = "mainView", ke = class extends fN {
     return (r = this.appManager) == null ? void 0 : r.mainViewProxy.mainViewClickHandler();
   }
   onAppDestroy(r, n) {
-    LN(`destroy-${r}`, n);
+    ON(`destroy-${r}`, n);
   }
   onAppEvent(r, n) {
     return tt.on(`custom-${r}`, n);
@@ -25626,27 +25626,32 @@ const fL = new aP({ emitter: tt }), Xh = "mainView", ke = class extends fN {
     if (!ke.mainViewWrapper || !ke.mainViewWrapperShadow)
       return;
     const h = n || Dd() || Rd() || ke.appReadonly || this.readonly;
-    ke.mainViewWrapper.style.width = `${(a == null ? void 0 : a.width) * l}px`, ke.mainViewWrapper.style.height = `${(a == null ? void 0 : a.height) * l}px`, ke.mainViewWrapperShadow.style.width = `${(a == null ? void 0 : a.width) * l}px`, ke.mainViewWrapperShadow.style.height = `${(a == null ? void 0 : a.height) * l}px`, this.room.disableCameraTransform = !0, h || this.moveCamera({
-      animationMode: op.Immediately,
-      scale: l,
-      centerX: 0,
-      centerY: 0
+    ke.mainViewWrapper.style.width = `${(a == null ? void 0 : a.width) * l}px`, ke.mainViewWrapper.style.height = `${(a == null ? void 0 : a.height) * l}px`, ke.mainViewWrapperShadow.style.width = `${(a == null ? void 0 : a.width) * l}px`, ke.mainViewWrapperShadow.style.height = `${(a == null ? void 0 : a.height) * l}px`, this.room.disableCameraTransform = !0, h || setTimeout(() => {
+      this.moveCamera({
+        animationMode: op.Immediately,
+        scale: l,
+        centerX: 0,
+        centerY: 0
+      });
     });
   }
   _setScale(r, n) {
-    var w, g, C, S;
+    var w;
     const { appId: a, scale: l } = r;
     if (!Fb(l))
       return !1;
     let h = l;
     h < 1 && (h = 1);
     const m = n || Dd() || Rd() || ke.appReadonly || this.readonly;
-    return m || this.safeUpdateAttributes(["scale"], { ...this.getAttributesValue(["scale"]), [a]: h }), a == Xh ? this._updateMainViewWrapperSize(h, n) : (tt.emit("onScaleChange", { appId: a, scale: h }), m || (C = (g = (w = this.appManager) == null ? void 0 : w.appProxies.get(a)) == null ? void 0 : g.view) == null || C.moveCamera({
-      scale: l,
-      animationMode: op.Immediately,
-      centerX: 0,
-      centerY: 0
-    })), (S = this.scrollerManager) == null || S.moveToCenter(a), !0;
+    return m || this.safeUpdateAttributes(["scale"], { ...this.getAttributesValue(["scale"]), [a]: h }), a == Xh ? this._updateMainViewWrapperSize(h, n) : (tt.emit("onScaleChange", { appId: a, scale: h }), m || setTimeout(() => {
+      var g, C, S;
+      (S = (C = (g = this.appManager) == null ? void 0 : g.appProxies.get(a)) == null ? void 0 : C.view) == null || S.moveCamera({
+        scale: l,
+        animationMode: op.Immediately,
+        centerX: 0,
+        centerY: 0
+      });
+    })), (w = this.scrollerManager) == null || w.moveToCenter(a), !0;
   }
   getScale() {
     return this.getAttributesValue(["scale"]);
@@ -25660,14 +25665,12 @@ const fL = new aP({ emitter: tt }), Xh = "mainView", ke = class extends fN {
     return n == null ? void 0 : n.startsWith("pptx://");
   }
   async ensureAttributes() {
-    if (oN(this.attributes) && await NM(50), xa(this.attributes) && (this.attributes[xi.Apps] || this.safeSetAttributes({ [xi.Apps]: {} }), this.attributes[xi.Cursors] || this.safeSetAttributes({ [xi.Cursors]: {} }), this.attributes._mainScenePath || this.safeSetAttributes({ _mainScenePath: RM }), this.attributes._mainSceneIndex || this.safeSetAttributes({ _mainSceneIndex: 0 }), this.attributes[xi.Registered] || this.safeSetAttributes({ [xi.Registered]: {} }), this.attributes[xi.IframeBridge] || this.safeSetAttributes({ [xi.IframeBridge]: {} }), this.attributes.mainViewBackgroundColor || this.safeSetAttributes({ mainViewBackgroundColor: "" }), this.attributes.mainViewBackgroundImg || this.safeSetAttributes({ mainViewBackgroundImg: "" }), !this.attributes.scale)) {
+    if (sN(this.attributes) && await NM(50), xa(this.attributes) && (this.attributes[xi.Apps] || this.safeSetAttributes({ [xi.Apps]: {} }), this.attributes[xi.Cursors] || this.safeSetAttributes({ [xi.Cursors]: {} }), this.attributes._mainScenePath || this.safeSetAttributes({ _mainScenePath: RM }), this.attributes._mainSceneIndex || this.safeSetAttributes({ _mainSceneIndex: 0 }), this.attributes[xi.Registered] || this.safeSetAttributes({ [xi.Registered]: {} }), this.attributes[xi.IframeBridge] || this.safeSetAttributes({ [xi.IframeBridge]: {} }), this.attributes.mainViewBackgroundColor || this.safeSetAttributes({ mainViewBackgroundColor: "" }), this.attributes.mainViewBackgroundImg || this.safeSetAttributes({ mainViewBackgroundImg: "" }), !this.attributes.scale)) {
       if (ke.appReadonly || this.readonly)
         return;
       this.safeSetAttributes({ scale: {
         [Xh]: 1
-      } }), setTimeout(() => {
-        console.log("windowmanager moveCamera", this.camera);
-      });
+      } });
     }
   }
   getIframeBridge() {
@@ -25711,29 +25714,29 @@ const fL = new aP({ emitter: tt }), Xh = "mainView", ke = class extends fN {
 let St = ke;
 St.kind = "WindowManager";
 St.debug = !1;
-St.containerSizeRatio = wN;
+St.containerSizeRatio = yN;
 St.isCreated = !1;
 St.appReadonly = Dd() || Rd();
 St._resolve = (r) => {
 };
-aL();
+rL();
 export {
-  WN as AppCreateError,
+  HN as AppCreateError,
   vs as AppManagerNotInitError,
-  xL as AppNotRegisterError,
-  GN as BindContainerRoomPhaseInvalidError,
-  YN as BoxManagerNotFoundError,
-  QN as BoxNotCreatedError,
-  CL as BuiltinApps,
-  oL as DomEvents,
+  SL as AppNotRegisterError,
+  YN as BindContainerRoomPhaseInvalidError,
+  ZN as BoxManagerNotFoundError,
+  $N as BoxNotCreatedError,
+  xL as BuiltinApps,
+  sL as DomEvents,
   Od as IframeBridge,
-  sL as IframeEvents,
-  ZN as InvalidScenePath,
-  $N as ParamsInvalidError,
-  FN as WhiteWebSDKInvalidError,
+  aL as IframeEvents,
+  QN as InvalidScenePath,
+  FN as ParamsInvalidError,
+  WN as WhiteWebSDKInvalidError,
   St as WindowManager,
   zM as calculateNextIndex,
   Xh as mainViewField,
-  fL as reconnectRefresher
+  dL as reconnectRefresher
 };
 //# sourceMappingURL=index.mjs.map
