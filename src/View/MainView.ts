@@ -79,11 +79,11 @@ export class MainViewProxy {
         }
     }
 
-    private get mainViewCamera() {
+    public get mainViewCamera() {
         return this.store.getMainViewCamera();
     }
 
-    private get mainViewSize() {
+    public get mainViewSize() {
         return this.store.getMainViewSize();
     }
 

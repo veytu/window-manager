@@ -745,8 +745,8 @@ declare class MainViewProxy {
     private syncCamera;
     private startListenWritableChange;
     ensureCameraAndSize(): void;
-    private get mainViewCamera();
-    private get mainViewSize();
+    get mainViewCamera(): MainViewCamera;
+    get mainViewSize(): MainViewSize;
     private get didRelease();
     private moveCameraSizeByAttributes;
     start(): void;

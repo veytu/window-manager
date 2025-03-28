@@ -1177,13 +1177,22 @@ export class WindowManager
         this.room.disableCameraTransform = true
         if (!skipUpdate) {
             setTimeout(() => {
-                this.moveCamera({
-                    animationMode: AnimationMode.Immediately,
-                    scale: currentScale,
-                    centerX: 0,
-                    centerY: 0
-                })
-            })
+                if (!!this.appManager?.mainViewProxy.mainViewSize.width && !!this.appManager?.mainViewProxy.mainViewSize.height) {
+                    this.moveCamera({
+                        animationMode: AnimationMode.Immediately,
+                        scale: currentScale,
+                        centerX: 0,
+                        centerY: 0
+                    })
+                    this.moveCameraToContain({
+                        width: this.appManager?.mainViewProxy.mainViewSize.width,
+                        height: this.appManager?.mainViewProxy.mainViewSize.height,
+                        originX: -this.appManager?.mainViewProxy.mainViewSize.width / 2,
+                        originY: -this.appManager?.mainViewProxy.mainViewSize.height / 2,
+                        animationMode: AnimationMode.Immediately,
+                    })
+                }
+            }, 20)
         }
     }
 
