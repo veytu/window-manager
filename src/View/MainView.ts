@@ -39,6 +39,9 @@ export class MainViewProxy {
             return internalEmitter.on("playgroundSizeChange", playgroundSizeChangeListener);
         });
         this.sideEffectManager.add(() => {
+            return internalEmitter.on("wrapperSizeChange", playgroundSizeChangeListener);
+        });
+        this.sideEffectManager.add(() => {
             return internalEmitter.on("containerSizeRatioUpdate", this.onUpdateContainerSizeRatio);
         });
         this.sideEffectManager.add(() => {

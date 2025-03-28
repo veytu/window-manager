@@ -16,6 +16,7 @@ export type EmitterEvent = {
     observerIdChange: number;
     boxStateChange: string;
     playgroundSizeChange: DOMRect;
+    wrapperSizeChange: DOMRect;
     startReconnect: undefined;
     onReconnected: undefined;
     removeScenes: RemoveSceneParams;

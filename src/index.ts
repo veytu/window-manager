@@ -1179,21 +1179,7 @@ export class WindowManager
 
         this.room.disableCameraTransform = true
 
-       setTimeout(() => {
-            if (!skipUpdate) {
-                this.appManager?.mainViewProxy.moveCamera({
-                    scale: currentScale,
-                    centerX: 0,
-                    centerY: 0,
-                })
-                this.appManager?.dispatchInternalEvent(Events.MoveCamera, {
-                    scale: currentScale,
-                    centerX: 0,
-                    centerY: 0,
-                    animationMode: AnimationMode.Immediately,
-                });
-            }
-        }, 50)
+        internalEmitter.emit('wrapperSizeChange', WindowManager.mainViewWrapper.getBoundingClientRect())
     }
 
     private _setScale (data: {appId: string, scale: number}, skipEmit?: boolean): boolean {
@@ -1215,17 +1201,6 @@ export class WindowManager
             this._updateMainViewWrapperSize(newScale, skipEmit)
         } else {
             internalEmitter.emit("onScaleChange", {appId, scale: newScale})
-            if (!skipUpdate) {
-                setTimeout(() => {
-                    this.appManager?.appProxies.get(appId)?.view?.moveCamera({
-                        scale,
-                        animationMode: AnimationMode.Immediately,
-                        centerX: 0,
-                        centerY: 0
-                    })
-                })
-            }
-            
         }
 
         this.scrollerManager?.moveToCenter(appId)
