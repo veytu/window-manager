@@ -1190,9 +1190,12 @@ export class WindowManager
                     scale: currentScale,
                     centerX: 0,
                     centerY: 0,
+                    animationMode: AnimationMode.Immediately,
                 });
                 setTimeout(() => {
-                    this.appManager?.mainViewProxy.setCameraAndSize();
+                    const camera = { ...this.mainView.camera, scale: currentScale, id: this.appManager?.uid! };
+                    const size = { ...this.mainView.size, id: this.appManager?.uid! };
+                    this.appManager?.mainViewProxy.setMainViewCameraAndSize(camera, size)
                 }, 500);
             }
         })

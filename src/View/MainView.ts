@@ -115,6 +115,10 @@ export class MainViewProxy {
         this.store.setMainViewCameraAndSize(camera, size);
     }
 
+    public setMainViewCameraAndSize (camera: Camera & {id: string}, size: Size & {id: string}) {
+        this.store.setMainViewCameraAndSize(camera, size);
+    }
+
     private cameraReaction = () => {
         return reaction(
             () => this.mainViewCamera,
@@ -288,6 +292,7 @@ export class MainViewProxy {
             if (isEqual(camera, this.view.camera)) return;
             const { centerX, centerY, scale } = camera;
             const needScale = scale * (this.scale || 1)
+            console.log('window manager scale', needScale)
             this.view.moveCamera({
                 centerX: centerX,
                 centerY: centerY,

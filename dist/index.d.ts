@@ -752,6 +752,11 @@ declare class MainViewProxy {
     start(): void;
     addCameraReaction: () => void;
     setCameraAndSize(): void;
+    setMainViewCameraAndSize(camera: Camera & {
+        id: string;
+    }, size: Size & {
+        id: string;
+    }): void;
     private cameraReaction;
     sizeChangeHandler: lodash.DebouncedFunc<(size: Size) => void>;
     onUpdateContainerSizeRatio: () => void;
