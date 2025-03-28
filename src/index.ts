@@ -1179,7 +1179,7 @@ export class WindowManager
 
         this.room.disableCameraTransform = true
 
-        Promise.resolve().then(() => {
+       setTimeout(() => {
             if (!skipUpdate) {
                 this.appManager?.mainViewProxy.moveCamera({
                     scale: currentScale,
@@ -1193,7 +1193,7 @@ export class WindowManager
                     animationMode: AnimationMode.Immediately,
                 });
             }
-        })
+        }, 50)
     }
 
     private _setScale (data: {appId: string, scale: number}, skipEmit?: boolean): boolean {
