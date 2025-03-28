@@ -1169,31 +1169,22 @@ export class WindowManager
         if (!WindowManager.mainViewWrapper || !WindowManager.mainViewWrapperShadow) return
         const skipUpdate = skipEmit || isAndroid() || isIOS() || WindowManager.appReadonly || this.readonly
         
-        WindowManager.mainViewWrapper.style.width = `${size?.width * currentScale}px`
-        WindowManager.mainViewWrapper.style.height = `${size?.height * currentScale}px`
-        WindowManager.mainViewWrapperShadow.style.width = `${size?.width * currentScale}px`
-        WindowManager.mainViewWrapperShadow.style.height = `${size?.height * currentScale}px`
+        if (!WindowManager.mainViewWrapper || !WindowManager.mainViewWrapperShadow) return
+            WindowManager.mainViewWrapper.style.width = `${size?.width * currentScale}px`
+            WindowManager.mainViewWrapper.style.height = `${size?.height * currentScale}px`
+            WindowManager.mainViewWrapperShadow.style.width = `${size?.width * currentScale}px`
+            WindowManager.mainViewWrapperShadow.style.height = `${size?.height * currentScale}px`
+        
 
         this.room.disableCameraTransform = true
-        if (!skipUpdate) {
-            setTimeout(() => {
-                if (!!this.appManager?.mainViewProxy.mainViewSize.width && !!this.appManager?.mainViewProxy.mainViewSize.height) {
-                    this.moveCamera({
-                        animationMode: AnimationMode.Immediately,
-                        scale: currentScale,
-                        centerX: 0,
-                        centerY: 0
-                    })
-                    this.moveCameraToContain({
-                        width: this.appManager?.mainViewProxy.mainViewSize.width,
-                        height: this.appManager?.mainViewProxy.mainViewSize.height,
-                        originX: -this.appManager?.mainViewProxy.mainViewSize.width / 2,
-                        originY: -this.appManager?.mainViewProxy.mainViewSize.height / 2,
-                        animationMode: AnimationMode.Immediately,
-                    })
-                }
-            }, 20)
-        }
+
+        Promise.resolve().then(() => {
+            this.appManager?.mainViewProxy.moveCamera({
+                scale: currentScale,
+                centerX: 0,
+                centerY: 0
+            })
+        })
     }
 
     private _setScale (data: {appId: string, scale: number}, skipEmit?: boolean): boolean {
