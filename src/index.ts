@@ -1259,16 +1259,18 @@ export class WindowManager
             this.mutationObserver = new MutationObserver((mutationsList) => {
                 for (let mutation of mutationsList) {
                     if (mutation.type === "childList") {
-                        console.log("子节点发生变化", mutation);
+                        const cursorImg: HTMLImageElement | null | undefined = WindowManager.mainViewWrapper?.querySelector('.appliance-plugin-main-view-displayer')?.querySelector('.cursor-pencil-image')
+                        if (cursorImg) {
+                            cursorImg.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAABCcAAAQnAEmzTo0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAQYSURBVHgB7ZhLbBNHHMa/WSdOE1riNBCpiG3TSH2dsFSqNqYqOfSCRFT30qoKVZxTr0GqgKN9KhyqGIRAgYMjJN4SDwkQUi4ICSkHUMxDoEg8AgEHQogdB7N2dr3DzC42sbNebxI/VsKftJqZ/39n5/ftzOyuFqippg9bBFUW3bWrC5T+xqouVj6GIAyR3bvHrfavqgG6Y8cAK/rR0gLtePhQTxASJHv2bLdyjaoZoDt3htDQ4ENvL9DRoQejUWBwUC8JGWIm+opdR0AV9OK/fSG2XHzYuFGHHx4GjhzRk93desnymskiqvgM/D9CQ05Z8v1xdRBts5PAunVAJKIn+TKSJCCZfN8hlRoie/cWnImKGuDwFPDxeoMsIWvCTKoKTE4OkaNHDU1UbAldu3EwC8+Vqm/EqV/+wVTzZ+YdBYbocPhoT8+AYRoVEL21IeSpO+DrrD+YE7dsghC+J/rptm1d+amyG+DwoKqP1z3OQ+hsOZ2TL2oinQZkWa+rqjc/XVYDC+EhOIC2DnjazqOz9UzOeaYm4vGFreb8dNkMGMHD2ag1PWvOWJsJDp9ILDxtNn8cB8ogM3hN7Mkivr7ISgVP1R+y4bSjHmPiBrS/GMOql5H8u8/7/RW4cyeGchqwAo+pB8C8BFG4rj3I803caPkKX96/jtXJHAMBcvz4ufzxSmpgKfAZiZ+wdmMznkrfae14QsKMpGD08+/x7fN7GRMBcuyY32jMkhlYDjxWsTdvqwix6Z7WvDvdjvhrPa+wmeAmvnj1KNB6eL+/0LglMbAS+Ixc0ycx9/IZJvBzNqYQR6Bn+1a/2dgrNlAK+Lknt9hxGyK5pn3baCZUNRD8fa2/2PgrMlBK+Iy4CUoR+Nfr9cOClv0xVw54rRvbsGI3/LCoZRmwCzzXkg3YCZ5rSQbsBs9l2YAd4bksGbArPFdRA3aG15BgCr9pwM7wGpZZUqG9/fyHmV3huQouofnRs24iyKNADHVrr7IvRgq7wXMVngGH7NYrLijRX9l0NL2jsA88l1A4IWzONhi8MrWJQTfYCl7nLCBKqTsnwE08/0k3kVGV4blMNnGeAU1sOeFvrbQDPJehAXn0dFfhLu9MNH+TjVQLnsvQAHveuM27ufQ9wZZVNeG5DA2MTdHNBXtQFVROQJ2TkBpbj8TERE66kvBcdUbB4bty+6zkwI/tjFeR2JEETafYBn7D+OWcc1d/1Id4MgSVxioOz7XoReb19rs+bVsTnZmZg9dN8GdnY9GLpGk0FksGA+u3IogKa9EMJBW4I5FprX5iRI8tNMH2R4wQEqYqvUkIDWMeVz7eEhxHlbTIAPuT7aY0W4+dGEmGxVbhpudrpwbbtMU/DhvJaA+Ms8XcJzgRvnQuGOaByxdQU0012VRvAXMqptxy2zoQAAAAAElFTkSuQmCC'
+                        }
                     }
-                    console.log('allow-board', mutation)
                 }
                 
             });
             if (!WindowManager.mainViewWrapper) return;
             const displayer = WindowManager.mainViewWrapper.querySelector('.appliance-plugin-main-view-displayer')
             if (!displayer) return
-            this.mutationObserver.observe(displayer, { subtree: true });
+            this.mutationObserver.observe(displayer, { subtree: true, childList: true });
         }
     }
 
