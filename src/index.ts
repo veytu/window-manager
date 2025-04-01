@@ -1252,6 +1252,7 @@ export class WindowManager
         WindowManager.playground?.classList.toggle("is-cursor-laserPointer", active);
         if (!active) {
             this.mutationObserver?.disconnect();
+            this.mutationObserver = null
             return;
         }
         if (!this.mutationObserver) {
@@ -1260,10 +1261,14 @@ export class WindowManager
                     if (mutation.type === "childList") {
                         console.log("子节点发生变化", mutation);
                     }
+                    console.log('allow-board', mutation)
                 }
+                
             });
-            if (!WindowManager.playground) return;
-            this.mutationObserver.observe(WindowManager.playground);
+            if (!WindowManager.mainViewWrapper) return;
+            const displayer = WindowManager.mainViewWrapper.querySelector('.appliance-plugin-main-view-displayer')
+            if (!displayer) return
+            this.mutationObserver.observe(displayer, { subtree: true });
         }
     }
 
