@@ -66,10 +66,10 @@ export type WindowMangerAttributes = {
     boxState: TELE_BOX_STATE;
     maximized?: boolean;
     minimized?: boolean;
-    maximizedBoxes?: string
-    minimizedBoxes?: string
-    mainViewBackgroundImg?: string
-    mainViewBackgroundColor?: string
+    maximizedBoxes?: string;
+    minimizedBoxes?: string;
+    mainViewBackgroundImg?: string;
+    mainViewBackgroundColor?: string;
     [key: string]: any;
 };
 
@@ -166,7 +166,7 @@ export type MountParams = {
 
 export const reconnectRefresher = new ReconnectRefresher({ emitter: internalEmitter });
 
-export const mainViewField = 'mainView'
+export const mainViewField = "mainView";
 
 export class WindowManager
     extends InvisiblePlugin<WindowMangerAttributes, any>
@@ -174,10 +174,10 @@ export class WindowManager
 {
     public static kind = "WindowManager";
     public static displayer: Displayer;
-    public static originWrapper?: HTMLElement
+    public static originWrapper?: HTMLElement;
     public static wrapper?: HTMLElement;
     public static mainViewWrapper?: HTMLElement;
-    public static mainViewWrapperShadow?: HTMLElement
+    public static mainViewWrapperShadow?: HTMLElement;
     public static sizer?: HTMLElement;
     public static playground?: HTMLElement;
     public static container?: HTMLElement;
@@ -185,11 +185,12 @@ export class WindowManager
     public static containerSizeRatio = DEFAULT_CONTAINER_RATIO;
     public static supportAppliancePlugin?: boolean;
     public static isCreated = false;
-    public static appReadonly: boolean = isAndroid() || isIOS()
+    public static appReadonly: boolean = isAndroid() || isIOS();
     private static _resolve = (_manager: WindowManager) => void 0;
+    private mutationObserver: MutationObserver | null = null;
 
-    private static extendWrapper?: HTMLElement
-    private static mainViewScrollWrapper?: HTMLElement
+    private static extendWrapper?: HTMLElement;
+    private static mainViewScrollWrapper?: HTMLElement;
     public version = __APP_VERSION__;
     public dependencies = __APP_DEPENDENCIES__;
 
@@ -199,7 +200,7 @@ export class WindowManager
     public emitter: Emittery<PublicEvent> = callbacks;
     public appManager?: AppManager;
     public cursorManager?: CursorManager;
-    public scrollerManager?: ScrollerManager
+    public scrollerManager?: ScrollerManager;
     public viewMode = ViewMode.Broadcaster;
     public isReplay = isPlayer(this.displayer);
     private _pageState?: PageStateImpl;
@@ -292,7 +293,7 @@ export class WindowManager
             params.cursorOptions,
             params.applianceIcons
         );
-        manager.scrollerManager = new ScrollerManager({manager})
+        manager.scrollerManager = new ScrollerManager({ manager });
         if (containerSizeRatio) {
             manager.containerSizeRatio = containerSizeRatio;
         }
@@ -311,32 +312,35 @@ export class WindowManager
             console.log(error);
         }
 
-        manager?.room?.addMagixEventListener("onScaleChange", (data) => {
-            manager?._setScale(data.payload)
-        })
+        manager?.room?.addMagixEventListener("onScaleChange", data => {
+            manager?._setScale(data.payload);
+        });
 
-        manager?.room?.addMagixEventListener("onMainViewBackgroundImgChange", (data) => {
-            manager?._setBackgroundImg(data.payload)
-        })
-        manager?.room?.addMagixEventListener("onMainViewBackgroundColorChange", (data) => {
-            manager?._setBackgroundColor(data.payload)
-        })
+        manager?.room?.addMagixEventListener("onMainViewBackgroundImgChange", data => {
+            manager?._setBackgroundImg(data.payload);
+        });
+        manager?.room?.addMagixEventListener("onMainViewBackgroundColorChange", data => {
+            manager?._setBackgroundColor(data.payload);
+        });
 
-        manager?.room?.addMagixEventListener("onLaserPointerActiveChange", (data) => {
-            manager?._setLaserPointer(data.payload)
-        })
+        manager?.room?.addMagixEventListener("onLaserPointerActiveChange", data => {
+            manager?._setLaserPointer(data.payload);
+        });
 
-        manager.room?.addMagixEventListener(ScrollerScrollEventType, (data) => {
-            internalEmitter.emit(ScrollerScrollEventType, data.payload)
-        })
+        manager.room?.addMagixEventListener(ScrollerScrollEventType, data => {
+            internalEmitter.emit(ScrollerScrollEventType, data.payload);
+        });
 
-        internalEmitter.on('playgroundSizeChange', () => {
-            manager?._updateMainViewWrapperSize(manager.getAttributesValue('scale')[mainViewField], true)
-        })
+        internalEmitter.on("playgroundSizeChange", () => {
+            manager?._updateMainViewWrapperSize(
+                manager.getAttributesValue("scale")[mainViewField],
+                true
+            );
+        });
 
         setTimeout(() => {
-            manager?._initAttribute()
-        })
+            manager?._initAttribute();
+        });
         return manager;
     }
 
@@ -357,7 +361,16 @@ export class WindowManager
         if (!WindowManager.container) {
             WindowManager.container = container;
         }
-        const { playground, wrapper, sizer, mainViewElement, mainViewWrapperShadow, mainViewWrapper, extendWrapper, mainViewScrollWrapper } = setupWrapper(container);
+        const {
+            playground,
+            wrapper,
+            sizer,
+            mainViewElement,
+            mainViewWrapperShadow,
+            mainViewWrapper,
+            extendWrapper,
+            mainViewScrollWrapper,
+        } = setupWrapper(container);
         WindowManager.playground = playground;
         if (chessboard) {
             sizer.classList.add("netless-window-manager-chess-sizer");
@@ -376,15 +389,18 @@ export class WindowManager
             wrapper,
             internalEmitter
         );
-        WindowManager.originWrapper = wrapper
+        WindowManager.originWrapper = wrapper;
         WindowManager.wrapper = wrapper;
         WindowManager.sizer = sizer;
         WindowManager.mainViewWrapper = mainViewWrapper;
-        WindowManager.extendWrapper = extendWrapper
-        WindowManager.mainViewScrollWrapper = mainViewScrollWrapper
-        WindowManager.mainViewWrapperShadow = mainViewWrapperShadow
+        WindowManager.extendWrapper = extendWrapper;
+        WindowManager.mainViewScrollWrapper = mainViewScrollWrapper;
+        WindowManager.mainViewWrapperShadow = mainViewWrapperShadow;
 
-        WindowManager.mainViewScrollWrapper?.classList.toggle('netless-window-manager-fancy-scrollbar-readonly', WindowManager.appReadonly)
+        WindowManager.mainViewScrollWrapper?.classList.toggle(
+            "netless-window-manager-fancy-scrollbar-readonly",
+            WindowManager.appReadonly
+        );
         return mainViewElement;
     }
 
@@ -415,7 +431,11 @@ export class WindowManager
                 this.boxManager = boxManager;
                 this.appManager?.setBoxManager(boxManager);
                 if (WindowManager.mainViewScrollWrapper) {
-                    this.scrollerManager?.add({appId: mainViewField, scrollElement: WindowManager.mainViewScrollWrapper ,manager: this})
+                    this.scrollerManager?.add({
+                        appId: mainViewField,
+                        scrollElement: WindowManager.mainViewScrollWrapper,
+                        manager: this,
+                    });
                 }
                 this.bindMainView(mainViewElement, params.disableCameraTransform);
                 if (WindowManager.wrapper) {
@@ -772,23 +792,23 @@ export class WindowManager
     public maximizedBoxNextPage() {
         const boxId = this.getTopMaxBoxId();
 
-        if (!boxId) return false
+        if (!boxId) return false;
 
-        const box = this.appManager?.appProxies.get(boxId)
+        const box = this.appManager?.appProxies.get(boxId);
 
-        if (!box) return false
-        
+        if (!box) return false;
+
         return box?.appContext?.nextPage();
     }
 
     public maximizedBoxPrevPage() {
         const boxId = this.getTopMaxBoxId();
 
-        if (!boxId) return false
+        if (!boxId) return false;
 
-        const box = this.appManager?.appProxies.get(boxId)
+        const box = this.appManager?.appProxies.get(boxId);
 
-        if (!box) return false
+        if (!box) return false;
 
         return box?.appContext?.prevPage();
     }
@@ -796,25 +816,27 @@ export class WindowManager
     public getMaximizedBoxPageState() {
         const boxId = this.getTopMaxBoxId();
 
-        if (!boxId) return undefined
+        if (!boxId) return undefined;
 
-        const box = this.appManager?.appProxies.get(boxId)
+        const box = this.appManager?.appProxies.get(boxId);
 
-        if (!box) return undefined
-        
-        return box?.appContext?.pageState
+        if (!box) return undefined;
+
+        return box?.appContext?.pageState;
     }
-    
+
     public getTopMaxBoxId() {
-        const boxes = this.appManager?.boxManager?.teleBoxManager.maximizedBoxes.filter(box => !this.appManager?.boxManager?.teleBoxManager.minimizedBoxes.includes(box))
-        if (!boxes?.length) return undefined
-        return boxes.reduce((a, b) =>
-          Number(this.appManager?.boxManager?.getBox(a)?._zIndex$?.value) >
-          Number(this.appManager?.boxManager?.getBox(b)?._zIndex$?.value)
-            ? a
-            : b
+        const boxes = this.appManager?.boxManager?.teleBoxManager.maximizedBoxes.filter(
+            box => !this.appManager?.boxManager?.teleBoxManager.minimizedBoxes.includes(box)
         );
-      }
+        if (!boxes?.length) return undefined;
+        return boxes.reduce((a, b) =>
+            Number(this.appManager?.boxManager?.getBox(a)?._zIndex$?.value) >
+            Number(this.appManager?.boxManager?.getBox(b)?._zIndex$?.value)
+                ? a
+                : b
+        );
+    }
 
     public get mainView(): View {
         if (this.appManager) {
@@ -943,7 +965,7 @@ export class WindowManager
     }
 
     public get extendWrapper() {
-        return WindowManager.extendWrapper
+        return WindowManager.extendWrapper;
     }
 
     /**
@@ -1060,24 +1082,24 @@ export class WindowManager
         return this.displayer as Room;
     }
 
-    public get appReadonly () {
-        return WindowManager.appReadonly
+    public get appReadonly() {
+        return WindowManager.appReadonly;
     }
 
-    public setAppReadonly (readonly: boolean): void {
-        WindowManager.appReadonly = readonly
+    public setAppReadonly(readonly: boolean): void {
+        WindowManager.appReadonly = readonly;
     }
 
     public safeSetAttributes(attributes: any): void {
         if (this.canOperate) {
-            this.room?.dispatchMagixEvent('Windowmanager_custom_attributes', attributes)
+            this.room?.dispatchMagixEvent("Windowmanager_custom_attributes", attributes);
             this.setAttributes(attributes);
         }
     }
 
     public safeUpdateAttributes(keys: string[], value: any): void {
         if (this.canOperate) {
-            this.room?.dispatchMagixEvent('Windowmanager_custom_attributes', {keys, value})
+            this.room?.dispatchMagixEvent("Windowmanager_custom_attributes", { keys, value });
             this.updateAttributes(keys, value);
         }
     }
@@ -1161,74 +1183,94 @@ export class WindowManager
     }
 
     public setScale(appId: string, scale: number): void {
-        this.room.dispatchMagixEvent("onScaleChange", {appId, scale})
+        this.room.dispatchMagixEvent("onScaleChange", { appId, scale });
     }
 
-    private _updateMainViewWrapperSize (scale?: number, skipEmit?: boolean) {
+    private _updateMainViewWrapperSize(scale?: number, skipEmit?: boolean) {
+        const size = WindowManager.originWrapper?.getBoundingClientRect();
 
-        const size = WindowManager.originWrapper?.getBoundingClientRect()
+        if (!size) return false;
+        const currentScale = scale ?? this.getAttributesValue("scale")[mainViewField];
+        if (!WindowManager.mainViewWrapper || !WindowManager.mainViewWrapperShadow) return;
 
-        if (!size) return false
-        const currentScale = scale ?? this.getAttributesValue('scale')[mainViewField]
-        if (!WindowManager.mainViewWrapper || !WindowManager.mainViewWrapperShadow) return
-        
-        if (!WindowManager.mainViewWrapper || !WindowManager.mainViewWrapperShadow) return
+        if (!WindowManager.mainViewWrapper || !WindowManager.mainViewWrapperShadow) return;
 
-        WindowManager.mainViewWrapper.style.width = `${size?.width * currentScale}px`
-        WindowManager.mainViewWrapper.style.height = `${size?.height * currentScale}px`
-        WindowManager.mainViewWrapperShadow.style.width = `${size?.width * currentScale}px`
-        WindowManager.mainViewWrapperShadow.style.height = `${size?.height * currentScale}px`
-        
-        const skipUpdate = skipEmit || this.readonly || isIOS() || isAndroid()
+        WindowManager.mainViewWrapper.style.width = `${size?.width * currentScale}px`;
+        WindowManager.mainViewWrapper.style.height = `${size?.height * currentScale}px`;
+        WindowManager.mainViewWrapperShadow.style.width = `${size?.width * currentScale}px`;
+        WindowManager.mainViewWrapperShadow.style.height = `${size?.height * currentScale}px`;
 
-        this.room.disableCameraTransform = true
+        const skipUpdate = skipEmit || this.readonly || isIOS() || isAndroid();
 
-        internalEmitter.emit('wrapperSizeChange', WindowManager.mainViewWrapper.getBoundingClientRect())
+        this.room.disableCameraTransform = true;
+
+        internalEmitter.emit(
+            "wrapperSizeChange",
+            WindowManager.mainViewWrapper.getBoundingClientRect()
+        );
     }
 
-    private _setScale (data: {appId: string, scale: number}, skipEmit?: boolean): boolean {
-        const {appId, scale} = data
-        if (!isNumber(scale)) return false
-        
-        let newScale = scale
+    private _setScale(data: { appId: string; scale: number }, skipEmit?: boolean): boolean {
+        const { appId, scale } = data;
+        if (!isNumber(scale)) return false;
+
+        let newScale = scale;
 
         if (newScale < 1) {
-            newScale = 1
+            newScale = 1;
         }
-        const skipUpdate = skipEmit || isAndroid() || isIOS() || WindowManager.appReadonly || this.readonly
+        const skipUpdate =
+            skipEmit || isAndroid() || isIOS() || WindowManager.appReadonly || this.readonly;
 
         if (!skipUpdate) {
-            this.safeUpdateAttributes(["scale"], {...this.getAttributesValue(['scale']), [appId]: newScale})
+            this.safeUpdateAttributes(["scale"], {
+                ...this.getAttributesValue(["scale"]),
+                [appId]: newScale,
+            });
         }
 
         if (appId == mainViewField) {
-            this._updateMainViewWrapperSize(newScale, skipEmit)
+            this._updateMainViewWrapperSize(newScale, skipEmit);
         } else {
-            internalEmitter.emit("onScaleChange", {appId, scale: newScale})
+            internalEmitter.emit("onScaleChange", { appId, scale: newScale });
         }
 
-        this.scrollerManager?.moveToCenter(appId)
+        this.scrollerManager?.moveToCenter(appId);
 
-        return true
+        return true;
     }
 
-    public getScale (): Record<string, number> | undefined {
-        return this.getAttributesValue(['scale'])
+    public getScale(): Record<string, number> | undefined {
+        return this.getAttributesValue(["scale"]);
     }
 
-    public setLaserPointer (active: boolean) {
-        this.room.dispatchMagixEvent("onLaserPointerActiveChange", active)
+    public setLaserPointer(active: boolean) {
+        this.room.dispatchMagixEvent("onLaserPointerActiveChange", active);
     }
 
-    private _setLaserPointer (active: boolean) {
-        this.safeSetAttributes({ [Fields.LaserPointerActive]: active });
-        WindowManager.playground?.classList.toggle('is-cursor-laserPointer', active)
+    private _setLaserPointer(active: boolean) {
+        WindowManager.playground?.classList.toggle("is-cursor-laserPointer", active);
+        if (!active) {
+            this.mutationObserver?.disconnect();
+            return;
+        }
+        if (!this.mutationObserver) {
+            this.mutationObserver = new MutationObserver((mutationsList) => {
+                for (let mutation of mutationsList) {
+                    if (mutation.type === "childList") {
+                        console.log("子节点发生变化", mutation);
+                    }
+                }
+            });
+            if (!WindowManager.playground) return;
+            this.mutationObserver.observe(WindowManager.playground);
+        }
     }
 
-    public getAppScale (appId: string): number {
-        return this.getAttributesValue(['scale'])[appId]
+    public getAppScale(appId: string): number {
+        return this.getAttributesValue(["scale"])[appId];
     }
- 
+
     private isDynamicPPT(scenes: SceneDefinition[]) {
         const sceneSrc = scenes[0]?.ppt?.src;
         return sceneSrc?.startsWith("pptx://");
@@ -1257,24 +1299,21 @@ export class WindowManager
             if (!this.attributes[Fields.IframeBridge]) {
                 this.safeSetAttributes({ [Fields.IframeBridge]: {} });
             }
-            if (!this.attributes['mainViewBackgroundColor']) {
-                this.safeSetAttributes({ mainViewBackgroundColor: '' });
+            if (!this.attributes["mainViewBackgroundColor"]) {
+                this.safeSetAttributes({ mainViewBackgroundColor: "" });
             }
-            if (!this.attributes['mainViewBackgroundImg']) {
-                this.safeSetAttributes({mainViewBackgroundImg: ''})
+            if (!this.attributes["mainViewBackgroundImg"]) {
+                this.safeSetAttributes({ mainViewBackgroundImg: "" });
             }
-            if (!this.attributes['scale']) {
-
+            if (!this.attributes["scale"]) {
                 if (WindowManager.appReadonly || this.readonly) {
-                    return
+                    return;
                 }
-                this.safeSetAttributes({scale: {
-                    [mainViewField]: 1
-                }})
-            }
-
-            if (!this.attributes[Fields.LaserPointerActive]) {
-                this.safeSetAttributes({ [Fields.LaserPointerActive]: false });
+                this.safeSetAttributes({
+                    scale: {
+                        [mainViewField]: 1,
+                    },
+                });
             }
         }
     }
@@ -1288,61 +1327,57 @@ export class WindowManager
         return this._iframeBridge;
     }
 
-    public getBackground (): {type: 'img' | 'color', value: string | undefined} | undefined {
-        if (!!this.attributes['mainViewBackgroundColor']) {
+    public getBackground(): { type: "img" | "color"; value: string | undefined } | undefined {
+        if (!!this.attributes["mainViewBackgroundColor"]) {
             return {
-                type: 'color',
-                value: this.attributes['mainViewBackgroundColor']
-            }
+                type: "color",
+                value: this.attributes["mainViewBackgroundColor"],
+            };
         }
 
-        if (!!this.attributes['mainViewBackgroundImg']) {
+        if (!!this.attributes["mainViewBackgroundImg"]) {
             return {
-                type: 'img',
-                value: this.attributes['mainViewBackgroundImg']
-            }
+                type: "img",
+                value: this.attributes["mainViewBackgroundImg"],
+            };
         }
 
-        return undefined
+        return undefined;
     }
 
-    public setBackgroundImg (src: string): void {
-        this.room.dispatchMagixEvent('onMainViewBackgroundColorChange', '')
-        this.room.dispatchMagixEvent('onMainViewBackgroundImgChange', src)
+    public setBackgroundImg(src: string): void {
+        this.room.dispatchMagixEvent("onMainViewBackgroundColorChange", "");
+        this.room.dispatchMagixEvent("onMainViewBackgroundImgChange", src);
     }
-    public setBackgroundColor (color: string): void {
-        this.room.dispatchMagixEvent('onMainViewBackgroundImgChange', '')
-        this.room.dispatchMagixEvent('onMainViewBackgroundColorChange', color)
+    public setBackgroundColor(color: string): void {
+        this.room.dispatchMagixEvent("onMainViewBackgroundImgChange", "");
+        this.room.dispatchMagixEvent("onMainViewBackgroundColorChange", color);
     }
-    private _setBackgroundColor (color: string): void {
-        if (!WindowManager.mainViewWrapper) return
-        WindowManager.mainViewWrapper.style.backgroundColor = color
-        this.safeUpdateAttributes(["mainViewBackgroundColor"], color)
+    private _setBackgroundColor(color: string): void {
+        if (!WindowManager.mainViewWrapper) return;
+        WindowManager.mainViewWrapper.style.backgroundColor = color;
+        this.safeUpdateAttributes(["mainViewBackgroundColor"], color);
     }
-    private _setBackgroundImg (src: string): void {
-        if (!WindowManager.mainViewWrapper) return
-        WindowManager.mainViewWrapper.style.backgroundImage = `url(${src})`
-        this.safeUpdateAttributes(["mainViewBackgroundImg"], src)
+    private _setBackgroundImg(src: string): void {
+        if (!WindowManager.mainViewWrapper) return;
+        WindowManager.mainViewWrapper.style.backgroundImage = `url(${src})`;
+        this.safeUpdateAttributes(["mainViewBackgroundImg"], src);
     }
 
-    private _initAttribute (): void {
-        if (!!this.attributes['mainViewBackgroundImg']) {
-            this._setBackgroundImg(this.attributes['mainViewBackgroundImg'])
+    private _initAttribute(): void {
+        if (!!this.attributes["mainViewBackgroundImg"]) {
+            this._setBackgroundImg(this.attributes["mainViewBackgroundImg"]);
         }
 
-        if (!!this.attributes['mainViewBackgroundColor']) {
-            this._setBackgroundColor(this.attributes['mainViewBackgroundColor'])
+        if (!!this.attributes["mainViewBackgroundColor"]) {
+            this._setBackgroundColor(this.attributes["mainViewBackgroundColor"]);
         }
 
-        if (!!this.attributes['scale']) {
-            const scaleMap: Record<string, number> = this.attributes['scale']
+        if (!!this.attributes["scale"]) {
+            const scaleMap: Record<string, number> = this.attributes["scale"];
             Object.keys(scaleMap).forEach(item => {
-                this._setScale({appId: item, scale: scaleMap[item]}, true)
-            })
-        }
-
-        if (!!this.attributes[Fields.LaserPointerActive]) {
-            WindowManager.playground?.classList.toggle('is-cursor-laserPointer', this.attributes[Fields.LaserPointerActive])
+                this._setScale({ appId: item, scale: scaleMap[item] }, true);
+            });
         }
     }
 }

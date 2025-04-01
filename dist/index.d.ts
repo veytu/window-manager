@@ -1325,6 +1325,7 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     static isCreated: boolean;
     static appReadonly: boolean;
     private static _resolve;
+    private mutationObserver;
     private static extendWrapper?;
     private static mainViewScrollWrapper?;
     version: string;
@@ -1514,7 +1515,7 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     private _iframeBridge?;
     getIframeBridge(): IframeBridge;
     getBackground(): {
-        type: 'img' | 'color';
+        type: "img" | "color";
         value: string | undefined;
     } | undefined;
     setBackgroundImg(src: string): void;
