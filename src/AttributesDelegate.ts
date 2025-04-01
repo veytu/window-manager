@@ -19,6 +19,7 @@ export enum Fields {
     FullPath = "fullPath",
     Registered = "registered",
     IframeBridge = "iframeBridge",
+    LaserPointerActive = 'laserPointerActive'
 }
 
 export type Apps = {

@@ -322,6 +322,10 @@ export class WindowManager
             manager?._setBackgroundColor(data.payload)
         })
 
+        manager?.room?.addMagixEventListener("onLaserPointerActiveChange", (data) => {
+            manager?._setLaserPointer(data.payload)
+        })
+
         manager.room?.addMagixEventListener(ScrollerScrollEventType, (data) => {
             internalEmitter.emit(ScrollerScrollEventType, data.payload)
         })
@@ -1212,6 +1216,15 @@ export class WindowManager
         return this.getAttributesValue(['scale'])
     }
 
+    public setLaserPointer (active: boolean) {
+        this.room.dispatchMagixEvent("onLaserPointerActiveChange", active)
+    }
+
+    private _setLaserPointer (active: boolean) {
+        this.safeSetAttributes({ [Fields.LaserPointerActive]: active });
+        WindowManager.playground?.classList.toggle('is-cursor-laserPointer', active)
+    }
+
     public getAppScale (appId: string): number {
         return this.getAttributesValue(['scale'])[appId]
     }
@@ -1258,6 +1271,10 @@ export class WindowManager
                 this.safeSetAttributes({scale: {
                     [mainViewField]: 1
                 }})
+            }
+
+            if (!this.attributes[Fields.LaserPointerActive]) {
+                this.safeSetAttributes({ [Fields.LaserPointerActive]: false });
             }
         }
     }
@@ -1322,6 +1339,10 @@ export class WindowManager
             Object.keys(scaleMap).forEach(item => {
                 this._setScale({appId: item, scale: scaleMap[item]}, true)
             })
+        }
+
+        if (!!this.attributes[Fields.LaserPointerActive]) {
+            WindowManager.playground?.classList.toggle('is-cursor-laserPointer', this.attributes[Fields.LaserPointerActive])
         }
     }
 }
