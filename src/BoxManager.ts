@@ -266,7 +266,7 @@ export class BoxManager {
                 width: rect.width,
                 height: rect.height,
             },
-            fence: true,
+            fence: false,
             prefersColorScheme: createTeleBoxManagerConfig?.prefersColorScheme,
             appReadonly: WindowManager.appReadonly
         };

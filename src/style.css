@@ -268,3 +268,11 @@
 .netless-window-manager-fancy-scrollbar-readonly::-webkit-scrollbar {
     display: none;
 }
+.appliance-plugin-hightlight-box {
+    border-color: rgba(57, 171, 255, 1) !important;
+}
+.appliance-plugin-hightlight-box .point {
+    background-color: white !important;
+    border:1px solid rgba(57, 171, 255, 1) !important;
+    border-radius: 100%;
+}

@@ -3377,7 +3377,7 @@ class v_ {
               Xi(w + Y, 0, 1 - this.height)
             );
           else {
-            const re = 20 / this.containerRect.width, le = 20 / this.containerRect.height;
+            const re = 200 / this.containerRect.width, le = 80 / this.containerRect.height;
             this.move(
               Xi(
                 m + oe,
@@ -4296,7 +4296,7 @@ class T_ {
         width: l.width,
         height: l.height
       },
-      fence: !0,
+      fence: !1,
       prefersColorScheme: n == null ? void 0 : n.prefersColorScheme,
       appReadonly: St.appReadonly
     }, m = new x_(h);
