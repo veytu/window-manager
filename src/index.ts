@@ -1255,7 +1255,7 @@ export class WindowManager
             this.mutationObserver = null;
             const clickImgs: HTMLCollectionOf<Element> | undefined =
                 WindowManager.wrapper?.getElementsByClassName(
-                    ".netless-window-manager-cursor-clicker-image"
+                    "netless-window-manager-cursor-clicker-image"
                 );
 
             if (!clickImgs) return;
@@ -1273,7 +1273,7 @@ export class WindowManager
         if (!this.mutationObserver) {
             const clickImgs: HTMLCollectionOf<Element> | undefined =
                 WindowManager.wrapper?.getElementsByClassName(
-                    ".netless-window-manager-cursor-clicker-image"
+                    "netless-window-manager-cursor-clicker-image"
                 );
 
             if (!clickImgs) return;
@@ -1290,7 +1290,7 @@ export class WindowManager
                 for (let mutation of mutationsList) {
                     if (mutation.type === "childList") {
                         const cursorImgs =
-                            WindowManager.wrapper?.getElementsByClassName(".cursor-pencil-image");
+                            WindowManager.wrapper?.getElementsByClassName("cursor-pencil-image");
 
                         const cursors = Array.prototype.slice.call(cursorImgs);
 
@@ -1303,7 +1303,7 @@ export class WindowManager
 
                         const clickImgs: HTMLCollectionOf<Element> | undefined =
                             WindowManager.wrapper?.getElementsByClassName(
-                                ".netless-window-manager-cursor-clicker-image"
+                                "netless-window-manager-cursor-clicker-image"
                             );
 
                         if (!clickImgs) return;
