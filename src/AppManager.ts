@@ -555,6 +555,7 @@ export class AppManager {
     };
 
     private onMinimized = (minimized: string | undefined) => {
+        console.log(minimized, this.boxManager?.minimized)
         if (this.boxManager?.minimized !== minimized) {
             setTimeout(() => {
                 this.boxManager?.setMinimized(minimized);
