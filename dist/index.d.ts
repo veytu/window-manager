@@ -538,8 +538,8 @@ declare class BoxManager {
     private get mainView();
     private get canOperate();
     get boxState(): "maximized" | "minimized" | "normal";
-    get maximized(): boolean;
-    get minimized(): boolean;
+    get maximized(): string[];
+    get minimized(): string[];
     get darkMode(): boolean;
     get prefersColorScheme(): TeleBoxColorScheme;
     get boxSize(): number;

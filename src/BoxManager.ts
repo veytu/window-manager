@@ -186,11 +186,11 @@ export class BoxManager {
     }
 
     public get maximized() {
-        return !!this.teleBoxManager._maximizedBoxes$.value;
+        return this.teleBoxManager._maximizedBoxes$.value;
     }
 
     public get minimized() {
-        return !!this.teleBoxManager._minimizedBoxes$.value;
+        return this.teleBoxManager._minimizedBoxes$.value;
     }
 
     public get darkMode() {
