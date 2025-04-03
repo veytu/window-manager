@@ -118,7 +118,9 @@ export class BoxManager {
             setTimeout(() => {
                 const offset = 0.0001 * (Math.random() > 0.5 ? 1 : -1);
                 this.teleBoxManager.boxes.forEach(box => {
-                    box.resize(box.intrinsicWidth + offset, box.intrinsicHeight + offset, true);
+                    if (box.id?.toLocaleLowerCase().includes('slide')) {
+                        box.resize(box.intrinsicWidth + offset, box.intrinsicHeight + offset, true);
+                    } 
                 });
             }, 400);
         });

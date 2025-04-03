@@ -7,7 +7,7 @@ import { autorun, isPlayer, isRoom, ScenePathType } from "white-web-sdk";
 import { boxEmitter } from "./BoxEmitter";
 import { calculateNextIndex } from "./Page";
 import { callbacks } from "./callback";
-import { debounce, get, isInteger, orderBy } from "lodash";
+import { debounce, get, isEqual, isInteger, isString, orderBy } from "lodash";
 import { internalEmitter } from "./InternalEmitter";
 import { Fields, store } from "./AttributesDelegate";
 import { log } from "./Utils/log";
@@ -555,7 +555,9 @@ export class AppManager {
     };
 
     private onMinimized = (minimized: string | undefined) => {
-        if (this.boxManager?.minimized !== minimized) {
+        if (!isString(minimized) || !minimized) return
+
+        if (!this.boxManager?.minimized || JSON.stringify(this.boxManager?.minimized || []) != minimized) {
             setTimeout(() => {
                 this.boxManager?.setMinimized(minimized);
             }, 0);
