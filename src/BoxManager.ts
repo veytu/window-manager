@@ -260,7 +260,7 @@ export class BoxManager {
     public setupBoxManager(
         createTeleBoxManagerConfig?: CreateTeleBoxManagerConfig
     ): TeleBoxManager {
-        const root = WindowManager.wrapper ? WindowManager.wrapper : document.body;
+        const root = WindowManager.playground ? WindowManager.playground : document.body;
         const rect = root.getBoundingClientRect();
         const initManagerState: TeleBoxManagerConfig = {
             root: root,
@@ -281,7 +281,7 @@ export class BoxManager {
             this.teleBoxManager.destroy();
         }
         this.teleBoxManager = manager;
-        const container = createTeleBoxManagerConfig?.collectorContainer || WindowManager.wrapper;
+        const container = createTeleBoxManagerConfig?.collectorContainer || WindowManager.playground;
         if (container) {
             this.setCollectorContainer(container);
         }
@@ -353,7 +353,7 @@ export class BoxManager {
     }
 
     public updateManagerRect(): void {
-        const rect = WindowManager.wrapper?.getBoundingClientRect();
+        const rect = WindowManager.playground?.getBoundingClientRect();
         if (rect && rect.width > 0 && rect.height > 0) {
             const containerRect = { x: 0, y: 0, width: rect.width, height: rect.height };
             this.teleBoxManager.setContainerRect(containerRect);
