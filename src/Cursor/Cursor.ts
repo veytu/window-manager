@@ -202,7 +202,8 @@ export class Cursor {
             if (customApplianceSrc) return customApplianceSrc;
         }
 
-        const applianceSrc = applianceIcons[iconsKey || ApplianceNames.shape];
+        const isLaserPointerActive = this.manager.isLaserPointerActive
+        const applianceSrc = (isLaserPointerActive?.active && isLaserPointerActive?.uid !== this.manager.uid ) ?  applianceIcons[ApplianceNames.laserPointer] : (applianceIcons[iconsKey || ApplianceNames.shape]);
         return applianceSrc || applianceIcons[ApplianceNames.shape];
     }
 

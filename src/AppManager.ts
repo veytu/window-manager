@@ -291,6 +291,10 @@ export class AppManager {
         return isRoom(this.displayer) ? (this.displayer as Room) : undefined;
     }
 
+    public get isLaserPointerActive () {
+        return this.windowManger.isLaserPointerActive
+    }
+
     public get mainView() {
         return this.mainViewProxy.view;
     }
