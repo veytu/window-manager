@@ -81,6 +81,7 @@ export type AddAppOptions = {
     scenePath?: string;
     title?: string;
     scenes?: SceneDefinition[];
+    hasHeader?: boolean;
 };
 
 export type setAppOptions = AddAppOptions & { appOptions?: any };

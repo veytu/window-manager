@@ -13,7 +13,7 @@ dependencies:
     version: github.com/veytu/app-plyr/31844ec96a3bb7406fc58a4744b5c24efdab9662
   '@netless/telebox-insider':
     specifier: github:veytu/telebox-insider
-    version: github.com/veytu/telebox-insider/bb10dfb870b68edc73e58c3223fe7ed28496cd85
+    version: github.com/veytu/telebox-insider/cea7112587bfd065af48f570cfb23b1fdc938512
   emittery:
     specifier: ^0.9.2
     version: 0.9.2
@@ -5894,8 +5894,8 @@ packages:
     version: 0.1.20
     dev: false
 
-  github.com/veytu/telebox-insider/bb10dfb870b68edc73e58c3223fe7ed28496cd85:
-    resolution: {tarball: https://codeload.github.com/veytu/telebox-insider/tar.gz/bb10dfb870b68edc73e58c3223fe7ed28496cd85}
+  github.com/veytu/telebox-insider/cea7112587bfd065af48f570cfb23b1fdc938512:
+    resolution: {tarball: https://codeload.github.com/veytu/telebox-insider/tar.gz/cea7112587bfd065af48f570cfb23b1fdc938512}
     name: '@netless/telebox-insider'
-    version: 0.2.55
+    version: 0.2.56
     dev: false

@@ -232,6 +232,7 @@ export class BoxManager {
             width,
             height,
             id: params.appId,
+            hasHeader: params.options?.hasHeader ?? true
         };
         const box = this.teleBoxManager.create(createBoxConfig, params.smartPosition);
         this.context.emitter.emit(`${params.appId}${Events.WindowCreated}` as any);

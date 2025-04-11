@@ -1234,6 +1234,7 @@ type AddAppOptions = {
     scenePath?: string;
     title?: string;
     scenes?: SceneDefinition[];
+    hasHeader?: boolean;
 };
 type setAppOptions = AddAppOptions & {
     appOptions?: any;
