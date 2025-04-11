@@ -207,7 +207,7 @@ export class AppProxy implements PageRemoveService {
                     callbacks.emit("onAppSetup", appId);
                 }, SETUP_APP_DELAY);
             });
-            const hasHeader = this.appAttributes.options?.hasHeader == false ? false : (this.appAttributes.state?.hasHeader == false ? false : true);
+            const hasHeader = options?.hasHeader === false ? false : (this.appAttributes.options?.hasHeader === false ? false : (this.appAttributes.state?.hasHeader === false ? false : true));
             this.boxManager?.createBox({
                 appId: appId,
                 app,
