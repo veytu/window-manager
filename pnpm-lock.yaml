@@ -10,7 +10,7 @@ dependencies:
     version: 3.3.1
   '@netless/app-plyr':
     specifier: github:veytu/app-plyr
-    version: github.com/veytu/app-plyr/31844ec96a3bb7406fc58a4744b5c24efdab9662
+    version: github.com/veytu/app-plyr/5913af320650c7245708908e17ab3683c518cb7c
   '@netless/telebox-insider':
     specifier: github:veytu/telebox-insider
     version: github.com/veytu/telebox-insider/810384ee7d9deadcd1cd8bc20117104dcb4add7c
@@ -5888,10 +5888,10 @@ packages:
       vanilla-lazyload: 17.9.0
     dev: true
 
-  github.com/veytu/app-plyr/31844ec96a3bb7406fc58a4744b5c24efdab9662:
-    resolution: {tarball: https://codeload.github.com/veytu/app-plyr/tar.gz/31844ec96a3bb7406fc58a4744b5c24efdab9662}
+  github.com/veytu/app-plyr/5913af320650c7245708908e17ab3683c518cb7c:
+    resolution: {tarball: https://codeload.github.com/veytu/app-plyr/tar.gz/5913af320650c7245708908e17ab3683c518cb7c}
     name: '@netless/app-plyr'
-    version: 0.1.20
+    version: 0.1.21
     dev: false
 
   github.com/veytu/telebox-insider/810384ee7d9deadcd1cd8bc20117104dcb4add7c:
