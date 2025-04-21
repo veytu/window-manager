@@ -1328,6 +1328,7 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     static appReadonly: boolean;
     private static _resolve;
     private mutationObserver;
+    private observerPencil;
     private static extendWrapper?;
     private static mainViewScrollWrapper?;
     version: string;
@@ -1516,6 +1517,8 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     private get teacherInfo();
     setLaserPointer(active: boolean): void;
     private _setLaserPointer;
+    setHidePencil(active: boolean): void;
+    private _setHidePencil;
     get isLaserPointerActive(): any;
     private bindHidTeacherCursorListener;
     getAppScale(appId: string): number;

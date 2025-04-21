@@ -197,6 +197,7 @@ export class WindowManager
     public static appReadonly: boolean = isAndroid() || isIOS();
     private static _resolve = (_manager: WindowManager) => void 0;
     private mutationObserver: MutationObserver | null = null;
+    private observerPencil: MutationObserver | null = null
 
     private static extendWrapper?: HTMLElement;
     private static mainViewScrollWrapper?: HTMLElement;
@@ -334,6 +335,9 @@ export class WindowManager
 
         manager?.room?.addMagixEventListener("onLaserPointerActiveChange", data => {
             manager?._setLaserPointer(data.payload);
+        });
+        manager?.room?.addMagixEventListener("onHidePencil", data => {
+            manager?._setHidePencil(data.payload);
         });
 
         manager.room?.addMagixEventListener(ScrollerScrollEventType, data => {
@@ -1310,6 +1314,46 @@ export class WindowManager
             });
             if (!WindowManager.wrapper) return;
             this.mutationObserver.observe(WindowManager.wrapper, {
+                subtree: true,
+                childList: true,
+            });
+        }
+    }
+
+    public setHidePencil(active: boolean) {
+        this.room.dispatchMagixEvent("onHidePencil", active);
+    }
+
+    private _setHidePencil (active: boolean) {
+        if (!active) {
+            this.observerPencil?.disconnect();
+            this.observerPencil = null;
+            return;
+        }
+        if (!this.observerPencil) {
+            if (!this.teacherInfo?.uid || !this.teacherInfo?.name) return;
+
+            this.observerPencil = new MutationObserver(mutationsList => {
+                for (let mutation of mutationsList) {
+                    if (mutation.type === "childList") {
+                        const cursorImgs =
+                            WindowManager.wrapper?.getElementsByClassName("cursor-pencil-offset");
+
+                        const cursors = Array.prototype.slice.call(cursorImgs);
+
+                        if (cursors) {
+                            cursors.forEach((item: HTMLDivElement) => {
+                                const nameNode = item.querySelector(".cursor-inner");
+                                if (nameNode && this.teacherInfo?.name != nameNode.innerHTML) {
+                                    item.classList.add('force-none')
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+            if (!WindowManager.wrapper) return;
+            this.observerPencil.observe(WindowManager.wrapper, {
                 subtree: true,
                 childList: true,
             });
