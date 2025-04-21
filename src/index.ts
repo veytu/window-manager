@@ -356,8 +356,8 @@ export class WindowManager
         });
 
         setTimeout(() => {
-            manager?.bindHidTeacherCursorListener(room);
-        }, 10000);
+            manager?.bindHidTeacherCursorListener();
+        }, 1000);
         return manager;
     }
 
@@ -1333,30 +1333,30 @@ export class WindowManager
         if (!this.observerPencil) {
             if (!this.teacherInfo?.uid || !this.teacherInfo?.name) return;
 
-            this.observerPencil = new MutationObserver(mutationsList => {
-                for (let mutation of mutationsList) {
-                    if (mutation.type === "childList") {
-                        const cursorImgs =
-                            WindowManager.wrapper?.getElementsByClassName("cursor-pencil-offset");
+            // this.observerPencil = new MutationObserver(mutationsList => {
+            //     for (let mutation of mutationsList) {
+            //         if (mutation.type === "childList") {
+            //             const cursorImgs =
+            //                 WindowManager.wrapper?.getElementsByClassName("cursor-pencil-offset");
 
-                        const cursors = Array.prototype.slice.call(cursorImgs);
+            //             const cursors = Array.prototype.slice.call(cursorImgs);
 
-                        if (cursors) {
-                            cursors.forEach((item: HTMLDivElement) => {
-                                const nameNode = item.querySelector(".cursor-inner");
-                                if (nameNode && this.teacherInfo?.name != nameNode.innerHTML) {
-                                    item.classList.add('force-none')
-                                }
-                            });
-                        }
-                    }
-                }
-            });
-            if (!WindowManager.wrapper) return;
-            this.observerPencil.observe(WindowManager.wrapper, {
-                subtree: true,
-                childList: true,
-            });
+            //             if (cursors) {
+            //                 cursors.forEach((item: HTMLDivElement) => {
+            //                     const nameNode = item.querySelector(".cursor-inner");
+            //                     if (nameNode && this.teacherInfo?.name != nameNode.innerHTML) {
+            //                         item.classList.add('force-none')
+            //                     }
+            //                 });
+            //             }
+            //         }
+            //     }
+            // });
+            // if (!WindowManager.wrapper) return;
+            // this.observerPencil.observe(WindowManager.wrapper, {
+            //     subtree: true,
+            //     childList: true,
+            // });
         }
     }
 
@@ -1364,22 +1364,7 @@ export class WindowManager
         return this.getAttributesValue([Fields.LaserPointerActive]) || false;
     }
 
-    private bindHidTeacherCursorListener(room: Room | Displayer) {
-        room.callbacks.on("onRoomStateChanged", (state: RoomState) => {
-            if (state?.roomMembers) {
-                const ishidCursor = true;
-                const cursorNode = document.querySelector(
-                    `div[data-cursor-uid="${this.teacherInfo?.uid}"]`
-                );
-                if (cursorNode) {
-                    if (ishidCursor && !this.isLaserPointerActive) {
-                        (cursorNode as HTMLDivElement).classList.add("force-none");
-                    } else {
-                        (cursorNode as HTMLDivElement).classList.remove("force-none");
-                    }
-                }
-            }
-        });
+    private bindHidTeacherCursorListener() {
         const targetNode = document.querySelector(".netless-window-manager-wrapper");
         const config = { childList: true, subtree: true };
         const callback = (mutationList: any) => {
@@ -1391,22 +1376,17 @@ export class WindowManager
 
                     cursors?.forEach(i => {
                         i.classList.add("force-none");
-                    });
-                    if (this.isLaserPointerActive) {
-                        const teacherCursor: any = Array.from(mutation.addedNodes).find(
-                            (node:any) => node && node.attributes && node.attributes.getNamedItem("data-cursor-uid")?.value === this.teacherInfo?.uid
-                        );
+                        if (this.isLaserPointerActive) {
+                            if (i.attributes.getNamedItem("data-cursor-uid")?.value === this.teacherInfo?.uid) {
+                                i.classList.remove('force-none')
+                                const img: HTMLImageElement | null = i.querySelector('.netless-window-manager-cursor-clicker-image') || i.querySelector('.netless-window-manager-cursor-selector-image') 
 
-                        if (teacherCursor) {
-                            teacherCursor.classList.remove("force-none")
-                            const img = teacherCursor.querySelector('.netless-window-manager-cursor-clicker-image') || teacherCursor.querySelector('.netless-window-manager-cursor-selector-image') 
-
-                            if (img) {
-                                img.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMjgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGZpbHRlciB4PSItMTIwJSIgeT0iLTEyMCUiIHdpZHRoPSIzNDAlIiBoZWlnaHQ9IjM0MCUiIGZpbHRlclVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgaWQ9ImEiPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjQiIGluPSJTb3VyY2VHcmFwaGljIi8+PC9maWx0ZXI+PC9kZWZzPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkgOSkiIGZpbGw9IiNGRjAxMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PGNpcmNsZSBmaWx0ZXI9InVybCgjYSkiIGN4PSI1IiBjeT0iNSIgcj0iNSIvPjxwYXRoIGQ9Ik01IDhhMyAzIDAgMSAwIDAtNiAzIDMgMCAwIDAgMCA2em0wLTEuNzE0YTEuMjg2IDEuMjg2IDAgMSAxIDAtMi41NzIgMS4yODYgMS4yODYgMCAwIDEgMCAyLjU3MnoiIGZpbGwtcnVsZT0ibm9uemVybyIvPjwvZz48L3N2Zz4=";
+                                if (img) {
+                                    img.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMjgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGZpbHRlciB4PSItMTIwJSIgeT0iLTEyMCUiIHdpZHRoPSIzNDAlIiBoZWlnaHQ9IjM0MCUiIGZpbHRlclVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgaWQ9ImEiPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjQiIGluPSJTb3VyY2VHcmFwaGljIi8+PC9maWx0ZXI+PC9kZWZzPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkgOSkiIGZpbGw9IiNGRjAxMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PGNpcmNsZSBmaWx0ZXI9InVybCgjYSkiIGN4PSI1IiBjeT0iNSIgcj0iNSIvPjxwYXRoIGQ9Ik01IDhhMyAzIDAgMSAwIDAtNiAzIDMgMCAwIDAgMCA2em0wLTEuNzE0YTEuMjg2IDEuMjg2IDAgMSAxIDAtMi41NzIgMS4yODYgMS4yODYgMCAwIDEgMCAyLjU3MnoiIGZpbGwtcnVsZT0ibm9uemVybyIvPjwvZz48L3N2Zz4=";
+                                }
                             }
                         }
-                        
-                    }
+                    });
                 }
             }
         };
