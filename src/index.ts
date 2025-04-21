@@ -356,8 +356,8 @@ export class WindowManager
         });
 
         setTimeout(() => {
-            manager?.bindHidTeacherCursorListener();
-        }, 1000);
+            manager?.bindHidTeacherCursorListener(room);
+        }, 10000);
         return manager;
     }
 
@@ -1282,6 +1282,12 @@ export class WindowManager
         if (!active) {
             this.mutationObserver?.disconnect();
             this.mutationObserver = null;
+            const cursorNode = document.querySelectorAll(
+                ".netless-window-manager-cursor-mid"
+            );
+            cursorNode?.forEach(i => {
+                i.classList.add("force-none");
+            });
             return;
         }
         if (!this.mutationObserver) {
@@ -1361,10 +1367,32 @@ export class WindowManager
     }
 
     public get isLaserPointerActive() {
-        return this.getAttributesValue([Fields.LaserPointerActive]) || false;
+        return this.getAttributesValue([Fields.LaserPointerActive]).active || false;
     }
 
-    private bindHidTeacherCursorListener() {
+    private bindHidTeacherCursorListener(room: Room | Displayer) {
+
+        room.callbacks.on("onRoomStateChanged", (state: RoomState) => {
+            if (state?.roomMembers) {
+                const cursorNode = document.querySelectorAll(
+                    ".netless-window-manager-cursor-mid"
+                );
+                cursorNode?.forEach(i => {
+                    i.classList.add("force-none");
+                    if (this.isLaserPointerActive) {
+                        if (i.attributes.getNamedItem("data-cursor-uid")?.value === this.teacherInfo?.uid) {
+                            i.classList.remove('force-none')
+                            const img: HTMLImageElement | null = i.querySelector('.netless-window-manager-cursor-clicker-image') || i.querySelector('.netless-window-manager-cursor-selector-image') 
+
+                            if (img) {
+                                img.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMjgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGZpbHRlciB4PSItMTIwJSIgeT0iLTEyMCUiIHdpZHRoPSIzNDAlIiBoZWlnaHQ9IjM0MCUiIGZpbHRlclVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgaWQ9ImEiPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjQiIGluPSJTb3VyY2VHcmFwaGljIi8+PC9maWx0ZXI+PC9kZWZzPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkgOSkiIGZpbGw9IiNGRjAxMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PGNpcmNsZSBmaWx0ZXI9InVybCgjYSkiIGN4PSI1IiBjeT0iNSIgcj0iNSIvPjxwYXRoIGQ9Ik01IDhhMyAzIDAgMSAwIDAtNiAzIDMgMCAwIDAgMCA2em0wLTEuNzE0YTEuMjg2IDEuMjg2IDAgMSAxIDAtMi41NzIgMS4yODYgMS4yODYgMCAwIDEgMCAyLjU3MnoiIGZpbGwtcnVsZT0ibm9uemVybyIvPjwvZz48L3N2Zz4=";
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
         const targetNode = document.querySelector(".netless-window-manager-wrapper");
         const config = { childList: true, subtree: true };
         const callback = (mutationList: any) => {
