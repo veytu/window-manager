@@ -1274,7 +1274,7 @@ export class WindowManager
     }
 
     private _setLaserPointer(active: boolean) {
-        WindowManager.playground?.classList.toggle("is-cursor-laserPointer", active);
+        // WindowManager.playground?.classList.toggle("is-cursor-laserPointer", active);
         if (!active) {
             this.mutationObserver?.disconnect();
             this.mutationObserver = null;
