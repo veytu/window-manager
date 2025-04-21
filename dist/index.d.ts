@@ -1509,9 +1509,15 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     private _updateMainViewWrapperSize;
     private _setScale;
     getScale(): Record<string, number> | undefined;
+    setTeacherInfo(data: {
+        uid?: string;
+        name?: string;
+    }): void;
+    private get teacherInfo();
     setLaserPointer(active: boolean): void;
     private _setLaserPointer;
     get isLaserPointerActive(): any;
+    private bindHidTeacherCursorListener;
     getAppScale(appId: string): number;
     private isDynamicPPT;
     private ensureAttributes;
