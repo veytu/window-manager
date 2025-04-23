@@ -1344,16 +1344,14 @@ export class WindowManager
                     if (mutation.type === "childList") {
                         const cursorImgs =
                             WindowManager.wrapper?.getElementsByClassName("cursor-pencil-offset");
-                        console.log('allow-board', cursorImgs)
+                        
                         const cursors = Array.prototype.slice.call(cursorImgs);
 
-                        console.log('allow-board', cursors)
                         if (cursors) {
                             cursors.forEach((item: HTMLDivElement) => {
                                 const nameNode = item.querySelector(".cursor-inner");
-                                console.log('allow-board', nameNode, item)
                                 if (nameNode && this.teacherInfo?.name != nameNode.innerHTML) {
-                                    item.classList.add('force-none')
+                                    nameNode.classList.add('force-none')
                                 }
                             });
                         }
