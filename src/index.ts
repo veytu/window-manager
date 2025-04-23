@@ -1342,14 +1342,14 @@ export class WindowManager
             this.observerPencil = new MutationObserver(mutationsList => {
                 for (let mutation of mutationsList) {
                     if (mutation.type === "childList") {
-                        const cursorImgs =
-                            WindowManager.wrapper?.getElementsByClassName("cursor-pencil-offset");
+                        const cursorImgs = WindowManager.wrapper?.getElementsByClassName("cursor-pencil-offset");
                         
                         const cursors = Array.prototype.slice.call(cursorImgs);
 
                         if (cursors) {
                             cursors.forEach((item: HTMLDivElement) => {
                                 const nameNode = item.querySelector(".cursor-inner");
+                                console.log(nameNode)
                                 if (nameNode && this.teacherInfo?.name != nameNode.innerHTML) {
                                     nameNode.classList.add('force-none')
                                 }
