@@ -1337,8 +1337,6 @@ export class WindowManager
             return;
         }
         if (!this.observerPencil) {
-            if (!this.teacherInfo?.uid || !this.teacherInfo?.name) return;
-
             this.observerPencil = new MutationObserver(mutationsList => {
                 for (let mutation of mutationsList) {
                     if (mutation.type === "childList") {
@@ -1349,8 +1347,7 @@ export class WindowManager
                         if (cursors) {
                             cursors.forEach((item: HTMLDivElement) => {
                                 const nameNode = item.querySelector(".cursor-inner");
-                                console.log(nameNode)
-                                if (nameNode && this.teacherInfo?.name != nameNode.innerHTML) {
+                                if (nameNode) {
                                     nameNode.classList.add('force-none')
                                 }
                             });
