@@ -18,7 +18,11 @@ export const setupBuiltin = () => {
         src: AppMediaPlayer,
     });
     WindowManager.register({
-        kind: Plyr.kind,
+        kind: 'video',
+        src: Plyr
+    })
+    WindowManager.register({
+        kind: 'audio',
         src: Plyr
     })
 };
