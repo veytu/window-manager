@@ -10,10 +10,10 @@ dependencies:
     version: 3.3.1
   '@netless/app-plyr':
     specifier: github:veytu/app-plyr
-    version: github.com/veytu/app-plyr/5913af320650c7245708908e17ab3683c518cb7c
+    version: git@github.com+veytu/app-plyr/5913af320650c7245708908e17ab3683c518cb7c
   '@netless/telebox-insider':
     specifier: github:veytu/telebox-insider
-    version: github.com/veytu/telebox-insider/2c03ddc4ec63c73d2686cea1b4f985c1397827a3
+    version: github.com/veytu/telebox-insider/99c29cd7da9cabcf5042dc001e5e1c5f19bdfb98
   emittery:
     specifier: ^0.9.2
     version: 0.9.2
@@ -1248,7 +1248,7 @@ packages:
     dependencies:
       '@babel/runtime': 7.26.10
       '@types/raf': 3.4.3
-      core-js: 3.41.0
+      core-js: 3.42.0
       raf: 3.4.1
       regenerator-runtime: 0.13.11
       rgbcolor: 1.0.1
@@ -1437,6 +1437,12 @@ packages:
     resolution: {integrity: sha512-SJ4/EHwS36QMJd6h/Rg+GyR4A5xE0FSI3eZ+iBVpfqf1x0eTSg1smWLHrA+2jQThZSh97fmSgFSU8B61nxosxA==}
     requiresBuild: true
     dev: true
+
+  /core-js@3.42.0:
+    resolution: {integrity: sha512-Sz4PP4ZA+Rq4II21qkNqOEDTDrCvcANId3xpIgB34NDkWc3UduWj2dqEtN9yZIq8Dk3HyPI33x9sqqU5C8sr0g==}
+    requiresBuild: true
+    dev: true
+    optional: true
 
   /core-util-is@1.0.2:
     resolution: {integrity: sha512-3lqz5YjWTYnW6dlDa5TLaTCcShfar1e40rmcJVwCBJC6mWlFuj0eCHIElmG1g5kyuJ/GD+8Wn4FFCcz4gJPfaQ==}
@@ -3404,7 +3410,7 @@ packages:
       fflate: 0.4.8
     optionalDependencies:
       canvg: 3.0.11
-      core-js: 3.41.0
+      core-js: 3.42.0
       dompurify: 2.5.8
       html2canvas: 1.4.1
     dev: true
@@ -5871,6 +5877,12 @@ packages:
       fd-slicer: 1.1.0
     dev: true
 
+  git@github.com+veytu/app-plyr/5913af320650c7245708908e17ab3683c518cb7c:
+    resolution: {commit: 5913af320650c7245708908e17ab3683c518cb7c, repo: git@github.com:veytu/app-plyr.git, type: git}
+    name: '@netless/app-plyr'
+    version: 0.1.21
+    dev: false
+
   github.com/veytu/app-docs-viewer/6d016f372d839e656222cdad9e100129efd710ea(jspdf@2.5.1):
     resolution: {tarball: https://codeload.github.com/veytu/app-docs-viewer/tar.gz/6d016f372d839e656222cdad9e100129efd710ea}
     id: github.com/veytu/app-docs-viewer/6d016f372d839e656222cdad9e100129efd710ea
@@ -5888,14 +5900,8 @@ packages:
       vanilla-lazyload: 17.9.0
     dev: true
 
-  github.com/veytu/app-plyr/5913af320650c7245708908e17ab3683c518cb7c:
-    resolution: {tarball: https://codeload.github.com/veytu/app-plyr/tar.gz/5913af320650c7245708908e17ab3683c518cb7c}
-    name: '@netless/app-plyr'
-    version: 0.1.21
-    dev: false
-
-  github.com/veytu/telebox-insider/2c03ddc4ec63c73d2686cea1b4f985c1397827a3:
-    resolution: {tarball: https://codeload.github.com/veytu/telebox-insider/tar.gz/2c03ddc4ec63c73d2686cea1b4f985c1397827a3}
+  github.com/veytu/telebox-insider/99c29cd7da9cabcf5042dc001e5e1c5f19bdfb98:
+    resolution: {tarball: https://codeload.github.com/veytu/telebox-insider/tar.gz/99c29cd7da9cabcf5042dc001e5e1c5f19bdfb98}
     name: '@netless/telebox-insider'
-    version: 0.2.59
+    version: 0.2.65
     dev: false

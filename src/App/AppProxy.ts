@@ -304,8 +304,9 @@ export class AppProxy implements PageRemoveService {
         const focus = this.store.focus;
         const size = attrs?.[AppAttributes.Size];
         const sceneIndex = attrs?.[AppAttributes.SceneIndex];
-        const maximized = this.attributes?.["maximized"];
-        const minimized = this.attributes?.["minimized"];
+        const maximized = this.store.getMaximized()?.includes(id)
+        const minimized = this.store.getMinimized()?.includes(id)
+        
         const zIndex = attrs?.zIndex;
         let payload = { maximized, minimized, zIndex } as AppInitState;
         if (position) {

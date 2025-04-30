@@ -7,10 +7,10 @@ settings:
 dependencies:
   '@netless/app-slide':
     specifier: git+https://github.com/veytu/app-slide.git
-    version: git@github.com+veytu/app-slide/a78c411dfde9feee9462a409c27c7a6efe5d9283(jspdf@2.5.1)
+    version: github.com/veytu/app-slide/61c68940d3befc02cc22c131b98504d1cfefb477(jspdf@2.5.1)
   '@netless/telebox-insider':
-    specifier: ^0.2.30
-    version: 0.2.30
+    specifier: github:veytu/telebox-insider
+    version: github.com/veytu/telebox-insider/99c29cd7da9cabcf5042dc001e5e1c5f19bdfb98
   '@netless/video-js-plugin':
     specifier: ^0.3.7
     version: 0.3.7(react-dom@17.0.2)(react@17.0.2)(video.js@7.14.3)(white-web-sdk@2.16.43)
@@ -55,10 +55,6 @@ packages:
 
   /@netless/canvas-polyfill@0.0.4:
     resolution: {integrity: sha512-7NzsJrba0R/mq/l10SkIZQwbrNVJyPxZYrjK6xL3Ts732iWAVuS2UB0u3s6iGeUVcqV39A679yva8APWRl4M0A==}
-    dev: false
-
-  /@netless/telebox-insider@0.2.30:
-    resolution: {integrity: sha512-hSaCG4nEHpwl2PIsqhwEC138/BL9+oSvkcGX5Z8pxYwFXAu+9AJVD4U+Mwa/ht6SZCF8oA+XxX0dCOTkrmNlXA==}
     dev: false
 
   /@netless/video-js-plugin@0.3.7(react-dom@17.0.2)(react@17.0.2)(video.js@7.14.3)(white-web-sdk@2.16.43):
@@ -204,14 +200,14 @@ packages:
     engines: {node: '>= 0.4.0'}
     hasBin: true
 
-  /canvg@3.0.10:
-    resolution: {integrity: sha512-qwR2FRNO9NlzTeKIPIKpnTY6fqwuYSequ8Ru8c0YkYU7U0oW+hLUvWadLvAu1Rl72OMNiFhoLu4f8eUjQ7l/+Q==}
+  /canvg@3.0.11:
+    resolution: {integrity: sha512-5ON+q7jCTgMp9cjpu4Jo6XbvfYwSB2Ow3kzHKfIyJfaCAOHLbdKPQqGKgfED/R5B+3TFFfe8pegYA+b423SRyA==}
     engines: {node: '>=10.0.0'}
     requiresBuild: true
     dependencies:
       '@babel/runtime': 7.26.10
       '@types/raf': 3.4.3
-      core-js: 3.41.0
+      core-js: 3.42.0
       raf: 3.4.1
       regenerator-runtime: 0.13.11
       rgbcolor: 1.0.1
@@ -254,6 +250,12 @@ packages:
   /core-js@3.41.0:
     resolution: {integrity: sha512-SJ4/EHwS36QMJd6h/Rg+GyR4A5xE0FSI3eZ+iBVpfqf1x0eTSg1smWLHrA+2jQThZSh97fmSgFSU8B61nxosxA==}
     requiresBuild: true
+    dev: false
+
+  /core-js@3.42.0:
+    resolution: {integrity: sha512-Sz4PP4ZA+Rq4II21qkNqOEDTDrCvcANId3xpIgB34NDkWc3UduWj2dqEtN9yZIq8Dk3HyPI33x9sqqU5C8sr0g==}
+    requiresBuild: true
+    optional: true
 
   /css-line-break@2.1.0:
     resolution: {integrity: sha512-FHcKFCZcAha3LwfVBhCQbW2nCNbkZXn7KVUJcsT5/P8YmfsVja0FMPJr0B903j/E69HUphKiV9iQArX8SDYA4w==}
@@ -550,8 +552,8 @@ packages:
       btoa: 1.2.1
       fflate: 0.4.8
     optionalDependencies:
-      canvg: 3.0.10
-      core-js: 3.41.0
+      canvg: 3.0.11
+      core-js: 3.42.0
       dompurify: 2.5.8
       html2canvas: 1.4.1
 
@@ -1008,11 +1010,11 @@ packages:
     engines: {node: '>=10.0.0'}
     dev: false
 
-  git@github.com+veytu/app-slide/a78c411dfde9feee9462a409c27c7a6efe5d9283(jspdf@2.5.1):
-    resolution: {commit: a78c411dfde9feee9462a409c27c7a6efe5d9283, repo: git@github.com:veytu/app-slide.git, type: git}
-    id: git@github.com+veytu/app-slide/a78c411dfde9feee9462a409c27c7a6efe5d9283
+  github.com/veytu/app-slide/61c68940d3befc02cc22c131b98504d1cfefb477(jspdf@2.5.1):
+    resolution: {tarball: https://codeload.github.com/veytu/app-slide/tar.gz/61c68940d3befc02cc22c131b98504d1cfefb477}
+    id: github.com/veytu/app-slide/61c68940d3befc02cc22c131b98504d1cfefb477
     name: '@netless/app-slide'
-    version: 0.2.63
+    version: 0.2.105
     peerDependencies:
       jspdf: 2.5.1
     peerDependenciesMeta:
@@ -1020,4 +1022,10 @@ packages:
         optional: true
     dependencies:
       jspdf: 2.5.1
+    dev: false
+
+  github.com/veytu/telebox-insider/99c29cd7da9cabcf5042dc001e5e1c5f19bdfb98:
+    resolution: {tarball: https://codeload.github.com/veytu/telebox-insider/tar.gz/99c29cd7da9cabcf5042dc001e5e1c5f19bdfb98}
+    name: '@netless/telebox-insider'
+    version: 0.2.65
     dev: false

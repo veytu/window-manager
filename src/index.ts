@@ -750,21 +750,22 @@ export class WindowManager
 
     public setBoxState(boxState: TeleBoxState): void {
         if (!this.canOperate) return;
-        switch (boxState) {
-            case "normal":
-                this.setMaximized(false);
-                this.setMinimized(false);
-                break;
-            case "maximized":
-                this.setMaximized(true);
-                this.setMinimized(false);
-                break;
-            case "minimized":
-                this.setMinimized(true);
-                break;
-            default:
-                break;
-        }
+        console.log(boxState)
+        // switch (boxState) {
+        //     case "normal":
+        //         this.setMaximized(false);
+        //         this.setMinimized(false);
+        //         break;
+        //     case "maximized":
+        //         this.setMaximized(true);
+        //         this.setMinimized(false);
+        //         break;
+        //     case "minimized":
+        //         this.setMinimized(true);
+        //         break;
+        //     default:
+        //         break;
+        // }
     }
 
     public setMaximized(maximized: any): void {
@@ -774,6 +775,7 @@ export class WindowManager
 
     public setMinimized(minimized: any): void {
         if (!this.canOperate) return;
+        
         this.boxManager?.setMinimized(minimized, false);
     }
 
