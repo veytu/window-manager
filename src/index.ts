@@ -1330,6 +1330,7 @@ export class WindowManager
 
     public setHidePencil(active: boolean) {
         this.room.dispatchMagixEvent("onHidePencil", active);
+        this.safeUpdateAttributes(["hidePencil"], active);
     }
 
     private _setHidePencil (active: boolean) {
@@ -1483,6 +1484,10 @@ export class WindowManager
             if (!this.attributes[Fields.LaserPointerActive]) {
                 this.safeSetAttributes({ [Fields.LaserPointerActive]: { active: false, uid: "" } });
             }
+
+            if (!this.attributes["hidePencil"]) {
+                this.safeSetAttributes({ hidePencil: false });
+            }
         }
     }
 
@@ -1552,6 +1557,10 @@ export class WindowManager
             const { active } = this.attributes[Fields.LaserPointerActive];
 
             this._setLaserPointer(active);
+        }
+
+        if (!!this.attributes["hidePencil"]) {
+            this._setHidePencil(this.attributes["hidePencil"])
         }
     }
 }
