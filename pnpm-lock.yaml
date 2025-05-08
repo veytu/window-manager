@@ -10,10 +10,10 @@ dependencies:
     version: 3.3.1
   '@netless/app-plyr':
     specifier: github:veytu/app-plyr
-    version: git@github.com+veytu/app-plyr/5913af320650c7245708908e17ab3683c518cb7c
+    version: github.com/veytu/app-plyr/5913af320650c7245708908e17ab3683c518cb7c
   '@netless/telebox-insider':
     specifier: github:veytu/telebox-insider
-    version: github.com/veytu/telebox-insider/99c29cd7da9cabcf5042dc001e5e1c5f19bdfb98
+    version: github.com/veytu/telebox-insider/05831fad1b84a36a023d42621dbf704c169fe665
   emittery:
     specifier: ^0.9.2
     version: 0.9.2
@@ -151,10 +151,28 @@ packages:
       picocolors: 1.1.1
     dev: true
 
+  /@babel/code-frame@7.27.1:
+    resolution: {integrity: sha512-cjQ7ZlQ0Mv3b47hABuTevyTuYN4i+loJKGeV9flcCgIK37cCXRh+L1bd3iBHlynerhQ7BhCkn2BPbQUL+rGqFg==}
+    engines: {node: '>=6.9.0'}
+    requiresBuild: true
+    dependencies:
+      '@babel/helper-validator-identifier': 7.27.1
+      js-tokens: 4.0.0
+      picocolors: 1.1.1
+    dev: true
+    optional: true
+
   /@babel/helper-validator-identifier@7.25.9:
     resolution: {integrity: sha512-Ed61U6XJc3CVRfkERJWDz4dJwKe7iLmmJsbOGu9wSloNSFttHV0I8g6UAgb7qnK5ly5bGLPd4oXZlxCdANBOWQ==}
     engines: {node: '>=6.9.0'}
     dev: true
+
+  /@babel/helper-validator-identifier@7.27.1:
+    resolution: {integrity: sha512-D2hP9eA+Sqx1kBZgzxZh0y1trbuU+JoDkiEwqhQ36nodYqJwyEIhPSdMNd7lOm/4io72luTPWH20Yda0xOuUow==}
+    engines: {node: '>=6.9.0'}
+    requiresBuild: true
+    dev: true
+    optional: true
 
   /@babel/highlight@7.25.9:
     resolution: {integrity: sha512-llL88JShoCsth8fF8R4SJnIn+WLvR6ccFxu1H3FlMhDontdcmZWf2HgIZ7AIqV3Xcck1idlohrN4EUBQz6klbw==}
@@ -4676,7 +4694,7 @@ packages:
       rollup: 4.35.0
       typescript: 5.8.2
     optionalDependencies:
-      '@babel/code-frame': 7.26.2
+      '@babel/code-frame': 7.27.1
     dev: true
 
   /rollup-plugin-styles@3.14.1(rollup@2.79.2):
@@ -5877,12 +5895,6 @@ packages:
       fd-slicer: 1.1.0
     dev: true
 
-  git@github.com+veytu/app-plyr/5913af320650c7245708908e17ab3683c518cb7c:
-    resolution: {commit: 5913af320650c7245708908e17ab3683c518cb7c, repo: git@github.com:veytu/app-plyr.git, type: git}
-    name: '@netless/app-plyr'
-    version: 0.1.21
-    dev: false
-
   github.com/veytu/app-docs-viewer/6d016f372d839e656222cdad9e100129efd710ea(jspdf@2.5.1):
     resolution: {tarball: https://codeload.github.com/veytu/app-docs-viewer/tar.gz/6d016f372d839e656222cdad9e100129efd710ea}
     id: github.com/veytu/app-docs-viewer/6d016f372d839e656222cdad9e100129efd710ea
@@ -5900,8 +5912,14 @@ packages:
       vanilla-lazyload: 17.9.0
     dev: true
 
-  github.com/veytu/telebox-insider/99c29cd7da9cabcf5042dc001e5e1c5f19bdfb98:
-    resolution: {tarball: https://codeload.github.com/veytu/telebox-insider/tar.gz/99c29cd7da9cabcf5042dc001e5e1c5f19bdfb98}
+  github.com/veytu/app-plyr/5913af320650c7245708908e17ab3683c518cb7c:
+    resolution: {tarball: https://codeload.github.com/veytu/app-plyr/tar.gz/5913af320650c7245708908e17ab3683c518cb7c}
+    name: '@netless/app-plyr'
+    version: 0.1.21
+    dev: false
+
+  github.com/veytu/telebox-insider/05831fad1b84a36a023d42621dbf704c169fe665:
+    resolution: {tarball: https://codeload.github.com/veytu/telebox-insider/tar.gz/05831fad1b84a36a023d42621dbf704c169fe665}
     name: '@netless/telebox-insider'
-    version: 0.2.65
+    version: 0.2.66
     dev: false
