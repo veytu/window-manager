@@ -43,8 +43,8 @@ importers:
         specifier: github:veytu/app-docs-viewer
         version: https://codeload.github.com/veytu/app-docs-viewer/tar.gz/6d016f372d839e656222cdad9e100129efd710ea(jspdf@2.5.2)
       '@netless/app-media-player':
-        specifier: 0.1.0-beta.9
-        version: 0.1.0-beta.9
+        specifier: 0.1.4
+        version: 0.1.4
       '@rollup/plugin-commonjs':
         specifier: ^20.0.0
         version: 20.0.0(rollup@4.41.1)
@@ -368,12 +368,8 @@ packages:
       jspdf:
         optional: true
 
-  '@netless/app-media-player@0.1.0-beta.9':
-    resolution: {integrity: sha512-pn6/k4T+7wCFhZ0Hq/yu+//lrqIkFGVLeUBqBtLrKXILiFO+c3g6dAtqbE5NLeUOnD9HKGbtjP1hHr9URUScpg==}
-
-  '@netless/app-plyr@https://codeload.github.com/veytu/app-plyr/tar.gz/03a30050dba2549f4a84452ef2f2eead6c595854':
-    resolution: {tarball: https://codeload.github.com/veytu/app-plyr/tar.gz/03a30050dba2549f4a84452ef2f2eead6c595854}
-    version: 0.1.23
+  '@netless/app-media-player@0.1.4':
+    resolution: {integrity: sha512-CsiLtd3LWGsQrHRZYB3Zl6tj5Q0LDJIevHY60LdYcUgUBR57FfC4fhaD0FP/bn4D82ki7HgKgeG2oflUlPfl3g==}
 
   '@netless/canvas-polyfill@0.0.4':
     resolution: {integrity: sha512-7NzsJrba0R/mq/l10SkIZQwbrNVJyPxZYrjK6xL3Ts732iWAVuS2UB0u3s6iGeUVcqV39A679yva8APWRl4M0A==}
@@ -3703,9 +3699,7 @@ snapshots:
     optionalDependencies:
       jspdf: 2.5.2
 
-  '@netless/app-media-player@0.1.0-beta.9': {}
-
-  '@netless/app-plyr@https://codeload.github.com/veytu/app-plyr/tar.gz/03a30050dba2549f4a84452ef2f2eead6c595854': {}
+  '@netless/app-media-player@0.1.4': {}
 
   '@netless/canvas-polyfill@0.0.4': {}
 

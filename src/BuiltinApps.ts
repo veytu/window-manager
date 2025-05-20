@@ -15,7 +15,7 @@ export const setupBuiltin = () => {
     });
     WindowManager.register({
         kind: AppMediaPlayer.kind,
-        src: AppMediaPlayer,
+        src: AppMediaPlayer as any,
     });
     WindowManager.register({
         kind: 'video',
