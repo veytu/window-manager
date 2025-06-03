@@ -1,6 +1,6 @@
 import * as lodash from 'lodash';
 import * as white_web_sdk from 'white-web-sdk';
-import { RoomMember, View, ApplianceNames, Camera, Size, SceneDefinition, SceneState, DisplayerState, ViewVisionMode, CameraState, Event as Event$1, Scope, EventPhase, MagixEventListenerOptions as MagixEventListenerOptions$1, autorun, reaction, toJS, listenUpdated, unlistenUpdated, listenDisposed, unlistenDisposed, Room, ViewMode, Displayer, MemberState, AnimationMode, InvisiblePlugin, InvisiblePluginContext, Player, Rectangle, Point, CameraBound, ImageInformation } from 'white-web-sdk';
+import { RoomMember, View, ApplianceNames, Camera, Size, SceneDefinition, SceneState, DisplayerState, ViewVisionMode, CameraState, Event as Event$1, Scope, EventPhase, MagixEventListenerOptions as MagixEventListenerOptions$1, toJS, listenUpdated, unlistenUpdated, listenDisposed, unlistenDisposed, Room, ViewMode, Displayer, MemberState, AnimationMode, InvisiblePlugin, InvisiblePluginContext, Player, Rectangle, Point, CameraBound, ImageInformation } from 'white-web-sdk';
 export { AnimationMode, Displayer, Player, Room, SceneDefinition, SceneState, View } from 'white-web-sdk';
 import Emittery from 'emittery';
 import { TELE_BOX_STATE, TeleBoxRect, TeleBoxColorScheme, ReadonlyTeleBox, TeleBoxManager, TeleBoxManagerUpdateConfig, TeleBoxConfig, TeleBoxState } from '@netless/telebox-insider';
@@ -537,7 +537,7 @@ declare class BoxManager {
     constructor(context: BoxManagerContext, createTeleBoxManagerConfig?: CreateTeleBoxManagerConfig | undefined);
     private get mainView();
     private get canOperate();
-    get boxState(): "maximized" | "minimized" | "normal";
+    get boxState(): "minimized" | "maximized" | "normal";
     get maximized(): string[];
     get minimized(): string[];
     get darkMode(): boolean;
@@ -608,8 +608,8 @@ declare class AppContext<TAttributes extends {} = any, TMagixEventPayloads = any
     private appOptions?;
     readonly emitter: Emittery<AppEmitterEvent<TAttributes>>;
     readonly mobxUtils: {
-        autorun: typeof autorun;
-        reaction: typeof reaction;
+        autorun: any;
+        reaction: any;
         toJS: typeof toJS;
     };
     readonly objectUtils: {
@@ -1537,4 +1537,5 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     private _initAttribute;
 }
 
-export { type AddAppOptions, type AddAppParams, type AddPageParams, AppContext, AppCreateError, type AppEmitterEvent, type AppInitState, type AppListenerKeys, AppManagerNotInitError, AppNotRegisterError, type AppPayload, type AppSyncAttributes, type ApplianceIcons, type BaseInsertParams, BindContainerRoomPhaseInvalidError, BoxManagerNotFoundError, BoxNotCreatedError, BuiltinApps, type CursorMovePayload, type CursorOptions, DomEvents, IframeBridge, type IframeBridgeAttributes, type IframeBridgeEvents, IframeEvents, type IframeSize, type InsertOptions, InvalidScenePath, type MountParams, type NetlessApp, type OnCreateInsertOption, type PageController, type PageRemoveService, type PageState, ParamsInvalidError, type PublicEvent, type RegisterEventData, type RegisterEvents, type RegisterParams, Storage, type StorageStateChangedEvent, type StorageStateChangedListener, WhiteWebSDKInvalidError, WindowManager, type WindowMangerAttributes, type apps, calculateNextIndex, mainViewField, reconnectRefresher, type setAppOptions };
+export { AppContext, AppCreateError, AppManagerNotInitError, AppNotRegisterError, BindContainerRoomPhaseInvalidError, BoxManagerNotFoundError, BoxNotCreatedError, BuiltinApps, DomEvents, IframeBridge, IframeEvents, InvalidScenePath, ParamsInvalidError, Storage, WhiteWebSDKInvalidError, WindowManager, calculateNextIndex, mainViewField, reconnectRefresher };
+export type { AddAppOptions, AddAppParams, AddPageParams, AppEmitterEvent, AppInitState, AppListenerKeys, AppPayload, AppSyncAttributes, ApplianceIcons, BaseInsertParams, CursorMovePayload, CursorOptions, IframeBridgeAttributes, IframeBridgeEvents, IframeSize, InsertOptions, MountParams, NetlessApp, OnCreateInsertOption, PageController, PageRemoveService, PageState, PublicEvent, RegisterEventData, RegisterEvents, RegisterParams, StorageStateChangedEvent, StorageStateChangedListener, WindowMangerAttributes, apps, setAppOptions };
