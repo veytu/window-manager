@@ -1281,6 +1281,7 @@ export class WindowManager
 
     private _setLaserPointer(active: boolean) {
         // WindowManager.playground?.classList.toggle("is-cursor-laserPointer", active);
+        // 隐藏 动作图标 区域DOM
         if (!active) {
             this.mutationObserver?.disconnect();
             this.mutationObserver = null;
@@ -1292,9 +1293,10 @@ export class WindowManager
             });
             return;
         }
+        // 替换原图标为激光笔
         if (!this.mutationObserver) {
-            if (!this.teacherInfo?.uid || !this.teacherInfo?.name) return;
-
+            // fix 学生端也要 使用 激光笔图标
+            // if (!this.teacherInfo?.uid || !this.teacherInfo?.name) return;
             this.mutationObserver = new MutationObserver(mutationsList => {
                 for (let mutation of mutationsList) {
                     if (mutation.type === "childList") {
@@ -1305,16 +1307,16 @@ export class WindowManager
 
                         if (cursors) {
                             cursors.forEach((item: HTMLDivElement) => {
-                                const nameNode = item.querySelector(".cursor-inner");
-                                if (nameNode && this.teacherInfo?.name == nameNode.innerHTML) {
+                                // const nameNode = item.querySelector(".cursor-inner");
+                                // if (nameNode && this.teacherInfo?.name == nameNode.innerHTML) {
                                     const imgNode: HTMLImageElement | null =
                                         item.querySelector(".cursor-pencil-image") || item.querySelector('.cursor-arrow-image');
-
+                                // 图片替换为激光笔svg
                                     if (imgNode) {
                                         imgNode.src =
                                             "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMjgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGZpbHRlciB4PSItMTIwJSIgeT0iLTEyMCUiIHdpZHRoPSIzNDAlIiBoZWlnaHQ9IjM0MCUiIGZpbHRlclVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgaWQ9ImEiPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjQiIGluPSJTb3VyY2VHcmFwaGljIi8+PC9maWx0ZXI+PC9kZWZzPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkgOSkiIGZpbGw9IiNGRjAxMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PGNpcmNsZSBmaWx0ZXI9InVybCgjYSkiIGN4PSI1IiBjeT0iNSIgcj0iNSIvPjxwYXRoIGQ9Ik01IDhhMyAzIDAgMSAwIDAtNiAzIDMgMCAwIDAgMCA2em0wLTEuNzE0YTEuMjg2IDEuMjg2IDAgMSAxIDAtMi41NzIgMS4yODYgMS4yODYgMCAwIDEgMCAyLjU3MnoiIGZpbGwtcnVsZT0ibm9uemVybyIvPjwvZz48L3N2Zz4=";
                                     }
-                                }
+                                // }
                             });
                         }
                     }
