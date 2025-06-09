@@ -1295,8 +1295,9 @@ export class WindowManager
         }
         // 替换原图标为激光笔
         if (!this.mutationObserver) {
-            // fix 学生端也要 使用 激光笔图标
             // if (!this.teacherInfo?.uid || !this.teacherInfo?.name) return;
+            // 如果是学生端 - 显示激光笔图标
+            if (this.teacherInfo?.uid !== "student") return;
             this.mutationObserver = new MutationObserver(mutationsList => {
                 for (let mutation of mutationsList) {
                     if (mutation.type === "childList") {
