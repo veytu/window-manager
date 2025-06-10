@@ -1279,7 +1279,51 @@ export class WindowManager
         });
     }
 
+    //老师端激光笔是否是激活状态
+    private _currentPointActive = false
+    //修改画笔和激光笔图片，内部不做权限角色判断，只根据是否激活处理
+    private _changePointerIcon() {
+        if (!this.mutationObserver) {
+            // 只替换 远端为老师情况
+            if (!this.teacherInfo?.uid || !this.teacherInfo?.name) return;
+            this.mutationObserver = new MutationObserver(mutationsList => {
+                if (this._currentPointActive) {
+                    for (let mutation of mutationsList) {
+                        if (mutation.type === "childList") {
+                            // get远端动作的uid 
+                            const cursorUid = WindowManager.wrapper?.querySelector('[data-cursor-uid]')?.getAttribute('data-cursor-uid');
+                            // 如果远端动作是老师，icon替换为激光笔
+                            if (cursorUid == this.teacherInfo?.uid) {
+                                // 以下为原有替换逻辑
+                                const cursorImgs = WindowManager.wrapper?.querySelector('[data-cursor-uid]')?.getElementsByClassName("cursor-pencil-offset");
+                                const cursors = Array.prototype.slice.call(cursorImgs);
+                                if (cursors) {
+                                    cursors.forEach((item: HTMLDivElement) => {
+                                        // const nameNode = item.querySelector(".cursor-inner");
+                                        const imgNode: HTMLImageElement | null =
+                                            item.querySelector(".cursor-pencil-image") || item.querySelector('.cursor-arrow-image');
+                                        if (imgNode) {
+                                            imgNode.src =
+                                                "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMjgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGZpbHRlciB4PSItMTIwJSIgeT0iLTEyMCUiIHdpZHRoPSIzNDAlIiBoZWlnaHQ9IjM0MCUiIGZpbHRlclVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgaWQ9ImEiPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjQiIGluPSJTb3VyY2VHcmFwaGljIi8+PC9maWx0ZXI+PC9kZWZzPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkgOSkiIGZpbGw9IiNGRjAxMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PGNpcmNsZSBmaWx0ZXI9InVybCgjYSkiIGN4PSI1IiBjeT0iNSIgcj0iNSIvPjxwYXRoIGQ9Ik01IDhhMyAzIDAgMSAwIDAtNiAzIDMgMCAwIDAgMCA2em0wLTEuNzE0YTEuMjg2IDEuMjg2IDAgMSAxIDAtMi41NzIgMS4yODYgMS4yODYgMCAwIDEgMCAyLjU3MnoiIGZpbGwtcnVsZT0ibm9uemVybyIvPjwvZz48L3N2Zz4=";
+                                        }
+                                    });
+                                }
+                            };
+
+                        }
+                    }
+                }
+            });
+            if (!WindowManager.wrapper) return;
+            this.mutationObserver.observe(WindowManager.wrapper, {
+                subtree: true,
+                childList: true,
+            });
+        }
+    }
+
     private _setLaserPointer(active: boolean) {
+        this._currentPointActive = active
         // WindowManager.playground?.classList.toggle("is-cursor-laserPointer", active);
         if (!active) {
             this.mutationObserver?.disconnect();
@@ -1292,41 +1336,8 @@ export class WindowManager
             });
             return;
         }
-        if (!this.mutationObserver) {
-            // 只替换 远端为老师情况
-            if (!this.teacherInfo?.uid || !this.teacherInfo?.name) return;
-            this.mutationObserver = new MutationObserver(mutationsList => {
-                for (let mutation of mutationsList) {
-                    if (mutation.type === "childList") {
-                        // get远端动作的uid 
-                        const cursorUid = WindowManager.wrapper?.querySelector('[data-cursor-uid]')?.getAttribute('data-cursor-uid');
-                        // 如果远端动作是老师，icon替换为激光笔
-                        if (cursorUid == this.teacherInfo?.uid) {
-                            // 以下为原有替换逻辑
-                            const cursorImgs = WindowManager.wrapper?.getElementsByClassName("cursor-pencil-offset");
-                            const cursors = Array.prototype.slice.call(cursorImgs);
-                            if (cursors) {
-                                cursors.forEach((item: HTMLDivElement) => {
-                                    // const nameNode = item.querySelector(".cursor-inner");
-                                    const imgNode: HTMLImageElement | null =
-                                            item.querySelector(".cursor-pencil-image") || item.querySelector('.cursor-arrow-image');
-                                    if (imgNode) {                                
-                                            imgNode.src =
-                                                "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMjgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGZpbHRlciB4PSItMTIwJSIgeT0iLTEyMCUiIHdpZHRoPSIzNDAlIiBoZWlnaHQ9IjM0MCUiIGZpbHRlclVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgaWQ9ImEiPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjQiIGluPSJTb3VyY2VHcmFwaGljIi8+PC9maWx0ZXI+PC9kZWZzPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkgOSkiIGZpbGw9IiNGRjAxMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PGNpcmNsZSBmaWx0ZXI9InVybCgjYSkiIGN4PSI1IiBjeT0iNSIgcj0iNSIvPjxwYXRoIGQ9Ik01IDhhMyAzIDAgMSAwIDAtNiAzIDMgMCAwIDAgMCA2em0wLTEuNzE0YTEuMjg2IDEuMjg2IDAgMSAxIDAtMi41NzIgMS4yODYgMS4yODYgMCAwIDEgMCAyLjU3MnoiIGZpbGwtcnVsZT0ibm9uemVybyIvPjwvZz48L3N2Zz4=";                                
-                                    }
-                                });
-                            }
-                        };
-                        
-                    }
-                }
-            });
-            if (!WindowManager.wrapper) return;
-            this.mutationObserver.observe(WindowManager.wrapper, {
-                subtree: true,
-                childList: true,
-            });
-        }
+        this._changePointerIcon()
+       
     }
 
     public setHidePencil(active: boolean) {
