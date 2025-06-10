@@ -1516,6 +1516,8 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     }): void;
     private get teacherInfo();
     setLaserPointer(active: boolean): void;
+    private _currentPointActive;
+    private _changePointerIcon;
     private _setLaserPointer;
     setHidePencil(active: boolean): void;
     private _setHidePencil;
