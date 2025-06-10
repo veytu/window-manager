@@ -1279,7 +1279,7 @@ export class WindowManager
         });
     }
 
-    private _setLaserPointer(active: boolean,tag?: string) {
+    private _setLaserPointer(active: boolean,type?: string) {
         // WindowManager.playground?.classList.toggle("is-cursor-laserPointer", active);
         if (!active) {
             this.mutationObserver?.disconnect();
@@ -1293,8 +1293,8 @@ export class WindowManager
             return;
         }
         if (!this.mutationObserver) {
-            // tag: 同时选中画笔和激光笔时，学生端显示激光图标
-            if (!tag) {
+            // 动作类型标记
+            if (!type) {
                 if (!this.teacherInfo?.uid || !this.teacherInfo?.name) return;
             }
             this.mutationObserver = new MutationObserver(mutationsList => {
@@ -1308,15 +1308,16 @@ export class WindowManager
                         if (cursors) {
                             cursors.forEach((item: HTMLDivElement) => {
                                 // const nameNode = item.querySelector(".cursor-inner");
-                                // if (nameNode && this.teacherInfo?.name == nameNode.innerHTML) {
-                                    const imgNode: HTMLImageElement | null =
+                                   const imgNode: HTMLImageElement | null =
                                         item.querySelector(".cursor-pencil-image") || item.querySelector('.cursor-arrow-image');
-
-                                    if (imgNode) {
+                                if (imgNode) {
+                                    if (type === 'laser') {
                                         imgNode.src =
                                             "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMjgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGZpbHRlciB4PSItMTIwJSIgeT0iLTEyMCUiIHdpZHRoPSIzNDAlIiBoZWlnaHQ9IjM0MCUiIGZpbHRlclVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgaWQ9ImEiPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjQiIGluPSJTb3VyY2VHcmFwaGljIi8+PC9maWx0ZXI+PC9kZWZzPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkgOSkiIGZpbGw9IiNGRjAxMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PGNpcmNsZSBmaWx0ZXI9InVybCgjYSkiIGN4PSI1IiBjeT0iNSIgcj0iNSIvPjxwYXRoIGQ9Ik01IDhhMyAzIDAgMSAwIDAtNiAzIDMgMCAwIDAgMCA2em0wLTEuNzE0YTEuMjg2IDEuMjg2IDAgMSAxIDAtMi41NzIgMS4yODYgMS4yODYgMCAwIDEgMCAyLjU3MnoiIGZpbGwtcnVsZT0ibm9uemVybyIvPjwvZz48L3N2Zz4=";
+                                    }else {
+                                        imgNode.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgY2xpcC1wYXRoPSJ1cmwoI2NsaXAwXzM0ODRfMjM3NzU0KSI+CjxwYXRoIGQ9Ik0xNS43MjggOS42ODYwOEwxNC4zMTQgOC4yNzIwOEw1IDE3LjU4NjFWMTkuMDAwMUg2LjQxNEwxNS43MjggOS42ODYwOFpNMTcuMTQyIDguMjcyMDhMMTguNTU2IDYuODU4MDhMMTcuMTQyIDUuNDQ0MDhMMTUuNzI4IDYuODU4MDhMMTcuMTQyIDguMjcyMDhaTTcuMjQyIDIxLjAwMDFIM1YxNi43NTcxTDE2LjQzNSAzLjMyMjA4QzE2LjYyMjUgMy4xMzQ2MSAxNi44NzY4IDMuMDI5MyAxNy4xNDIgMy4wMjkzQzE3LjQwNzIgMy4wMjkzIDE3LjY2MTUgMy4xMzQ2MSAxNy44NDkgMy4zMjIwOEwyMC42NzggNi4xNTEwOEMyMC44NjU1IDYuMzM4NjEgMjAuOTcwOCA2LjU5MjkyIDIwLjk3MDggNi44NTgwOEMyMC45NzA4IDcuMTIzMjUgMjAuODY1NSA3LjM3NzU2IDIwLjY3OCA3LjU2NTA4TDcuMjQyIDIxLjAwMDFaIiBmaWxsPSIjOEQ4RkE2Ii8+CjwvZz4KPGRlZnM+CjxjbGlwUGF0aCBpZD0iY2xpcDBfMzQ4NF8yMzc3NTQiPgo8cmVjdCB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9IndoaXRlIi8+CjwvY2xpcFBhdGg+CjwvZGVmcz4KPC9zdmc+Cg==";
                                     }
-                                // }
+                                }
                             });
                         }
                     }
