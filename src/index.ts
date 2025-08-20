@@ -134,10 +134,10 @@ export type AppInitState = {
     focus?: boolean;
     maximized?: boolean;
     minimized?: boolean;
-    maximizedBoxes?: string[];
-    minimizedBoxes?: string[];
+    // maximizedBoxes?: string[];
+    // minimizedBoxes?: string[];
     sceneIndex?: number;
-    boxState?: TeleBoxState; // 兼容旧版 telebox
+    boxState?: TELE_BOX_STATE; // 兼容旧版 telebox
     zIndex?: number;
 };
 
@@ -322,27 +322,27 @@ export class WindowManager
             console.log(error);
         }
 
-        manager?.room?.addMagixEventListener("onScaleChange", data => {
-            manager?._setScale(data.payload);
-        });
+        // manager?.room?.addMagixEventListener("onScaleChange", data => {
+        //     manager?._setScale(data.payload);
+        // });
 
-        manager?.room?.addMagixEventListener("onMainViewBackgroundImgChange", data => {
-            manager?._setBackgroundImg(data.payload);
-        });
-        manager?.room?.addMagixEventListener("onMainViewBackgroundColorChange", data => {
-            manager?._setBackgroundColor(data.payload);
-        });
+        // manager?.room?.addMagixEventListener("onMainViewBackgroundImgChange", data => {
+        //     manager?._setBackgroundImg(data.payload);
+        // });
+        // manager?.room?.addMagixEventListener("onMainViewBackgroundColorChange", data => {
+        //     manager?._setBackgroundColor(data.payload);
+        // });
 
-        manager?.room?.addMagixEventListener("onLaserPointerActiveChange", data => {
-            manager?._setLaserPointer(data.payload);
-        });
-        manager?.room?.addMagixEventListener("onHidePencil", data => {
-            manager?._setHidePencil(data.payload);
-        });
+        // manager?.room?.addMagixEventListener("onLaserPointerActiveChange", data => {
+        //     manager?._setLaserPointer(data.payload);
+        // });
+        // manager?.room?.addMagixEventListener("onHidePencil", data => {
+        //     manager?._setHidePencil(data.payload);
+        // });
 
-        manager.room?.addMagixEventListener(ScrollerScrollEventType, data => {
-            internalEmitter.emit(ScrollerScrollEventType, data.payload);
-        });
+        // manager.room?.addMagixEventListener(ScrollerScrollEventType, data => {
+        //     internalEmitter.emit(ScrollerScrollEventType, data.payload);
+        // });
 
         internalEmitter.on("playgroundSizeChange", () => {
             manager?._updateMainViewWrapperSize(
@@ -1203,6 +1203,10 @@ export class WindowManager
 
     public setScale(appId: string, scale: number): void {
         this.room.dispatchMagixEvent("onScaleChange", { appId, scale });
+        // this.safeUpdateAttributes(["scale"], {
+        //     ...this.getAttributesValue(["scale"]),
+        //     [appId]: scale,
+        // });
     }
 
     private _updateMainViewWrapperSize(scale?: number, skipEmit?: boolean) {
@@ -1530,14 +1534,14 @@ export class WindowManager
         return undefined;
     }
 
-    public setBackgroundImg(src: string): void {
-        this.room.dispatchMagixEvent("onMainViewBackgroundColorChange", "");
-        this.room.dispatchMagixEvent("onMainViewBackgroundImgChange", src);
-    }
-    public setBackgroundColor(color: string): void {
-        this.room.dispatchMagixEvent("onMainViewBackgroundImgChange", "");
-        this.room.dispatchMagixEvent("onMainViewBackgroundColorChange", color);
-    }
+    // public setBackgroundImg(src: string): void {
+    //     this.room.dispatchMagixEvent("onMainViewBackgroundColorChange", "");
+    //     this.room.dispatchMagixEvent("onMainViewBackgroundImgChange", src);
+    // }
+    // public setBackgroundColor(color: string): void {
+    //     this.room.dispatchMagixEvent("onMainViewBackgroundImgChange", "");
+    //     this.room.dispatchMagixEvent("onMainViewBackgroundColorChange", color);
+    // }
     private _setBackgroundColor(color: string): void {
         if (!WindowManager.mainViewWrapper) return;
         WindowManager.mainViewWrapper.style.backgroundColor = color;

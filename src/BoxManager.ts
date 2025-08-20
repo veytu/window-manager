@@ -22,6 +22,8 @@ import { isAndroid, isIOS } from "./Utils/environment";
 
 export { TELE_BOX_STATE };
 
+export type TELE_BOX_NOT_MINIMIZED_STATE = "maximized" | "normal";
+
 export type CreateBoxParams = {
     appId: string;
     app: NetlessApp;

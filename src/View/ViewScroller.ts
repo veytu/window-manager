@@ -97,7 +97,8 @@ class ViewScroller {
     }
 
     private dispatchScrollEvent = debounce(({x, y}: {x: number, y: number}) => {
-        this.manager.room?.dispatchMagixEvent(ScrollerScrollEventType, {appId: this.appId, x, y})
+        // todo use attributes update
+        // this.manager.room?.dispatchMagixEvent(ScrollerScrollEventType, {appId: this.appId, x, y})
     }, 200)
 
     private scroll(): void {
