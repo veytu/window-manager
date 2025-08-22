@@ -20,10 +20,10 @@ export enum Fields {
     FullPath = "fullPath",
     Registered = "registered",
     IframeBridge = "iframeBridge",
+    BoxesStatus = "boxesStatus",
+    LastNotMinimizedBoxesStatus = 'lastNotMinimizedBoxesStatus',
     // 移动到自定义的内部
     LaserPointerActive = 'laserPointerActive',
-    boxsStatus = "boxsStatus",
-    lastNotMinimizedBoxsStatus = 'lastNotMinimizedBoxsStatus',
 }
 
 export type Apps = {
@@ -84,37 +84,45 @@ export class AttributesDelegate {
         return get(this.attributes, ["minimized"]);
     }
 
-    public getBoxsStatus(): Record<string, TELE_BOX_STATE> | undefined {
-        return get(this.attributes, [Fields.boxsStatus]);
+    public getBoxesStatus(): Record<string, TELE_BOX_STATE> | undefined {
+        return get(this.attributes, [Fields.BoxesStatus]);
     }
 
-    public setBoxsStatus(boxsStatus: Record<string, TELE_BOX_STATE> | undefined) {
-        this.context.safeSetAttributes({ [Fields.boxsStatus]: boxsStatus });
+    public getLaserPointerActive() {
+        return get(this.attributes, [Fields.LaserPointerActive]);
+    }
+
+    public setLaserPointerActive(active: boolean) {
+        this.context.safeSetAttributes({ [Fields.LaserPointerActive]: active });
+    }
+
+    public setBoxesStatus(boxesStatus: Record<string, TELE_BOX_STATE> | undefined) {
+        this.context.safeSetAttributes({ [Fields.BoxesStatus]: boxesStatus });
     }
 
     public getBoxStatus(id: string): TELE_BOX_STATE | undefined {
-        return get(this.attributes, [Fields.boxsStatus, id]);
+        return get(this.attributes, [Fields.BoxesStatus, id]);
     }
 
     public setBoxStatus(id: string, status: TELE_BOX_STATE | undefined) {
-        this.context.safeUpdateAttributes([Fields.boxsStatus, id], status);
+        this.context.safeUpdateAttributes([Fields.BoxesStatus, id], status);
     }
 
 
-    public getLastNotMinimizedBoxsStatus(): Record<string, TELE_BOX_NOT_MINIMIZED_STATE> | undefined {
-        return get(this.attributes, [Fields.lastNotMinimizedBoxsStatus]);
+    public getLastNotMinimizedBoxesStatus(): Record<string, TELE_BOX_NOT_MINIMIZED_STATE> | undefined {
+        return get(this.attributes, [Fields.LastNotMinimizedBoxesStatus]);
     }
 
-    public setLastNotMinimizedBoxsStatus(lastNotMinimizedBoxsStatus: Record<string, TELE_BOX_NOT_MINIMIZED_STATE> | undefined) {
-        this.context.safeSetAttributes({ [Fields.lastNotMinimizedBoxsStatus]: lastNotMinimizedBoxsStatus });
+    public setLastNotMinimizedBoxesStatus(lastNotMinimizedBoxesStatus: Record<string, TELE_BOX_NOT_MINIMIZED_STATE> | undefined) {
+        this.context.safeSetAttributes({ [Fields.LastNotMinimizedBoxesStatus]: lastNotMinimizedBoxesStatus });
     }
 
-    public getLastNotMinimizedBoxStatus(): TELE_BOX_NOT_MINIMIZED_STATE | undefined {
-        return get(this.attributes, [Fields.lastNotMinimizedBoxsStatus, this.getLastNotMinimizedBoxsStatus()]);
+    public getLastNotMinimizedBoxStatus(id: string): TELE_BOX_NOT_MINIMIZED_STATE | undefined {
+        return get(this.attributes, [Fields.LastNotMinimizedBoxesStatus, id]);
     }
 
     public setLastNotMinimizedBoxStatus(id: string, status: TELE_BOX_NOT_MINIMIZED_STATE | undefined) {
-        this.context.safeUpdateAttributes([Fields.lastNotMinimizedBoxsStatus, id], status);
+        this.context.safeUpdateAttributes([Fields.LastNotMinimizedBoxesStatus, id], status);
     }
 
     public setupAppAttributes(params: AddAppParams, id: string, isDynamicPPT: boolean) {
