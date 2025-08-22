@@ -2,7 +2,7 @@ import pRetry from "p-retry";
 import { AppManager } from "./AppManager";
 import { appRegister } from "./Register";
 import { callbacks } from "./callback";
-import { checkVersion, createInvisiblePlugin, setupWrapper } from "./Helper";
+import { checkVersion, createInvisiblePlugin, findMemberByUid, setupWrapper } from "./Helper";
 import { ContainerResizeObserver } from "./ContainerResizeObserver";
 import { createBoxManager } from "./BoxManager";
 import { CursorManager } from "./Cursor";
@@ -20,7 +20,7 @@ import {
     RoomState,
     ViewMode,
 } from "white-web-sdk";
-import { isEqual, isNull, isObject, omit, isNumber, get } from "lodash";
+import { isEqual, isNull, isObject, omit, isNumber, get, throttle } from "lodash";
 import { log } from "./Utils/log";
 import { PageStateImpl } from "./PageState";
 import { ReconnectRefresher } from "./ReconnectRefresher";
@@ -68,6 +68,7 @@ import { IframeBridge } from "./View/IframeBridge";
 import { setOptions } from "@netless/app-media-player";
 import { ScrollerManager, ScrollerScrollEventType } from "./ScrollerManager";
 import { isAndroid, isIOS } from "./Utils/environment";
+import { LaserPointerManager } from "./LaserPointerManager";
 export * from "./View/IframeBridge";
 
 // 防循环工具函数
@@ -358,6 +359,12 @@ export class WindowManager
                 const data = get(manager!.appManager!.attributes, Fields.LaserPointerActive);
                 console.log(`${logFirstTag} LaserPointerActive Target`, JSON.stringify(data))
                 manager?._setLaserPointer(data);
+                // 根据权限更新激光笔管理器状态（参照原来的逻辑）
+                if (manager?.teacherInfo?.uid === manager?._getCurrentUserId()) {
+                    manager?._laserPointerManager?.setLaserPointer(data?.active);
+                } else {
+                    manager?._laserPointerManager?.setLaserPointer(false);
+                }
             }, 'LaserPointerActive');
         });
         manager.appManager?.refresher?.add(Fields.ViewScrollChange, () => {
@@ -1306,6 +1313,8 @@ export class WindowManager
 
     //老师端激光笔是否是激活状态
     private _currentPointActive = false
+    //学生移动监听器
+    private _studentMoveObserver?: MutationObserver
     //修改画笔和激光笔图片，内部不做权限角色判断，只根据是否激活处理
     private _changePointerIcon() {
         if (!this.mutationObserver) {
@@ -1316,7 +1325,7 @@ export class WindowManager
                     for (let mutation of mutationsList) {
                         if (mutation.type === "childList") {
                             // get远端动作的uid 
-                            const cursorUid = WindowManager.wrapper?.querySelector('[data-cursor-uid]')?.getAttribute('data-cursor-uid');
+                            const cursorUid = this._getCurrentUserId();
                             // 如果远端动作是老师，icon替换为激光笔
                             if (cursorUid == this.teacherInfo?.uid) {
                                 // 以下为原有替换逻辑
@@ -1351,8 +1360,13 @@ export class WindowManager
         this._currentPointActive = active
         // WindowManager.playground?.classList.toggle("is-cursor-laserPointer", active);
         if (!active) {
+            // 清理激光笔相关资源
             this.mutationObserver?.disconnect();
             this.mutationObserver = null;
+            
+            // 清理激光笔相关资源
+            this._laserPointerManager?.setLaserPointer(false);
+            
             const cursorNode = document.querySelectorAll(
                 ".netless-window-manager-cursor-mid"
             );
@@ -1362,8 +1376,50 @@ export class WindowManager
             return;
         }
         this._changePointerIcon()
+        
+        // 确保只有一个激光笔管理器实例
+        if (!this._laserPointerManager) {
+            this._initLaserPointerManager()
+        }
+        
+        // 只有当前用户是老师时才激活（参照原来的逻辑）
+        if (this.teacherInfo?.uid === this._getCurrentUserId()) {
+            this._laserPointerManager?.setLaserPointer(true);
+        }
        
     }
+
+    // 激光笔管理器
+    private _laserPointerManager?: LaserPointerManager;
+
+    // 初始化激光笔管理器
+    private _initLaserPointerManager() {
+        console.log(`${logFirstTag} Initializing LaserPointerManager, existing:`, !!this._laserPointerManager);
+        if (WindowManager.container && this.room && this.displayer && this.appManager) {
+            this._laserPointerManager = new LaserPointerManager(
+                WindowManager.container,
+                this.room,
+                this.displayer,
+                this.appManager,
+                this.teacherInfo,
+                this._getCurrentUserId()
+            );
+            console.log(`${logFirstTag} LaserPointerManager created successfully`);
+        }
+    }
+
+    // 获取当前用户ID
+    private _getCurrentUserId(): string | undefined {
+        return this.appManager?.uid ? findMemberByUid(this.room, this.appManager?.uid)?.payload?.uid : undefined;
+    }
+
+    // 销毁激光笔管理器
+    private _destroyLaserPointerManager() {
+        this._laserPointerManager?.destroy();
+        this._laserPointerManager = undefined;
+    }
+
+
 
     public setHidePencil(active: boolean) {
         // this.room.dispatchMagixEvent("onHidePencil", active);
@@ -1536,3 +1592,4 @@ export * from "./typings";
 
 export { BuiltinApps } from "./BuiltinApps";
 export type { PublicEvent } from "./callback";
+
