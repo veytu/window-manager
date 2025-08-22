@@ -1311,53 +1311,7 @@ export class WindowManager
         this.safeUpdateAttributes([Fields.LaserPointerActive], {active,uid: this.appManager?.uid});
     }
 
-    //老师端激光笔是否是激活状态
-    private _currentPointActive = false
-    //学生移动监听器
-    private _studentMoveObserver?: MutationObserver
-    //修改画笔和激光笔图片，内部不做权限角色判断，只根据是否激活处理
-    private _changePointerIcon() {
-        if (!this.mutationObserver) {
-            // 只替换 远端为老师情况
-            if (!this.teacherInfo?.uid || !this.teacherInfo?.name) return;
-            this.mutationObserver = new MutationObserver(mutationsList => {
-                if (this._currentPointActive) {
-                    for (let mutation of mutationsList) {
-                        if (mutation.type === "childList") {
-                            // get远端动作的uid 
-                            const cursorUid = this._getCurrentUserId();
-                            // 如果远端动作是老师，icon替换为激光笔
-                            if (cursorUid == this.teacherInfo?.uid) {
-                                // 以下为原有替换逻辑
-                                const cursorImgs = WindowManager.wrapper?.querySelector('[data-cursor-uid]')?.getElementsByClassName("cursor-pencil-offset");
-                                const cursors = Array.prototype.slice.call(cursorImgs);
-                                if (cursors) {
-                                    cursors.forEach((item: HTMLDivElement) => {
-                                        // const nameNode = item.querySelector(".cursor-inner");
-                                        const imgNode: HTMLImageElement | null =
-                                            item.querySelector(".cursor-pencil-image") || item.querySelector('.cursor-arrow-image');
-                                        if (imgNode) {
-                                            imgNode.src =
-                                                "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMjgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGZpbHRlciB4PSItMTIwJSIgeT0iLTEyMCUiIHdpZHRoPSIzNDAlIiBoZWlnaHQ9IjM0MCUiIGZpbHRlclVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgaWQ9ImEiPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjQiIGluPSJTb3VyY2VHcmFwaGljIi8+PC9maWx0ZXI+PC9kZWZzPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkgOSkiIGZpbGw9IiNGRjAxMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PGNpcmNsZSBmaWx0ZXI9InVybCgjYSkiIGN4PSI1IiBjeT0iNSIgcj0iNSIvPjxwYXRoIGQ9Ik01IDhhMyAzIDAgMSAwIDAtNiAzIDMgMCAwIDAgMCA2em0wLTEuNzE0YTEuMjg2IDEuMjg2IDAgMSAxIDAtMi41NzIgMS4yODYgMS4yODYgMCAwIDEgMCAyLjU3MnoiIGZpbGwtcnVsZT0ibm9uemVybyIvPjwvZz48L3N2Zz4=";
-                                        }
-                                    });
-                                }
-                            };
-
-                        }
-                    }
-                }
-            });
-            if (!WindowManager.wrapper) return;
-            this.mutationObserver.observe(WindowManager.wrapper, {
-                subtree: true,
-                childList: true,
-            });
-        }
-    }
-
     private _setLaserPointer(active: boolean) {
-        this._currentPointActive = active
         // WindowManager.playground?.classList.toggle("is-cursor-laserPointer", active);
         if (!active) {
             // 清理激光笔相关资源
@@ -1375,8 +1329,6 @@ export class WindowManager
             });
             return;
         }
-        this._changePointerIcon()
-        
         // 确保只有一个激光笔管理器实例
         if (!this._laserPointerManager) {
             this._initLaserPointerManager()
@@ -1417,46 +1369,6 @@ export class WindowManager
     private _destroyLaserPointerManager() {
         this._laserPointerManager?.destroy();
         this._laserPointerManager = undefined;
-    }
-
-
-
-    public setHidePencil(active: boolean) {
-        // this.room.dispatchMagixEvent("onHidePencil", active);
-        this.safeUpdateAttributes([Fields.HidePencil], active);
-    }
-
-    private _setHidePencil (active: boolean) {
-        if (!active) {
-            this.observerPencil?.disconnect();
-            this.observerPencil = null;
-            return;
-        }
-        if (!this.observerPencil) {
-            this.observerPencil = new MutationObserver(mutationsList => {
-                for (let mutation of mutationsList) {
-                    if (mutation.type === "childList") {
-                        const cursorImgs = WindowManager.wrapper?.getElementsByClassName("cursor-pencil-offset");
-                        
-                        const cursors = Array.prototype.slice.call(cursorImgs);
-
-                        if (cursors) {
-                            cursors.forEach((item: HTMLDivElement) => {
-                                const nameNode = item.querySelector(".cursor-inner");
-                                if (nameNode) {
-                                    nameNode.classList.add('force-none')
-                                }
-                            });
-                        }
-                    }
-                }
-            });
-            if (!WindowManager.wrapper) return;
-            this.observerPencil.observe(WindowManager.wrapper, {
-                subtree: true,
-                childList: true,
-            });
-        }
     }
 
     public get isLaserPointerActive() {
@@ -1507,10 +1419,6 @@ export class WindowManager
 
             if (!this.attributes[Fields.LaserPointerActive]) {
                 this.safeSetAttributes({ [Fields.LaserPointerActive]: { active: false, uid: "" } });
-            }
-
-            if (!this.attributes[Fields.HidePencil]) {
-                this.safeSetAttributes({ [Fields.HidePencil]: false });
             }
         }
     }
@@ -1578,10 +1486,6 @@ export class WindowManager
         if (!!this.attributes[Fields.LaserPointerActive]) {
             const { active } = this.attributes[Fields.LaserPointerActive];
             this._setLaserPointer(active);
-        }
-
-        if (!!this.attributes[Fields.HidePencil]) {
-            this._setHidePencil(this.attributes[Fields.HidePencil])
         }
     }
 }
