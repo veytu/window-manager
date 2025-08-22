@@ -12,6 +12,7 @@ import type {
     TeleBoxColorScheme,
     TeleBoxRect,
     TeleBoxConfig,
+    TELE_BOX_NOT_MINIMIZED_STATE,
 } from "@netless/telebox-insider";
 import type Emittery from "emittery";
 import type { NetlessApp } from "./typings";
@@ -20,7 +21,7 @@ import type { CallbacksType } from "./callback";
 import type { EmitterType } from "./InternalEmitter";
 import { isAndroid, isIOS } from "./Utils/environment";
 
-export { TELE_BOX_STATE };
+export { TELE_BOX_STATE,TELE_BOX_NOT_MINIMIZED_STATE };
 
 export type CreateBoxParams = {
     appId: string;

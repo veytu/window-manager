@@ -223,10 +223,10 @@ export class AppProxy implements PageRemoveService {
                 });
                 this.boxManager.focusBox({ appId }, false);
             }
-
-            const mainViewBgImg =  this.store.attributes['mainViewBackgroundImg']
-            internalEmitter.emit("onBackgroundImgChange", mainViewBgImg)
-            
+            const data:{img:string,color:string}|undefined = this.store.attributes[Fields.MainViewBackgroundInfo]
+            if(data && data.img.length > 0){
+                internalEmitter.emit("onBackgroundImgChange", data.img)
+            }
         } catch (error: any) {
             console.error(error);
             throw new Error(`[WindowManager]: app setup error: ${error.message}`);

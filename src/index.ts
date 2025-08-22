@@ -11,6 +11,7 @@ import { internalEmitter } from "./InternalEmitter";
 import { Fields } from "./AttributesDelegate";
 import { initDb } from "./Register/storage";
 import {
+    autorun,
     InvisiblePlugin,
     isPlayer,
     isRoom,
@@ -19,7 +20,7 @@ import {
     RoomState,
     ViewMode,
 } from "white-web-sdk";
-import { isEqual, isNull, isObject, omit, isNumber } from "lodash";
+import { isEqual, isNull, isObject, omit, isNumber, get } from "lodash";
 import { log } from "./Utils/log";
 import { PageStateImpl } from "./PageState";
 import { ReconnectRefresher } from "./ReconnectRefresher";
@@ -69,6 +70,20 @@ import { ScrollerManager, ScrollerScrollEventType } from "./ScrollerManager";
 import { isAndroid, isIOS } from "./Utils/environment";
 export * from "./View/IframeBridge";
 
+// 防循环工具函数
+function createAntiLoopAutorun(fn: () => void) {
+    let isUpdating = false;
+    return autorun(() => {
+        if (isUpdating) return;
+        isUpdating = true;
+        try {
+            fn();
+        } finally {
+            isUpdating = false;
+        }
+    });
+}
+
 export type WindowMangerAttributes = {
     modelValue?: string;
     boxState: TELE_BOX_STATE;
@@ -76,8 +91,6 @@ export type WindowMangerAttributes = {
     minimized?: boolean;
     maximizedBoxes?: string;
     minimizedBoxes?: string;
-    mainViewBackgroundImg?: string;
-    mainViewBackgroundColor?: string;
     [key: string]: any;
 };
 
@@ -134,10 +147,8 @@ export type AppInitState = {
     focus?: boolean;
     maximized?: boolean;
     minimized?: boolean;
-    maximizedBoxes?: string[];
-    minimizedBoxes?: string[];
     sceneIndex?: number;
-    boxState?: TeleBoxState; // 兼容旧版 telebox
+    boxState?: TELE_BOX_STATE; // 兼容旧版 telebox
     zIndex?: number;
 };
 
@@ -177,6 +188,7 @@ export const reconnectRefresher = new ReconnectRefresher({ emitter: internalEmit
 
 export const mainViewField = "mainView";
 
+export const logFirstTag = "Custom WindowManager Attributes"
 export class WindowManager
     extends InvisiblePlugin<WindowMangerAttributes, any>
     implements PageController
@@ -322,42 +334,57 @@ export class WindowManager
             console.log(error);
         }
 
-        manager?.room?.addMagixEventListener("onScaleChange", data => {
-            manager?._setScale(data.payload);
+        manager.appManager?.refresher?.add(Fields.Scale, () => {
+            console.log(`${logFirstTag} Scale Register Listener`)
+            return createAntiLoopAutorun(() => {
+                const data = get(manager!.appManager!.attributes, Fields.Scale);
+                const keys = Object.keys(data)
+                if(keys.length > 0){
+                    const appId = keys[0]
+                    const currentScale = data[appId];
+                    console.log(`${logFirstTag} Scale Target`, JSON.stringify(data))
+                    manager?._setScale({ appId, scale: currentScale },true);
+                }
+            });
         });
-
-        manager?.room?.addMagixEventListener("onMainViewBackgroundImgChange", data => {
-            manager?._setBackgroundImg(data.payload);
+        manager.appManager?.refresher?.add(Fields.LaserPointerActive, () => {
+            console.log(`${logFirstTag} LaserPointerActive Register Listener`)
+            return createAntiLoopAutorun(() => {
+                const data = get(manager!.appManager!.attributes, Fields.LaserPointerActive);
+                console.log(`${logFirstTag} LaserPointerActive Target`, JSON.stringify(data))
+                manager?._setLaserPointer(data);
+            });
         });
-        manager?.room?.addMagixEventListener("onMainViewBackgroundColorChange", data => {
-            manager?._setBackgroundColor(data.payload);
+        manager.appManager?.refresher?.add(Fields.ViewScrollChange, () => {
+            console.log(`${logFirstTag} ViewScrollChange Register Listener`)
+            return createAntiLoopAutorun(() => {
+                const data = get(manager!.appManager!.attributes, Fields.ViewScrollChange);
+                if(data){
+                    console.log(`${logFirstTag} ViewScrollChange Target`, JSON.stringify(data))
+                    internalEmitter.emit(ScrollerScrollEventType, data);
+                }
+            });
         });
-
-        manager?.room?.addMagixEventListener("onLaserPointerActiveChange", data => {
-            manager?._setLaserPointer(data.payload);
-        });
-        manager?.room?.addMagixEventListener("onHidePencil", data => {
-            manager?._setHidePencil(data.payload);
-        });
-
-        manager.room?.addMagixEventListener(ScrollerScrollEventType, data => {
-            internalEmitter.emit(ScrollerScrollEventType, data.payload);
+        manager.appManager?.refresher?.add(Fields.MainViewBackgroundInfo, () => {
+            console.log(`${logFirstTag} MainViewBackgroundInfo Register Listener`)
+            return createAntiLoopAutorun(() => {
+                const data:{img:string,color:string} = get(manager!.appManager!.attributes, Fields.MainViewBackgroundInfo);
+                console.log(`${logFirstTag} MainViewBackgroundInfo Target`, JSON.stringify(data))
+                if(data.img.length > 0){
+                    manager?._setBackgroundImg(data.img)
+                }else if(data.color.length > 0){
+                    manager?._setBackgroundColor(data.color)
+                }
+            });
         });
 
         internalEmitter.on("playgroundSizeChange", () => {
-            manager?._updateMainViewWrapperSize(
-                manager.getAttributesValue("scale")[mainViewField],
-                true
-            );
+            manager?._updateMainViewWrapperSize(manager.getAttributesValue(Fields.Scale)[mainViewField],true);
         });
 
         setTimeout(() => {
             manager?._initAttribute();
         });
-
-        setTimeout(() => {
-            manager?.bindHidTeacherCursorListener(room);
-        }, 10000);
         return manager;
     }
 
@@ -1111,14 +1138,14 @@ export class WindowManager
 
     public safeSetAttributes(attributes: any): void {
         if (this.canOperate) {
-            this.room?.dispatchMagixEvent("Windowmanager_custom_attributes", attributes);
+            // this.room?.dispatchMagixEvent("Windowmanager_custom_attributes", attributes);
             this.setAttributes(attributes);
         }
     }
 
     public safeUpdateAttributes(keys: string[], value: any): void {
         if (this.canOperate) {
-            this.room?.dispatchMagixEvent("Windowmanager_custom_attributes", { keys, value });
+            // this.room?.dispatchMagixEvent("Windowmanager_custom_attributes", { keys, value });
             this.updateAttributes(keys, value);
         }
     }
@@ -1202,14 +1229,24 @@ export class WindowManager
     }
 
     public setScale(appId: string, scale: number): void {
-        this.room.dispatchMagixEvent("onScaleChange", { appId, scale });
+        if (!isNumber(scale)) return;
+        let newScale = scale;
+
+        if (newScale < 1) {
+            newScale = 1;
+        }
+        if(newScale!== this.getScale()?.[appId]){
+            console.log(`${logFirstTag} Scale Set`, {appId, newScale},isNumber(newScale),this.canOperate)
+            this.safeUpdateAttributes([Fields.Scale,appId], newScale);
+            this._setScale({appId, scale: newScale});
+        }
     }
 
     private _updateMainViewWrapperSize(scale?: number, skipEmit?: boolean) {
         const size = WindowManager.originWrapper?.getBoundingClientRect();
 
         if (!size) return false;
-        const currentScale = scale ?? this.getAttributesValue("scale")[mainViewField];
+        const currentScale = scale ?? this.getAttributesValue(Fields.Scale)[mainViewField];
         if (!WindowManager.mainViewWrapper || !WindowManager.mainViewWrapperShadow) return;
 
         if (!WindowManager.mainViewWrapper || !WindowManager.mainViewWrapperShadow) return;
@@ -1231,27 +1268,11 @@ export class WindowManager
 
     private _setScale(data: { appId: string; scale: number }, skipEmit?: boolean): boolean {
         const { appId, scale } = data;
-        if (!isNumber(scale)) return false;
-
-        let newScale = scale;
-
-        if (newScale < 1) {
-            newScale = 1;
-        }
-        const skipUpdate =
-            skipEmit || isAndroid() || isIOS() || WindowManager.appReadonly || this.readonly;
-
-        if (!skipUpdate) {
-            this.safeUpdateAttributes(["scale"], {
-                ...this.getAttributesValue(["scale"]),
-                [appId]: newScale,
-            });
-        }
-
+        
         if (appId == mainViewField) {
-            this._updateMainViewWrapperSize(newScale, skipEmit);
+            this._updateMainViewWrapperSize(scale, skipEmit);
         } else {
-            internalEmitter.emit("onScaleChange", { appId, scale: newScale });
+            internalEmitter.emit("onScaleChange", { appId, scale: scale });
         }
 
         this.scrollerManager?.moveToCenter(appId);
@@ -1260,7 +1281,7 @@ export class WindowManager
     }
 
     public getScale(): Record<string, number> | undefined {
-        return this.getAttributesValue(["scale"]);
+        return this.getAttributesValue([Fields.Scale]);
     }
 
     public setTeacherInfo(data: { uid?: string; name?: string }) {
@@ -1272,11 +1293,7 @@ export class WindowManager
     }
 
     public setLaserPointer(active: boolean) {
-        this.room.dispatchMagixEvent("onLaserPointerActiveChange", active);
-        this.safeUpdateAttributes([Fields.LaserPointerActive], {
-            active,
-            uid: this.appManager?.uid,
-        });
+        this.safeUpdateAttributes([Fields.LaserPointerActive], {active,uid: this.appManager?.uid});
     }
 
     //老师端激光笔是否是激活状态
@@ -1341,8 +1358,8 @@ export class WindowManager
     }
 
     public setHidePencil(active: boolean) {
-        this.room.dispatchMagixEvent("onHidePencil", active);
-        this.safeUpdateAttributes(["hidePencil"], active);
+        // this.room.dispatchMagixEvent("onHidePencil", active);
+        this.safeUpdateAttributes([Fields.HidePencil], active);
     }
 
     private _setHidePencil (active: boolean) {
@@ -1382,70 +1399,8 @@ export class WindowManager
         return this.getAttributesValue([Fields.LaserPointerActive]).active || false;
     }
 
-    private bindHidTeacherCursorListener(room: Room | Displayer) {
-
-        room.callbacks.on("onRoomStateChanged", (state: RoomState) => {
-            if (state?.roomMembers) {
-                const cursorNode = document.querySelectorAll(
-                    ".netless-window-manager-cursor-mid"
-                );
-                cursorNode?.forEach(i => {
-                    i.classList.add("force-none");
-                    if (this.isLaserPointerActive) {
-                        if (i.attributes.getNamedItem("data-cursor-uid")?.value === this.teacherInfo?.uid) {
-                            i.classList.remove('force-none')
-                            const img: HTMLImageElement | null = i.querySelector('.netless-window-manager-cursor-clicker-image')
-                            const selector: HTMLImageElement | null = i.querySelector('.netless-window-manager-cursor-selector-image') 
-
-                            if (img) {
-                                img.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMjgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGZpbHRlciB4PSItMTIwJSIgeT0iLTEyMCUiIHdpZHRoPSIzNDAlIiBoZWlnaHQ9IjM0MCUiIGZpbHRlclVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgaWQ9ImEiPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjQiIGluPSJTb3VyY2VHcmFwaGljIi8+PC9maWx0ZXI+PC9kZWZzPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkgOSkiIGZpbGw9IiNGRjAxMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PGNpcmNsZSBmaWx0ZXI9InVybCgjYSkiIGN4PSI1IiBjeT0iNSIgcj0iNSIvPjxwYXRoIGQ9Ik01IDhhMyAzIDAgMSAwIDAtNiAzIDMgMCAwIDAgMCA2em0wLTEuNzE0YTEuMjg2IDEuMjg2IDAgMSAxIDAtMi41NzIgMS4yODYgMS4yODYgMCAwIDEgMCAyLjU3MnoiIGZpbGwtcnVsZT0ibm9uemVybyIvPjwvZz48L3N2Zz4=";
-                            }
-
-                            if (selector) {
-                                selector.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMjgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGZpbHRlciB4PSItMTIwJSIgeT0iLTEyMCUiIHdpZHRoPSIzNDAlIiBoZWlnaHQ9IjM0MCUiIGZpbHRlclVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgaWQ9ImEiPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjQiIGluPSJTb3VyY2VHcmFwaGljIi8+PC9maWx0ZXI+PC9kZWZzPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkgOSkiIGZpbGw9IiNGRjAxMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PGNpcmNsZSBmaWx0ZXI9InVybCgjYSkiIGN4PSI1IiBjeT0iNSIgcj0iNSIvPjxwYXRoIGQ9Ik01IDhhMyAzIDAgMSAwIDAtNiAzIDMgMCAwIDAgMCA2em0wLTEuNzE0YTEuMjg2IDEuMjg2IDAgMSAxIDAtMi41NzIgMS4yODYgMS4yODYgMCAwIDEgMCAyLjU3MnoiIGZpbGwtcnVsZT0ibm9uemVybyIvPjwvZz48L3N2Zz4=";
-                            }
-                        }
-                    }
-                });
-            }
-        });
-
-        const targetNode = document.querySelector(".netless-window-manager-wrapper");
-        const config = { childList: true, subtree: true };
-        const callback = (mutationList: any) => {
-            for (const mutation of mutationList) {
-                if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
-                    const cursors = targetNode?.querySelectorAll(
-                        ".netless-window-manager-cursor-mid"
-                    );
-
-                    cursors?.forEach(i => {
-                        i.classList.add("force-none");
-                        if (this.isLaserPointerActive) {
-                            if (i.attributes.getNamedItem("data-cursor-uid")?.value === this.teacherInfo?.uid) {
-                                i.classList.remove('force-none')
-                                const img: HTMLImageElement | null = i.querySelector('.netless-window-manager-cursor-clicker-image')
-                                const selector: HTMLImageElement | null = i.querySelector('.netless-window-manager-cursor-selector-image') 
-
-                                if (img) {
-                                    img.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMjgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGZpbHRlciB4PSItMTIwJSIgeT0iLTEyMCUiIHdpZHRoPSIzNDAlIiBoZWlnaHQ9IjM0MCUiIGZpbHRlclVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgaWQ9ImEiPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjQiIGluPSJTb3VyY2VHcmFwaGljIi8+PC9maWx0ZXI+PC9kZWZzPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkgOSkiIGZpbGw9IiNGRjAxMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PGNpcmNsZSBmaWx0ZXI9InVybCgjYSkiIGN4PSI1IiBjeT0iNSIgcj0iNSIvPjxwYXRoIGQ9Ik01IDhhMyAzIDAgMSAwIDAtNiAzIDMgMCAwIDAgMCA2em0wLTEuNzE0YTEuMjg2IDEuMjg2IDAgMSAxIDAtMi41NzIgMS4yODYgMS4yODYgMCAwIDEgMCAyLjU3MnoiIGZpbGwtcnVsZT0ibm9uemVybyIvPjwvZz48L3N2Zz4=";
-                                }
-
-                                if (selector) {
-                                    selector.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMjgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGZpbHRlciB4PSItMTIwJSIgeT0iLTEyMCUiIHdpZHRoPSIzNDAlIiBoZWlnaHQ9IjM0MCUiIGZpbHRlclVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgaWQ9ImEiPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjQiIGluPSJTb3VyY2VHcmFwaGljIi8+PC9maWx0ZXI+PC9kZWZzPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkgOSkiIGZpbGw9IiNGRjAxMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PGNpcmNsZSBmaWx0ZXI9InVybCgjYSkiIGN4PSI1IiBjeT0iNSIgcj0iNSIvPjxwYXRoIGQ9Ik01IDhhMyAzIDAgMSAwIDAtNiAzIDMgMCAwIDAgMCA2em0wLTEuNzE0YTEuMjg2IDEuMjg2IDAgMSAxIDAtMi41NzIgMS4yODYgMS4yODYgMCAwIDEgMCAyLjU3MnoiIGZpbGwtcnVsZT0ibm9uemVybyIvPjwvZz48L3N2Zz4=";
-                                }
-                            }
-                        }
-                    });
-                }
-            }
-        };
-        const observer = new MutationObserver(callback);
-        observer.observe(targetNode as any, config);
-    }
-
     public getAppScale(appId: string): number {
-        return this.getAttributesValue(["scale"])[appId];
+        return this.getAttributesValue([Fields.Scale])[appId];
     }
 
     private isDynamicPPT(scenes: SceneDefinition[]) {
@@ -1476,29 +1431,22 @@ export class WindowManager
             if (!this.attributes[Fields.IframeBridge]) {
                 this.safeSetAttributes({ [Fields.IframeBridge]: {} });
             }
-            if (!this.attributes["mainViewBackgroundColor"]) {
-                this.safeSetAttributes({ mainViewBackgroundColor: "" });
+            if (!this.attributes[Fields.MainViewBackgroundInfo]) {
+                this.safeSetAttributes({ [Fields.MainViewBackgroundInfo]: {img:'',color:''} });
             }
-            if (!this.attributes["mainViewBackgroundImg"]) {
-                this.safeSetAttributes({ mainViewBackgroundImg: "" });
-            }
-            if (!this.attributes["scale"]) {
+            if (!this.attributes[Fields.Scale]) {
                 if (WindowManager.appReadonly || this.readonly) {
                     return;
                 }
-                this.safeSetAttributes({
-                    scale: {
-                        [mainViewField]: 1,
-                    },
-                });
+                this.safeSetAttributes({[Fields.Scale]: {[mainViewField]: 1}});
             }
 
             if (!this.attributes[Fields.LaserPointerActive]) {
                 this.safeSetAttributes({ [Fields.LaserPointerActive]: { active: false, uid: "" } });
             }
 
-            if (!this.attributes["hidePencil"]) {
-                this.safeSetAttributes({ hidePencil: false });
+            if (!this.attributes[Fields.HidePencil]) {
+                this.safeSetAttributes({ [Fields.HidePencil]: false });
             }
         }
     }
@@ -1513,53 +1461,50 @@ export class WindowManager
     }
 
     public getBackground(): { type: "img" | "color"; value: string | undefined } | undefined {
-        if (!!this.attributes["mainViewBackgroundColor"]) {
-            return {
-                type: "color",
-                value: this.attributes["mainViewBackgroundColor"],
-            };
+        if (!!this.attributes[Fields.MainViewBackgroundInfo]) {
+            const data = this.attributes[Fields.MainViewBackgroundInfo]
+            if(data.img.length>0){
+                return {
+                    type: "img",
+                    value: data.img,
+                };
+            }else if(data.color.length > 0){
+                return {
+                    type: "color",
+                    value: data.color,
+                };
+            }
         }
-
-        if (!!this.attributes["mainViewBackgroundImg"]) {
-            return {
-                type: "img",
-                value: this.attributes["mainViewBackgroundImg"],
-            };
-        }
-
         return undefined;
     }
 
     public setBackgroundImg(src: string): void {
-        this.room.dispatchMagixEvent("onMainViewBackgroundColorChange", "");
-        this.room.dispatchMagixEvent("onMainViewBackgroundImgChange", src);
+        this.safeUpdateAttributes([Fields.MainViewBackgroundInfo], {color:'',img:src});
     }
     public setBackgroundColor(color: string): void {
-        this.room.dispatchMagixEvent("onMainViewBackgroundImgChange", "");
-        this.room.dispatchMagixEvent("onMainViewBackgroundColorChange", color);
+        this.safeUpdateAttributes([Fields.MainViewBackgroundInfo], {color:color,img:''});
     }
     private _setBackgroundColor(color: string): void {
         if (!WindowManager.mainViewWrapper) return;
         WindowManager.mainViewWrapper.style.backgroundColor = color;
-        this.safeUpdateAttributes(["mainViewBackgroundColor"], color);
+        WindowManager.mainViewWrapper.style.backgroundImage = 'unset';
     }
     private _setBackgroundImg(src: string): void {
         if (!WindowManager.mainViewWrapper) return;
         WindowManager.mainViewWrapper.style.backgroundImage = `url(${src})`;
-        this.safeUpdateAttributes(["mainViewBackgroundImg"], src);
+        WindowManager.mainViewWrapper.style.backgroundColor = 'unset';
     }
 
     private _initAttribute(): void {
-        if (!!this.attributes["mainViewBackgroundImg"]) {
-            this._setBackgroundImg(this.attributes["mainViewBackgroundImg"]);
+        const data:{img:string,color:string}|undefined = this.attributes[Fields.MainViewBackgroundInfo];
+        if(data && data.img.length > 0){
+            this._setBackgroundImg(data.img)
+        }else if(data && data.color.length > 0){
+            this._setBackgroundColor(data.color)
         }
 
-        if (!!this.attributes["mainViewBackgroundColor"]) {
-            this._setBackgroundColor(this.attributes["mainViewBackgroundColor"]);
-        }
-
-        if (!!this.attributes["scale"]) {
-            const scaleMap: Record<string, number> = this.attributes["scale"];
+        if (!!this.attributes[Fields.Scale]) {
+            const scaleMap: Record<string, number> = this.attributes[Fields.Scale];
             Object.keys(scaleMap).forEach(item => {
                 this._setScale({ appId: item, scale: scaleMap[item] }, true);
             });
@@ -1567,12 +1512,11 @@ export class WindowManager
 
         if (!!this.attributes[Fields.LaserPointerActive]) {
             const { active } = this.attributes[Fields.LaserPointerActive];
-
             this._setLaserPointer(active);
         }
 
-        if (!!this.attributes["hidePencil"]) {
-            this._setHidePencil(this.attributes["hidePencil"])
+        if (!!this.attributes[Fields.HidePencil]) {
+            this._setHidePencil(this.attributes[Fields.HidePencil])
         }
     }
 }

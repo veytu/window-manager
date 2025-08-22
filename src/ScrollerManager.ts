@@ -14,13 +14,13 @@ export class ScrollerManager {
     internalEmitter.on(ScrollerScrollEventType, this.onAppScrolling.bind(this))
   }
 
-  private onAppScrolling (payload: {appId: string, x: number, y: number}) {
-    const {
-      appId,
-      x,
-      y,
-    } = payload
-    this.scrollTo(appId, {x, y})
+  private onAppScrolling (payload: {appId: string, x: number, y: number} | undefined) {
+    if (payload) {
+      const { appId, x, y, } = payload
+      if (appId) {
+        this.scrollTo(appId, { x, y })
+      }
+    }
   }
 
   public add (config: ViewScrollerConfig) {

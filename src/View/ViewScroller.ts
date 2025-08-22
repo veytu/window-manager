@@ -1,8 +1,7 @@
 import { createSideEffectBinder, withValueEnhancer, Val } from "value-enhancer";
 import { SideEffectManager } from "side-effect-manager";
-import { WindowManager } from "..";
+import { logFirstTag, WindowManager } from "..";
 import { type CallbackManager, createCallbackManager } from "../Utils/callbacks";
-import { ScrollerScrollEventType } from "../ScrollerManager";
 import { debounce, isNumber } from "lodash";
 
 type ValConfig = {
@@ -97,7 +96,7 @@ class ViewScroller {
     }
 
     private dispatchScrollEvent = debounce(({x, y}: {x: number, y: number}) => {
-        this.manager.room?.dispatchMagixEvent(ScrollerScrollEventType, {appId: this.appId, x, y})
+        this.manager.appManager?.store?.setViewScrollChange({ appId: this.appId, x, y })
     }, 200)
 
     private scroll(): void {
@@ -116,7 +115,7 @@ class ViewScroller {
     }
 
     private setAttribute() {
-        console.log('window manager scroll readonly', this.manager.readonly || WindowManager.appReadonly)
+        console.log(`${logFirstTag} PageScrollerAttributeField Set`, JSON.stringify(this.crood.value))
         if (WindowManager.appReadonly || this.manager.readonly) return;
 
         const currentAttribute = this.manager.getAttributesValue([PageScrollerAttributeField]);
