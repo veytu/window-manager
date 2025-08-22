@@ -3,6 +3,7 @@ import { SideEffectManager } from "side-effect-manager";
 import { logFirstTag, WindowManager } from "..";
 import { type CallbackManager, createCallbackManager } from "../Utils/callbacks";
 import { debounce, isNumber } from "lodash";
+import { Fields } from "../AttributesDelegate";
 
 type ValConfig = {
     $crood: Val<InternalCoord>;
@@ -18,8 +19,6 @@ export type ScrollCoord = {
     x?: number;
     y?: number;
 };
-
-export const PageScrollerAttributeField = "scrollData";
 
 // coord [0,1]; 0 is top, 1 is bottom;
 // ex. scrollTop element.scrollHeight - element.clientHeight = maxScrollTop;
@@ -43,6 +42,8 @@ class ViewScroller {
     private baseScrollLeft: number = 0;
     protected sizeObserver: ResizeObserver
     protected callbackManager: CallbackManager
+    private _isInternalUpdate: boolean = false;
+    private _isRemoteSync: boolean = false; // 添加远端同步标志位
 
     constructor(config: ViewScrollerConfig) {
         this._sideEffect = new SideEffectManager();
@@ -70,7 +71,10 @@ class ViewScroller {
         this.sizeObserver.observe(this._scrollingElement)
         this.sizeObserver.observe(this._scrollingElement.firstElementChild!)
         this.crood.reaction(() => {
-            this.scroll();
+            // 添加标志位防止循环
+            if (!this._isInternalUpdate) {
+                this.scroll();
+            }
         })
 
         setTimeout(() => {
@@ -90,12 +94,30 @@ class ViewScroller {
     private onScroll() {
         console.log('window manager scroll readonly', this.manager.readonly || WindowManager.appReadonly)
         if (this.manager.readonly || WindowManager.appReadonly) return
+        
+        // 如果是内部更新触发的滚动，不处理
+        if (this._isInternalUpdate) return;
+        
+        // 如果是远端同步触发的滚动，也不处理（避免循环）
+        if (this._isRemoteSync) return;
+        
         const {x, y} = this.calcLocalToCoord(this.getLocalCoord())
 
         this.dispatchScrollEvent({x, y})
     }
 
     private dispatchScrollEvent = debounce(({x, y}: {x: number, y: number}) => {
+        console.log(`${logFirstTag} ViewScrollChange Dispatch Scroll Event`, {appId: this.appId, x, y})
+        
+        // 检查数据是否真的发生了变化
+        const currentData = this.manager.appManager?.store?.getViewScrollChange();
+        if (currentData && currentData.appId === this.appId && 
+            Math.abs(currentData.x - x) < 0.01 && Math.abs(currentData.y - y) < 0.01) {
+            console.log(`${logFirstTag} ViewScrollChange Skip - No significant change`);
+            return;
+        }
+        
+        // 更新数据（会自动同步到远端）
         this.manager.appManager?.store?.setViewScrollChange({ appId: this.appId, x, y })
     }, 200)
 
@@ -107,34 +129,36 @@ class ViewScroller {
     }
 
     public setCoord(position: ScrollCoord): void {
-        this.crood.setValue({
-            x: isValidNumber(position.x) ? position.x! : this.crood.value.x,
-            y: isValidNumber(position.y) ? position.y! : this.crood.value.y
-        });
-        this.setAttribute();
-    }
-
-    private setAttribute() {
-        console.log(`${logFirstTag} PageScrollerAttributeField Set`, JSON.stringify(this.crood.value))
-        if (WindowManager.appReadonly || this.manager.readonly) return;
-
-        const currentAttribute = this.manager.getAttributesValue([PageScrollerAttributeField]);
-        if (currentAttribute) {
-            this.manager.updateAttributes([PageScrollerAttributeField], {
-                ...currentAttribute,
-                [this.appId]: this.crood.value,
+        this._isInternalUpdate = true;
+        console.log(`${logFirstTag} ViewScrollChange SetCoord`, JSON.stringify(position))
+        try {
+            this.crood.setValue({
+                x: isValidNumber(position.x) ? position.x! : this.crood.value.x,
+                y: isValidNumber(position.y) ? position.y! : this.crood.value.y
             });
-        } else {
-            this.manager.safeSetAttributes({
-                [PageScrollerAttributeField]: { [this.appId]: this.crood.value },
-            });
+        } finally {
+            this._isInternalUpdate = false;
         }
     }
 
-    private getAttribute() {
-        const currentAttribute = this.manager.getAttributesValue([PageScrollerAttributeField]);
+    // 添加远端同步方法
+    public setCoordFromRemote(position: ScrollCoord): void {
+        this._isRemoteSync = true;
+        console.log(`${logFirstTag} ViewScrollChange SetCoordFromRemote`, JSON.stringify(position))
+        try {
+            this.crood.setValue({
+                x: isValidNumber(position.x) ? position.x! : this.crood.value.x,
+                y: isValidNumber(position.y) ? position.y! : this.crood.value.y
+            });
+        } finally {
+            this._isRemoteSync = false;
+        }
+    }
 
-        return currentAttribute?.[this.appId] || { x: 0, y: 0 };
+
+    private getAttribute() {
+        const currentAttribute = this.manager.appManager?.store?.getViewScrollChange() || { x: 0, y: 0 };
+        return currentAttribute;
     }
 
     private calcCoordToLocal(): InternalCoord {

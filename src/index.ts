@@ -71,15 +71,20 @@ import { isAndroid, isIOS } from "./Utils/environment";
 export * from "./View/IframeBridge";
 
 // 防循环工具函数
-function createAntiLoopAutorun(fn: () => void) {
+function createAntiLoopAutorun(fn: () => void, name?: string) {
     let isUpdating = false;
     return autorun(() => {
-        if (isUpdating) return;
+        if (isUpdating) {
+            console.log(`${logFirstTag} ${name || 'Autorun'} Skipped - Already updating`);
+            return;
+        }
         isUpdating = true;
         try {
+            console.log(`${logFirstTag} ${name || 'Autorun'} Executing`);
             fn();
         } finally {
             isUpdating = false;
+            console.log(`${logFirstTag} ${name || 'Autorun'} Completed`);
         }
     });
 }
@@ -345,7 +350,7 @@ export class WindowManager
                     console.log(`${logFirstTag} Scale Target`, JSON.stringify(data))
                     manager?._setScale({ appId, scale: currentScale },true);
                 }
-            });
+            }, 'Scale');
         });
         manager.appManager?.refresher?.add(Fields.LaserPointerActive, () => {
             console.log(`${logFirstTag} LaserPointerActive Register Listener`)
@@ -353,7 +358,7 @@ export class WindowManager
                 const data = get(manager!.appManager!.attributes, Fields.LaserPointerActive);
                 console.log(`${logFirstTag} LaserPointerActive Target`, JSON.stringify(data))
                 manager?._setLaserPointer(data);
-            });
+            }, 'LaserPointerActive');
         });
         manager.appManager?.refresher?.add(Fields.ViewScrollChange, () => {
             console.log(`${logFirstTag} ViewScrollChange Register Listener`)
@@ -361,9 +366,10 @@ export class WindowManager
                 const data = get(manager!.appManager!.attributes, Fields.ViewScrollChange);
                 if(data){
                     console.log(`${logFirstTag} ViewScrollChange Target`, JSON.stringify(data))
+                    // 发送到本地事件
                     internalEmitter.emit(ScrollerScrollEventType, data);
                 }
-            });
+            }, 'ViewScrollChange');
         });
         manager.appManager?.refresher?.add(Fields.MainViewBackgroundInfo, () => {
             console.log(`${logFirstTag} MainViewBackgroundInfo Register Listener`)
@@ -375,7 +381,7 @@ export class WindowManager
                 }else if(data.color.length > 0){
                     manager?._setBackgroundColor(data.color)
                 }
-            });
+            }, 'MainViewBackgroundInfo');
         });
 
         internalEmitter.on("playgroundSizeChange", () => {
@@ -1235,10 +1241,12 @@ export class WindowManager
         if (newScale < 1) {
             newScale = 1;
         }
-        if(newScale!== this.getScale()?.[appId]){
+        
+        const currentScale = this.getScale()?.[appId];
+        if(newScale !== currentScale){
             console.log(`${logFirstTag} Scale Set`, {appId, newScale},isNumber(newScale),this.canOperate)
+            // 只更新数据，不调用 _setScale，让 autorun 来处理 UI 更新
             this.safeUpdateAttributes([Fields.Scale,appId], newScale);
-            this._setScale({appId, scale: newScale});
         }
     }
 
@@ -1506,6 +1514,7 @@ export class WindowManager
         if (!!this.attributes[Fields.Scale]) {
             const scaleMap: Record<string, number> = this.attributes[Fields.Scale];
             Object.keys(scaleMap).forEach(item => {
+                // 初始化时直接调用 _setScale，不更新数据
                 this._setScale({ appId: item, scale: scaleMap[item] }, true);
             });
         }
