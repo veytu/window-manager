@@ -130,13 +130,15 @@ export class BoxManager {
         });
 
         // events.on 的值则会根据 skipUpdate 来决定是否触发回调
-        this.teleBoxManager.events.on("minimized", minimizedBoxes => {
-            this.context.safeSetAttributes({ minimizedBoxes: JSON.stringify(minimizedBoxes) });
-            callbacks.emit("onMinimized", JSON.stringify(minimizedBoxes));
+        this.teleBoxManager.events.on("minimized", (value: any) => {
+            console.log('TelBox Options Window Manager Receive Minimized', value)
+            // this.context.safeSetAttributes({ minimizedBoxes: JSON.stringify(minimizedBoxes) });
+            // callbacks.emit("onMinimized", JSON.stringify(minimizedBoxes));
         });
-        this.teleBoxManager.events.on("maximized", maximizedBoxes => {
-            this.context.safeSetAttributes({ maximizedBoxes: JSON.stringify(maximizedBoxes) });
-            callbacks.emit("onMaximized", JSON.stringify(maximizedBoxes));
+        this.teleBoxManager.events.on("maximized", (value: any) => {
+            console.log('TelBox Options Window Manager Receive Maximized', value)
+            // this.context.safeSetAttributes({ maximizedBoxes: JSON.stringify(maximizedBoxes) });
+            // callbacks.emit("onMaximized", JSON.stringify(maximizedBoxes));
         });
         this.teleBoxManager.events.on("removed", boxes => {
             boxes.forEach(box => {
@@ -161,6 +163,7 @@ export class BoxManager {
         );
         this.teleBoxManager.events.on("focused", box => {
             if (box) {
+                console.log('TelBox Options Window Manager Receive Focused', box,this.canOperate)
                 if (this.canOperate) {
                     boxEmitter.emit("focus", { appId: box.id });
                 } else {
@@ -169,6 +172,7 @@ export class BoxManager {
             }
         });
         this.teleBoxManager.events.on("z_index", box => {
+            console.log('TelBox Options Window Manager Receive ZIndex', box)
             this.context.updateAppState(box.id, AppAttributes.ZIndex, box.zIndex);
             callbacks.emit("appZIndexChange", { appId: box.id, box: box });
         });

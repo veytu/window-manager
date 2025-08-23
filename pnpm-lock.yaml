@@ -16,7 +16,7 @@ importers:
         version: https://codeload.github.com/veytu/app-plyr/tar.gz/23b9dbb2faf38cdc44ee2a7671f311ddec90cc19
       '@netless/telebox-insider':
         specifier: github:veytu/telebox-insider
-        version: https://codeload.github.com/veytu/telebox-insider/tar.gz/183283cdbde2bdd1d56cb761cda33fb5c44c60ce
+        version: https://codeload.github.com/veytu/telebox-insider/tar.gz/ef15606c0def1ab4b1b63d93004e509011d02282
       emittery:
         specifier: ^0.9.2
         version: 0.9.2
@@ -384,8 +384,8 @@ packages:
   '@netless/canvas-polyfill@0.0.4':
     resolution: {integrity: sha512-7NzsJrba0R/mq/l10SkIZQwbrNVJyPxZYrjK6xL3Ts732iWAVuS2UB0u3s6iGeUVcqV39A679yva8APWRl4M0A==}
 
-  '@netless/telebox-insider@https://codeload.github.com/veytu/telebox-insider/tar.gz/183283cdbde2bdd1d56cb761cda33fb5c44c60ce':
-    resolution: {tarball: https://codeload.github.com/veytu/telebox-insider/tar.gz/183283cdbde2bdd1d56cb761cda33fb5c44c60ce}
+  '@netless/telebox-insider@https://codeload.github.com/veytu/telebox-insider/tar.gz/ef15606c0def1ab4b1b63d93004e509011d02282':
+    resolution: {tarball: https://codeload.github.com/veytu/telebox-insider/tar.gz/ef15606c0def1ab4b1b63d93004e509011d02282}
     version: 0.2.683
 
   '@netless/xml-js@1.6.16':
@@ -3718,7 +3718,7 @@ snapshots:
 
   '@netless/canvas-polyfill@0.0.4': {}
 
-  '@netless/telebox-insider@https://codeload.github.com/veytu/telebox-insider/tar.gz/183283cdbde2bdd1d56cb761cda33fb5c44c60ce': {}
+  '@netless/telebox-insider@https://codeload.github.com/veytu/telebox-insider/tar.gz/ef15606c0def1ab4b1b63d93004e509011d02282': {}
 
   '@netless/xml-js@1.6.16': {}
 

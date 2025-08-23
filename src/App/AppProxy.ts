@@ -31,6 +31,7 @@ import type { PageRemoveService, PageState } from "../Page";
 import { calculateNextIndex } from "../Page";
 import { boxEmitter } from "../BoxEmitter";
 import { callbacks } from "../callback";
+import { TELE_BOX_STATE } from "../BoxManager";
 
 export type AppEmitter = Emittery<AppEmitterEvent>;
 

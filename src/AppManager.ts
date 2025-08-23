@@ -343,14 +343,16 @@ export class AppManager {
         this.addAppCloseListener();
         this.refresher.add("maximizedBoxes", () => {
             return autorun(() => {
+                console.log('TelBox Window Manager Add Max Listener')
                 const maximized = this.attributes.maximizedBoxes;
-                this.boxManager?.setMaximized(maximized)
+                // this.boxManager?.setMaximized(maximized)
             });
         });
         this.refresher.add("minimizedBoxes", () => {
             return autorun(() => {
+                console.log('TelBox Window Manager Add Min Listener')
                 const minimized = this.attributes.minimizedBoxes;
-                this.onMinimized(minimized);
+                // this.onMinimized(minimized);
             });
         });
         this.refresher.add("mainViewIndex", () => {

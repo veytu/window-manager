@@ -95,8 +95,6 @@ export type WindowMangerAttributes = {
     boxState: TELE_BOX_STATE;
     maximized?: boolean;
     minimized?: boolean;
-    maximizedBoxes?: string;
-    minimizedBoxes?: string;
     [key: string]: any;
 };
 
@@ -389,6 +387,13 @@ export class WindowManager
                     manager?._setBackgroundColor(data.color)
                 }
             }, 'MainViewBackgroundInfo');
+        });
+        manager.appManager?.refresher?.add(Fields.boxsStatus, () => {
+            console.log(`${logFirstTag} TelBox BoxsStatus Register Listener`)
+            return createAntiLoopAutorun(() => {
+                const data = get(manager!.appManager!.attributes, Fields.boxsStatus);
+                console.log(`${logFirstTag} TelBox BoxsStatus Target`, JSON.stringify(data))
+            }, 'BoxsStatus');
         });
 
         internalEmitter.on("playgroundSizeChange", () => {
