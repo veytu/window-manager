@@ -182,14 +182,26 @@ export class AppProxy implements PageRemoveService {
                 let boxInitState: AppInitState | undefined;
                 if (!skipUpdate) {
                     boxInitState = this.getAppInitState(appId);
-                    const maximized = this.boxManager?.teleBoxManager?.maximizedBoxes?.includes(appId)
-                    const minimized = this.boxManager?.teleBoxManager?.minimizedBoxes?.includes(appId)
-                    Object.assign((boxInitState || {}), { maximized, minimized });
-                    this.boxManager?.updateBoxState(boxInitState);
+                    // 从boxsStatus获取状态
+                    const boxsStatus = this.store.getBoxsStatus();
+                    if (boxsStatus) {
+                        const maximized = boxsStatus[appId] === TELE_BOX_STATE.Maximized;
+                        const minimized = boxsStatus[appId] === TELE_BOX_STATE.Minimized;
+                        Object.assign((boxInitState || {}), { maximized, minimized });
+                        this.boxManager?.updateBoxState(boxInitState);
 
-                    const boxes = this.boxManager?.teleBoxManager.maximizedBoxes.filter(box => !this?.boxManager?.teleBoxManager.minimizedBoxes.includes(box))
-                    if (boxes?.length) {
-                        this.boxManager?.teleBoxManager?.makeBoxTopFromMaximized()
+                        // 获取只最大化但未最小化的box
+                        const maximizedBoxIds = Object.entries(boxsStatus)
+                            .filter(([_, status]) => status === TELE_BOX_STATE.Maximized)
+                            .map(([appId, _]) => appId);
+                        const minimizedBoxIds = Object.entries(boxsStatus)
+                            .filter(([_, status]) => status === TELE_BOX_STATE.Minimized)
+                            .map(([appId, _]) => appId);
+                        const boxes = maximizedBoxIds.filter(boxId => !minimizedBoxIds.includes(boxId));
+                        
+                        if (boxes?.length) {
+                            this.boxManager?.teleBoxManager?.makeBoxTopFromMaximized()
+                        }
                     }
                     
                 }

@@ -37,7 +37,7 @@ import {
     putScenes,
     wait,
 } from "./Utils/Common";
-import type { TELE_BOX_STATE, BoxManager } from "./BoxManager";
+import { TELE_BOX_STATE, BoxManager } from "./BoxManager";
 import * as Errors from "./Utils/error";
 import type { Apps, Position } from "./AttributesDelegate";
 import {
@@ -885,9 +885,12 @@ export class WindowManager
     }
 
     public getTopMaxBoxId() {
-        const boxes = this.appManager?.boxManager?.teleBoxManager.maximizedBoxes.filter(
-            box => !this.appManager?.boxManager?.teleBoxManager.minimizedBoxes.includes(box)
-        );
+        const boxsStatus = this.appManager?.store.getBoxsStatus();
+        if (!boxsStatus) return undefined;
+        
+        const maximizedBoxes = Object.entries(boxsStatus).filter(([_,value])=> value === TELE_BOX_STATE.Maximized).map(([boxId])=> boxId);
+        const minimizedBoxes = Object.entries(boxsStatus).filter(([_,value])=> value === TELE_BOX_STATE.Minimized).map(([boxId])=> boxId);
+        const boxes = maximizedBoxes.filter((boxId)=> !minimizedBoxes.includes(boxId));
         if (!boxes?.length) return undefined;
         return boxes.reduce((a, b) =>
             Number(this.appManager?.boxManager?.getBox(a)?._zIndex$?.value) >

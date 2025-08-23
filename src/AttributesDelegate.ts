@@ -120,7 +120,7 @@ export class AttributesDelegate {
     }
 
     public getLastNotMinimizedBoxStatus(): TELE_BOX_NOT_MINIMIZED_STATE | undefined {
-        return get(this.attributes, [Fields.lastNotMinimizedBoxsStatus, this.getLastNotMinimizedBoxsStatus()]);
+        return get(this.attributes, [Fields.lastNotMinimizedBoxsStatus]);
     }
 
     public setLastNotMinimizedBoxStatus(id: string, status: TELE_BOX_NOT_MINIMIZED_STATE | undefined) {

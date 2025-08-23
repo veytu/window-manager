@@ -12,7 +12,6 @@ import type {
     TeleBoxColorScheme,
     TeleBoxRect,
     TeleBoxConfig,
-    TELE_BOX_NOT_MINIMIZED_STATE,
 } from "@netless/telebox-insider";
 import type Emittery from "emittery";
 import type { NetlessApp } from "./typings";
@@ -21,7 +20,11 @@ import type { CallbacksType } from "./callback";
 import type { EmitterType } from "./InternalEmitter";
 import { isAndroid, isIOS } from "./Utils/environment";
 
-export { TELE_BOX_STATE,TELE_BOX_NOT_MINIMIZED_STATE };
+// 定义本地类型
+type TELE_BOX_NOT_MINIMIZED_STATE = "normal" | "maximized";
+
+export { TELE_BOX_STATE };
+export type { TELE_BOX_NOT_MINIMIZED_STATE };
 
 export type CreateBoxParams = {
     appId: string;
@@ -115,7 +118,7 @@ export class BoxManager {
         });
 
         // ppt 在最小化后刷新恢复正常大小，拿不到正确的宽高，需要手动触发一下窗口的 resize
-        this.teleBoxManager._minimizedBoxes$.reaction(() => {
+        this.teleBoxManager.events.on("minimized", () => {
             setTimeout(() => {
                 const offset = 0.0001 * (Math.random() > 0.5 ? 1 : -1);
                 this.teleBoxManager.boxes.forEach(box => {
@@ -189,11 +192,19 @@ export class BoxManager {
     }
 
     public get maximized() {
-        return this.teleBoxManager._maximizedBoxes$.value;
+        const boxsStatus = this.context.manager.appManager?.store.getBoxsStatus();
+        if (!boxsStatus) return [];
+        return Object.entries(boxsStatus)
+            .filter(([_, status]) => status === TELE_BOX_STATE.Maximized)
+            .map(([appId, _]) => appId);
     }
 
     public get minimized() {
-        return this.teleBoxManager._minimizedBoxes$.value;
+        const boxsStatus = this.context.manager.appManager?.store.getBoxsStatus();
+        if (!boxsStatus) return [];
+        return Object.entries(boxsStatus)
+            .filter(([_, status]) => status === TELE_BOX_STATE.Minimized)
+            .map(([appId, _]) => appId);
     }
 
     public get darkMode() {
@@ -401,7 +412,14 @@ export class BoxManager {
     public setMaximized(maximized?: string, skipUpdate = true): void {
         if (!isString(maximized)) return;
         try {
-            this.teleBoxManager.setMaximizedBoxes(JSON.parse(maximized), skipUpdate);
+            const newBoxsStatus = {
+                ...this.manager.appManager?.store.getBoxsStatus(),
+                [maximized]: TELE_BOX_STATE.Maximized
+            }
+            if(!skipUpdate){
+                this.manager.appManager?.store.setBoxsStatus(newBoxsStatus);
+            }
+            this.teleBoxManager.setBoxesStatus(newBoxsStatus);
         } catch (e) {
             console.log(e);
         }
@@ -410,7 +428,14 @@ export class BoxManager {
     public setMinimized(minimized?: string, skipUpdate = true) {
         if (!isString(minimized)) return;
         try {
-            this.teleBoxManager.setMinimizedBoxes(JSON.parse(minimized), skipUpdate);
+            const newBoxsStatus = {
+                ...this.manager.appManager?.store.getBoxsStatus(),
+                [minimized]: TELE_BOX_STATE.Minimized
+            }
+            if(!skipUpdate){
+                this.manager.appManager?.store.setBoxsStatus(newBoxsStatus);
+            }
+            this.teleBoxManager.setBoxesStatus(newBoxsStatus);
         } catch (e) {
             console.log(e);
         }
