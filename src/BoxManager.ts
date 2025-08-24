@@ -128,14 +128,17 @@ export class BoxManager {
 
         // events.on 的值则会根据 skipUpdate 来决定是否触发回调
         this.teleBoxManager.events.on("minimized", minimizedBoxes => {
+            console.log('[TeleBox] BoxManager - Minimized Event Received', minimizedBoxes)
             this.context.safeSetAttributes({ minimizedBoxes: JSON.stringify(minimizedBoxes) });
             callbacks.emit("onMinimized", JSON.stringify(minimizedBoxes));
         });
         this.teleBoxManager.events.on("maximized", maximizedBoxes => {
+            console.log('[TeleBox] BoxManager - Maximized Event Received', maximizedBoxes)
             this.context.safeSetAttributes({ maximizedBoxes: JSON.stringify(maximizedBoxes) });
             callbacks.emit("onMaximized", JSON.stringify(maximizedBoxes));
         });
         this.teleBoxManager.events.on("removed", boxes => {
+            console.log('[TeleBox] BoxManager - Removed Event Received', boxes)
             boxes.forEach(box => {
                 boxEmitter.emit("close", { appId: box.id });
             });
@@ -399,20 +402,26 @@ export class BoxManager {
     }
 
     public setMaximized(maximized?: string, skipUpdate = true): void {
+        console.log('[TeleBox] BoxManager SetMaximized Called', { maximized, skipUpdate })
         if (!isString(maximized)) return;
         try {
-            this.teleBoxManager.setMaximizedBoxes(JSON.parse(maximized), skipUpdate);
+            const maximizedBoxes = JSON.parse(maximized)
+            console.log('[TeleBox] BoxManager SetMaximized - Parsed Boxes', maximizedBoxes)
+            this.teleBoxManager.setMaximizedBoxes(maximizedBoxes, skipUpdate);
         } catch (e) {
-            console.log(e);
+            console.log('[TeleBox] BoxManager SetMaximized - Error', e);
         }
     }
 
     public setMinimized(minimized?: string, skipUpdate = true) {
+        console.log('[TeleBox] BoxManager SetMinimized Called', { minimized, skipUpdate })
         if (!isString(minimized)) return;
         try {
-            this.teleBoxManager.setMinimizedBoxes(JSON.parse(minimized), skipUpdate);
+            const minimizedBoxes = JSON.parse(minimized)
+            console.log('[TeleBox] BoxManager SetMinimized - Parsed Boxes', minimizedBoxes)
+            this.teleBoxManager.setMinimizedBoxes(minimizedBoxes, skipUpdate);
         } catch (e) {
-            console.log(e);
+            console.log('[TeleBox] BoxManager SetMinimized - Error', e);
         }
     }
 

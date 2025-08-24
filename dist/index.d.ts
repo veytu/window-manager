@@ -1,10 +1,11 @@
 import * as lodash from 'lodash';
 import * as white_web_sdk from 'white-web-sdk';
-import { RoomMember, View, ApplianceNames, Camera, Size, SceneDefinition, SceneState, DisplayerState, ViewVisionMode, CameraState, Event as Event$1, Scope, EventPhase, MagixEventListenerOptions as MagixEventListenerOptions$1, toJS, listenUpdated, unlistenUpdated, listenDisposed, unlistenDisposed, Room, ViewMode, Displayer, MemberState, AnimationMode, InvisiblePlugin, InvisiblePluginContext, Player, Rectangle, Point, CameraBound, ImageInformation } from 'white-web-sdk';
+import { RoomMember, View, ApplianceNames, Event as Event$1, Scope, EventPhase, MagixEventListenerOptions as MagixEventListenerOptions$1, SceneDefinition, toJS, listenUpdated, unlistenUpdated, listenDisposed, unlistenDisposed, Room, SceneState, DisplayerState, ViewVisionMode, CameraState, Camera, Size, ViewMode, Displayer, MemberState, AnimationMode, InvisiblePlugin, InvisiblePluginContext, Player, Rectangle, Point, CameraBound, ImageInformation } from 'white-web-sdk';
 export { AnimationMode, Displayer, Player, Room, SceneDefinition, SceneState, View } from 'white-web-sdk';
-import Emittery from 'emittery';
-import { TELE_BOX_STATE, TeleBoxRect, TeleBoxColorScheme, ReadonlyTeleBox, TeleBoxManager, TeleBoxManagerUpdateConfig, TeleBoxConfig, TeleBoxState } from '@netless/telebox-insider';
+import * as _netless_telebox_insider from '@netless/telebox-insider';
+import { TELE_BOX_STATE, ReadonlyTeleBox, TeleBoxRect, TeleBoxColorScheme, TeleBoxManager, TeleBoxManagerUpdateConfig, TeleBoxConfig, TELE_BOX_NOT_MINIMIZED_STATE, TeleBoxState } from '@netless/telebox-insider';
 export { ReadonlyTeleBox, TeleBoxRect } from '@netless/telebox-insider';
+import Emittery from 'emittery';
 
 declare enum Events {
     AppMove = "AppMove",
@@ -59,7 +60,7 @@ declare class CursorManager {
     private canMoveCursor;
     setupWrapper(wrapper: HTMLElement): void;
     setMainViewDivElement(div: HTMLDivElement): void;
-    get boxState(): any;
+    get boxState(): _netless_telebox_insider.TELE_BOX_STATE;
     get focusView(): View | undefined;
     private mouseMoveListener_;
     private mouseMoveTimer;
@@ -114,74 +115,37 @@ declare class Cursor {
     hide(): void;
 }
 
-type Apps = {
-    [key: string]: AppSyncAttributes;
-};
-type Position = {
+type BoxMovePayload = {
+    appId: string;
     x: number;
     y: number;
-    type: PositionType;
-    id?: string;
 };
-type PositionType = "main" | "app";
-type StoreContext = {
-    getAttributes: () => any;
-    safeUpdateAttributes: (keys: string[], value: any) => void;
-    safeSetAttributes: (attributes: any) => void;
+type BoxFocusPayload = {
+    appId: string;
 };
-type ICamera = Camera & {
-    id: string;
-};
-type ISize = Size & {
-    id: string;
-};
-declare class AttributesDelegate {
-    private context;
-    constructor(context: StoreContext);
-    setContext(context: StoreContext): void;
-    get attributes(): any;
-    apps(): Apps;
-    get focus(): string | undefined;
-    getAppAttributes(id: string): AppSyncAttributes;
-    getAppState(id: string): any;
-    getMaximized(): any;
-    getMinimized(): any;
-    setupAppAttributes(params: AddAppParams, id: string, isDynamicPPT: boolean): void;
-    updateAppState(appId: string, stateName: AppAttributes, state: any): void;
-    cleanAppAttributes(id: string): void;
-    cleanFocus(): void;
-    getAppSceneIndex(id: string): any;
-    getAppScenePath(id: string): any;
-    getMainViewScenePath(): string | undefined;
-    getMainViewSceneIndex(): any;
-    getBoxState(): any;
-    setMainViewScenePath(scenePath: string): void;
-    setMainViewSceneIndex(index: number): void;
-    getMainViewCamera(): MainViewCamera;
-    getMainViewSize(): MainViewSize;
-    setMainViewCamera(camera: ICamera): void;
-    setMainViewSize(size: ISize): void;
-    setMainViewCameraAndSize(camera: ICamera, size: ISize): void;
-    setAppFocus: (appId: string, focus: boolean) => void;
-    updateCursor(uid: string, position: Position): void;
-    updateCursorState(uid: string, cursorState: string | undefined): void;
-    getCursorState(uid: string): any;
-    cleanCursor(uid: string): void;
-    setMainViewFocusPath(mainView: View): void;
-    getIframeBridge(): any;
-    setIframeBridge(data: any): void;
-}
-type MainViewSize = {
-    id: string;
+type BoxResizePayload = {
+    appId: string;
     width: number;
     height: number;
+    x?: number;
+    y?: number;
 };
-type MainViewCamera = {
-    id: string;
-    centerX: number;
-    centerY: number;
-    scale: number;
+type BoxClosePayload = {
+    appId: string;
+    error?: Error;
 };
+type BoxStateChangePayload = {
+    appId: string;
+    state: TELE_BOX_STATE;
+};
+type BoxEvent = {
+    move: BoxMovePayload;
+    focus: BoxFocusPayload;
+    resize: BoxResizePayload;
+    close: BoxClosePayload;
+    boxStateChange: BoxStateChangePayload;
+};
+type BoxEmitterType = Emittery<BoxEvent>;
 
 type StorageEventListener<T> = (event: T) => void;
 declare class StorageEvent<TMessage> {
@@ -238,37 +202,33 @@ declare class Storage<TState extends Record<string, any> = any> implements Stora
     private _updateProperties;
 }
 
-type BoxMovePayload = {
-    appId: string;
-    x: number;
-    y: number;
-};
-type BoxFocusPayload = {
-    appId: string;
-};
-type BoxResizePayload = {
-    appId: string;
-    width: number;
-    height: number;
-    x?: number;
-    y?: number;
-};
-type BoxClosePayload = {
-    appId: string;
-    error?: Error;
-};
-type BoxStateChangePayload = {
-    appId: string;
-    state: TELE_BOX_STATE;
-};
-type BoxEvent = {
-    move: BoxMovePayload;
-    focus: BoxFocusPayload;
-    resize: BoxResizePayload;
-    close: BoxClosePayload;
-    boxStateChange: BoxStateChangePayload;
-};
-type BoxEmitterType = Emittery<BoxEvent>;
+interface MagixEventListenerOptions extends MagixEventListenerOptions$1 {
+    /**
+     * Rapid emitted callbacks will be slowed down to this interval (in ms).
+     */
+    fireInterval?: number;
+    /**
+     * If `true`, sent events will reach self-listeners after committed to server.
+     * Otherwise the events will reach self-listeners immediately.
+     */
+    fireSelfEventAfterCommit?: boolean;
+}
+interface MagixEventMessage<TPayloads = any, TEvent extends MagixEventTypes<TPayloads> = MagixEventTypes<TPayloads>> extends Omit<Event$1, "scope" | "phase"> {
+    /** Event name */
+    event: TEvent;
+    /** Event Payload */
+    payload: TPayloads[TEvent];
+    /** Whiteboard ID of the client who dispatched the event. It will be AdminObserverId for system events. */
+    authorId: number;
+    scope: `${Scope}`;
+    phase: `${EventPhase}`;
+}
+type MagixEventTypes<TPayloads = any> = Extract<keyof TPayloads, string>;
+type MagixEventDispatcher<TPayloads = any> = <TEvent extends MagixEventTypes<TPayloads> = MagixEventTypes<TPayloads>>(event: TEvent, payload: TPayloads[TEvent]) => void;
+type MagixEventHandler<TPayloads = any, TEvent extends MagixEventTypes<TPayloads> = MagixEventTypes<TPayloads>> = (message: MagixEventMessage<TPayloads, TEvent>) => void;
+type MagixEventListenerDisposer = () => void;
+type MagixEventAddListener<TPayloads = any> = <TEvent extends MagixEventTypes<TPayloads> = MagixEventTypes<TPayloads>>(event: TEvent, handler: MagixEventHandler<TPayloads, TEvent>, options?: MagixEventListenerOptions | undefined) => MagixEventListenerDisposer;
+type MagixEventRemoveListener<TPayloads = any> = <TEvent extends MagixEventTypes<TPayloads> = MagixEventTypes<TPayloads>>(event: TEvent, handler?: MagixEventHandler<TPayloads, TEvent>) => void;
 
 type AddPageParams = {
     after?: boolean;
@@ -292,6 +252,137 @@ interface PageRemoveService {
 }
 
 declare const calculateNextIndex: (index: number, pageState: PageState) => number;
+
+declare class AppContext<TAttributes extends {} = any, TMagixEventPayloads = any, TAppOptions = any> implements PageController {
+    private manager;
+    private boxManager;
+    appId: string;
+    private appProxy;
+    private appOptions?;
+    readonly emitter: Emittery<AppEmitterEvent<TAttributes>>;
+    readonly mobxUtils: {
+        autorun: any;
+        reaction: any;
+        toJS: typeof toJS;
+    };
+    readonly objectUtils: {
+        listenUpdated: typeof listenUpdated;
+        unlistenUpdated: typeof unlistenUpdated;
+        listenDisposed: typeof listenDisposed;
+        unlistenDisposed: typeof unlistenDisposed;
+    };
+    private store;
+    readonly isAddApp: boolean;
+    readonly isReplay: boolean;
+    constructor(manager: AppManager, boxManager: BoxManager, appId: string, appProxy: AppProxy, appOptions?: (TAppOptions | (() => TAppOptions)) | undefined);
+    getDisplayer: () => white_web_sdk.Displayer<white_web_sdk.DisplayerCallbacks>;
+    /** @deprecated Use context.storage.state instead. */
+    getAttributes: () => TAttributes | undefined;
+    getScenes: () => SceneDefinition[] | undefined;
+    getView: () => View | undefined;
+    mountView: (dom: HTMLElement) => void;
+    getInitScenePath: () => string | undefined;
+    /** Get App writable status. */
+    getIsWritable: () => boolean;
+    getIsAppReadonly: () => boolean;
+    /** Get the App Window UI box. */
+    getBox: () => ReadonlyTeleBox;
+    getRoom: () => Room | undefined;
+    /** @deprecated Use context.storage.setState instead. */
+    setAttributes: (attributes: TAttributes) => void;
+    /** @deprecated Use context.storage.setState instead. */
+    updateAttributes: (keys: string[], value: any) => void;
+    setScenePath: (scenePath: string) => Promise<void>;
+    /** Get the local App options. */
+    getAppOptions: () => TAppOptions | undefined;
+    private _storage?;
+    /** Main Storage for attributes. */
+    get storage(): Storage<TAttributes>;
+    /**
+     * Create separated storages for flexible state management.
+     * @param storeId Namespace for the storage. Storages of the same namespace share the same data.
+     * @param defaultState Default state for initial storage creation.
+     * @returns
+     */
+    createStorage: <TState extends {}>(storeId: string, defaultState?: TState) => Storage<TState>;
+    /** Dispatch events to other clients (and self). */
+    dispatchMagixEvent: MagixEventDispatcher<TMagixEventPayloads>;
+    /** Listen to events from others clients (and self messages). */
+    addMagixEventListener: MagixEventAddListener<TMagixEventPayloads>;
+    /** Remove a Magix event listener. */
+    removeMagixEventListener: MagixEventRemoveListener<TMagixEventPayloads>;
+    /** PageController  */
+    nextPage: () => Promise<boolean>;
+    jumpPage: (index: number) => Promise<boolean>;
+    prevPage: () => Promise<boolean>;
+    addPage: (params?: AddPageParams) => Promise<void>;
+    removePage: (index?: number) => Promise<boolean>;
+    get pageState(): PageState;
+    get kind(): string;
+    /** Dispatch a local event to `manager.onAppEvent()`. */
+    dispatchAppEvent(type: string, value?: any): void;
+    get extendWrapper(): HTMLElement | undefined;
+}
+
+type AppEmitter = Emittery<AppEmitterEvent>;
+declare class AppProxy implements PageRemoveService {
+    private params;
+    private manager;
+    kind: string;
+    id: string;
+    scenePath?: string;
+    appEmitter: AppEmitter;
+    scenes?: SceneDefinition[];
+    private appListener;
+    private boxManager;
+    private appProxies;
+    private viewManager;
+    private store;
+    isAddApp: boolean;
+    private status;
+    private stateKey;
+    private _pageState;
+    private _prevFullPath;
+    appResult?: NetlessApp<any>;
+    appContext?: AppContext<any, any>;
+    constructor(params: BaseInsertParams, manager: AppManager, appId: string, isAddApp: boolean);
+    private initScenes;
+    get view(): View | undefined;
+    get viewIndex(): number | undefined;
+    get isWritable(): boolean;
+    get attributes(): any;
+    get appAttributes(): AppSyncAttributes;
+    getFullScenePath(): string | undefined;
+    private getFullScenePathFromScenes;
+    setFullPath(path: string): void;
+    baseInsertApp(skipUpdate?: boolean): Promise<{
+        appId: string;
+        app: NetlessApp;
+    }>;
+    get box(): ReadonlyTeleBox | undefined;
+    private setupApp;
+    private fixMobileSize;
+    private afterSetupApp;
+    onSeek(time: number): Promise<void>;
+    onReconnected(): Promise<void>;
+    onRemoveScene(scenePath: string): Promise<void>;
+    getAppInitState: (id: string) => AppInitState | undefined;
+    emitAppSceneStateChange(sceneState: SceneState): void;
+    emitAppIsWritableChange(): void;
+    private makeAppEventListener;
+    private appAttributesUpdateListener;
+    private setFocusScenePathHandler;
+    setScenePath(): void;
+    setViewFocusScenePath(): string | undefined;
+    private createView;
+    notifyPageStateChange: lodash.DebouncedFunc<() => void>;
+    get pageState(): PageState;
+    removeSceneByIndex(index: number): Promise<boolean>;
+    setSceneIndexWithoutSync(index: number): void;
+    setSceneIndex(index: number): void;
+    destroy(needCloseBox: boolean, cleanAttrs: boolean, skipUpdate: boolean, error?: Error): Promise<void>;
+    close(): Promise<void>;
+}
 
 declare class AppCreateError extends Error {
     message: string;
@@ -572,164 +663,92 @@ declare class BoxManager {
     destroy(): void;
 }
 
-interface MagixEventListenerOptions extends MagixEventListenerOptions$1 {
-    /**
-     * Rapid emitted callbacks will be slowed down to this interval (in ms).
-     */
-    fireInterval?: number;
-    /**
-     * If `true`, sent events will reach self-listeners after committed to server.
-     * Otherwise the events will reach self-listeners immediately.
-     */
-    fireSelfEventAfterCommit?: boolean;
-}
-interface MagixEventMessage<TPayloads = any, TEvent extends MagixEventTypes<TPayloads> = MagixEventTypes<TPayloads>> extends Omit<Event$1, "scope" | "phase"> {
-    /** Event name */
-    event: TEvent;
-    /** Event Payload */
-    payload: TPayloads[TEvent];
-    /** Whiteboard ID of the client who dispatched the event. It will be AdminObserverId for system events. */
-    authorId: number;
-    scope: `${Scope}`;
-    phase: `${EventPhase}`;
-}
-type MagixEventTypes<TPayloads = any> = Extract<keyof TPayloads, string>;
-type MagixEventDispatcher<TPayloads = any> = <TEvent extends MagixEventTypes<TPayloads> = MagixEventTypes<TPayloads>>(event: TEvent, payload: TPayloads[TEvent]) => void;
-type MagixEventHandler<TPayloads = any, TEvent extends MagixEventTypes<TPayloads> = MagixEventTypes<TPayloads>> = (message: MagixEventMessage<TPayloads, TEvent>) => void;
-type MagixEventListenerDisposer = () => void;
-type MagixEventAddListener<TPayloads = any> = <TEvent extends MagixEventTypes<TPayloads> = MagixEventTypes<TPayloads>>(event: TEvent, handler: MagixEventHandler<TPayloads, TEvent>, options?: MagixEventListenerOptions | undefined) => MagixEventListenerDisposer;
-type MagixEventRemoveListener<TPayloads = any> = <TEvent extends MagixEventTypes<TPayloads> = MagixEventTypes<TPayloads>>(event: TEvent, handler?: MagixEventHandler<TPayloads, TEvent>) => void;
-
-declare class AppContext<TAttributes extends {} = any, TMagixEventPayloads = any, TAppOptions = any> implements PageController {
-    private manager;
-    private boxManager;
-    appId: string;
-    private appProxy;
-    private appOptions?;
-    readonly emitter: Emittery<AppEmitterEvent<TAttributes>>;
-    readonly mobxUtils: {
-        autorun: any;
-        reaction: any;
-        toJS: typeof toJS;
-    };
-    readonly objectUtils: {
-        listenUpdated: typeof listenUpdated;
-        unlistenUpdated: typeof unlistenUpdated;
-        listenDisposed: typeof listenDisposed;
-        unlistenDisposed: typeof unlistenDisposed;
-    };
-    private store;
-    readonly isAddApp: boolean;
-    readonly isReplay: boolean;
-    constructor(manager: AppManager, boxManager: BoxManager, appId: string, appProxy: AppProxy, appOptions?: (TAppOptions | (() => TAppOptions)) | undefined);
-    getDisplayer: () => white_web_sdk.Displayer<white_web_sdk.DisplayerCallbacks>;
-    /** @deprecated Use context.storage.state instead. */
-    getAttributes: () => TAttributes | undefined;
-    getScenes: () => SceneDefinition[] | undefined;
-    getView: () => View | undefined;
-    mountView: (dom: HTMLElement) => void;
-    getInitScenePath: () => string | undefined;
-    /** Get App writable status. */
-    getIsWritable: () => boolean;
-    getIsAppReadonly: () => boolean;
-    /** Get the App Window UI box. */
-    getBox: () => ReadonlyTeleBox;
-    getRoom: () => Room | undefined;
-    /** @deprecated Use context.storage.setState instead. */
-    setAttributes: (attributes: TAttributes) => void;
-    /** @deprecated Use context.storage.setState instead. */
-    updateAttributes: (keys: string[], value: any) => void;
-    setScenePath: (scenePath: string) => Promise<void>;
-    /** Get the local App options. */
-    getAppOptions: () => TAppOptions | undefined;
-    private _storage?;
-    /** Main Storage for attributes. */
-    get storage(): Storage<TAttributes>;
-    /**
-     * Create separated storages for flexible state management.
-     * @param storeId Namespace for the storage. Storages of the same namespace share the same data.
-     * @param defaultState Default state for initial storage creation.
-     * @returns
-     */
-    createStorage: <TState extends {}>(storeId: string, defaultState?: TState) => Storage<TState>;
-    /** Dispatch events to other clients (and self). */
-    dispatchMagixEvent: MagixEventDispatcher<TMagixEventPayloads>;
-    /** Listen to events from others clients (and self messages). */
-    addMagixEventListener: MagixEventAddListener<TMagixEventPayloads>;
-    /** Remove a Magix event listener. */
-    removeMagixEventListener: MagixEventRemoveListener<TMagixEventPayloads>;
-    /** PageController  */
-    nextPage: () => Promise<boolean>;
-    jumpPage: (index: number) => Promise<boolean>;
-    prevPage: () => Promise<boolean>;
-    addPage: (params?: AddPageParams) => Promise<void>;
-    removePage: (index?: number) => Promise<boolean>;
-    get pageState(): PageState;
-    get kind(): string;
-    /** Dispatch a local event to `manager.onAppEvent()`. */
-    dispatchAppEvent(type: string, value?: any): void;
-    get extendWrapper(): HTMLElement | undefined;
-}
-
-type AppEmitter = Emittery<AppEmitterEvent>;
-declare class AppProxy implements PageRemoveService {
-    private params;
-    private manager;
-    kind: string;
+type Apps = {
+    [key: string]: AppSyncAttributes;
+};
+type Position = {
+    x: number;
+    y: number;
+    type: PositionType;
+    id?: string;
+};
+type PositionType = "main" | "app";
+type StoreContext = {
+    getAttributes: () => any;
+    safeUpdateAttributes: (keys: string[], value: any) => void;
+    safeSetAttributes: (attributes: any) => void;
+};
+type ICamera = Camera & {
     id: string;
-    scenePath?: string;
-    appEmitter: AppEmitter;
-    scenes?: SceneDefinition[];
-    private appListener;
-    private boxManager;
-    private appProxies;
-    private viewManager;
-    private store;
-    isAddApp: boolean;
-    private status;
-    private stateKey;
-    private _pageState;
-    private _prevFullPath;
-    appResult?: NetlessApp<any>;
-    appContext?: AppContext<any, any>;
-    constructor(params: BaseInsertParams, manager: AppManager, appId: string, isAddApp: boolean);
-    private initScenes;
-    get view(): View | undefined;
-    get viewIndex(): number | undefined;
-    get isWritable(): boolean;
+};
+type ISize = Size & {
+    id: string;
+};
+declare class AttributesDelegate {
+    private context;
+    constructor(context: StoreContext);
+    setContext(context: StoreContext): void;
     get attributes(): any;
-    get appAttributes(): AppSyncAttributes;
-    getFullScenePath(): string | undefined;
-    private getFullScenePathFromScenes;
-    setFullPath(path: string): void;
-    baseInsertApp(skipUpdate?: boolean): Promise<{
+    apps(): Apps;
+    get focus(): string | undefined;
+    getAppAttributes(id: string): AppSyncAttributes;
+    getAppState(id: string): any;
+    getMaximized(): any;
+    getMinimized(): any;
+    getBoxsStatus(): Record<string, TELE_BOX_STATE> | undefined;
+    setBoxsStatus(boxsStatus: Record<string, TELE_BOX_STATE> | undefined): void;
+    getBoxStatus(id: string): TELE_BOX_STATE | undefined;
+    setBoxStatus(id: string, status: TELE_BOX_STATE | undefined): void;
+    getLastNotMinimizedBoxsStatus(): Record<string, TELE_BOX_NOT_MINIMIZED_STATE> | undefined;
+    setLastNotMinimizedBoxsStatus(lastNotMinimizedBoxsStatus: Record<string, TELE_BOX_NOT_MINIMIZED_STATE> | undefined): void;
+    setViewScrollChange(data: {
         appId: string;
-        app: NetlessApp;
-    }>;
-    get box(): ReadonlyTeleBox | undefined;
-    private setupApp;
-    private fixMobileSize;
-    private afterSetupApp;
-    onSeek(time: number): Promise<void>;
-    onReconnected(): Promise<void>;
-    onRemoveScene(scenePath: string): Promise<void>;
-    getAppInitState: (id: string) => AppInitState | undefined;
-    emitAppSceneStateChange(sceneState: SceneState): void;
-    emitAppIsWritableChange(): void;
-    private makeAppEventListener;
-    private appAttributesUpdateListener;
-    private setFocusScenePathHandler;
-    setScenePath(): void;
-    setViewFocusScenePath(): string | undefined;
-    private createView;
-    notifyPageStateChange: lodash.DebouncedFunc<() => void>;
-    get pageState(): PageState;
-    removeSceneByIndex(index: number): Promise<boolean>;
-    setSceneIndexWithoutSync(index: number): void;
-    setSceneIndex(index: number): void;
-    destroy(needCloseBox: boolean, cleanAttrs: boolean, skipUpdate: boolean, error?: Error): Promise<void>;
-    close(): Promise<void>;
+        x: number;
+        y: number;
+    }): void;
+    getViewScrollChange(): {
+        appId: string;
+        x: number;
+        y: number;
+    } | undefined;
+    getLastNotMinimizedBoxStatus(): TELE_BOX_NOT_MINIMIZED_STATE | undefined;
+    setLastNotMinimizedBoxStatus(id: string, status: TELE_BOX_NOT_MINIMIZED_STATE | undefined): void;
+    setupAppAttributes(params: AddAppParams, id: string, isDynamicPPT: boolean): void;
+    updateAppState(appId: string, stateName: AppAttributes, state: any): void;
+    cleanAppAttributes(id: string): void;
+    cleanFocus(): void;
+    getAppSceneIndex(id: string): any;
+    getAppScenePath(id: string): any;
+    getMainViewScenePath(): string | undefined;
+    getMainViewSceneIndex(): any;
+    getBoxState(): TELE_BOX_STATE;
+    setMainViewScenePath(scenePath: string): void;
+    setMainViewSceneIndex(index: number): void;
+    getMainViewCamera(): MainViewCamera;
+    getMainViewSize(): MainViewSize;
+    setMainViewCamera(camera: ICamera): void;
+    setMainViewSize(size: ISize): void;
+    setMainViewCameraAndSize(camera: ICamera, size: ISize): void;
+    setAppFocus: (appId: string, focus: boolean) => void;
+    updateCursor(uid: string, position: Position): void;
+    updateCursorState(uid: string, cursorState: string | undefined): void;
+    getCursorState(uid: string): any;
+    cleanCursor(uid: string): void;
+    setMainViewFocusPath(mainView: View): void;
+    getIframeBridge(): any;
+    setIframeBridge(data: any): void;
 }
+type MainViewSize = {
+    id: string;
+    width: number;
+    height: number;
+};
+type MainViewCamera = {
+    id: string;
+    centerX: number;
+    centerY: number;
+    scale: number;
+};
 
 declare class MainViewProxy {
     private manager;
@@ -1182,13 +1201,15 @@ declare class ViewScroller {
     private baseScrollLeft;
     protected sizeObserver: ResizeObserver;
     protected callbackManager: CallbackManager;
+    private _isInternalUpdate;
+    private _isRemoteSync;
     constructor(config: ViewScrollerConfig);
     private updateSize;
     private onScroll;
     private dispatchScrollEvent;
     private scroll;
     setCoord(position: ScrollCoord): void;
-    private setAttribute;
+    setCoordFromRemote(position: ScrollCoord): void;
     private getAttribute;
     private calcCoordToLocal;
     private getLocalCoord;
@@ -1205,9 +1226,11 @@ declare class ScrollerManager {
     private onAppScrolling;
     add(config: ViewScrollerConfig): void;
     scrollTo(appId: string, position: ScrollCoord): void;
+    scrollToFromRemote(appId: string, position: ScrollCoord): void;
     moveToCenter(appId?: string): void;
     getScroller(appId: string): ViewScroller | undefined;
     remove(appId: string): void;
+    destroy(): void;
 }
 
 declare const BuiltinApps: {
@@ -1223,8 +1246,6 @@ type WindowMangerAttributes = {
     minimized?: boolean;
     maximizedBoxes?: string;
     minimizedBoxes?: string;
-    mainViewBackgroundImg?: string;
-    mainViewBackgroundColor?: string;
     [key: string]: any;
 };
 type apps = {
@@ -1270,10 +1291,8 @@ type AppInitState = {
     focus?: boolean;
     maximized?: boolean;
     minimized?: boolean;
-    maximizedBoxes?: string[];
-    minimizedBoxes?: string[];
     sceneIndex?: number;
-    boxState?: TeleBoxState;
+    boxState?: TELE_BOX_STATE;
     zIndex?: number;
 };
 type CursorMovePayload = {
@@ -1311,6 +1330,7 @@ type MountParams = {
 };
 declare const reconnectRefresher: ReconnectRefresher;
 declare const mainViewField = "mainView";
+declare const logFirstTag = "Custom WindowManager Attributes";
 declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any> implements PageController {
     static kind: string;
     static displayer: Displayer;
@@ -1516,13 +1536,12 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     }): void;
     private get teacherInfo();
     setLaserPointer(active: boolean): void;
-    private _currentPointActive;
-    private _changePointerIcon;
     private _setLaserPointer;
-    setHidePencil(active: boolean): void;
-    private _setHidePencil;
+    private _laserPointerManager?;
+    private _initLaserPointerManager;
+    private _getCurrentUserId;
+    private _destroyLaserPointerManager;
     get isLaserPointerActive(): any;
-    private bindHidTeacherCursorListener;
     getAppScale(appId: string): number;
     private isDynamicPPT;
     private ensureAttributes;
@@ -1539,5 +1558,5 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     private _initAttribute;
 }
 
-export { AppContext, AppCreateError, AppManagerNotInitError, AppNotRegisterError, BindContainerRoomPhaseInvalidError, BoxManagerNotFoundError, BoxNotCreatedError, BuiltinApps, DomEvents, IframeBridge, IframeEvents, InvalidScenePath, ParamsInvalidError, Storage, WhiteWebSDKInvalidError, WindowManager, calculateNextIndex, mainViewField, reconnectRefresher };
+export { AppContext, AppCreateError, AppManagerNotInitError, AppNotRegisterError, BindContainerRoomPhaseInvalidError, BoxManagerNotFoundError, BoxNotCreatedError, BuiltinApps, DomEvents, IframeBridge, IframeEvents, InvalidScenePath, ParamsInvalidError, Storage, WhiteWebSDKInvalidError, WindowManager, calculateNextIndex, logFirstTag, mainViewField, reconnectRefresher };
 export type { AddAppOptions, AddAppParams, AddPageParams, AppEmitterEvent, AppInitState, AppListenerKeys, AppPayload, AppSyncAttributes, ApplianceIcons, BaseInsertParams, CursorMovePayload, CursorOptions, IframeBridgeAttributes, IframeBridgeEvents, IframeSize, InsertOptions, MountParams, NetlessApp, OnCreateInsertOption, PageController, PageRemoveService, PageState, PublicEvent, RegisterEventData, RegisterEvents, RegisterParams, StorageStateChangedEvent, StorageStateChangedListener, WindowMangerAttributes, apps, setAppOptions };
