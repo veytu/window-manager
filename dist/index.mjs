@@ -1515,7 +1515,7 @@ function TS(r) {
   };
   return { bindSideEffect: n, combine: (a, l, f, m) => n(Xk(a, l, f, m)), createVal: (a, l) => n(new wp(a, l)) };
 }
-var ES = /* @__PURE__ */ ((r) => (r.Light = "light", r.Dark = "dark", r.Auto = "auto", r))(ES || {}), Ye = /* @__PURE__ */ ((r) => (r.Normal = "normal", r.Minimized = "minimized", r.Maximized = "maximized", r))(Ye || {}), qn = /* @__PURE__ */ ((r) => (r.DarkMode = "dark_mode", r.PrefersColorScheme = "prefers_color_scheme", r.Close = "close", r.Focus = "focus", r.Blur = "blur", r.Move = "move", r.Resize = "resize", r.IntrinsicMove = "intrinsic_move", r.IntrinsicResize = "intrinsic_resize", r.VisualResize = "visual_resize", r.ZIndex = "z_index", r.State = "state", r.Minimized = "minimized", r.Maximized = "maximized", r.Readonly = "readonly", r.Destroyed = "destroyed", r))(qn || {}), nr = /* @__PURE__ */ ((r) => (r.Close = "close", r.Maximize = "maximize", r.Minimize = "minimize", r))(nr || {}), xs = /* @__PURE__ */ ((r) => (r.North = "n", r.South = "s", r.West = "w", r.East = "e", r.NorthWest = "nw", r.NorthEast = "ne", r.SouthEast = "se", r.SouthWest = "sw", r))(xs || {});
+var ES = /* @__PURE__ */ ((r) => (r.Light = "light", r.Dark = "dark", r.Auto = "auto", r))(ES || {}), Ze = /* @__PURE__ */ ((r) => (r.Normal = "normal", r.Minimized = "minimized", r.Maximized = "maximized", r))(Ze || {}), qn = /* @__PURE__ */ ((r) => (r.DarkMode = "dark_mode", r.PrefersColorScheme = "prefers_color_scheme", r.Close = "close", r.Focus = "focus", r.Blur = "blur", r.Move = "move", r.Resize = "resize", r.IntrinsicMove = "intrinsic_move", r.IntrinsicResize = "intrinsic_resize", r.VisualResize = "visual_resize", r.ZIndex = "z_index", r.State = "state", r.Minimized = "minimized", r.Maximized = "maximized", r.Readonly = "readonly", r.Destroyed = "destroyed", r))(qn || {}), nr = /* @__PURE__ */ ((r) => (r.Close = "close", r.Maximize = "maximize", r.Minimize = "minimize", r))(nr || {}), xs = /* @__PURE__ */ ((r) => (r.North = "n", r.South = "s", r.West = "w", r.East = "e", r.NorthWest = "nw", r.NorthEast = "ne", r.SouthEast = "se", r.SouthWest = "sw", r))(xs || {});
 const Rb = "dh";
 function qi(r, n, a) {
   return Math.min(Math.max(r, n), a);
@@ -1552,7 +1552,7 @@ class JT {
     onEvent: f,
     onDragStart: m,
     namespace: y = "telebox",
-    state: v = Ye.Normal,
+    state: v = Ze.Normal,
     appReadonly: S = !1
   } = {}) {
     this.$btns = [], this.sideEffect = new hp(), this.lastTitleBarClick = {
@@ -1588,7 +1588,7 @@ class JT {
       {
         type: nr.Maximize,
         iconClassName: this.wrapClassName("titlebar-icon-maximize"),
-        isActive: (x) => x === Ye.Maximized
+        isActive: (x) => x === Ze.Maximized
       },
       {
         type: nr.Close,
@@ -1756,15 +1756,15 @@ class i_ {
     lt.reaction((Re, ut, Ve) => {
       Ve || this.events.emit(Re ? qn.Focus : qn.Blur);
     });
-    const Ze = de(D);
-    Ze.reaction((Re, ut, Ve) => {
+    const Ye = de(D);
+    Ye.reaction((Re, ut, Ve) => {
       Ve || this.events.emit(qn.Minimized, Re);
     });
-    const Pe = de(L);
-    Pe.reaction((Re, ut, Ve) => {
+    const ze = de(L);
+    ze.reaction((Re, ut, Ve) => {
       Ve || this.events.emit(qn.Maximized, Re);
     });
-    const mt = et([Ze, Pe], ([Re, ut]) => (console.log("state reaction", Re, ut), Re ? Ye.Minimized : ut ? Ye.Maximized : Ye.Normal));
+    const mt = et([Ye, ze], ([Re, ut]) => (console.log("state reaction", Re, ut), Re ? Ze.Minimized : ut ? Ze.Maximized : Ze.Normal));
     mt.reaction((Re, ut, Ve) => {
       Ve || this.events.emit(qn.State, Re);
     });
@@ -1793,7 +1793,7 @@ class i_ {
       Ve || this.events.emit(qn.IntrinsicResize, Re);
     });
     const xt = et(
-      [Ot, Pe],
+      [Ot, ze],
       ([Re, ut]) => ut ? { width: 1, height: 1 } : Re,
       Ss
     );
@@ -1801,7 +1801,7 @@ class i_ {
       Ve || this.events.emit(qn.Resize, Re);
     });
     const kn = et(
-      [xt, Ze, Ge, At],
+      [xt, Ye, Ge, At],
       ([Re, ut, Ve, Vt]) => ut && Vt ? {
         width: Vt.width / Re.width / Ve.width,
         height: Vt.height / Re.height / Ve.height
@@ -1821,8 +1821,8 @@ class i_ {
         Ot,
         Ge,
         At,
-        Ze,
-        Pe
+        Ye,
+        ze
       ],
       ([
         Re,
@@ -1857,15 +1857,15 @@ class i_ {
         else
           switch (Re.type) {
             case nr.Maximize: {
-              console.log("[TeleBox] TeleBox TitleBar Maximize Event", { boxId: this.id, currentMaximized: Pe.value }), Pe.setValue(!Pe.value);
+              console.log("[TeleBox] TeleBox TitleBar Maximize Event", { boxId: this.id, currentMaximized: ze.value });
               break;
             }
             case nr.Minimize: {
-              console.log("[TeleBox] TeleBox TitleBar Minimize Event", { boxId: this.id, currentMinimized: Ze.value }), Ze.setValue(!0);
+              console.log("[TeleBox] TeleBox TitleBar Minimize Event", { boxId: this.id, currentMinimized: Ye.value });
               break;
             }
             case nr.Close: {
-              console.log("[TeleBox] TeleBox TitleBar Close Event", { boxId: this.id, currentVisible: Xe.value }), Xe.setValue(!1);
+              console.log("[TeleBox] TeleBox TitleBar Close Event", { boxId: this.id, currentVisible: Xe.value });
               break;
             }
             default: {
@@ -1892,8 +1892,8 @@ class i_ {
       fixRatio: Me,
       focus: lt,
       zIndex: be,
-      minimized: Ze,
-      maximized: Pe,
+      minimized: Ye,
+      maximized: ze,
       $userContent: Mi,
       $userFooter: Qn,
       $userStyles: Ui
@@ -2039,7 +2039,7 @@ class i_ {
     l(this.$box, this._readonly$, "readonly"), l(this.$box, this._draggable$, "no-drag", Xv), l(this.$box, this._resizable$, "no-resize", Xv), l(this.$box, this._focus$, "blur", Xv), l(this.$box, this._darkMode$, "color-scheme-dark"), l(this.$box, this._darkMode$, "color-scheme-light", Xv), this._renderSideEffect.add(() => {
       const D = this.wrapClassName("minimized"), L = this.wrapClassName("maximized"), j = "box-maximized-timer";
       return this._state$.subscribe((Z) => {
-        console.log(Z === Ye.Minimized, Z), this.$box.classList.toggle(D, Z === Ye.Minimized), Z === Ye.Maximized ? (this._renderSideEffect.flush(j), this.$box.classList.toggle(L, !0)) : this.$box.classList.toggle(L, !1);
+        console.log(Z === Ze.Minimized, Z), this.$box.classList.toggle(D, Z === Ze.Minimized), Z === Ze.Maximized ? (this._renderSideEffect.flush(j), this.$box.classList.toggle(L, !0)) : this.$box.classList.toggle(L, !1);
       });
     }), this._renderSideEffect.add(
       () => this._visible$.subscribe((D) => {
@@ -2106,7 +2106,7 @@ class i_ {
     }), this._state$.reaction((D) => {
       A.classList.toggle(
         this.wrapClassName("footer-hide"),
-        D == Ye.Maximized
+        D == Ze.Maximized
       );
     }), v.appendChild(S), v.appendChild(x), v.appendChild(A), this.$contentWrap = x, this.addObserver(x, (D) => {
       const L = D.find((j) => j.target == x);
@@ -2124,7 +2124,7 @@ class i_ {
     const a = "handle-tracking-listener", l = this.wrapClassName("transforming");
     let f, m = 0, y = 0, v = 0, S = 0, x = 0, E = 0, A;
     const D = (Z) => {
-      if (this.state !== Ye.Normal)
+      if (this.state !== Ze.Normal)
         return;
       kd(Z);
       let { pageX: F, pageY: he } = IM(Z);
@@ -2217,7 +2217,7 @@ class i_ {
       A = void 0, f && (kd(Z), this.$box.classList.toggle(l, !1), this._sideEffect.flush(a), f.remove());
     }, j = (Z) => {
       var F;
-      if (this.readonly || Z.button != null && Z.button !== 0 || !this.draggable || A || this.state !== Ye.Normal)
+      if (this.readonly || Z.button != null && Z.button !== 0 || !this.draggable || A || this.state !== Ze.Normal)
         return;
       const he = Z.target;
       if ((F = he.dataset) != null && F.teleBoxHandle) {
@@ -2362,7 +2362,7 @@ class qT {
   }
   updateMinimizedCount() {
     if (this.count$) {
-      const n = Object.values(this.allBoxStatusInfo).filter((a) => a === Ye.Minimized).length;
+      const n = Object.values(this.allBoxStatusInfo).filter((a) => a === Ze.Minimized).length;
       this.count$.textContent = String(n);
     }
   }
@@ -2409,7 +2409,7 @@ class qT {
       {},
       "telebox-collector-titles-content-click"
     )), y.innerHTML = "";
-    const v = (n = this.boxes) == null ? void 0 : n.filter((x) => this.allBoxStatusInfo[x.id] === Ye.Minimized).map((x) => {
+    const v = (n = this.boxes) == null ? void 0 : n.filter((x) => this.allBoxStatusInfo[x.id] === Ze.Minimized).map((x) => {
       const E = document.createElement("button");
       return E.className = this.wrapClassName("collector-titles-tab"), E.textContent = x.title, E.dataset.teleBoxID = x.id, E.dataset.teleTitleBarNoDblClick = "true", y.appendChild(E), x._title$.reaction((A) => E.textContent = A);
     });
@@ -2445,7 +2445,7 @@ class o_ extends JT {
   focusBox(n) {
     var a, l;
     if (!(this.focusedBox && this.focusedBox === n || !(n != null && n.hasHeader))) {
-      if (console.log("[TeleBox] TitleBar FocusBox Called", n == null ? void 0 : n.id, (a = this.focusedBox) == null ? void 0 : a.id, this.state), this.$titles && (this.state === Ye.Maximized || this.hasMaximizedBox())) {
+      if (console.log("[TeleBox] TitleBar FocusBox Called", n == null ? void 0 : n.id, (a = this.focusedBox) == null ? void 0 : a.id, this.state), this.$titles && (this.state === Ze.Maximized || this.hasMaximizedBox())) {
         const { children: f } = this.$titles.firstElementChild;
         for (let m = f.length - 1; m >= 0; m -= 1) {
           const y = f[m], v = (l = y.dataset) == null ? void 0 : l.teleBoxID;
@@ -2456,7 +2456,7 @@ class o_ extends JT {
     }
   }
   hasMaximizedBox() {
-    return Object.entries(this.allBoxStatusInfo || {}).some(([n, a]) => a === Ye.Maximized);
+    return Object.entries(this.allBoxStatusInfo || {}).some(([n, a]) => a === Ze.Maximized);
   }
   setContainerRect(n) {
     if (this.containerRect = n, this.$titleBar) {
@@ -2473,7 +2473,7 @@ class o_ extends JT {
   setState(n) {
     super.setState(n), this.$titleBar && this.$titleBar.classList.toggle(
       this.wrapClassName("max-titlebar-maximized"),
-      n === Ye.Maximized
+      n === Ze.Maximized
     ), this.updateTitles();
   }
   setReadonly(n) {
@@ -2489,7 +2489,7 @@ class o_ extends JT {
     const n = super.render(), { x: a, y: l, width: f } = this.containerRect;
     n.style.transform = `translate(${a}px, ${l}px)`, n.style.width = f + "px", n.classList.add(this.wrapClassName("max-titlebar")), n.classList.toggle(
       this.wrapClassName("max-titlebar-maximized"),
-      this.state === Ye.Maximized
+      this.state === Ze.Maximized
     ), n.classList.toggle(this.wrapClassName("readonly"), this.readonly), n.classList.add(
       this.wrapClassName(this.darkMode ? "color-scheme-dark" : "color-scheme-light")
     );
@@ -2501,7 +2501,7 @@ class o_ extends JT {
   }
   updateTitles() {
     var n;
-    const a = Object.entries(this.allBoxStatusInfo).filter(([f, m]) => m === Ye.Maximized).map(([f, m]) => f), l = Object.entries(this.allBoxStatusInfo).filter(([f, m]) => m === Ye.Minimized).map(([f, m]) => f);
+    const a = Object.entries(this.allBoxStatusInfo).filter(([f, m]) => m === Ze.Maximized).map(([f, m]) => f), l = Object.entries(this.allBoxStatusInfo).filter(([f, m]) => m === Ze.Minimized).map(([f, m]) => f);
     (n = this.$titleBar) == null || n.classList.toggle(
       this.wrapClassName("max-titlebar-active"),
       a.length > 0 && this.boxes.length > 0 && a.filter((f) => !l.includes(f)).length > 0
@@ -2526,7 +2526,7 @@ class o_ extends JT {
     );
     const n = document.createElement("div");
     n.className = this.wrapClassName("titles-content"), this.$titles.appendChild(n);
-    const a = Object.entries(this.allBoxStatusInfo).filter(([y, v]) => v === Ye.Maximized).map(([y, v]) => y), l = Object.entries(this.allBoxStatusInfo).filter(([y, v]) => v === Ye.Minimized).map(([y, v]) => y), f = this.boxes.filter((y) => a.includes(y.id)).filter((y) => !l.includes(y.id)).filter((y) => y.hasHeader), m = this.boxes.filter((y) => a.includes(y.id)).filter((y) => !l.includes(y.id)).filter((y) => !y.hasHeader);
+    const a = Object.entries(this.allBoxStatusInfo).filter(([y, v]) => v === Ze.Maximized).map(([y, v]) => y), l = Object.entries(this.allBoxStatusInfo).filter(([y, v]) => v === Ze.Minimized).map(([y, v]) => y), f = this.boxes.filter((y) => a.includes(y.id)).filter((y) => !l.includes(y.id)).filter((y) => y.hasHeader), m = this.boxes.filter((y) => a.includes(y.id)).filter((y) => !l.includes(y.id)).filter((y) => !y.hasHeader);
     return this.$titleBar && (f.length == 0 && m.length > 0 ? this.$titleBar.style.display = "none" : this.$titleBar.style.display = ""), f.forEach((y) => {
       const v = document.createElement("button");
       v.className = this.wrapClassName("titles-tab"), v.textContent = y.title, v.dataset.teleBoxID = y.id, v.dataset.teleTitleBarNoDblClick = "true", this.focusedBox && y.id === this.focusedBox.id && v.classList.add(this.wrapClassName("titles-tab-focus")), n.appendChild(v);
@@ -2607,14 +2607,14 @@ class u_ {
     const F = D(v);
     F.reaction((te, pe, ee) => {
       this.boxes$.value.forEach((Qe) => Qe.setReadonly(te, ee));
-    }), Object.entries(S).filter(([te, pe]) => pe === Ye.Minimized).map(([te, pe]) => te), Object.entries(S).filter(([te, pe]) => pe === Ye.Maximized).map(([te, pe]) => te), this.allBoxStatusInfo$ = D(S), console.log("[TeleBox] Manager Constructor AllBoxStatusInfo Created", { allBoxStatusInfo: S }), this.allBoxStatusInfo$.reaction((te, pe, ee) => {
+    }), Object.entries(S).filter(([te, pe]) => pe === Ze.Minimized).map(([te, pe]) => te), Object.entries(S).filter(([te, pe]) => pe === Ze.Maximized).map(([te, pe]) => te), this.allBoxStatusInfo$ = D(S), console.log("[TeleBox] Manager Constructor AllBoxStatusInfo Created", { allBoxStatusInfo: S }), this.allBoxStatusInfo$.reaction((te, pe, ee) => {
       var Qe, De, ce;
       console.log("[TeleBox] AllBoxStatusInfo Reaction Triggered", { allBoxStatusInfo: te, skipUpdate: ee });
       const et = this.getMaximizedBoxes(te), de = this.getMinimizedBoxes(te);
       this.boxes$.value.forEach((xe) => {
         const Ge = et.includes(xe.id), At = de.includes(xe.id);
         xe.setMaximized(Ge, !0), xe.setMinimized(At, !0);
-      }), this.maxTitleBar.setState(et.length > 0 ? Ye.Maximized : Ye.Normal), this.maxTitleBar.setAllBoxStatusInfo({ ...te });
+      }), this.maxTitleBar.setState(et.length > 0 ? Ze.Maximized : Ze.Normal), this.maxTitleBar.setAllBoxStatusInfo({ ...te });
       const Ue = de.length > 0;
       console.log("[TeleBox] Collector Visibility Update", { minimized: Ue, minimizedBoxes: de }), (Qe = ae.value) == null || Qe.setVisible(Ue), (De = this.collector) == null || De.setAllBoxStatusInfo({ ...te }), Ue && (ce = ae.value) != null && ce.$collector && _e.setValue(oe()), this.makeBoxTopFromNotMinimized(), ee || this.events.emit(Vn.AllBoxStatusInfo, te);
     }), this.lastLastNotMinimizedBoxsStatus$.reaction((te, pe, ee) => {
@@ -2624,7 +2624,7 @@ class u_ {
       [this.allBoxStatusInfo$],
       ([te]) => {
         const pe = this.getMinimizedBoxes(te), ee = this.getMaximizedBoxes(te);
-        return pe.length ? Ye.Minimized : ee.length ? Ye.Maximized : Ye.Normal;
+        return pe.length ? Ze.Minimized : ee.length ? Ze.Maximized : Ze.Normal;
       }
     );
     he.reaction((te, pe, ee) => {
@@ -2722,11 +2722,11 @@ class u_ {
           case nr.Maximize: {
             if (console.log("[TeleBox] TitleBar Options Click To Maximize", De), De.hasFocus) {
               const ce = { ...this.allBoxStatusInfo$.value };
-              ce[De.boxId] = Ye.Maximized === ce[De.boxId] ? Ye.Normal : Ye.Maximized, this.setAllBoxStatusInfo(ce, !1);
+              ce[De.boxId] = Ze.Maximized === ce[De.boxId] ? Ze.Normal : Ze.Maximized, this.setAllBoxStatusInfo(ce, !1);
             } else {
               const ce = { ...this.allBoxStatusInfo$.value };
               Object.keys(ce).forEach((et) => {
-                ce[et] === Ye.Maximized && (ce[et] = Ye.Normal);
+                ce[et] === Ze.Maximized && (ce[et] = Ze.Normal);
               }), this.setAllBoxStatusInfo(ce, !1);
             }
             break;
@@ -2737,7 +2737,7 @@ class u_ {
             else {
               const ce = { ...this.allBoxStatusInfo$.value };
               Object.keys(ce).forEach((et) => {
-                ce[et] === Ye.Maximized && (ce[et] = Ye.Normal);
+                ce[et] === Ze.Maximized && (ce[et] = Ze.Normal);
               }), this.setAllBoxStatusInfo(ce, !1);
             }
             break;
@@ -2816,16 +2816,16 @@ class u_ {
     this.lastLastNotMinimizedBoxsStatus$.setValue(f, a);
   }
   getMaximizedBoxes(n = this.allBoxStatusInfo$.value) {
-    return Object.entries(n).filter(([a, l]) => l === Ye.Maximized).map(([a, l]) => a);
+    return Object.entries(n).filter(([a, l]) => l === Ze.Maximized).map(([a, l]) => a);
   }
   getMinimizedBoxes(n = this.allBoxStatusInfo$.value) {
-    return Object.entries(n).filter(([a, l]) => l === Ye.Minimized).map(([a, l]) => a);
+    return Object.entries(n).filter(([a, l]) => l === Ze.Minimized).map(([a, l]) => a);
   }
   setState(n, a = !1) {
     switch (console.log(a), n) {
-      case Ye.Maximized:
+      case Ze.Maximized:
         break;
-      case Ye.Minimized:
+      case Ze.Minimized:
         break;
     }
     return this;
@@ -2852,7 +2852,7 @@ class u_ {
     });
     S.mount(this.root), S.focus && (this.focusBox(S), a && this.makeBoxTop(S)), this.boxes$.setValue([...this.boxes, S]);
     const x = { ...this.allBoxStatusInfo$.value };
-    return y ? x[l] = Ye.Maximized : v ? x[l] = Ye.Minimized : x[l] = Ye.Normal, console.log("[TeleBox] Create - Setting AllBoxStatusInfo for new box", {
+    return y ? x[l] = Ze.Maximized : v ? x[l] = Ze.Minimized : x[l] = Ze.Normal, console.log("[TeleBox] Create - Setting AllBoxStatusInfo for new box", {
       boxId: l,
       managerMaximized$: y,
       managerMinimized$: v,
@@ -2862,7 +2862,7 @@ class u_ {
       console.log("[TeleBox] TitleBar Maximize From Box Event", { boxId: S.id });
       const E = this.cleanAllBoxStatusInfo(this.allBoxStatusInfo$.value);
       Object.entries(E).forEach(([A, D]) => {
-        D !== Ye.Minimized && (E[A] = Ye.Maximized);
+        D !== Ze.Minimized && (E[A] = Ze.Maximized);
       }), this.setAllBoxStatusInfo(E, !1);
     }), S._delegateEvents.on(nr.Minimize, () => {
       console.log("[TeleBox] TitleBar Minimize From Box Event", { boxId: S.id }), this.changeBoxToMinimized(S.id);
@@ -2892,7 +2892,7 @@ class u_ {
   }
   changeBoxToMinimized(n) {
     const a = { ...this.allBoxStatusInfo$.value }, l = { ...this.lastLastNotMinimizedBoxsStatus$.value };
-    l[n] = a[n], a[n] = Ye.Minimized, this.setAllBoxStatusInfo(a, !1), this.lastLastNotMinimizedBoxsStatus$.setValue(l, !1);
+    l[n] = a[n], a[n] = Ze.Minimized, this.setAllBoxStatusInfo(a, !1), this.lastLastNotMinimizedBoxsStatus$.setValue(l, !1);
   }
   changeBoxToClose(n) {
     this.remove(n, !1);
@@ -3025,28 +3025,39 @@ class u_ {
         n._zIndex$.setValue(this.topBox.zIndex + 1, a);
   }
   makeBoxTopFromNotMinimized(n = void 0, a = !1) {
-    var l, f;
     if (console.log("[TeleBox] MakeBoxTopFromNotMinimized Called", { topFocusBox: n == null ? void 0 : n.id, skipUpdate: a }), !n) {
-      const y = Object.entries(this.allBoxStatusInfo$.value).filter(([v, S]) => S !== Ye.Minimized).map(([v, S]) => v);
-      n = (l = this.boxes.filter((v) => y.includes(v.id))) == null ? void 0 : l.reduce((v, S) => v.zIndex > S.zIndex ? v : S);
+      const f = Object.entries(this.allBoxStatusInfo$.value).filter(([y, v]) => v !== Ze.Minimized).map(([y, v]) => y), m = this.boxes.filter((y) => f.includes(y.id));
+      m.length > 0 && (n = m.reduce((y, v) => y.zIndex > v.zIndex ? y : v));
     }
-    if (this.makeBoxTop(n, a), this.allBoxStatusInfo$.value[n.id] === Ye.Maximized)
+    if (!n) {
+      console.log("[TeleBox] No topFocusBox found, returning early");
+      return;
+    }
+    if (this.makeBoxTop(n, a), this.allBoxStatusInfo$.value[n.id] === Ze.Maximized)
       this.maxTitleBar.focusBox(n);
     else {
-      const y = (f = this.boxes.filter((v) => this.allBoxStatusInfo$.value[v.id] === Ye.Maximized)) == null ? void 0 : f.reduce((v, S) => v.zIndex > S.zIndex ? v : S);
-      this.maxTitleBar.focusBox(y);
+      const f = this.boxes.filter((m) => this.allBoxStatusInfo$.value[m.id] === Ze.Maximized);
+      if (f.length > 0) {
+        const m = f.reduce((y, v) => y.zIndex > v.zIndex ? y : v);
+        this.maxTitleBar.focusBox(m);
+      }
     }
     a || this.events.emit(Vn.ZIndex, n);
-    const m = this.boxes$.value.filter((y) => this.getMaximizedBoxes().includes(y.id)).sort((y, v) => v.zIndex - y.zIndex);
-    m && m.length > 0 && this.maxTitleBar.setIndexZ(m[0].zIndex + 1);
+    const l = this.boxes$.value.filter((f) => this.getMaximizedBoxes().includes(f.id)).sort((f, m) => m.zIndex - f.zIndex);
+    l && l.length > 0 && this.maxTitleBar.setIndexZ(l[0].zIndex + 1);
   }
   makeBoxTopFromMaximized(n) {
-    var a, l;
+    var a;
     console.log("[TeleBox] MakeBoxTopFromMaximized Called", { boxId: n, currentMaximized: this.getMaximizedBoxes(), currentMinimized: this.getMinimizedBoxes() });
-    let f;
-    n ? this.getMaximizedBoxes().includes(n) && !this.getMinimizedBoxes().includes(n) && (f = this.boxes$.value.find((y) => y.id === n), console.log("[TeleBox] MakeBoxTopFromMaximized - Found Specific Box", { boxId: n, maxIndexBox: f == null ? void 0 : f.id })) : (f = (l = (a = this.boxes) == null ? void 0 : a.filter((y) => this.allBoxStatusInfo$.value[y.id] === Ye.Maximized)) == null ? void 0 : l.reduce((y, v) => y.zIndex > v.zIndex ? y : v), f && (console.log("[TeleBox] MakeBoxTopFromMaximized - Focusing Max Index Box", { maxIndexBox: f.id }), this.maxTitleBar.focusBox(f)));
-    const m = !!f;
-    return console.log("[TeleBox] MakeBoxTopFromMaximized Result", { result: m, maxIndexBox: f == null ? void 0 : f.id }), m;
+    let l;
+    if (n)
+      this.getMaximizedBoxes().includes(n) && !this.getMinimizedBoxes().includes(n) && (l = this.boxes$.value.find((m) => m.id === n), console.log("[TeleBox] MakeBoxTopFromMaximized - Found Specific Box", { boxId: n, maxIndexBox: l == null ? void 0 : l.id }));
+    else {
+      const m = (a = this.boxes) == null ? void 0 : a.filter((y) => this.allBoxStatusInfo$.value[y.id] === Ze.Maximized);
+      m && m.length > 0 && (l = m.reduce((y, v) => y.zIndex > v.zIndex ? y : v), l && (console.log("[TeleBox] MakeBoxTopFromMaximized - Focusing Max Index Box", { maxIndexBox: l.id }), this.maxTitleBar.focusBox(l)));
+    }
+    const f = !!l;
+    return console.log("[TeleBox] MakeBoxTopFromMaximized Result", { result: f, maxIndexBox: l == null ? void 0 : l.id }), f;
   }
   getBoxIndex(n) {
     return typeof n == "string" ? this.boxes.findIndex((a) => a.id === n) : this.boxes.findIndex((a) => a === n);
@@ -3103,8 +3114,8 @@ class d_ {
       var E;
       console.log("[TeleBox] BoxManager - AllBoxStatusInfo Event Received", v);
       const S = v || {};
-      (E = this.context.manager.appManager) == null || E.store.setAllBoxStatusInfo(S), Object.entries(S).filter(([A, D]) => D === Ye.Maximized).map(([A, D]) => A);
-      const x = Object.entries(S).filter(([A, D]) => D === Ye.Minimized).map(([A, D]) => A);
+      (E = this.context.manager.appManager) == null || E.store.setAllBoxStatusInfo(S), Object.entries(S).filter(([A, D]) => D === Ze.Maximized).map(([A, D]) => A);
+      const x = Object.entries(S).filter(([A, D]) => D === Ze.Minimized).map(([A, D]) => A);
       f.emit("onAllBoxStatusInfo", S), x.length > 0 && setTimeout(() => {
         const A = 1e-4 * (Math.random() > 0.5 ? 1 : -1);
         this.teleBoxManager.boxes.forEach((D) => {
@@ -3155,12 +3166,12 @@ class d_ {
   get maximized() {
     var a;
     const n = (a = this.context.manager.appManager) == null ? void 0 : a.store.getAllBoxStatusInfo();
-    return n ? Object.entries(n).filter(([l, f]) => f === Ye.Maximized).map(([l, f]) => l) : [];
+    return n ? Object.entries(n).filter(([l, f]) => f === Ze.Maximized).map(([l, f]) => l) : [];
   }
   get minimized() {
     var a;
     const n = (a = this.context.manager.appManager) == null ? void 0 : a.store.getAllBoxStatusInfo();
-    return n ? Object.entries(n).filter(([l, f]) => f === Ye.Minimized).map(([l, f]) => l) : [];
+    return n ? Object.entries(n).filter(([l, f]) => f === Ze.Minimized).map(([l, f]) => l) : [];
   }
   get darkMode() {
     return this.teleBoxManager.darkMode;
@@ -3198,7 +3209,7 @@ class d_ {
   }
   setBoxInitState(n) {
     const a = this.teleBoxManager.queryOne({ id: n });
-    a && a.state === Ye.Maximized && this.context.boxEmitter.emit("resize", {
+    a && a.state === Ze.Maximized && this.context.boxEmitter.emit("resize", {
       appId: n,
       x: a.x,
       y: a.y,
@@ -3360,11 +3371,11 @@ class f_ {
   }
   getMaximized() {
     const n = this.getAllBoxStatusInfo();
-    return n ? Object.entries(n).filter(([a, l]) => l === Ye.Maximized).map(([a, l]) => a) : [];
+    return n ? Object.entries(n).filter(([a, l]) => l === Ze.Maximized).map(([a, l]) => a) : [];
   }
   getMinimized() {
     const n = this.getAllBoxStatusInfo();
-    return n ? Object.entries(n).filter(([a, l]) => l === Ye.Minimized).map(([a, l]) => a) : [];
+    return n ? Object.entries(n).filter(([a, l]) => l === Ze.Minimized).map(([a, l]) => a) : [];
   }
   setAllBoxStatusInfo(n) {
     console.log("[TeleBox] AttributesDelegate - setAllBoxStatusInfo", n), this.context.safeSetAttributes({ allBoxStatusInfo: n });
@@ -7089,22 +7100,22 @@ function mL() {
   ae.constructor = Y, r(ae, he.prototype), ae.isPureReactComponent = !0;
   var oe = { current: null }, _e = Object.prototype.hasOwnProperty, He = { key: !0, ref: !0, __self: !0, __source: !0 };
   function Be(N, V, ne) {
-    var Me, be = {}, lt = null, Ze = null;
+    var Me, be = {}, lt = null, Ye = null;
     if (V != null)
-      for (Me in V.ref !== void 0 && (Ze = V.ref), V.key !== void 0 && (lt = "" + V.key), V)
+      for (Me in V.ref !== void 0 && (Ye = V.ref), V.key !== void 0 && (lt = "" + V.key), V)
         _e.call(V, Me) && !He.hasOwnProperty(Me) && (be[Me] = V[Me]);
-    var Pe = arguments.length - 2;
-    if (Pe === 1)
+    var ze = arguments.length - 2;
+    if (ze === 1)
       be.children = ne;
-    else if (1 < Pe) {
-      for (var mt = Array(Pe), St = 0; St < Pe; St++)
+    else if (1 < ze) {
+      for (var mt = Array(ze), St = 0; St < ze; St++)
         mt[St] = arguments[St + 2];
       be.children = mt;
     }
     if (N && N.defaultProps)
-      for (Me in Pe = N.defaultProps, Pe)
-        be[Me] === void 0 && (be[Me] = Pe[Me]);
-    return { $$typeof: a, type: N, key: lt, ref: Ze, props: be, _owner: oe.current };
+      for (Me in ze = N.defaultProps, ze)
+        be[Me] === void 0 && (be[Me] = ze[Me]);
+    return { $$typeof: a, type: N, key: lt, ref: Ye, props: be, _owner: oe.current };
   }
   function We(N, V) {
     return { $$typeof: a, type: N.type, key: V, ref: N.ref, props: N.props, _owner: N._owner };
@@ -7151,14 +7162,14 @@ function mL() {
     if (lt)
       return ne(Me, N, V === "" ? "." + Ue(N, 0) : V), 1;
     if (lt = 0, V = V === "" ? "." : V + ":", Array.isArray(N))
-      for (var Ze = 0; Ze < N.length; Ze++) {
-        be = N[Ze];
-        var Pe = V + Ue(be, Ze);
-        lt += et(be, Pe, ne, Me);
+      for (var Ye = 0; Ye < N.length; Ye++) {
+        be = N[Ye];
+        var ze = V + Ue(be, Ye);
+        lt += et(be, ze, ne, Me);
       }
-    else if (N === null || typeof N != "object" ? Pe = null : (Pe = L && N[L] || N["@@iterator"], Pe = typeof Pe == "function" ? Pe : null), typeof Pe == "function")
-      for (N = Pe.call(N), Ze = 0; !(be = N.next()).done; )
-        be = be.value, Pe = V + Ue(be, Ze++), lt += et(be, Pe, ne, Me);
+    else if (N === null || typeof N != "object" ? ze = null : (ze = L && N[L] || N["@@iterator"], ze = typeof ze == "function" ? ze : null), typeof ze == "function")
+      for (N = ze.call(N), Ye = 0; !(be = N.next()).done; )
+        be = be.value, ze = V + Ue(be, Ye++), lt += et(be, ze, ne, Me);
     else if (be === "object")
       throw ne = "" + N, Error(j(31, ne === "[object Object]" ? "object with keys {" + Object.keys(N).join(", ") + "}" : ne, ""));
     return lt;
@@ -7215,21 +7226,21 @@ function mL() {
   } }, Wt.Component = he, Wt.Fragment = f, Wt.Profiler = y, Wt.PureComponent = Y, Wt.StrictMode = m, Wt.Suspense = E, Wt.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = se, Wt.cloneElement = function(N, V, ne) {
     if (N == null)
       throw Error(j(267, N));
-    var Me = r({}, N.props), be = N.key, lt = N.ref, Ze = N._owner;
+    var Me = r({}, N.props), be = N.key, lt = N.ref, Ye = N._owner;
     if (V != null) {
-      if (V.ref !== void 0 && (lt = V.ref, Ze = oe.current), V.key !== void 0 && (be = "" + V.key), N.type && N.type.defaultProps)
-        var Pe = N.type.defaultProps;
+      if (V.ref !== void 0 && (lt = V.ref, Ye = oe.current), V.key !== void 0 && (be = "" + V.key), N.type && N.type.defaultProps)
+        var ze = N.type.defaultProps;
       for (mt in V)
-        _e.call(V, mt) && !He.hasOwnProperty(mt) && (Me[mt] = V[mt] === void 0 && Pe !== void 0 ? Pe[mt] : V[mt]);
+        _e.call(V, mt) && !He.hasOwnProperty(mt) && (Me[mt] = V[mt] === void 0 && ze !== void 0 ? ze[mt] : V[mt]);
     }
     var mt = arguments.length - 2;
     if (mt === 1)
       Me.children = ne;
     else if (1 < mt) {
-      Pe = Array(mt);
+      ze = Array(mt);
       for (var St = 0; St < mt; St++)
-        Pe[St] = arguments[St + 2];
-      Me.children = Pe;
+        ze[St] = arguments[St + 2];
+      Me.children = ze;
     }
     return {
       $$typeof: a,
@@ -7237,7 +7248,7 @@ function mL() {
       key: be,
       ref: lt,
       props: Me,
-      _owner: Ze
+      _owner: Ye
     };
   }, Wt.createContext = function(N, V) {
     return V === void 0 && (V = null), N = { $$typeof: S, _calculateChangedBits: V, _currentValue: N, _currentValue2: N, _threadCount: 0, Provider: null, Consumer: null }, N.Provider = { $$typeof: v, _context: N }, N.Consumer = N;
@@ -7529,15 +7540,15 @@ function yL() {
       var lt = {
         isMounted: ["isMounted", "Instead, make sure to clean up subscriptions and pending requests in componentWillUnmount to prevent memory leaks."],
         replaceState: ["replaceState", "Refactor your code to use setState instead (see https://github.com/facebook/react/issues/3236)."]
-      }, Ze = function(T, P) {
+      }, Ye = function(T, P) {
         Object.defineProperty(be.prototype, T, {
           get: function() {
             Yt("%s(...) is deprecated in plain JavaScript React classes. %s", P[0], P[1]);
           }
         });
       };
-      for (var Pe in lt)
-        lt.hasOwnProperty(Pe) && Ze(Pe, lt[Pe]);
+      for (var ze in lt)
+        lt.hasOwnProperty(ze) && Ye(ze, lt[ze]);
     }
     function mt() {
     }
@@ -8230,11 +8241,11 @@ function wL() {
           se[0] = V;
           e:
             for (var ne = 0, Me = se.length; ne < Me; ) {
-              var be = 2 * (ne + 1) - 1, lt = se[be], Ze = be + 1, Pe = se[Ze];
+              var be = 2 * (ne + 1) - 1, lt = se[be], Ye = be + 1, ze = se[Ye];
               if (lt !== void 0 && 0 > te(lt, V))
-                Pe !== void 0 && 0 > te(Pe, lt) ? (se[ne] = Pe, se[Ze] = V, ne = Ze) : (se[ne] = lt, se[be] = V, ne = be);
-              else if (Pe !== void 0 && 0 > te(Pe, V))
-                se[ne] = Pe, se[Ze] = V, ne = Ze;
+                ze !== void 0 && 0 > te(ze, lt) ? (se[ne] = ze, se[Ye] = V, ne = Ye) : (se[ne] = lt, se[be] = V, ne = be);
+              else if (ze !== void 0 && 0 > te(ze, V))
+                se[ne] = ze, se[Ye] = V, ne = Ye;
               else
                 break e;
             }
@@ -8506,9 +8517,9 @@ function bL() {
         var tt = re.sortIndex - fe.sortIndex;
         return tt !== 0 ? tt : re.id - fe.id;
       }
-      var de = 0, Ue = 1, xe = 2, Ge = 3, At = 4, Yt = 5, Xe = 0, se = 0, N = 4, V = typeof SharedArrayBuffer == "function" ? new SharedArrayBuffer(N * Int32Array.BYTES_PER_ELEMENT) : typeof ArrayBuffer == "function" ? new ArrayBuffer(N * Int32Array.BYTES_PER_ELEMENT) : null, ne = V !== null ? new Int32Array(V) : [], Me = 0, be = 1, lt = 2, Ze = 3;
-      ne[Me] = de, ne[Ze] = 0, ne[be] = 0;
-      var Pe = 131072, mt = 524288, St = 0, Ot = null, xt = null, kn = 0, jt = 1, Kn = 2, Mi = 3, Qn = 4, Ui = 5, Hi = 6, Re = 7, ut = 8;
+      var de = 0, Ue = 1, xe = 2, Ge = 3, At = 4, Yt = 5, Xe = 0, se = 0, N = 4, V = typeof SharedArrayBuffer == "function" ? new SharedArrayBuffer(N * Int32Array.BYTES_PER_ELEMENT) : typeof ArrayBuffer == "function" ? new ArrayBuffer(N * Int32Array.BYTES_PER_ELEMENT) : null, ne = V !== null ? new Int32Array(V) : [], Me = 0, be = 1, lt = 2, Ye = 3;
+      ne[Me] = de, ne[Ye] = 0, ne[be] = 0;
+      var ze = 131072, mt = 524288, St = 0, Ot = null, xt = null, kn = 0, jt = 1, Kn = 2, Mi = 3, Qn = 4, Ui = 5, Hi = 6, Re = 7, ut = 8;
       function Ve(re) {
         if (xt !== null) {
           var fe = kn;
@@ -8524,23 +8535,23 @@ function bL() {
         }
       }
       function Vt() {
-        St = Pe, Ot = new ArrayBuffer(St * 4), xt = new Int32Array(Ot), kn = 0;
+        St = ze, Ot = new ArrayBuffer(St * 4), xt = new Int32Array(Ot), kn = 0;
       }
       function ei() {
         var re = Ot;
         return St = 0, Ot = null, xt = null, kn = 0, re;
       }
       function mn(re, fe) {
-        ne[Ze]++, xt !== null && Ve([jt, fe * 1e3, re.id, re.priorityLevel]);
+        ne[Ye]++, xt !== null && Ve([jt, fe * 1e3, re.id, re.priorityLevel]);
       }
       function Jr(re, fe) {
-        ne[Me] = de, ne[be] = 0, ne[Ze]--, xt !== null && Ve([Kn, fe * 1e3, re.id]);
+        ne[Me] = de, ne[be] = 0, ne[Ye]--, xt !== null && Ve([Kn, fe * 1e3, re.id]);
       }
       function Wi(re, fe) {
-        ne[Ze]--, xt !== null && Ve([Qn, fe * 1e3, re.id]);
+        ne[Ye]--, xt !== null && Ve([Qn, fe * 1e3, re.id]);
       }
       function Ia(re, fe) {
-        ne[Me] = de, ne[be] = 0, ne[Ze]--, xt !== null && Ve([Mi, fe * 1e3, re.id]);
+        ne[Me] = de, ne[be] = 0, ne[Ye]--, xt !== null && Ve([Mi, fe * 1e3, re.id]);
       }
       function Aa(re, fe) {
         Xe++, ne[Me] = re.priorityLevel, ne[be] = re.id, ne[lt] = Xe, xt !== null && Ve([Ui, fe * 1e3, re.id, Xe]);
@@ -8913,29 +8924,29 @@ function SL() {
       }
     return !1;
   }
-  function Ze(i, s, c, h, g, C) {
+  function Ye(i, s, c, h, g, C) {
     this.acceptsBooleans = s === 2 || s === 3 || s === 4, this.attributeName = h, this.attributeNamespace = g, this.mustUseProperty = c, this.propertyName = i, this.type = s, this.sanitizeURL = C;
   }
-  var Pe = {};
+  var ze = {};
   "children dangerouslySetInnerHTML defaultValue defaultChecked innerHTML suppressContentEditableWarning suppressHydrationWarning style".split(" ").forEach(function(i) {
-    Pe[i] = new Ze(i, 0, !1, i, null, !1);
+    ze[i] = new Ye(i, 0, !1, i, null, !1);
   }), [["acceptCharset", "accept-charset"], ["className", "class"], ["htmlFor", "for"], ["httpEquiv", "http-equiv"]].forEach(function(i) {
     var s = i[0];
-    Pe[s] = new Ze(s, 1, !1, i[1], null, !1);
+    ze[s] = new Ye(s, 1, !1, i[1], null, !1);
   }), ["contentEditable", "draggable", "spellCheck", "value"].forEach(function(i) {
-    Pe[i] = new Ze(i, 2, !1, i.toLowerCase(), null, !1);
+    ze[i] = new Ye(i, 2, !1, i.toLowerCase(), null, !1);
   }), ["autoReverse", "externalResourcesRequired", "focusable", "preserveAlpha"].forEach(function(i) {
-    Pe[i] = new Ze(i, 2, !1, i, null, !1);
+    ze[i] = new Ye(i, 2, !1, i, null, !1);
   }), "allowFullScreen async autoFocus autoPlay controls default defer disabled disablePictureInPicture formNoValidate hidden loop noModule noValidate open playsInline readOnly required reversed scoped seamless itemScope".split(" ").forEach(function(i) {
-    Pe[i] = new Ze(i, 3, !1, i.toLowerCase(), null, !1);
+    ze[i] = new Ye(i, 3, !1, i.toLowerCase(), null, !1);
   }), ["checked", "multiple", "muted", "selected"].forEach(function(i) {
-    Pe[i] = new Ze(i, 3, !0, i, null, !1);
+    ze[i] = new Ye(i, 3, !0, i, null, !1);
   }), ["capture", "download"].forEach(function(i) {
-    Pe[i] = new Ze(i, 4, !1, i, null, !1);
+    ze[i] = new Ye(i, 4, !1, i, null, !1);
   }), ["cols", "rows", "size", "span"].forEach(function(i) {
-    Pe[i] = new Ze(i, 6, !1, i, null, !1);
+    ze[i] = new Ye(i, 6, !1, i, null, !1);
   }), ["rowSpan", "start"].forEach(function(i) {
-    Pe[i] = new Ze(i, 5, !1, i.toLowerCase(), null, !1);
+    ze[i] = new Ye(i, 5, !1, i.toLowerCase(), null, !1);
   });
   var mt = /[\-:]([a-z])/g;
   function St(i) {
@@ -8946,22 +8957,22 @@ function SL() {
       mt,
       St
     );
-    Pe[s] = new Ze(s, 1, !1, i, null, !1);
+    ze[s] = new Ye(s, 1, !1, i, null, !1);
   }), "xlink:actuate xlink:arcrole xlink:role xlink:show xlink:title xlink:type".split(" ").forEach(function(i) {
     var s = i.replace(mt, St);
-    Pe[s] = new Ze(s, 1, !1, i, "http://www.w3.org/1999/xlink", !1);
+    ze[s] = new Ye(s, 1, !1, i, "http://www.w3.org/1999/xlink", !1);
   }), ["xml:base", "xml:lang", "xml:space"].forEach(function(i) {
     var s = i.replace(mt, St);
-    Pe[s] = new Ze(s, 1, !1, i, "http://www.w3.org/XML/1998/namespace", !1);
+    ze[s] = new Ye(s, 1, !1, i, "http://www.w3.org/XML/1998/namespace", !1);
   }), ["tabIndex", "crossOrigin"].forEach(function(i) {
-    Pe[i] = new Ze(i, 1, !1, i.toLowerCase(), null, !1);
-  }), Pe.xlinkHref = new Ze("xlinkHref", 1, !1, "xlink:href", "http://www.w3.org/1999/xlink", !0), ["src", "href", "action", "formAction"].forEach(function(i) {
-    Pe[i] = new Ze(i, 1, !1, i.toLowerCase(), null, !0);
+    ze[i] = new Ye(i, 1, !1, i.toLowerCase(), null, !1);
+  }), ze.xlinkHref = new Ye("xlinkHref", 1, !1, "xlink:href", "http://www.w3.org/1999/xlink", !0), ["src", "href", "action", "formAction"].forEach(function(i) {
+    ze[i] = new Ye(i, 1, !1, i.toLowerCase(), null, !0);
   });
   var Ot = r.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
   Ot.hasOwnProperty("ReactCurrentDispatcher") || (Ot.ReactCurrentDispatcher = { current: null }), Ot.hasOwnProperty("ReactCurrentBatchConfig") || (Ot.ReactCurrentBatchConfig = { suspense: null });
   function xt(i, s, c, h) {
-    var g = Pe.hasOwnProperty(s) ? Pe[s] : null, C = g !== null ? g.type === 0 : h ? !1 : !(!(2 < s.length) || s[0] !== "o" && s[0] !== "O" || s[1] !== "n" && s[1] !== "N");
+    var g = ze.hasOwnProperty(s) ? ze[s] : null, C = g !== null ? g.type === 0 : h ? !1 : !(!(2 < s.length) || s[0] !== "o" && s[0] !== "O" || s[1] !== "n" && s[1] !== "N");
     C || (lt(s, c, g, h) && (c = null), h || g === null ? Me(s) && (c === null ? i.removeAttribute(s) : i.setAttribute(s, "" + c)) : g.mustUseProperty ? i[g.propertyName] = c === null ? g.type === 3 ? !1 : "" : c : (s = g.attributeName, h = g.attributeNamespace, c === null ? i.removeAttribute(s) : (g = g.type, c = g === 3 || g === 4 && c === !0 ? "" : "" + c, h ? i.setAttributeNS(h, s, c) : i.setAttribute(s, c))));
   }
   var kn = /^(.*)[\\\/]/, jt = typeof Symbol == "function" && Symbol.for, Kn = jt ? Symbol.for("react.element") : 60103, Mi = jt ? Symbol.for("react.portal") : 60106, Qn = jt ? Symbol.for("react.fragment") : 60107, Ui = jt ? Symbol.for("react.strict_mode") : 60108, Hi = jt ? Symbol.for("react.profiler") : 60114, Re = jt ? Symbol.for("react.provider") : 60109, ut = jt ? Symbol.for("react.context") : 60110, Ve = jt ? Symbol.for("react.concurrent_mode") : 60111, Vt = jt ? Symbol.for("react.forward_ref") : 60112, ei = jt ? Symbol.for("react.suspense") : 60113, mn = jt ? Symbol.for("react.suspense_list") : 60120, Jr = jt ? Symbol.for("react.memo") : 60115, Wi = jt ? Symbol.for("react.lazy") : 60116, Ia = jt ? Symbol.for("react.block") : 60121, Aa = typeof Symbol == "function" && Symbol.iterator;
@@ -10906,24 +10917,24 @@ function SL() {
       return null;
     }
     function zi(B, z, G, ue) {
-      for (var ye = null, ze = null, nt = z, Ct = z = 0, fn = null; nt !== null && Ct < G.length; Ct++) {
+      for (var ye = null, Pe = null, nt = z, Ct = z = 0, fn = null; nt !== null && Ct < G.length; Ct++) {
         nt.index > Ct ? (fn = nt, nt = null) : fn = nt.sibling;
         var dt = gt(B, nt, G[Ct], ue);
         if (dt === null) {
           nt === null && (nt = fn);
           break;
         }
-        i && nt && dt.alternate === null && s(B, nt), z = C(dt, z, Ct), ze === null ? ye = dt : ze.sibling = dt, ze = dt, nt = fn;
+        i && nt && dt.alternate === null && s(B, nt), z = C(dt, z, Ct), Pe === null ? ye = dt : Pe.sibling = dt, Pe = dt, nt = fn;
       }
       if (Ct === G.length)
         return c(B, nt), ye;
       if (nt === null) {
         for (; Ct < G.length; Ct++)
-          nt = ke(B, G[Ct], ue), nt !== null && (z = C(nt, z, Ct), ze === null ? ye = nt : ze.sibling = nt, ze = nt);
+          nt = ke(B, G[Ct], ue), nt !== null && (z = C(nt, z, Ct), Pe === null ? ye = nt : Pe.sibling = nt, Pe = nt);
         return ye;
       }
       for (nt = h(B, nt); Ct < G.length; Ct++)
-        fn = Rt(nt, B, Ct, G[Ct], ue), fn !== null && (i && fn.alternate !== null && nt.delete(fn.key === null ? Ct : fn.key), z = C(fn, z, Ct), ze === null ? ye = fn : ze.sibling = fn, ze = fn);
+        fn = Rt(nt, B, Ct, G[Ct], ue), fn !== null && (i && fn.alternate !== null && nt.delete(fn.key === null ? Ct : fn.key), z = C(fn, z, Ct), Pe === null ? ye = fn : Pe.sibling = fn, Pe = fn);
       return i && nt.forEach(function(as) {
         return s(B, as);
       }), ye;
@@ -10934,24 +10945,24 @@ function SL() {
         throw Error(l(150));
       if (G = ye.call(G), G == null)
         throw Error(l(151));
-      for (var ze = ye = null, nt = z, Ct = z = 0, fn = null, dt = G.next(); nt !== null && !dt.done; Ct++, dt = G.next()) {
+      for (var Pe = ye = null, nt = z, Ct = z = 0, fn = null, dt = G.next(); nt !== null && !dt.done; Ct++, dt = G.next()) {
         nt.index > Ct ? (fn = nt, nt = null) : fn = nt.sibling;
         var as = gt(B, nt, dt.value, ue);
         if (as === null) {
           nt === null && (nt = fn);
           break;
         }
-        i && nt && as.alternate === null && s(B, nt), z = C(as, z, Ct), ze === null ? ye = as : ze.sibling = as, ze = as, nt = fn;
+        i && nt && as.alternate === null && s(B, nt), z = C(as, z, Ct), Pe === null ? ye = as : Pe.sibling = as, Pe = as, nt = fn;
       }
       if (dt.done)
         return c(B, nt), ye;
       if (nt === null) {
         for (; !dt.done; Ct++, dt = G.next())
-          dt = ke(B, dt.value, ue), dt !== null && (z = C(dt, z, Ct), ze === null ? ye = dt : ze.sibling = dt, ze = dt);
+          dt = ke(B, dt.value, ue), dt !== null && (z = C(dt, z, Ct), Pe === null ? ye = dt : Pe.sibling = dt, Pe = dt);
         return ye;
       }
       for (nt = h(B, nt); !dt.done; Ct++, dt = G.next())
-        dt = Rt(nt, B, Ct, dt.value, ue), dt !== null && (i && dt.alternate !== null && nt.delete(dt.key === null ? Ct : dt.key), z = C(dt, z, Ct), ze === null ? ye = dt : ze.sibling = dt, ze = dt);
+        dt = Rt(nt, B, Ct, dt.value, ue), dt !== null && (i && dt.alternate !== null && nt.delete(dt.key === null ? Ct : dt.key), z = C(dt, z, Ct), Pe === null ? ye = dt : Pe.sibling = dt, Pe = dt);
       return i && nt.forEach(function(qg) {
         return s(B, qg);
       }), ye;
@@ -10959,13 +10970,13 @@ function SL() {
     return function(B, z, G, ue) {
       var ye = typeof G == "object" && G !== null && G.type === Qn && G.key === null;
       ye && (G = G.props.children);
-      var ze = typeof G == "object" && G !== null;
-      if (ze)
+      var Pe = typeof G == "object" && G !== null;
+      if (Pe)
         switch (G.$$typeof) {
           case Kn:
             e: {
-              for (ze = G.key, ye = z; ye !== null; ) {
-                if (ye.key === ze) {
+              for (Pe = G.key, ye = z; ye !== null; ) {
+                if (ye.key === Pe) {
                   switch (ye.tag) {
                     case 7:
                       if (G.type === Qn) {
@@ -11016,7 +11027,7 @@ function SL() {
         return zi(B, z, G, ue);
       if (hi(G))
         return Fn(B, z, G, ue);
-      if (ze && Ws(B, G), typeof G > "u" && !ye)
+      if (Pe && Ws(B, G), typeof G > "u" && !ye)
         switch (B.tag) {
           case 1:
           case 0:
@@ -12641,8 +12652,8 @@ Add a <Suspense fallback=...> component higher in the tree to provide a loading 
                 break e;
               case 1:
                 $ = R;
-                var ze = ke.type, nt = ke.stateNode;
-                if ((ke.effectTag & 64) === 0 && (typeof ze.getDerivedStateFromError == "function" || nt !== null && typeof nt.componentDidCatch == "function" && (Xi === null || !Xi.has(nt)))) {
+                var Pe = ke.type, nt = ke.stateNode;
+                if ((ke.effectTag & 64) === 0 && (typeof Pe.getDerivedStateFromError == "function" || nt !== null && typeof nt.componentDidCatch == "function" && (Xi === null || !Xi.has(nt)))) {
                   ke.effectTag |= 4096, ke.expirationTime = s;
                   var Ct = hm(ke, $, s);
                   Nf(ke, Ct);
@@ -12789,8 +12800,8 @@ Add a <Suspense fallback=...> component higher in the tree to provide a loading 
             if (ue & 16 && ii(Oe.stateNode, ""), ue & 128) {
               var ye = Oe.alternate;
               if (ye !== null) {
-                var ze = ye.ref;
-                ze !== null && (typeof ze == "function" ? ze(null) : ze.current = null);
+                var Pe = ye.ref;
+                Pe !== null && (typeof Pe == "function" ? Pe(null) : Pe.current = null);
               }
             }
             switch (ue & 1038) {
@@ -12820,15 +12831,15 @@ Add a <Suspense fallback=...> component higher in the tree to provide a loading 
           is(Oe, dt), Oe = Oe.nextEffect;
         }
       while (Oe !== null);
-      if (ze = Jd, ye = Gd(), ue = ze.focusedElem, R = ze.selectionRange, ye !== ue && ue && ue.ownerDocument && Yd(ue.ownerDocument.documentElement, ue)) {
-        for (R !== null && Fu(ue) && (ye = R.start, ze = R.end, ze === void 0 && (ze = ye), "selectionStart" in ue ? (ue.selectionStart = ye, ue.selectionEnd = Math.min(ze, ue.value.length)) : (ze = (ye = ue.ownerDocument || document) && ye.defaultView || window, ze.getSelection && (ze = ze.getSelection(), H = ue.textContent.length, M = Math.min(R.start, H), R = R.end === void 0 ? M : Math.min(R.end, H), !ze.extend && M > R && (H = R, R = M, M = H), H = Zd(ue, M), Ee = Zd(ue, R), H && Ee && (ze.rangeCount !== 1 || ze.anchorNode !== H.node || ze.anchorOffset !== H.offset || ze.focusNode !== Ee.node || ze.focusOffset !== Ee.offset) && (ye = ye.createRange(), ye.setStart(H.node, H.offset), ze.removeAllRanges(), M > R ? (ze.addRange(ye), ze.extend(Ee.node, Ee.offset)) : (ye.setEnd(Ee.node, Ee.offset), ze.addRange(ye)))))), ye = [], ze = ue; ze = ze.parentNode; )
-          ze.nodeType === 1 && ye.push({
-            element: ze,
-            left: ze.scrollLeft,
-            top: ze.scrollTop
+      if (Pe = Jd, ye = Gd(), ue = Pe.focusedElem, R = Pe.selectionRange, ye !== ue && ue && ue.ownerDocument && Yd(ue.ownerDocument.documentElement, ue)) {
+        for (R !== null && Fu(ue) && (ye = R.start, Pe = R.end, Pe === void 0 && (Pe = ye), "selectionStart" in ue ? (ue.selectionStart = ye, ue.selectionEnd = Math.min(Pe, ue.value.length)) : (Pe = (ye = ue.ownerDocument || document) && ye.defaultView || window, Pe.getSelection && (Pe = Pe.getSelection(), H = ue.textContent.length, M = Math.min(R.start, H), R = R.end === void 0 ? M : Math.min(R.end, H), !Pe.extend && M > R && (H = R, R = M, M = H), H = Zd(ue, M), Ee = Zd(ue, R), H && Ee && (Pe.rangeCount !== 1 || Pe.anchorNode !== H.node || Pe.anchorOffset !== H.offset || Pe.focusNode !== Ee.node || Pe.focusOffset !== Ee.offset) && (ye = ye.createRange(), ye.setStart(H.node, H.offset), Pe.removeAllRanges(), M > R ? (Pe.addRange(ye), Pe.extend(Ee.node, Ee.offset)) : (ye.setEnd(Ee.node, Ee.offset), Pe.addRange(ye)))))), ye = [], Pe = ue; Pe = Pe.parentNode; )
+          Pe.nodeType === 1 && ye.push({
+            element: Pe,
+            left: Pe.scrollLeft,
+            top: Pe.scrollTop
           });
         for (typeof ue.focus == "function" && ue.focus(), ue = 0; ue < ye.length; ue++)
-          ze = ye[ue], ze.element.scrollLeft = ze.left, ze.element.scrollTop = ze.top;
+          Pe = ye[ue], Pe.element.scrollLeft = Pe.left, Pe.element.scrollTop = Pe.top;
       }
       Pa = !!Yu, Jd = Yu = null, i.current = c, Oe = g;
       do
@@ -13841,7 +13852,7 @@ function TL() {
         t && ee(e, t, o);
       e._dispatchListeners = null, e._dispatchInstances = null;
     }
-    var De = 0, ce = 1, et = 2, de = 3, Ue = 4, xe = 5, Ge = 6, At = 7, Yt = 8, Xe = 9, se = 10, N = 11, V = 12, ne = 13, Me = 14, be = 15, lt = 16, Ze = 17, Pe = 18, mt = 19, St = 20, Ot = 21, xt = 22, kn = null, jt = {};
+    var De = 0, ce = 1, et = 2, de = 3, Ue = 4, xe = 5, Ge = 6, At = 7, Yt = 8, Xe = 9, se = 10, N = 11, V = 12, ne = 13, Me = 14, be = 15, lt = 16, Ye = 17, ze = 18, mt = 19, St = 20, Ot = 21, xt = 22, kn = null, jt = {};
     function Kn() {
       if (!!kn)
         for (var e in jt) {
@@ -17238,7 +17249,7 @@ Check the render method of \`` + e + "`." : "";
     function ye(e, t) {
       e.removeChild(t);
     }
-    function ze(e, t) {
+    function Pe(e, t) {
       e.nodeType === li ? e.parentNode.removeChild(t) : e.removeChild(t);
     }
     function nt(e) {
@@ -21805,7 +21816,7 @@ Check the render method of \`` + u + "`.");
         }
         case be:
           return Y0(e, t, t.type, t.pendingProps, u, o);
-        case Ze: {
+        case Ye: {
           var Dt = t.type, Ht = t.pendingProps, kt = t.elementType === Dt ? Ht : ga(Dt, Ht);
           return B1(e, t, Dt, kt, o);
         }
@@ -21956,7 +21967,7 @@ Check the render method of \`` + u + "`.");
           return ud(t), Bw(t), null;
         case se:
           return Dy(t), null;
-        case Ze: {
+        case Ye: {
           var ge = t.type;
           return ds(ge) && $m(t), null;
         }
@@ -22183,7 +22194,7 @@ Visit https://fb.me/react-error-boundaries to learn more about error boundaries.
         case xe:
         case Ge:
         case Ue:
-        case Ze:
+        case Ye:
           return;
       }
       throw Error("This unit of work tag should not have side-effects. This error is likely caused by a bug in React. Please file an issue.");
@@ -22309,7 +22320,7 @@ Learn more about data fetching with Hooks: https://fb.me/react-hooks-data-fetchi
           return;
         }
         case mt:
-        case Ze:
+        case Ye:
         case St:
         case Ot:
           return;
@@ -22402,7 +22413,7 @@ Learn more about data fetching with Hooks: https://fb.me/react-hooks-data-fetchi
         }
         case St:
           return;
-        case Pe:
+        case ze:
           return;
         case Ot:
           return;
@@ -22448,7 +22459,7 @@ Learn more about data fetching with Hooks: https://fb.me/react-hooks-data-fetchi
               return null;
             t = t.return;
           }
-          for (t.sibling.return = t.return, t = t.sibling; t.tag !== xe && t.tag !== Ge && t.tag !== Pe; ) {
+          for (t.sibling.return = t.return, t = t.sibling; t.tag !== xe && t.tag !== Ge && t.tag !== ze; ) {
             if (t.effectTag & Cn || t.child === null || t.tag === Ue)
               continue e;
             t.child.return = t, t = t.child;
@@ -22530,7 +22541,7 @@ Learn more about data fetching with Hooks: https://fb.me/react-hooks-data-fetchi
           d = !0;
         }
         if (u.tag === xe || u.tag === Ge)
-          oR(e, u, o), w ? ze(p, u.stateNode) : ye(p, u.stateNode);
+          oR(e, u, o), w ? Pe(p, u.stateNode) : ye(p, u.stateNode);
         else if (u.tag === Ue) {
           if (u.child !== null) {
             p = u.stateNode.containerInfo, w = !0, u.child.return = u, u = u.child;
@@ -22597,7 +22608,7 @@ Learn more about data fetching with Hooks: https://fb.me/react-hooks-data-fetchi
           wC(t);
           return;
         }
-        case Ze:
+        case Ye:
           return;
       }
       throw Error("This unit of work tag should not have side-effects. This error is likely caused by a bug in React. Please file an issue.");
@@ -22693,7 +22704,7 @@ Learn more about data fetching with Hooks: https://fb.me/react-hooks-data-fetchi
               if (I.effectTag |= Ft, o.effectTag &= ~(Af | Lo), o.tag === ce) {
                 var q = o.alternate;
                 if (q === null)
-                  o.tag = Ze;
+                  o.tag = Ye;
                 else {
                   var O = Jo(It, null);
                   O.tag = tv, qo(o, O);
