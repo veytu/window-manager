@@ -341,18 +341,6 @@ export class AppManager {
 
         this.addAppsChangeListener();
         this.addAppCloseListener();
-        this.refresher.add("maximizedBoxes", () => {
-            return autorun(() => {
-                const maximized = this.attributes.maximizedBoxes;
-                this.boxManager?.setMaximized(maximized)
-            });
-        });
-        this.refresher.add("minimizedBoxes", () => {
-            return autorun(() => {
-                const minimized = this.attributes.minimizedBoxes;
-                this.onMinimized(minimized);
-            });
-        });
         this.refresher.add("mainViewIndex", () => {
             return autorun(() => {
                 const mainSceneIndex = get(this.attributes, "_mainSceneIndex");
@@ -577,11 +565,19 @@ export class AppManager {
     }
 
     public resetMaximized() {
-        this.boxManager?.setMaximized(this.store.getMaximized() ? this.store.getMaximized() : []);
+        const allBoxStatusInfo = this.store.getAllBoxStatusInfo();
+        if (allBoxStatusInfo) {
+            // 创建新对象，避免传递只读对象
+            this.boxManager?.teleBoxManager?.setAllBoxStatusInfo({ ...allBoxStatusInfo });
+        }
     }
 
     public resetMinimized() {
-        this.boxManager?.setMinimized(this.store.getMinimized() ? this.store.getMinimized() : []);
+        const allBoxStatusInfo = this.store.getAllBoxStatusInfo();
+        if (allBoxStatusInfo) {
+            // 创建新对象，避免传递只读对象
+            this.boxManager?.teleBoxManager?.setAllBoxStatusInfo({ ...allBoxStatusInfo });
+        }
     }
 
     private onAppDelete = async (apps: any) => {

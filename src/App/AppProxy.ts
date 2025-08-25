@@ -182,12 +182,12 @@ export class AppProxy implements PageRemoveService {
                 let boxInitState: AppInitState | undefined;
                 if (!skipUpdate) {
                     boxInitState = this.getAppInitState(appId);
-                    const maximized = this.boxManager?.teleBoxManager?.maximizedBoxes?.includes(appId)
-                    const minimized = this.boxManager?.teleBoxManager?.minimizedBoxes?.includes(appId)
+                            const maximized = this.boxManager?.teleBoxManager?.getMaximizedBoxes()?.includes(appId)
+        const minimized = this.boxManager?.teleBoxManager?.getMinimizedBoxes()?.includes(appId)
                     Object.assign((boxInitState || {}), { maximized, minimized });
                     this.boxManager?.updateBoxState(boxInitState);
 
-                    const boxes = this.boxManager?.teleBoxManager.maximizedBoxes.filter(box => !this?.boxManager?.teleBoxManager.minimizedBoxes.includes(box))
+                    const boxes = this.boxManager?.teleBoxManager.getMaximizedBoxes().filter(box => !this?.boxManager?.teleBoxManager.getMinimizedBoxes().includes(box))
                     if (boxes?.length) {
                         this.boxManager?.teleBoxManager?.makeBoxTopFromMaximized()
                     }

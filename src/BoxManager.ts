@@ -12,7 +12,6 @@ import type {
     TeleBoxColorScheme,
     TeleBoxRect,
     TeleBoxConfig,
-    TELE_BOX_NOT_MINIMIZED_STATE,
 } from "@netless/telebox-insider";
 import type Emittery from "emittery";
 import type { NetlessApp } from "./typings";
@@ -21,7 +20,11 @@ import type { CallbacksType } from "./callback";
 import type { EmitterType } from "./InternalEmitter";
 import { isAndroid, isIOS } from "./Utils/environment";
 
-export { TELE_BOX_STATE,TELE_BOX_NOT_MINIMIZED_STATE };
+// 定义本地类型
+type TELE_BOX_NOT_MINIMIZED_STATE = "normal" | "maximized";
+
+export { TELE_BOX_STATE };
+export type { TELE_BOX_NOT_MINIMIZED_STATE };
 
 export type CreateBoxParams = {
     appId: string;
@@ -115,27 +118,83 @@ export class BoxManager {
         });
 
         // ppt 在最小化后刷新恢复正常大小，拿不到正确的宽高，需要手动触发一下窗口的 resize
-        this.teleBoxManager._minimizedBoxes$.reaction(() => {
-            setTimeout(() => {
-                const offset = 0.0001 * (Math.random() > 0.5 ? 1 : -1);
-                this.teleBoxManager.boxes.forEach(box => {
-                    if (box.id?.toLocaleLowerCase().includes('slide')) {
-                        box.resize(box.intrinsicWidth + offset, box.intrinsicHeight + offset, true);
-                    } 
-                });
-            }, 400);
-        });
+        // 现在通过minimized事件来触发
+        // this.teleBoxManager.events.on("minimized", (minimizedBoxes) => {
+        //     if (minimizedBoxes.length > 0) {
+        //         setTimeout(() => {
+        //             const offset = 0.0001 * (Math.random() > 0.5 ? 1 : -1);
+        //             this.teleBoxManager.boxes.forEach(box => {
+        //                 if (box.id?.toLocaleLowerCase().includes('slide')) {
+        //                     box.resize(box.intrinsicWidth + offset, box.intrinsicHeight + offset, true);
+        //                 } 
+        //             });
+        //         }, 400);
+        //     }
+        // });
 
         // events.on 的值则会根据 skipUpdate 来决定是否触发回调
-        this.teleBoxManager.events.on("minimized", minimizedBoxes => {
-            console.log('[TeleBox] BoxManager - Minimized Event Received', minimizedBoxes)
-            this.context.safeSetAttributes({ minimizedBoxes: JSON.stringify(minimizedBoxes) });
-            callbacks.emit("onMinimized", JSON.stringify(minimizedBoxes));
-        });
-        this.teleBoxManager.events.on("maximized", maximizedBoxes => {
-            console.log('[TeleBox] BoxManager - Maximized Event Received', maximizedBoxes)
-            this.context.safeSetAttributes({ maximizedBoxes: JSON.stringify(maximizedBoxes) });
+        // this.teleBoxManager.events.on("minimized", minimizedBoxes => {
+        //     console.log('[TeleBox] BoxManager - Minimized Event Received', minimizedBoxes)
+        //     // 更新AllBoxStatusInfo
+        //     const allBoxStatusInfo = this.context.manager.appManager?.store.getAllBoxStatusInfo() || {}
+        //     // 清除所有最小化状态
+        //     Object.keys(allBoxStatusInfo).forEach(boxId => {
+        //         if (allBoxStatusInfo[boxId] === TELE_BOX_STATE.Minimized) {
+        //             allBoxStatusInfo[boxId] = TELE_BOX_STATE.Normal
+        //         }
+        //     })
+        //     // 设置新的最小化状态
+        //     minimizedBoxes.forEach(boxId => {
+        //         allBoxStatusInfo[boxId] = TELE_BOX_STATE.Minimized
+        //     })
+        //     this.context.manager.appManager?.store.setAllBoxStatusInfo(allBoxStatusInfo)
+        //     callbacks.emit("onMinimized", JSON.stringify(minimizedBoxes));
+        // });
+        // this.teleBoxManager.events.on("maximized", maximizedBoxes => {
+        //     console.log('[TeleBox] BoxManager - Maximized Event Received', maximizedBoxes)
+        //     // 更新AllBoxStatusInfo
+        //     const allBoxStatusInfo = this.context.manager.appManager?.store.getAllBoxStatusInfo() || {}
+        //     // 清除所有最大化状态
+        //     Object.keys(allBoxStatusInfo).forEach(boxId => {
+        //         if (allBoxStatusInfo[boxId] === TELE_BOX_STATE.Maximized) {
+        //             allBoxStatusInfo[boxId] = TELE_BOX_STATE.Normal
+        //         }
+        //     })
+        //     // 设置新的最大化状态
+        //     maximizedBoxes.forEach(boxId => {
+        //         allBoxStatusInfo[boxId] = TELE_BOX_STATE.Maximized
+        //     })
+        //     this.context.manager.appManager?.store.setAllBoxStatusInfo(allBoxStatusInfo)
+        //     callbacks.emit("onMaximized", JSON.stringify(maximizedBoxes));
+        // });
+        this.teleBoxManager.events.on("all_box_status_info", info => {
+            console.log('[TeleBox] BoxManager - AllBoxStatusInfo Event Received', info)
+            const allBoxStatusInfo = info || {}
+            // // 清除所有最大化状态
+            // Object.keys(allBoxStatusInfo).forEach(boxId => {
+            //     if (allBoxStatusInfo[boxId] === TELE_BOX_STATE.Maximized) {
+            //         allBoxStatusInfo[boxId] = TELE_BOX_STATE.Normal
+            //     }
+            // })
+            this.context.manager.appManager?.store.setAllBoxStatusInfo(allBoxStatusInfo)
+            const maximizedBoxes = Object.entries(allBoxStatusInfo)
+                .filter(([_, state]) => state === TELE_BOX_STATE.Maximized)
+                .map(([boxId, _]) => boxId);
+            const minimizedBoxes = Object.entries(allBoxStatusInfo)
+                .filter(([_, state]) => state === TELE_BOX_STATE.Minimized)
+                .map(([boxId, _]) => boxId);
             callbacks.emit("onMaximized", JSON.stringify(maximizedBoxes));
+            callbacks.emit("onMinimized", JSON.stringify(minimizedBoxes));
+            if (minimizedBoxes.length > 0) {
+                setTimeout(() => {
+                    const offset = 0.0001 * (Math.random() > 0.5 ? 1 : -1);
+                    this.teleBoxManager.boxes.forEach(box => {
+                        if (box.id?.toLocaleLowerCase().includes('slide')) {
+                            box.resize(box.intrinsicWidth + offset, box.intrinsicHeight + offset, true);
+                        } 
+                    });
+                }, 400);
+            }
         });
         this.teleBoxManager.events.on("removed", boxes => {
             console.log('[TeleBox] BoxManager - Removed Event Received', boxes)
@@ -192,11 +251,21 @@ export class BoxManager {
     }
 
     public get maximized() {
-        return this.teleBoxManager._maximizedBoxes$.value;
+        // 从allBoxStatusInfo中获取最大化boxes
+        const allBoxStatusInfo = this.context.manager.appManager?.store.getAllBoxStatusInfo();
+        if (!allBoxStatusInfo) return [];
+        return Object.entries(allBoxStatusInfo)
+            .filter(([_, state]) => state === TELE_BOX_STATE.Maximized)
+            .map(([boxId, _]) => boxId);
     }
 
     public get minimized() {
-        return this.teleBoxManager._minimizedBoxes$.value;
+        // 从allBoxStatusInfo中获取最小化boxes
+        const allBoxStatusInfo = this.context.manager.appManager?.store.getAllBoxStatusInfo();
+        if (!allBoxStatusInfo) return [];
+        return Object.entries(allBoxStatusInfo)
+            .filter(([_, state]) => state === TELE_BOX_STATE.Minimized)
+            .map(([boxId, _]) => boxId);
     }
 
     public get darkMode() {
@@ -407,7 +476,7 @@ export class BoxManager {
         try {
             const maximizedBoxes = JSON.parse(maximized)
             console.log('[TeleBox] BoxManager SetMaximized - Parsed Boxes', maximizedBoxes)
-            this.teleBoxManager.setMaximizedBoxes(maximizedBoxes, skipUpdate);
+            this.teleBoxManager.setAllBoxStatusInfo(maximizedBoxes, skipUpdate);
         } catch (e) {
             console.log('[TeleBox] BoxManager SetMaximized - Error', e);
         }
@@ -417,9 +486,9 @@ export class BoxManager {
         console.log('[TeleBox] BoxManager SetMinimized Called', { minimized, skipUpdate })
         if (!isString(minimized)) return;
         try {
-            const minimizedBoxes = JSON.parse(minimized)
-            console.log('[TeleBox] BoxManager SetMinimized - Parsed Boxes', minimizedBoxes)
-            this.teleBoxManager.setMinimizedBoxes(minimizedBoxes, skipUpdate);
+            // const minimizedBoxes = JSON.parse(minimized)
+            // console.log('[TeleBox] BoxManager SetMinimized - Parsed Boxes', minimizedBoxes)
+            // this.teleBoxManager.setMinimizedBoxes(minimizedBoxes, skipUpdate);
         } catch (e) {
             console.log('[TeleBox] BoxManager SetMinimized - Error', e);
         }

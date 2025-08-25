@@ -4,7 +4,8 @@ import { setViewFocusScenePath } from "./Utils/Common";
 import { logFirstTag, type AddAppParams, type AppSyncAttributes } from "./index";
 import type { Camera, Size, View } from "white-web-sdk";
 import type { Cursor } from "./Cursor/Cursor";
-import { TELE_BOX_NOT_MINIMIZED_STATE, TELE_BOX_STATE } from "./BoxManager";
+import { TELE_BOX_STATE } from "./BoxManager";
+import type { TELE_BOX_NOT_MINIMIZED_STATE } from "./BoxManager";
 
 export enum Fields {
     Apps = "apps",
@@ -22,8 +23,8 @@ export enum Fields {
     IframeBridge = "iframeBridge",
     // 移动到自定义的内部
     LaserPointerActive = 'laserPointerActive',
-    boxsStatus = "boxsStatus",
-    lastNotMinimizedBoxsStatus = 'lastNotMinimizedBoxsStatus',
+    AllBoxStatusInfo = "allBoxStatusInfo",//全部的Box状态信息
+    LastNotMinimizedBoxsStatus = "lastNotMinimizedBoxsStatus",//上一次最小化的Box状态信息
     ViewScrollChange = 'viewScrollChange',//视图移动
     MainViewBackgroundInfo = 'mainViewBackgroundInfo',//背景信息，分为图片和颜色{img:url,color:string}
     Scale = 'Scale',//缩放调整
@@ -79,36 +80,44 @@ export class AttributesDelegate {
         return get(this.apps(), [id, Fields.State]);
     }
 
-    public getMaximized() {
-        return get(this.attributes, ["maximized"]);
+    public getMaximized(): string[] {
+        const allBoxStatusInfo = this.getAllBoxStatusInfo()
+        if (!allBoxStatusInfo) return []
+        return Object.entries(allBoxStatusInfo)
+            .filter(([_, state]) => state === TELE_BOX_STATE.Maximized)
+            .map(([boxId, _]) => boxId)
     }
 
-    public getMinimized() {
-        return get(this.attributes, ["minimized"]);
+    public getMinimized(): string[] {
+        const allBoxStatusInfo = this.getAllBoxStatusInfo()
+        if (!allBoxStatusInfo) return []
+        return Object.entries(allBoxStatusInfo)
+            .filter(([_, state]) => state === TELE_BOX_STATE.Minimized)
+            .map(([boxId, _]) => boxId)
     }
 
-    public getBoxsStatus(): Record<string, TELE_BOX_STATE> | undefined {
-        return get(this.attributes, [Fields.boxsStatus]);
+    public setAllBoxStatusInfo(allBoxStatusInfo: Record<string, TELE_BOX_STATE> | undefined) {
+        console.log('[TeleBox] AttributesDelegate - setAllBoxStatusInfo', allBoxStatusInfo)
+        this.context.safeSetAttributes({ [Fields.AllBoxStatusInfo]: allBoxStatusInfo });
+    }
+    public getAllBoxStatusInfo(): Record<string, TELE_BOX_STATE> | undefined {
+        return get(this.attributes, [Fields.AllBoxStatusInfo]);
     }
 
-    public setBoxsStatus(boxsStatus: Record<string, TELE_BOX_STATE> | undefined) {
-        this.context.safeSetAttributes({ [Fields.boxsStatus]: boxsStatus });
+    public setBoxStatusInfo(id: string, status: TELE_BOX_STATE | undefined) {
+        this.context.safeUpdateAttributes([Fields.AllBoxStatusInfo, id], status);
     }
 
-    public getBoxStatus(id: string): TELE_BOX_STATE | undefined {
-        return get(this.attributes, [Fields.boxsStatus, id]);
-    }
-
-    public setBoxStatus(id: string, status: TELE_BOX_STATE | undefined) {
-        this.context.safeUpdateAttributes([Fields.boxsStatus, id], status);
+    public getBoxStatusInfo(id: string): TELE_BOX_STATE | undefined {
+        return get(this.attributes, [Fields.AllBoxStatusInfo, id]);
     }
 
     public getLastNotMinimizedBoxsStatus(): Record<string, TELE_BOX_NOT_MINIMIZED_STATE> | undefined {
-        return get(this.attributes, [Fields.lastNotMinimizedBoxsStatus]);
+        return get(this.attributes, [Fields.LastNotMinimizedBoxsStatus]);
     }
 
     public setLastNotMinimizedBoxsStatus(lastNotMinimizedBoxsStatus: Record<string, TELE_BOX_NOT_MINIMIZED_STATE> | undefined) {
-        this.context.safeSetAttributes({ [Fields.lastNotMinimizedBoxsStatus]: lastNotMinimizedBoxsStatus });
+        this.context.safeSetAttributes({ [Fields.LastNotMinimizedBoxsStatus]: lastNotMinimizedBoxsStatus });
     }
 
     public setViewScrollChange(data: {appId: string, x: number, y: number}) {
@@ -119,12 +128,12 @@ export class AttributesDelegate {
         return get(this.attributes, [Fields.ViewScrollChange]);
     }
 
-    public getLastNotMinimizedBoxStatus(): TELE_BOX_NOT_MINIMIZED_STATE | undefined {
-        return get(this.attributes, [Fields.lastNotMinimizedBoxsStatus, this.getLastNotMinimizedBoxsStatus()]);
+    public getLastNotMinimizedBoxStatus(id: string): TELE_BOX_NOT_MINIMIZED_STATE | undefined {
+        return get(this.attributes, [Fields.LastNotMinimizedBoxsStatus, id]);
     }
 
     public setLastNotMinimizedBoxStatus(id: string, status: TELE_BOX_NOT_MINIMIZED_STATE | undefined) {
-        this.context.safeUpdateAttributes([Fields.lastNotMinimizedBoxsStatus, id], status);
+        this.context.safeUpdateAttributes([Fields.LastNotMinimizedBoxsStatus, id], status);
     }
 
     public setupAppAttributes(params: AddAppParams, id: string, isDynamicPPT: boolean) {

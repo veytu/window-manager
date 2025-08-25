@@ -95,8 +95,6 @@ export type WindowMangerAttributes = {
     boxState: TELE_BOX_STATE;
     maximized?: boolean;
     minimized?: boolean;
-    maximizedBoxes?: string;
-    minimizedBoxes?: string;
     [key: string]: any;
 };
 
@@ -390,6 +388,14 @@ export class WindowManager
                 }
             }, 'MainViewBackgroundInfo');
         });
+        manager.appManager?.refresher?.add(Fields.AllBoxStatusInfo, () => {
+            console.log(`${logFirstTag} AllBoxStatusInfo Register Listener`)
+            return createAntiLoopAutorun(() => {
+                const data = get(manager!.appManager!.attributes, Fields.AllBoxStatusInfo);
+                manager?.boxManager?.teleBoxManager?.setAllBoxStatusInfo(data,true)
+                console.log(`${logFirstTag} AllBoxStatusInfo Target`, JSON.stringify(data))
+            }, 'AllBoxStatusInfo');
+        });
 
         internalEmitter.on("playgroundSizeChange", () => {
             manager?._updateMainViewWrapperSize(manager.getAttributesValue(Fields.Scale)[mainViewField],true);
@@ -502,8 +508,8 @@ export class WindowManager
         }
         internalEmitter.emit("updateManagerRect");
         this.appManager?.refresh();
-        this.appManager?.resetMaximized();
-        this.appManager?.resetMinimized();
+        // this.appManager?.resetMaximized();
+        // this.appManager?.resetMinimized();
         this.appManager?.displayerWritableListener(!this.room.isWritable);
         WindowManager.container = container;
     }
@@ -885,8 +891,8 @@ export class WindowManager
     }
 
     public getTopMaxBoxId() {
-        const boxes = this.appManager?.boxManager?.teleBoxManager.maximizedBoxes.filter(
-            box => !this.appManager?.boxManager?.teleBoxManager.minimizedBoxes.includes(box)
+        const boxes = this.appManager?.boxManager?.teleBoxManager.getMaximizedBoxes().filter(
+            box => !this.appManager?.boxManager?.teleBoxManager.getMinimizedBoxes().includes(box)
         );
         if (!boxes?.length) return undefined;
         return boxes.reduce((a, b) =>
