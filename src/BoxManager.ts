@@ -170,12 +170,6 @@ export class BoxManager {
         this.teleBoxManager.events.on("all_box_status_info", info => {
             console.log('[TeleBox] BoxManager - AllBoxStatusInfo Event Received', info)
             const allBoxStatusInfo = info || {}
-            // // 清除所有最大化状态
-            // Object.keys(allBoxStatusInfo).forEach(boxId => {
-            //     if (allBoxStatusInfo[boxId] === TELE_BOX_STATE.Maximized) {
-            //         allBoxStatusInfo[boxId] = TELE_BOX_STATE.Normal
-            //     }
-            // })
             this.context.manager.appManager?.store.setAllBoxStatusInfo(allBoxStatusInfo)
             const maximizedBoxes = Object.entries(allBoxStatusInfo)
                 .filter(([_, state]) => state === TELE_BOX_STATE.Maximized)
@@ -183,8 +177,7 @@ export class BoxManager {
             const minimizedBoxes = Object.entries(allBoxStatusInfo)
                 .filter(([_, state]) => state === TELE_BOX_STATE.Minimized)
                 .map(([boxId, _]) => boxId);
-            callbacks.emit("onMaximized", JSON.stringify(maximizedBoxes));
-            callbacks.emit("onMinimized", JSON.stringify(minimizedBoxes));
+            callbacks.emit("onAllBoxStatusInfo", allBoxStatusInfo);
             if (minimizedBoxes.length > 0) {
                 setTimeout(() => {
                     const offset = 0.0001 * (Math.random() > 0.5 ? 1 : -1);
@@ -195,6 +188,11 @@ export class BoxManager {
                     });
                 }, 400);
             }
+        });
+        this.teleBoxManager.events.on("last_last_not_minimized_boxs_status", info => {
+            console.log('[TeleBox] BoxManager - LastLastNotMinimizedBoxsStatus Event Received', info)
+            const lastLastNotMinimizedBoxsStatus = info || {}
+            this.context.manager.appManager?.store.setLastNotMinimizedBoxsStatus(lastLastNotMinimizedBoxsStatus)
         });
         this.teleBoxManager.events.on("removed", boxes => {
             console.log('[TeleBox] BoxManager - Removed Event Received', boxes)
@@ -473,13 +471,13 @@ export class BoxManager {
     public setMaximized(maximized?: string, skipUpdate = true): void {
         console.log('[TeleBox] BoxManager SetMaximized Called', { maximized, skipUpdate })
         if (!isString(maximized)) return;
-        try {
-            const maximizedBoxes = JSON.parse(maximized)
-            console.log('[TeleBox] BoxManager SetMaximized - Parsed Boxes', maximizedBoxes)
-            this.teleBoxManager.setAllBoxStatusInfo(maximizedBoxes, skipUpdate);
-        } catch (e) {
-            console.log('[TeleBox] BoxManager SetMaximized - Error', e);
-        }
+        // try {
+        //     const maximizedBoxes = JSON.parse(maximized)
+        //     console.log('[TeleBox] BoxManager SetMaximized - Parsed Boxes', maximizedBoxes)
+        //     this.teleBoxManager.setAllBoxStatusInfo(maximizedBoxes, skipUpdate);
+        // } catch (e) {
+        //     console.log('[TeleBox] BoxManager SetMaximized - Error', e);
+        // }
     }
 
     public setMinimized(minimized?: string, skipUpdate = true) {

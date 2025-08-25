@@ -112,11 +112,11 @@ export class AttributesDelegate {
         return get(this.attributes, [Fields.AllBoxStatusInfo, id]);
     }
 
-    public getLastNotMinimizedBoxsStatus(): Record<string, TELE_BOX_NOT_MINIMIZED_STATE> | undefined {
+    public getLastNotMinimizedBoxsStatus(): Record<string, TELE_BOX_STATE> | undefined {
         return get(this.attributes, [Fields.LastNotMinimizedBoxsStatus]);
     }
 
-    public setLastNotMinimizedBoxsStatus(lastNotMinimizedBoxsStatus: Record<string, TELE_BOX_NOT_MINIMIZED_STATE> | undefined) {
+    public setLastNotMinimizedBoxsStatus(lastNotMinimizedBoxsStatus: Record<string, TELE_BOX_STATE> | undefined) {
         this.context.safeSetAttributes({ [Fields.LastNotMinimizedBoxsStatus]: lastNotMinimizedBoxsStatus });
     }
 

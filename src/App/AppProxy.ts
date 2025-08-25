@@ -5,7 +5,7 @@ import { AppPageStateImpl } from "./AppPageStateImpl";
 import { appRegister } from "../Register";
 import { autorun } from "white-web-sdk";
 import { BoxManagerNotFoundError } from "../Utils/error";
-import { debounce, get, isNumber } from "lodash";
+import { compact, debounce, get, isNumber } from "lodash";
 import { internalEmitter } from "../InternalEmitter";
 import { Fields } from "../AttributesDelegate";
 import { log } from "../Utils/log";
@@ -182,8 +182,8 @@ export class AppProxy implements PageRemoveService {
                 let boxInitState: AppInitState | undefined;
                 if (!skipUpdate) {
                     boxInitState = this.getAppInitState(appId);
-                            const maximized = this.boxManager?.teleBoxManager?.getMaximizedBoxes()?.includes(appId)
-        const minimized = this.boxManager?.teleBoxManager?.getMinimizedBoxes()?.includes(appId)
+                    const maximized = this.boxManager?.teleBoxManager?.getMaximizedBoxes()?.includes(appId)
+                    const minimized = this.boxManager?.teleBoxManager?.getMinimizedBoxes()?.includes(appId)
                     Object.assign((boxInitState || {}), { maximized, minimized });
                     this.boxManager?.updateBoxState(boxInitState);
 
@@ -191,7 +191,7 @@ export class AppProxy implements PageRemoveService {
                     if (boxes?.length) {
                         this.boxManager?.teleBoxManager?.makeBoxTopFromMaximized()
                     }
-                    
+
                 }
                 this.appEmitter.onAny(this.appListener);
                 this.appAttributesUpdateListener(appId);

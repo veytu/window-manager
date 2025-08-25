@@ -43,6 +43,7 @@ export type PublicEvent = {
     appZIndexChange: {appId: string; box: ReadonlyTeleBox};
     onMinimized: string;
     onMaximized: string;
+    onAllBoxStatusInfo: Record<string, TELE_BOX_STATE>  ;
 };
 
 export type CallbacksType = Emittery<PublicEvent>;

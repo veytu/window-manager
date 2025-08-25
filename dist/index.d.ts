@@ -528,6 +528,7 @@ type PublicEvent = {
     };
     onMinimized: string;
     onMaximized: string;
+    onAllBoxStatusInfo: Record<string, TELE_BOX_STATE>;
 };
 type CallbacksType = Emittery<PublicEvent>;
 
@@ -701,8 +702,8 @@ declare class AttributesDelegate {
     getAllBoxStatusInfo(): Record<string, TELE_BOX_STATE> | undefined;
     setBoxStatusInfo(id: string, status: TELE_BOX_STATE | undefined): void;
     getBoxStatusInfo(id: string): TELE_BOX_STATE | undefined;
-    getLastNotMinimizedBoxsStatus(): Record<string, TELE_BOX_NOT_MINIMIZED_STATE> | undefined;
-    setLastNotMinimizedBoxsStatus(lastNotMinimizedBoxsStatus: Record<string, TELE_BOX_NOT_MINIMIZED_STATE> | undefined): void;
+    getLastNotMinimizedBoxsStatus(): Record<string, TELE_BOX_STATE> | undefined;
+    setLastNotMinimizedBoxsStatus(lastNotMinimizedBoxsStatus: Record<string, TELE_BOX_STATE> | undefined): void;
     setViewScrollChange(data: {
         appId: string;
         x: number;
@@ -1330,7 +1331,7 @@ type MountParams = {
 };
 declare const reconnectRefresher: ReconnectRefresher;
 declare const mainViewField = "mainView";
-declare const logFirstTag = "Custom WindowManager Attributes";
+declare const logFirstTag = "[TeleBox] WindowManager";
 declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any> implements PageController {
     static kind: string;
     static displayer: Displayer;

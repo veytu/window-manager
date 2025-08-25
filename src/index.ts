@@ -192,7 +192,7 @@ export const reconnectRefresher = new ReconnectRefresher({ emitter: internalEmit
 
 export const mainViewField = "mainView";
 
-export const logFirstTag = "Custom WindowManager Attributes"
+export const logFirstTag = "[TeleBox] WindowManager"
 export class WindowManager
     extends InvisiblePlugin<WindowMangerAttributes, any>
     implements PageController
@@ -394,6 +394,14 @@ export class WindowManager
                 const data = get(manager!.appManager!.attributes, Fields.AllBoxStatusInfo);
                 manager?.boxManager?.teleBoxManager?.setAllBoxStatusInfo(data,true)
                 console.log(`${logFirstTag} AllBoxStatusInfo Target`, JSON.stringify(data))
+            }, 'AllBoxStatusInfo');
+        });
+        manager.appManager?.refresher?.add(Fields.LastNotMinimizedBoxsStatus, () => {
+            console.log(`${logFirstTag} LastNotMinimizedBoxsStatus Register Listener`)
+            return createAntiLoopAutorun(() => {
+                const data = get(manager!.appManager!.attributes, Fields.LastNotMinimizedBoxsStatus);
+                manager?.boxManager?.teleBoxManager?.setLastLastNotMinimizedBoxsStatus(data,true)
+                console.log(`${logFirstTag} LastNotMinimizedBoxsStatus Target`, JSON.stringify(data))
             }, 'AllBoxStatusInfo');
         });
 
