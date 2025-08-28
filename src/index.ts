@@ -1363,6 +1363,7 @@ export class WindowManager
         console.log(`${logFirstTag} Initializing LaserPointerManager, existing:`, !!this._laserPointerManager);
         if (WindowManager.container && this.room && this.displayer && this.appManager) {
             this._laserPointerManager = new LaserPointerManager(
+                this,
                 WindowManager.container,
                 this.room,
                 this.displayer,

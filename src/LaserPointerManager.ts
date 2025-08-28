@@ -1,6 +1,7 @@
 import { throttle } from "lodash";
 import { Displayer, Room } from "white-web-sdk";
 import { Fields } from "./AttributesDelegate";
+import { WindowManager } from ".";
 
 const logFirstTag = "[LaserPointerManager]";
 
@@ -24,8 +25,10 @@ export class LaserPointerManager {
     private _teacherInfo?: any;
     private _currentUserId?: string;
     private _instanceId: string; // 实例唯一标识
+    private _manager: WindowManager;
 
     constructor(
+        manager: WindowManager,
         container: HTMLElement,
         room: Room,
         displayer: Displayer,
@@ -33,6 +36,7 @@ export class LaserPointerManager {
         teacherInfo?: any,
         currentUserId?: string
     ) {
+        this._manager = manager;
         this._container = container;
         this._room = room;
         this._displayer = displayer;
@@ -138,11 +142,8 @@ export class LaserPointerManager {
                 return;
             }
             
-            const relativeX = (event.clientX - containerRect.left) / containerRect.width;
-            const relativeY = (event.clientY - containerRect.top) / containerRect.height;
-            
-            const position = { x: relativeX, y: relativeY };
-            
+            const position = this._manager.mainView.convertToPointInWorld({x: event.offsetX, y: event.offsetY})
+            console.log(`${logFirstTag} [${this._instanceId}] Mouse move handler called, position:`, position, event.offsetX, event.offsetY);
             // 检查是否是重新进入容器（之前在外面，现在在里面）
             const wasOutside = this._lastTeacherPosition && 
                              (this._lastTeacherPosition.x === -1 && this._lastTeacherPosition.y === -1);
@@ -234,12 +235,11 @@ export class LaserPointerManager {
             background-repeat: no-repeat;
             pointer-events: none;
             z-index: 10000;
-            transform: translate(-50%, -50%);
             display: none;
         `;
         
         if (this._container) {
-            this._container.appendChild(this._laserPointerIcon);
+            this._container?.querySelector('.netless-window-manager-wrapper')?.appendChild(this._laserPointerIcon);
         }
     }
 
@@ -289,11 +289,11 @@ export class LaserPointerManager {
         // 更新激光笔图标位置
         if (this._laserPointerIcon && this._container) {
             const containerRect = this._container.getBoundingClientRect();
-            const actualX = position.x * containerRect.width;
-            const actualY = position.y * containerRect.height;
+            const point = this._manager.mainView.convertToPointOnScreen(position.x, position.y)
             
-            this._laserPointerIcon.style.left = `${actualX}px`;
-            this._laserPointerIcon.style.top = `${actualY}px`;
+            // 使用 transform 设置位置，性能更好且更流畅
+            this._laserPointerIcon.style.left = `${point.x - 10}px`;
+            this._laserPointerIcon.style.top = `${point.y - 10}px`;
             this._laserPointerIcon.style.display = 'block';
         }
     }
