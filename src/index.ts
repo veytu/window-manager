@@ -1368,7 +1368,6 @@ export class WindowManager
                 this.room,
                 this.displayer,
                 this.appManager,
-                this.teacherInfo,
                 this._getCurrentUserId()
             );
             console.log(`${logFirstTag} LaserPointerManager created successfully`);
