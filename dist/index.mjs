@@ -1,6 +1,6 @@
 import CT from "p-retry";
 import Od from "emittery";
-import { debounce as Ea, isEqual as dg, omit as hS, isObject as Ma, has as $b, get as zt, size as KN, mapValues as eD, noop as MT, isString as Fb, pick as tD, isEmpty as tp, isInteger as nD, orderBy as iD, isFunction as Id, isNumber as ag, throttle as rD, isNull as aD } from "lodash";
+import { debounce as Ea, isEqual as dg, omit as hS, isObject as Ma, has as $b, get as _t, size as KN, mapValues as eD, noop as MT, isString as Fb, pick as tD, isEmpty as tp, isInteger as nD, orderBy as iD, isFunction as Id, isNumber as ag, throttle as rD, isNull as aD } from "lodash";
 import { ScenePathType as sg, UpdateEventKind as TT, listenUpdated as fg, unlistenUpdated as pS, reaction as Sg, autorun as yo, toJS as sD, listenDisposed as oD, unlistenDisposed as lD, ViewMode as ll, AnimationMode as Qb, isPlayer as mS, isRoom as ku, WhiteVersion as uD, ApplianceNames as kn, RoomPhase as _u, PlayerPhase as dM, InvisiblePlugin as cD } from "white-web-sdk";
 import { v4 as dD } from "uuid";
 import { ResizeObserver as fD } from "@juggle/resize-observer";
@@ -10,7 +10,7 @@ import { createSideEffectBinder as hD, withValueEnhancer as pD } from "value-enh
 var en = /* @__PURE__ */ ((r) => (r.AppMove = "AppMove", r.AppFocus = "AppFocus", r.AppResize = "AppResize", r.AppBoxStateChange = "AppBoxStateChange", r.GetAttributes = "GetAttributes", r.UpdateWindowManagerWrapper = "UpdateWindowManagerWrapper", r.InitReplay = "InitReplay", r.WindowCreated = "WindowCreated", r.SetMainViewScenePath = "SetMainViewScenePath", r.SetMainViewSceneIndex = "SetMainViewSceneIndex", r.SetAppFocusIndex = "SetAppFocusIndex", r.SwitchViewsToFreedom = "SwitchViewsToFreedom", r.MoveCamera = "MoveCamera", r.MoveCameraToContain = "MoveCameraToContain", r.CursorMove = "CursorMove", r.RootDirRemoved = "RootDirRemoved", r.Refresh = "Refresh", r.InitMainViewCamera = "InitMainViewCamera", r))(en || {});
 const Yb = "__WindowManger", bb = "__WindowMangerEnsureReconnected__";
 var er = /* @__PURE__ */ ((r) => (r.Size = "size", r.Position = "position", r.SceneIndex = "SceneIndex", r.ZIndex = "zIndex", r))(er || {}), ET = /* @__PURE__ */ ((r) => (r.setBoxSize = "setBoxSize", r.setBoxMinSize = "setBoxMinSize", r.destroy = "destroy", r))(ET || {}), Gb = /* @__PURE__ */ ((r) => (r.StartCreate = "StartCreate", r))(Gb || {}), Xb = /* @__PURE__ */ ((r) => (r.Leave = "leave", r.Normal = "normal", r))(Xb || {});
-const hM = "2.16.1", mD = 340 / 720, vD = 340 / 720, gD = 9 / 16, Er = "/", IT = "/init", AT = 200, _t = new Od();
+const hM = "2.16.1", mD = 340 / 720, vD = 340 / 720, gD = 9 / 16, Er = "/", IT = "/init", AT = 200, Pt = new Od();
 class yD {
   constructor() {
     this.list = [], this.isEmit = !1, this.invoked = () => {
@@ -39,7 +39,7 @@ class yD {
   }
   emitReady() {
     this.isEmit || setTimeout(() => {
-      _t.emit("ready");
+      Pt.emit("ready");
     }, AT), this.isEmit = !0;
   }
   empty() {
@@ -99,27 +99,27 @@ const ED = "NetlessApp", ID = 1e4, AD = async (r) => {
   return typeof a > "u" && (a = window[n]), a;
 }, RD = async (r, n, a) => {
   const l = a || ED + n;
-  _t.emit("loadApp", { kind: n, status: "start" });
+  Pt.emit("loadApp", { kind: n, status: "start" });
   let f;
   try {
     if (f = await AD(r), !f || f.length === 0)
-      throw _t.emit("loadApp", { kind: n, status: "failed", reason: "script is empty." }), new Error("[WindowManager]: script is empty.");
+      throw Pt.emit("loadApp", { kind: n, status: "failed", reason: "script is empty." }), new Error("[WindowManager]: script is empty.");
   } catch (m) {
-    throw _t.emit("loadApp", { kind: n, status: "failed", reason: m.message }), m;
+    throw Pt.emit("loadApp", { kind: n, status: "failed", reason: m.message }), m;
   }
   return ND(f, l, n);
 }, ND = (r, n, a) => {
   try {
     const l = mM(r, n);
-    return _t.emit("loadApp", { kind: a, status: "success" }), l;
+    return Pt.emit("loadApp", { kind: a, status: "success" }), l;
   } catch (l) {
     if (l.message.includes("Can only have one anonymous define call per script file")) {
       const f = window.define;
       typeof f == "function" && f.amd && delete f.amd;
       const m = mM(r, n);
-      return _t.emit("loadApp", { kind: a, status: "success" }), m;
+      return Pt.emit("loadApp", { kind: a, status: "success" }), m;
     }
-    throw _t.emit("loadApp", { kind: a, status: "failed", reason: l.message }), l;
+    throw Pt.emit("loadApp", { kind: a, status: "failed", reason: l.message }), l;
   }
 };
 async function DD(r, n) {
@@ -291,9 +291,9 @@ class VD {
       var l, f;
       (l = this.boxManager) == null || l.resizeBox(Object.assign(a, { skipUpdate: !0 })), (f = this.manager.room) == null || f.refreshViewSize();
     }, this.boxStateChangeHandler = (a) => {
-      _t.emit("boxStateChange", a);
+      Pt.emit("boxStateChange", a);
     }, this.setMainViewScenePathHandler = ({ nextScenePath: a }) => {
-      Lu(this.manager.mainView, a), _t.emit("mainViewScenePathChange", a);
+      Lu(this.manager.mainView, a), Pt.emit("mainViewScenePathChange", a);
     }, this.moveCameraHandler = (a) => {
       dg(hS(a, ["animationMode"]), { ...this.manager.mainView.camera }) || this.manager.mainView.moveCamera(a);
     }, this.moveCameraToContainHandler = (a) => {
@@ -489,7 +489,7 @@ class wM {
       throw new Error(`Default state for Storage ${a} is not an object.`);
     this._context = n, this.id = a || null, this._state = {};
     const f = this._getRawState(this._state);
-    this._context.getIsWritable() && (this.id === null ? n.isAddApp && l && this.setState(l) : (f === this._state || !Ma(f)) && (zt(this._context.getAttributes(), [xa]) || this._context.updateAttributes([xa], {}), this._context.updateAttributes([xa, this.id], this._state), l && this.setState(l))), xb(f).forEach((m) => {
+    this._context.getIsWritable() && (this.id === null ? n.isAddApp && l && this.setState(l) : (f === this._state || !Ma(f)) && (_t(this._context.getAttributes(), [xa]) || this._context.updateAttributes([xa], {}), this._context.updateAttributes([xa, this.id], this._state), l && this.setState(l))), xb(f).forEach((m) => {
       if (!(this.id === null && m === xa))
         try {
           const w = Ma(f[m]) ? JSON.parse(JSON.stringify(f[m])) : f[m];
@@ -499,7 +499,7 @@ class wM {
         }
     }), this._sideEffect.addDisposer(
       kT(
-        () => this.id === null ? n.getAttributes() : zt(n.getAttributes(), [xa, this.id]),
+        () => this.id === null ? n.getAttributes() : _t(n.getAttributes(), [xa, this.id]),
         this._updateProperties.bind(this),
         this.destroy.bind(this)
       )
@@ -575,7 +575,7 @@ class wM {
   }
   _getRawState(n) {
     var a;
-    return this.id === null ? (a = this._context.getAttributes()) != null ? a : n : zt(this._context.getAttributes(), [xa, this.id], n);
+    return this.id === null ? (a = this._context.getAttributes()) != null ? a : n : _t(this._context.getAttributes(), [xa, this.id], n);
   }
   _setRawState(n, a) {
     if (this.id === null) {
@@ -642,7 +642,7 @@ class qD {
       const v = this.getView();
       v && (v.divElement = w, setTimeout(() => {
         var b;
-        (b = this.getRoom()) == null || b.refreshViewSize(), _t.emit("onAppViewMounted", { appId: this.appId, view: v });
+        (b = this.getRoom()) == null || b.refreshViewSize(), Pt.emit("onAppViewMounted", { appId: this.appId, view: v });
       }, 1e3));
     }, this.getInitScenePath = () => this.manager.getAppInitPath(this.appId), this.getIsWritable = () => this.manager.canOperate, this.getIsAppReadonly = () => this.manager.appReadonly, this.getBox = () => {
       const w = this.boxManager.getBox(this.appId);
@@ -3350,7 +3350,7 @@ class d_ {
     this.teleBoxManager.destroy();
   }
 }
-var Ke = /* @__PURE__ */ ((r) => (r.Apps = "apps", r.Focus = "focus", r.State = "state", r.BoxState = "boxState", r.MainViewCamera = "mainViewCamera", r.MainViewSize = "mainViewSize", r.Broadcaster = "broadcaster", r.Cursors = "cursors", r.Position = "position", r.CursorState = "cursorState", r.FullPath = "fullPath", r.Registered = "registered", r.IframeBridge = "iframeBridge", r.LaserPointerActive = "laserPointerActive", r.AllBoxStatusInfo = "allBoxStatusInfo", r.LastNotMinimizedBoxsStatus = "lastNotMinimizedBoxsStatus", r.ViewScrollChange = "viewScrollChange", r.MainViewBackgroundInfo = "mainViewBackgroundInfo", r.Scale = "Scale", r))(Ke || {});
+var Ke = /* @__PURE__ */ ((r) => (r.Apps = "apps", r.Focus = "focus", r.State = "state", r.BoxState = "boxState", r.MainViewCamera = "mainViewCamera", r.MainViewSize = "mainViewSize", r.Broadcaster = "broadcaster", r.Cursors = "cursors", r.Position = "position", r.CursorState = "cursorState", r.FullPath = "fullPath", r.Registered = "registered", r.IframeBridge = "iframeBridge", r.LaserPointerActive = "laserPointerActive", r.AllBoxStatusInfo = "allBoxStatusInfo", r.LastNotMinimizedBoxsStatus = "lastNotMinimizedBoxsStatus", r.ViewScrollChange = "viewScrollChange", r.MainViewBackgroundInfo = "mainViewBackgroundInfo", r.Scale = "Scale", r.TeacherInfo = "teacher", r))(Ke || {});
 class f_ {
   constructor(n) {
     this.context = n, this.setAppFocus = (a, l) => {
@@ -3364,20 +3364,26 @@ class f_ {
     return this.context.getAttributes();
   }
   apps() {
-    return zt(this.attributes, ["apps"]);
+    return _t(this.attributes, ["apps"]);
   }
   get focus() {
-    return zt(this.attributes, ["focus"]);
+    return _t(this.attributes, ["focus"]);
   }
   getAppAttributes(n) {
-    return zt(this.apps(), [n]);
+    return _t(this.apps(), [n]);
   }
   getAppState(n) {
-    return zt(this.apps(), [n, "state"]);
+    return _t(this.apps(), [n, "state"]);
   }
   getMaximized() {
     const n = this.getAllBoxStatusInfo();
     return n ? Object.entries(n).filter(([a, l]) => l === We.Maximized).map(([a, l]) => a) : [];
+  }
+  setTeacherInfo(n) {
+    this.context.safeSetAttributes({ teacher: n });
+  }
+  getTeacherInfo() {
+    return _t(this.attributes, ["teacher"]);
   }
   getMinimized() {
     const n = this.getAllBoxStatusInfo();
@@ -3387,16 +3393,16 @@ class f_ {
     console.log("[TeleBox] AttributesDelegate - setAllBoxStatusInfo", n), this.context.safeSetAttributes({ allBoxStatusInfo: n });
   }
   getAllBoxStatusInfo() {
-    return zt(this.attributes, ["allBoxStatusInfo"]);
+    return _t(this.attributes, ["allBoxStatusInfo"]);
   }
   setBoxStatusInfo(n, a) {
     this.context.safeUpdateAttributes(["allBoxStatusInfo", n], a);
   }
   getBoxStatusInfo(n) {
-    return zt(this.attributes, ["allBoxStatusInfo", n]);
+    return _t(this.attributes, ["allBoxStatusInfo", n]);
   }
   getLastNotMinimizedBoxsStatus() {
-    return zt(this.attributes, ["lastNotMinimizedBoxsStatus"]);
+    return _t(this.attributes, ["lastNotMinimizedBoxsStatus"]);
   }
   setLastNotMinimizedBoxsStatus(n) {
     this.context.safeSetAttributes({ lastNotMinimizedBoxsStatus: n });
@@ -3405,10 +3411,10 @@ class f_ {
     console.log(`${on} ViewScrollChange Set`, JSON.stringify(n)), this.context.safeSetAttributes({ viewScrollChange: n });
   }
   getViewScrollChange() {
-    return zt(this.attributes, ["viewScrollChange"]);
+    return _t(this.attributes, ["viewScrollChange"]);
   }
   getLastNotMinimizedBoxStatus(n) {
-    return zt(this.attributes, ["lastNotMinimizedBoxsStatus", n]);
+    return _t(this.attributes, ["lastNotMinimizedBoxsStatus", n]);
   }
   setLastNotMinimizedBoxStatus(n, a) {
     this.context.safeUpdateAttributes(["lastNotMinimizedBoxsStatus", n], a);
@@ -3425,7 +3431,7 @@ class f_ {
     });
   }
   updateAppState(n, a, l) {
-    zt(this.attributes, ["apps", n, "state"]) && this.context.safeUpdateAttributes(["apps", n, "state", a], l);
+    _t(this.attributes, ["apps", n, "state"]) && this.context.safeUpdateAttributes(["apps", n, "state", a], l);
   }
   cleanAppAttributes(n) {
     this.context.safeUpdateAttributes(["apps", n], void 0), this.context.safeSetAttributes({ [n]: void 0 }), this.attributes.focus === n && this.cleanFocus();
@@ -3457,10 +3463,10 @@ class f_ {
     this.context.safeSetAttributes({ _mainSceneIndex: n });
   }
   getMainViewCamera() {
-    return zt(this.attributes, ["mainViewCamera"]);
+    return _t(this.attributes, ["mainViewCamera"]);
   }
   getMainViewSize() {
-    return zt(this.attributes, ["mainViewSize"]);
+    return _t(this.attributes, ["mainViewSize"]);
   }
   setMainViewCamera(n) {
     this.context.safeSetAttributes({ mainViewCamera: { ...n } });
@@ -3475,13 +3481,13 @@ class f_ {
     });
   }
   updateCursor(n, a) {
-    zt(this.attributes, ["cursors"]) || this.context.safeUpdateAttributes(["cursors"], {}), zt(this.attributes, ["cursors", n]) || this.context.safeUpdateAttributes(["cursors", n], {}), this.context.safeUpdateAttributes(["cursors", n, "position"], a);
+    _t(this.attributes, ["cursors"]) || this.context.safeUpdateAttributes(["cursors"], {}), _t(this.attributes, ["cursors", n]) || this.context.safeUpdateAttributes(["cursors", n], {}), this.context.safeUpdateAttributes(["cursors", n, "position"], a);
   }
   updateCursorState(n, a) {
-    zt(this.attributes, ["cursors", n]) || this.context.safeUpdateAttributes(["cursors", n], {}), this.context.safeUpdateAttributes(["cursors", n, "cursorState"], a);
+    _t(this.attributes, ["cursors", n]) || this.context.safeUpdateAttributes(["cursors", n], {}), this.context.safeUpdateAttributes(["cursors", n, "cursorState"], a);
   }
   getCursorState(n) {
-    return zt(this.attributes, ["cursors", n, "cursorState"]);
+    return _t(this.attributes, ["cursors", n, "cursorState"]);
   }
   cleanCursor(n) {
     this.context.safeUpdateAttributes(["cursors", n], void 0);
@@ -3491,7 +3497,7 @@ class f_ {
     a && Lu(n, a);
   }
   getIframeBridge() {
-    return zt(this.attributes, ["iframeBridge"]);
+    return _t(this.attributes, ["iframeBridge"]);
   }
   setIframeBridge(n) {
     if (Ma(n)) {
@@ -3546,7 +3552,7 @@ class IS {
       }));
     }, this.setFocusScenePathHandler = Ea((w) => {
       var v;
-      this.view && w && w !== ((v = this.view) == null ? void 0 : v.focusScenePath) && (Lu(this.view, w), _t.emit("onAppScenePathChange", { appId: this.id, view: this.view }));
+      this.view && w && w !== ((v = this.view) == null ? void 0 : v.focusScenePath) && (Lu(this.view, w), Pt.emit("onAppScenePathChange", { appId: this.id, view: this.view }));
     }, 50), this.notifyPageStateChange = Ea(() => {
       this.appEmitter.emit("pageStateChange", this.pageState);
     }, 50), this.kind = n.kind, this.id = l, this.stateKey = `${this.id}_state`, this.appProxies.set(this.id, this), this.appEmitter = new Od(), this.appListener = this.makeAppEventListener(this.id), this.isAddApp = f, this.initScenes(), (m = this.params.options) != null && m.scenePath && this.createView(), this._pageState = new KD({
@@ -3580,10 +3586,10 @@ class IS {
   }
   getFullScenePath() {
     if (this.scenePath)
-      return zt(this.appAttributes, [Ke.FullPath]) || this.getFullScenePathFromScenes();
+      return _t(this.appAttributes, [Ke.FullPath]) || this.getFullScenePathFromScenes();
   }
   getFullScenePathFromScenes() {
-    const n = zt(this.appAttributes, ["state", "SceneIndex"], 0), a = PD(this.manager.room, this.scenePath, n);
+    const n = _t(this.appAttributes, ["state", "SceneIndex"], 0), a = PD(this.manager.room, this.scenePath, n);
     return a && this.setFullPath(a), a;
   }
   setFullPath(n) {
@@ -3637,7 +3643,7 @@ class IS {
         this.appEmitter.onAny(this.appListener), this.appAttributesUpdateListener(n), this.setViewFocusScenePath(), setTimeout(async () => {
           console.log("setup app", l);
           const $e = await l.setup(w);
-          this.appResult = $e, tr.notifyApp(this.kind, "created", { appId: n, result: $e }), this.afterSetupApp(D), this.fixMobileSize(), _t.emit("onAppSetup", n);
+          this.appResult = $e, tr.notifyApp(this.kind, "created", { appId: n, result: $e }), this.afterSetupApp(D), this.fixMobileSize(), Pt.emit("onAppSetup", n);
         }, AT);
       });
       const E = (f == null ? void 0 : f.hasHeader) === !1 || ((v = this.appAttributes.options) == null ? void 0 : v.hasHeader) === !1 ? !1 : ((b = this.appAttributes.state) == null ? void 0 : b.hasHeader) !== !1;
@@ -3873,7 +3879,7 @@ class v_ {
     }, this.setMainViewSize = Ea((l) => {
       this.store.setMainViewSize({ ...l, id: this.manager.uid });
     }, 50), this._syncMainViewTimer = 0, this.onCameraOrSizeUpdated = () => {
-      _t.emit("cameraStateChange", this.cameraState), this.manager.room && this.manager.room.syncMainView && (clearTimeout(this._syncMainViewTimer), this._syncMainViewTimer = setTimeout(this.syncMainView, 100, this.manager.room)), this.ensureMainViewSize();
+      Pt.emit("cameraStateChange", this.cameraState), this.manager.room && this.manager.room.syncMainView && (clearTimeout(this._syncMainViewTimer), this._syncMainViewTimer = setTimeout(this.syncMainView, 100, this.manager.room)), this.ensureMainViewSize();
     }, this.syncMainView = (l) => {
       l.isWritable && l.syncMainView(this.mainView);
     }, this.setViewMode = (l) => {
@@ -3898,7 +3904,7 @@ class v_ {
     return this.store.getMainViewSize();
   }
   get didRelease() {
-    return zt(this.view, ["didRelease"]);
+    return _t(this.view, ["didRelease"]);
   }
   moveCameraSizeByAttributes() {
     this.moveCameraToContian(this.mainViewSize), this.moveCamera(this.mainViewCamera);
@@ -3937,7 +3943,7 @@ class v_ {
   }
   rebind() {
     const n = this.mainView.divElement, a = this.mainView.disableCameraTransform;
-    this.stop(), this.didRelease || this.mainView.release(), this.removeMainViewListener(), this.mainView = this.createMainView(), this.mainView.disableCameraTransform = a, this.mainView.divElement = n, this.addMainViewListener(), this.start(), _t.emit("onMainViewRebind", this.mainView);
+    this.stop(), this.didRelease || this.mainView.release(), this.removeMainViewListener(), this.mainView = this.createMainView(), this.mainView.disableCameraTransform = a, this.mainView.divElement = n, this.addMainViewListener(), this.start(), Pt.emit("onMainViewRebind", this.mainView);
   }
   addMainViewListener() {
     this.mainViewIsAddListener || this.view.divElement && (this.view.divElement.addEventListener("click", this.mainViewClickListener), this.view.divElement.addEventListener("touchend", this.mainViewClickListener), this.mainViewIsAddListener = !0);
@@ -4009,9 +4015,9 @@ class g_ {
     }, this.disposeViewCallbacks = (a) => {
       a.callbacks.off("onCanRedoStepsUpdate", this.onCanRedoStepsUpdate), a.callbacks.off("onCanUndoStepsUpdate", this.onCanUndoStepsUpdate);
     }, this.onCanRedoStepsUpdate = (a) => {
-      _t.emit("canRedoStepsChange", a);
+      Pt.emit("canRedoStepsChange", a);
     }, this.onCanUndoStepsUpdate = (a) => {
-      _t.emit("canUndoStepsChange", a);
+      Pt.emit("canUndoStepsChange", a);
     }, this.disposePrevFocusViewRedoUndoListeners = (a) => {
       let l;
       if (a === void 0)
@@ -4086,7 +4092,7 @@ class y_ {
       const l = (f = this.callbacksNode) == null ? void 0 : f.scenes[a];
       l && this.mainViewProxy.setFocusScenePath(`${Er}${l}`);
     }, this.onSceneChange = (a) => (this.mainViewScenesLength = a.scenes.length, this.updateSceneState(a), this.emitMainViewScenesChange(this.mainViewScenesLength)), this.emitMainViewScenesChange = (a) => Promise.all([
-      _t.emit("mainViewScenesLengthChange", a),
+      Pt.emit("mainViewScenesLengthChange", a),
       qe.emit("changePageState")
     ]), this.updateSceneState = (a) => {
       const l = this.store.getMainViewSceneIndex() || 0;
@@ -4099,24 +4105,24 @@ class y_ {
           name: m
         })),
         sceneName: f
-      }, _t.emit("sceneStateChange", this.sceneState);
+      }, Pt.emit("sceneStateChange", this.sceneState);
     }, this.onBoxMove = (a) => {
       this.dispatchInternalEvent(en.AppMove, a), this.store.updateAppState(a.appId, er.Position, {
         x: a.x,
         y: a.y
-      }), _t.emit("onBoxMove", a);
+      }), Pt.emit("onBoxMove", a);
     }, this.onBoxResize = (a) => {
       a.width && a.height && (this.dispatchInternalEvent(en.AppResize, a), this.store.updateAppState(a.appId, er.Size, {
         width: a.width,
         height: a.height
-      }), _t.emit("onBoxResize", a));
+      }), Pt.emit("onBoxResize", a));
     }, this.onBoxFocus = (a) => {
-      this.windowManger.safeSetAttributes({ focus: a.appId }), _t.emit("onBoxFocus", a);
+      this.windowManger.safeSetAttributes({ focus: a.appId }), Pt.emit("onBoxFocus", a);
     }, this.onBoxClose = (a) => {
       const l = this.appProxies.get(a.appId);
-      l && l.destroy(!1, !0, !0, a.error), _t.emit("onBoxClose", a);
+      l && l.destroy(!1, !0, !0, a.error), Pt.emit("onBoxClose", a);
     }, this.onBoxStateChange = (a) => {
-      this.dispatchInternalEvent(en.AppBoxStateChange, a), _t.emit("onBoxStateChange", a);
+      this.dispatchInternalEvent(en.AppBoxStateChange, a), Pt.emit("onBoxStateChange", a);
     }, this.addAppsChangeListener = () => {
       this.refresher.add("apps", () => kT(
         () => this.attributes.apps,
@@ -4129,10 +4135,10 @@ class y_ {
         this.onAppDelete(this.attributes.apps);
       }));
     }, this.onMainViewIndexChange = (a) => {
-      a !== void 0 && this._prevSceneIndex !== a && (_t.emit("mainViewSceneIndexChange", a), qe.emit("changePageState"), this.callbacksNode && this.updateSceneState(this.callbacksNode), this._prevSceneIndex = a);
+      a !== void 0 && this._prevSceneIndex !== a && (Pt.emit("mainViewSceneIndexChange", a), qe.emit("changePageState"), this.callbacksNode && this.updateSceneState(this.callbacksNode), this._prevSceneIndex = a);
     }, this.onFocusChange = (a) => {
       var l;
-      this._prevFocused !== a && (_t.emit("focusedChange", a), qe.emit("focusedChange", { focused: a, prev: this._prevFocused }), this._prevFocused = a, a !== void 0 && ((l = this.boxManager) == null || l.focusBox({ appId: a }), setTimeout(() => {
+      this._prevFocused !== a && (Pt.emit("focusedChange", a), qe.emit("focusedChange", { focused: a, prev: this._prevFocused }), this._prevFocused = a, a !== void 0 && ((l = this.boxManager) == null || l.focusBox({ appId: a }), setTimeout(() => {
         const f = this.appProxies.get(a);
         f && tr.notifyApp(f.kind, "focus", { appId: a });
       }, 0)));
@@ -4246,13 +4252,13 @@ class y_ {
   async onCreated() {
     var n;
     if (await this.attributesUpdateCallback(this.attributes.apps), qe.emit("updateManagerRect"), mo.on("move", this.onBoxMove), mo.on("resize", this.onBoxResize), mo.on("focus", this.onBoxFocus), mo.on("close", this.onBoxClose), mo.on("boxStateChange", this.onBoxStateChange), this.addAppsChangeListener(), this.addAppCloseListener(), this.refresher.add("mainViewIndex", () => yo(() => {
-      const a = zt(this.attributes, "_mainSceneIndex");
+      const a = _t(this.attributes, "_mainSceneIndex");
       this.onMainViewIndexChange(a);
     })), this.refresher.add("focusedChange", () => yo(() => {
-      const a = zt(this.attributes, "focus");
+      const a = _t(this.attributes, "focus");
       this.onFocusChange(a);
     })), this.refresher.add("registeredChange", () => yo(() => {
-      const a = zt(this.attributes, Ke.Registered);
+      const a = _t(this.attributes, Ke.Registered);
       this.onRegisteredChange(a);
     })), !this.attributes.apps || Object.keys(this.attributes.apps).length === 0) {
       const a = this.store.getMainViewScenePath();
@@ -4270,7 +4276,7 @@ class y_ {
     });
   }
   notifyAppsChange(n) {
-    (this._appIds.length !== n.length || !this._appIds.every((a) => n.includes(a))) && (this._appIds = n, _t.emit("appsChange", n));
+    (this._appIds.length !== n.length || !this._appIds.every((a) => n.includes(a))) && (this._appIds = n, Pt.emit("appsChange", n));
   }
   async _attributesUpdateCallback(n) {
     if (n && Mt.container) {
@@ -4324,7 +4330,7 @@ class y_ {
   }
   bindMainView(n, a) {
     const l = this.mainViewProxy.view;
-    l.disableCameraTransform = a, l.divElement = n, l.focusScenePath || this.setMainViewFocusPath(), qe.emit("mainViewMounted"), _t.emit("onMainViewMounted", l);
+    l.disableCameraTransform = a, l.divElement = n, l.focusScenePath || this.setMainViewFocusPath(), qe.emit("mainViewMounted"), Pt.emit("onMainViewMounted", l);
   }
   setMainViewFocusPath(n) {
     var l;
@@ -4412,7 +4418,7 @@ class y_ {
     }
   }
   dispatchSetMainViewScenePath(n) {
-    this.dispatchInternalEvent(en.SetMainViewScenePath, { nextScenePath: n }), _t.emit("mainViewScenePathChange", n), Jb(this.room, n);
+    this.dispatchInternalEvent(en.SetMainViewScenePath, { nextScenePath: n }), Pt.emit("mainViewScenePathChange", n), Jb(this.room, n);
   }
   getAppInitPath(n) {
     var l;
@@ -4449,7 +4455,7 @@ class y_ {
   destroy() {
     this.displayer.callbacks.off(this.eventName, this.displayerStateListener), this.displayer.callbacks.off("onEnableWriteNowChanged", this.displayerWritableListener), this.appListeners.removeListeners(), mo.clearListeners(), qe.clearListeners(), this.appProxies.size && this.appProxies.forEach((n) => {
       n.destroy(!0, !1, !0);
-    }), _t.clearListeners(), this.sideEffectManager.flushAll(), this._prevFocused = void 0, this._prevSceneIndex = void 0;
+    }), Pt.clearListeners(), this.sideEffectManager.flushAll(), this._prevFocused = void 0, this._prevSceneIndex = void 0;
   }
 }
 const w_ = (r) => {
@@ -5201,7 +5207,7 @@ class tP {
 class nP {
   constructor(n) {
     this.manager = n, qe.on("changePageState", () => {
-      _t.emit("pageStateChange", this.toObject());
+      Pt.emit("pageStateChange", this.toObject());
     });
   }
   get index() {
@@ -7386,8 +7392,8 @@ function yL() {
           if (je) {
             var rt = je[1];
             if (rt) {
-              var Pt = rt.replace(de, "");
-              Je = Pt + "/" + Je;
+              var zt = rt.replace(de, "");
+              Je = zt + "/" + Je;
             }
           }
         }
@@ -7500,10 +7506,10 @@ function yL() {
         });
         je.unshift("Warning: " + P), Function.prototype.apply.call(console[T], console, je);
         try {
-          var rt = 0, Pt = "Warning: " + P.replace(/%s/g, function() {
+          var rt = 0, zt = "Warning: " + P.replace(/%s/g, function() {
             return W[rt++];
           });
-          throw new Error(Pt);
+          throw new Error(zt);
         } catch {
         }
       }
@@ -7644,9 +7650,9 @@ function yL() {
       }), Object.freeze && (Object.freeze(rt.props), Object.freeze(rt)), rt;
     };
     function ei(T, P, W) {
-      var J, xe = {}, Je = null, je = null, rt = null, Pt = null;
+      var J, xe = {}, Je = null, je = null, rt = null, zt = null;
       if (P != null) {
-        Hi(P) && (je = P.ref, Ve(P)), Wi(P) && (Je = "" + P.key), rt = P.__self === void 0 ? null : P.__self, Pt = P.__source === void 0 ? null : P.__source;
+        Hi(P) && (je = P.ref, Ve(P)), Wi(P) && (Je = "" + P.key), rt = P.__self === void 0 ? null : P.__self, zt = P.__source === void 0 ? null : P.__source;
         for (J in P)
           _n.call(P, J) && !jt.hasOwnProperty(J) && (xe[J] = P[J]);
       }
@@ -7667,7 +7673,7 @@ function yL() {
         var si = typeof T == "function" ? T.displayName || T.name || "Unknown" : T;
         Je && Ne(xe, si), je && ut(xe, si);
       }
-      return Vt(T, Je, je, rt, Pt, te.current, xe);
+      return Vt(T, Je, je, rt, zt, te.current, xe);
     }
     function vn(T, P) {
       var W = Vt(T.type, P, T.ref, T._self, T._source, T._owner, T.props);
@@ -7676,7 +7682,7 @@ function yL() {
     function Jr(T, P, W) {
       if (T == null)
         throw Error("React.cloneElement(...): The argument must be a React element, but you passed " + T + ".");
-      var J, xe = r({}, T.props), Je = T.key, je = T.ref, rt = T._self, Pt = T._source, Sn = T._owner;
+      var J, xe = r({}, T.props), Je = T.key, je = T.ref, rt = T._self, zt = T._source, Sn = T._owner;
       if (P != null) {
         Hi(P) && (je = P.ref, Sn = te.current), Wi(P) && (Je = "" + P.key);
         var Cn;
@@ -7692,7 +7698,7 @@ function yL() {
           ai[si] = arguments[si + 2];
         xe.children = ai;
       }
-      return Vt(T.type, Je, je, rt, Pt, Sn, xe);
+      return Vt(T.type, Je, je, rt, zt, Sn, xe);
     }
     function $i(T) {
       return typeof T == "object" && T !== null && T.$$typeof === f;
@@ -7753,16 +7759,16 @@ function yL() {
           T,
           P === "" ? Ia + ti(T, 0) : P
         ), 1;
-      var je, rt, Pt = 0, Sn = P === "" ? Ia : P + Aa;
+      var je, rt, zt = 0, Sn = P === "" ? Ia : P + Aa;
       if (Array.isArray(T))
         for (var Cn = 0; Cn < T.length; Cn++)
-          je = T[Cn], rt = Sn + ti(je, Cn), Pt += Rr(je, rt, W, J);
+          je = T[Cn], rt = Sn + ti(je, Cn), zt += Rr(je, rt, W, J);
       else {
         var En = $e(T);
         if (typeof En == "function") {
           En === T.entries && (rr || Gt("Using Maps as children is deprecated and will be removed in a future major release. Consider converting children to an array of keyed ReactElements instead."), rr = !0);
           for (var ai = En.call(T), si, Co = 0; !(si = ai.next()).done; )
-            je = si.value, rt = Sn + ti(je, Co++), Pt += Rr(je, rt, W, J);
+            je = si.value, rt = Sn + ti(je, Co++), zt += Rr(je, rt, W, J);
         } else if (xe === "object") {
           var ia = "";
           ia = " If you meant to render a collection of children, use an array instead." + fe.getStackAddendum();
@@ -7770,7 +7776,7 @@ function yL() {
           throw Error("Objects are not valid as a React child (found: " + (sr === "[object Object]" ? "object with keys {" + Object.keys(T).join(", ") + "}" : sr) + ")." + ia);
         }
       }
-      return Pt;
+      return zt;
     }
     function bn(T, P, W) {
       return T == null ? 0 : Rr(T, "", P, W);
@@ -7790,8 +7796,8 @@ function yL() {
     }
     function ln(T, P, W) {
       var J = T.result, xe = T.keyPrefix, Je = T.func, je = T.context, rt = Je.call(je, P, T.count++);
-      Array.isArray(rt) ? Ei(rt, J, W, function(Pt) {
-        return Pt;
+      Array.isArray(rt) ? Ei(rt, J, W, function(zt) {
+        return zt;
       }) : rt != null && ($i(rt) && (rt = vn(
         rt,
         xe + (rt.key && (!P || P.key !== rt.key) ? Ra(rt.key) + "/" : "") + W
@@ -8104,8 +8110,8 @@ Check the top-level render call using <` + W + ">.");
       if (rt == null)
         return rt;
       if (J)
-        for (var Pt = 2; Pt < arguments.length; Pt++)
-          nn(arguments[Pt], T);
+        for (var zt = 2; zt < arguments.length; zt++)
+          nn(arguments[zt], T);
       return T === w ? xo(rt) : _a(rt), rt;
     }
     var yn = !1;
@@ -9473,7 +9479,7 @@ function SL() {
       c.set(i, null);
     }
   }
-  var P, W, J, xe = !1, Je = [], je = null, rt = null, Pt = null, Sn = /* @__PURE__ */ new Map(), Cn = /* @__PURE__ */ new Map(), En = [], ai = "mousedown mouseup touchcancel touchend touchstart auxclick dblclick pointercancel pointerdown pointerup dragend dragstart drop compositionend compositionstart keydown keypress keyup input textInput close cancel copy cut paste click change contextmenu reset submit".split(" "), si = "focus blur dragenter dragleave mouseover mouseout pointerover pointerout gotpointercapture lostpointercapture".split(" ");
+  var P, W, J, xe = !1, Je = [], je = null, rt = null, zt = null, Sn = /* @__PURE__ */ new Map(), Cn = /* @__PURE__ */ new Map(), En = [], ai = "mousedown mouseup touchcancel touchend touchstart auxclick dblclick pointercancel pointerdown pointerup dragend dragstart drop compositionend compositionstart keydown keypress keyup input textInput close cancel copy cut paste click change contextmenu reset submit".split(" "), si = "focus blur dragenter dragleave mouseover mouseout pointerover pointerout gotpointercapture lostpointercapture".split(" ");
   function Co(i, s) {
     var c = qt(s);
     ai.forEach(function(h) {
@@ -9497,7 +9503,7 @@ function SL() {
         break;
       case "mouseover":
       case "mouseout":
-        Pt = null;
+        zt = null;
         break;
       case "pointerover":
       case "pointerout":
@@ -9518,7 +9524,7 @@ function SL() {
       case "dragenter":
         return rt = Mo(rt, i, s, c, h, g), !0;
       case "mouseover":
-        return Pt = Mo(Pt, i, s, c, h, g), !0;
+        return zt = Mo(zt, i, s, c, h, g), !0;
       case "pointerover":
         var C = g.pointerId;
         return Sn.set(C, Mo(Sn.get(C) || null, i, s, c, h, g)), !0;
@@ -9570,7 +9576,7 @@ function SL() {
       var s = Pr(i.topLevelType, i.eventSystemFlags, i.container, i.nativeEvent);
       s !== null ? i.blockedOn = s : Je.shift();
     }
-    je !== null && kr(je) && (je = null), rt !== null && kr(rt) && (rt = null), Pt !== null && kr(Pt) && (Pt = null), Sn.forEach(Tp), Cn.forEach(Tp);
+    je !== null && kr(je) && (je = null), rt !== null && kr(rt) && (rt = null), zt !== null && kr(zt) && (zt = null), Sn.forEach(Tp), Cn.forEach(Tp);
   }
   function Ns(i, s) {
     i.blockedOn === s && (i.blockedOn = null, xe || (xe = !0, a.unstable_scheduleCallback(a.unstable_NormalPriority, Hd)));
@@ -9586,7 +9592,7 @@ function SL() {
         h.blockedOn === i && (h.blockedOn = null);
       }
     }
-    for (je !== null && Ns(je, i), rt !== null && Ns(rt, i), Pt !== null && Ns(Pt, i), Sn.forEach(s), Cn.forEach(s), c = 0; c < En.length; c++)
+    for (je !== null && Ns(je, i), rt !== null && Ns(rt, i), zt !== null && Ns(zt, i), Sn.forEach(s), Cn.forEach(s), c = 0; c < En.length; c++)
       h = En[c], h.blockedOn === i && (h.blockedOn = null);
     for (; 0 < En.length && (c = En[0], c.blockedOn === null); )
       kg(c), c.blockedOn === null && En.shift();
@@ -14406,7 +14412,7 @@ function TL() {
       return `
     in ` + (e || "Unknown") + u;
     }
-    var J = typeof Symbol == "function" && Symbol.for, xe = J ? Symbol.for("react.element") : 60103, Je = J ? Symbol.for("react.portal") : 60106, je = J ? Symbol.for("react.fragment") : 60107, rt = J ? Symbol.for("react.strict_mode") : 60108, Pt = J ? Symbol.for("react.profiler") : 60114, Sn = J ? Symbol.for("react.provider") : 60109, Cn = J ? Symbol.for("react.context") : 60110, En = J ? Symbol.for("react.concurrent_mode") : 60111, ai = J ? Symbol.for("react.forward_ref") : 60112, si = J ? Symbol.for("react.suspense") : 60113, Co = J ? Symbol.for("react.suspense_list") : 60120, ia = J ? Symbol.for("react.memo") : 60115, sr = J ? Symbol.for("react.lazy") : 60116, Mo = J ? Symbol.for("react.block") : 60121, Mp = typeof Symbol == "function" && Symbol.iterator, kg = "@@iterator";
+    var J = typeof Symbol == "function" && Symbol.for, xe = J ? Symbol.for("react.element") : 60103, Je = J ? Symbol.for("react.portal") : 60106, je = J ? Symbol.for("react.fragment") : 60107, rt = J ? Symbol.for("react.strict_mode") : 60108, zt = J ? Symbol.for("react.profiler") : 60114, Sn = J ? Symbol.for("react.provider") : 60109, Cn = J ? Symbol.for("react.context") : 60110, En = J ? Symbol.for("react.concurrent_mode") : 60111, ai = J ? Symbol.for("react.forward_ref") : 60112, si = J ? Symbol.for("react.suspense") : 60113, Co = J ? Symbol.for("react.suspense_list") : 60120, ia = J ? Symbol.for("react.memo") : 60115, sr = J ? Symbol.for("react.lazy") : 60116, Mo = J ? Symbol.for("react.block") : 60121, Mp = typeof Symbol == "function" && Symbol.iterator, kg = "@@iterator";
     function kr(e) {
       if (e === null || typeof e != "object")
         return null;
@@ -14450,7 +14456,7 @@ Your code should look like:
           return "Fragment";
         case Je:
           return "Portal";
-        case Pt:
+        case zt:
           return "Profiler";
         case rt:
           return "StrictMode";
@@ -23815,7 +23821,7 @@ For more info, visit https://fb.me/react-mock-scheduler`));
             case rt:
               S = Gt, d |= xn;
               break;
-            case Pt:
+            case zt:
               return SN(o, d, p, t);
             case si:
               return xN(o, d, p, t);
@@ -23870,7 +23876,7 @@ Check the render method of \`` + _ + "`.");
     function SN(e, t, o, u) {
       (typeof e.id != "string" || typeof e.onRender != "function") && v('Profiler must specify an "id" string and "onRender" function as props');
       var d = ba(V, e, u, t | hs);
-      return d.elementType = Pt, d.type = Pt, d.expirationTime = o, d;
+      return d.elementType = zt, d.type = zt, d.expirationTime = o, d;
     }
     function xN(e, t, o, u) {
       var d = ba(ne, e, u, t);
@@ -25312,12 +25318,18 @@ class rB {
 }
 const Ui = "[LaserPointerManager]";
 class aB {
-  constructor(n, a, l, f, m, w, v) {
-    this._currentPointActive = !1, this._manager = n, this._container = a, this._room = l, this._displayer = f, this._appManager = m, this._teacherInfo = w, this._currentUserId = v, this._instanceId = `LP_${Math.random().toString(36).substr(2, 6)}`, this._setupMagixListener();
+  constructor(n, a, l, f, m, w) {
+    this._currentPointActive = !1, this._manager = n, this._container = a, this._room = l, this._displayer = f, this._appManager = m, this._currentUserId = w, this._instanceId = `LP_${Math.random().toString(36).substr(2, 6)}`, this._setupMagixListener();
   }
   setLaserPointer(n) {
     var a;
-    console.log(`${Ui} [${this._instanceId}] setLaserPointer called with active:`, n), this._currentPointActive = n, n ? (console.log(`${Ui} [${this._instanceId}] LastPointActive Chagne`, JSON.stringify(this._teacherInfo), this._currentUserId), ((a = this._teacherInfo) == null ? void 0 : a.uid) === this._currentUserId && this._setupTeacherMoveListener()) : (this._container && this._boundHandleTeacherMouseMove ? (console.log(`${Ui} [${this._instanceId}] Removing mousemove listener`), this._container.removeEventListener("mousemove", this._boundHandleTeacherMouseMove)) : console.log(`${Ui} [${this._instanceId}] Cannot remove listener - container:`, !!this._container, "boundHandler:", !!this._boundHandleTeacherMouseMove), this._lastTeacherPosition = void 0), this.updateLaserPointerIconVisibility();
+    if (console.log(`${Ui} [${this._instanceId}] setLaserPointer called with active:`, n), this._currentPointActive = n, !n)
+      this._container && this._boundHandleTeacherMouseMove ? (console.log(`${Ui} [${this._instanceId}] Removing mousemove listener`), this._container.removeEventListener("mousemove", this._boundHandleTeacherMouseMove)) : console.log(`${Ui} [${this._instanceId}] Cannot remove listener - container:`, !!this._container, "boundHandler:", !!this._boundHandleTeacherMouseMove), this._lastTeacherPosition = void 0;
+    else {
+      const l = (a = this._manager.appManager) == null ? void 0 : a.store.getTeacherInfo();
+      console.log(`${Ui} [${this._instanceId}] LastPointActive Chagne`, JSON.stringify(l), this._currentUserId), (l == null ? void 0 : l.uid) === this._currentUserId && this._setupTeacherMoveListener();
+    }
+    this.updateLaserPointerIconVisibility();
   }
   _setupTeacherMoveListener() {
     console.log(`${Ui} [${this._instanceId}] Setting up teacher move listener`), this._teacherMoveThrottle || (this._teacherMoveThrottle = rD((n) => {
@@ -25361,9 +25373,9 @@ class aB {
     }));
   }
   updateLaserPointerIconVisibility() {
-    var a, l, f;
-    const n = (l = (a = this._appManager) == null ? void 0 : a.attributes) == null ? void 0 : l[Ke.LaserPointerActive];
-    !(n != null && n.active) || ((f = this._teacherInfo) == null ? void 0 : f.uid) === this._currentUserId ? this._hideLaserPointerIcon() : this._setupLaserPointerIcon();
+    var l, f, m;
+    const n = (f = (l = this._appManager) == null ? void 0 : l.attributes) == null ? void 0 : f[Ke.LaserPointerActive], a = (m = this._manager.appManager) == null ? void 0 : m.store.getTeacherInfo();
+    !(n != null && n.active) || (a == null ? void 0 : a.uid) === this._currentUserId ? this._hideLaserPointerIcon() : this._setupLaserPointerIcon();
   }
   _setupLaserPointerIcon() {
     var a, l, f;
@@ -25392,17 +25404,18 @@ class aB {
   _setupMagixListener() {
     var n;
     (n = this._displayer) == null || n.addMagixEventListener("teacherLaserPointerMove", (a) => {
-      var f;
-      if (((f = this._teacherInfo) == null ? void 0 : f.uid) === this._currentUserId)
+      var m;
+      const l = (m = this._manager.appManager) == null ? void 0 : m.store.getTeacherInfo();
+      if ((l == null ? void 0 : l.uid) === this._currentUserId)
         return;
-      const { position: l } = a.payload;
-      console.log(`${Ui} [${this._instanceId}] Received Teacher Laser Pointer Move`, l), this._showLaserPointerIcon(l);
+      const { position: f } = a.payload;
+      console.log(`${Ui} [${this._instanceId}] Received Teacher Laser Pointer Move`, f), this._showLaserPointerIcon(f);
     });
   }
   _showLaserPointerIcon(n) {
-    var l, f, m;
-    const a = (f = (l = this._appManager) == null ? void 0 : l.attributes) == null ? void 0 : f[Ke.LaserPointerActive];
-    if (!(a != null && a.active) || ((m = this._teacherInfo) == null ? void 0 : m.uid) === this._currentUserId) {
+    var f, m, w;
+    const a = (m = (f = this._appManager) == null ? void 0 : f.attributes) == null ? void 0 : m[Ke.LaserPointerActive], l = (w = this._manager.appManager) == null ? void 0 : w.store.getTeacherInfo();
+    if (!(a != null && a.active) || (l == null ? void 0 : l.uid) === this._currentUserId) {
       this._hideLaserPointerIcon();
       return;
     }
@@ -25412,8 +25425,8 @@ class aB {
     }
     if (this._setupLaserPointerIcon(), this._laserPointerIcon && this._container) {
       this._container.getBoundingClientRect();
-      const w = this._manager.mainView.convertToPointOnScreen(n.x, n.y);
-      this._laserPointerIcon.style.left = `${w.x - 10}px`, this._laserPointerIcon.style.top = `${w.y - 10}px`, this._laserPointerIcon.style.display = "block";
+      const v = this._manager.mainView.convertToPointOnScreen(n.x, n.y);
+      this._laserPointerIcon.style.left = `${v.x - 10}px`, this._laserPointerIcon.style.top = `${v.y - 10}px`, this._laserPointerIcon.style.display = "block";
     }
   }
   destroy() {
@@ -25442,7 +25455,7 @@ function Ed(r, n) {
 }
 const sB = new iP({ emitter: qe }), Kh = "mainView", on = "[TeleBox] WindowManager", Me = class extends cD {
   constructor(r) {
-    super(r), this.mutationObserver = null, this.observerPencil = null, this.version = "1.1.627", this.dependencies = { dependencies: { "@juggle/resize-observer": "^3.3.1", "@netless/app-plyr": "github:veytu/app-plyr", "@netless/telebox-insider": "github:veytu/telebox-insider", emittery: "^0.9.2", lodash: "^4.17.21", "p-retry": "^4.6.1", uuid: "^7.0.3", "value-enhancer": "0.0.8", "video.js": ">=7" }, peerDependencies: { jspdf: "2.5.1", "white-web-sdk": "^2.16.52" }, devDependencies: { "@hyrious/dts": "^0.2.2", "@netless/app-docs-viewer": "github:veytu/app-docs-viewer", "@netless/app-media-player": "0.1.4", "@rollup/plugin-commonjs": "^20.0.0", "@rollup/plugin-node-resolve": "^13.0.4", "@rollup/plugin-url": "^6.1.0", "@sveltejs/vite-plugin-svelte": "^1.4.0", "@tsconfig/svelte": "^2.0.1", "@types/debug": "^4.1.7", "@types/lodash": "^4.14.182", "@types/lodash-es": "^4.17.4", "@types/uuid": "^8.3.1", "@typescript-eslint/eslint-plugin": "^4.30.0", "@typescript-eslint/parser": "^4.30.0", "@vitest/ui": "^0.14.1", cypress: "^8.7.0", dotenv: "^10.0.0", eslint: "^7.32.0", "eslint-config-prettier": "^8.3.0", "eslint-plugin-svelte3": "^3.2.0", jsdom: "^19.0.0", jspdf: "^2.5.1", less: "^4.1.1", prettier: "^2.3.2", "prettier-plugin-svelte": "^2.4.0", "rollup-plugin-analyzer": "^4.0.0", "rollup-plugin-styles": "^3.14.1", "side-effect-manager": "0.1.5", svelte: "^3.42.4", typescript: "^4.5.5", vite: "^3.0.0", vitest: "^0.14.1", "white-web-sdk": "2.16.52" } }, this.emitter = _t, this.viewMode = ll.Broadcaster, this.isReplay = mS(this.displayer), this._cursorUIDs = [], this.containerSizeRatio = Me.containerSizeRatio, Me.displayer = r.displayer, window.NETLESS_DEPS = { dependencies: { "@juggle/resize-observer": "^3.3.1", "@netless/app-plyr": "github:veytu/app-plyr", "@netless/telebox-insider": "github:veytu/telebox-insider", emittery: "^0.9.2", lodash: "^4.17.21", "p-retry": "^4.6.1", uuid: "^7.0.3", "value-enhancer": "0.0.8", "video.js": ">=7" }, peerDependencies: { jspdf: "2.5.1", "white-web-sdk": "^2.16.52" }, devDependencies: { "@hyrious/dts": "^0.2.2", "@netless/app-docs-viewer": "github:veytu/app-docs-viewer", "@netless/app-media-player": "0.1.4", "@rollup/plugin-commonjs": "^20.0.0", "@rollup/plugin-node-resolve": "^13.0.4", "@rollup/plugin-url": "^6.1.0", "@sveltejs/vite-plugin-svelte": "^1.4.0", "@tsconfig/svelte": "^2.0.1", "@types/debug": "^4.1.7", "@types/lodash": "^4.14.182", "@types/lodash-es": "^4.17.4", "@types/uuid": "^8.3.1", "@typescript-eslint/eslint-plugin": "^4.30.0", "@typescript-eslint/parser": "^4.30.0", "@vitest/ui": "^0.14.1", cypress: "^8.7.0", dotenv: "^10.0.0", eslint: "^7.32.0", "eslint-config-prettier": "^8.3.0", "eslint-plugin-svelte3": "^3.2.0", jsdom: "^19.0.0", jspdf: "^2.5.1", less: "^4.1.1", prettier: "^2.3.2", "prettier-plugin-svelte": "^2.4.0", "rollup-plugin-analyzer": "^4.0.0", "rollup-plugin-styles": "^3.14.1", "side-effect-manager": "0.1.5", svelte: "^3.42.4", typescript: "^4.5.5", vite: "^3.0.0", vitest: "^0.14.1", "white-web-sdk": "2.16.52" } };
+    super(r), this.mutationObserver = null, this.observerPencil = null, this.version = "1.1.628", this.dependencies = { dependencies: { "@juggle/resize-observer": "^3.3.1", "@netless/app-plyr": "github:veytu/app-plyr", "@netless/telebox-insider": "github:veytu/telebox-insider", emittery: "^0.9.2", lodash: "^4.17.21", "p-retry": "^4.6.1", uuid: "^7.0.3", "value-enhancer": "0.0.8", "video.js": ">=7" }, peerDependencies: { jspdf: "2.5.1", "white-web-sdk": "^2.16.52" }, devDependencies: { "@hyrious/dts": "^0.2.2", "@netless/app-docs-viewer": "github:veytu/app-docs-viewer", "@netless/app-media-player": "0.1.4", "@rollup/plugin-commonjs": "^20.0.0", "@rollup/plugin-node-resolve": "^13.0.4", "@rollup/plugin-url": "^6.1.0", "@sveltejs/vite-plugin-svelte": "^1.4.0", "@tsconfig/svelte": "^2.0.1", "@types/debug": "^4.1.7", "@types/lodash": "^4.14.182", "@types/lodash-es": "^4.17.4", "@types/uuid": "^8.3.1", "@typescript-eslint/eslint-plugin": "^4.30.0", "@typescript-eslint/parser": "^4.30.0", "@vitest/ui": "^0.14.1", cypress: "^8.7.0", dotenv: "^10.0.0", eslint: "^7.32.0", "eslint-config-prettier": "^8.3.0", "eslint-plugin-svelte3": "^3.2.0", jsdom: "^19.0.0", jspdf: "^2.5.1", less: "^4.1.1", prettier: "^2.3.2", "prettier-plugin-svelte": "^2.4.0", "rollup-plugin-analyzer": "^4.0.0", "rollup-plugin-styles": "^3.14.1", "side-effect-manager": "0.1.5", svelte: "^3.42.4", typescript: "^4.5.5", vite: "^3.0.0", vitest: "^0.14.1", "white-web-sdk": "2.16.52" } }, this.emitter = Pt, this.viewMode = ll.Broadcaster, this.isReplay = mS(this.displayer), this._cursorUIDs = [], this.containerSizeRatio = Me.containerSizeRatio, Me.displayer = r.displayer, window.NETLESS_DEPS = { dependencies: { "@juggle/resize-observer": "^3.3.1", "@netless/app-plyr": "github:veytu/app-plyr", "@netless/telebox-insider": "github:veytu/telebox-insider", emittery: "^0.9.2", lodash: "^4.17.21", "p-retry": "^4.6.1", uuid: "^7.0.3", "value-enhancer": "0.0.8", "video.js": ">=7" }, peerDependencies: { jspdf: "2.5.1", "white-web-sdk": "^2.16.52" }, devDependencies: { "@hyrious/dts": "^0.2.2", "@netless/app-docs-viewer": "github:veytu/app-docs-viewer", "@netless/app-media-player": "0.1.4", "@rollup/plugin-commonjs": "^20.0.0", "@rollup/plugin-node-resolve": "^13.0.4", "@rollup/plugin-url": "^6.1.0", "@sveltejs/vite-plugin-svelte": "^1.4.0", "@tsconfig/svelte": "^2.0.1", "@types/debug": "^4.1.7", "@types/lodash": "^4.14.182", "@types/lodash-es": "^4.17.4", "@types/uuid": "^8.3.1", "@typescript-eslint/eslint-plugin": "^4.30.0", "@typescript-eslint/parser": "^4.30.0", "@vitest/ui": "^0.14.1", cypress: "^8.7.0", dotenv: "^10.0.0", eslint: "^7.32.0", "eslint-config-prettier": "^8.3.0", "eslint-plugin-svelte3": "^3.2.0", jsdom: "^19.0.0", jspdf: "^2.5.1", less: "^4.1.1", prettier: "^2.3.2", "prettier-plugin-svelte": "^2.4.0", "rollup-plugin-analyzer": "^4.0.0", "rollup-plugin-styles": "^3.14.1", "side-effect-manager": "0.1.5", svelte: "^3.42.4", typescript: "^4.5.5", vite: "^3.0.0", vitest: "^0.14.1", "white-web-sdk": "2.16.52" } };
   }
   static onCreate(r) {
     Me._resolve(r);
@@ -25486,28 +25499,28 @@ const sB = new iP({ emitter: qe }), Kh = "mainView", on = "[TeleBox] WindowManag
       console.warn("[WindowManager]: indexedDB open failed"), console.log(X);
     }
     return (v = (w = m.appManager) == null ? void 0 : w.refresher) == null || v.add(Ke.Scale, () => (console.log(`${on} Scale Register Listener`), Ed(() => {
-      const X = zt(m.appManager.attributes, Ke.Scale), Y = Object.keys(X);
+      const X = _t(m.appManager.attributes, Ke.Scale), Y = Object.keys(X);
       if (Y.length > 0) {
         const ae = Y[0], oe = X[ae];
         console.log(`${on} Scale Target`, JSON.stringify(X)), m == null || m._setScale({ appId: ae, scale: oe }, !0);
       }
     }, "Scale"))), (x = (b = m.appManager) == null ? void 0 : b.refresher) == null || x.add(Ke.LaserPointerActive, () => (console.log(`${on} LaserPointerActive Register Listener`), Ed(() => {
       var Y, ae, oe;
-      const X = zt(m.appManager.attributes, Ke.LaserPointerActive);
+      const X = _t(m.appManager.attributes, Ke.LaserPointerActive);
       console.log(`${on} LaserPointerActive Target`, JSON.stringify(X)), m == null || m._setLaserPointer(X), ((Y = m == null ? void 0 : m.teacherInfo) == null ? void 0 : Y.uid) === (m == null ? void 0 : m._getCurrentUserId()) ? (ae = m == null ? void 0 : m._laserPointerManager) == null || ae.setLaserPointer(X == null ? void 0 : X.active) : (oe = m == null ? void 0 : m._laserPointerManager) == null || oe.setLaserPointer(!1);
     }, "LaserPointerActive"))), (A = (E = m.appManager) == null ? void 0 : E.refresher) == null || A.add(Ke.ViewScrollChange, () => (console.log(`${on} ViewScrollChange Register Listener`), Ed(() => {
-      const X = zt(m.appManager.attributes, Ke.ViewScrollChange);
+      const X = _t(m.appManager.attributes, Ke.ViewScrollChange);
       X && (console.log(`${on} ViewScrollChange Target`, JSON.stringify(X)), qe.emit(tI, X));
     }, "ViewScrollChange"))), (L = (D = m.appManager) == null ? void 0 : D.refresher) == null || L.add(Ke.MainViewBackgroundInfo, () => (console.log(`${on} MainViewBackgroundInfo Register Listener`), Ed(() => {
-      const X = zt(m.appManager.attributes, Ke.MainViewBackgroundInfo);
+      const X = _t(m.appManager.attributes, Ke.MainViewBackgroundInfo);
       console.log(`${on} MainViewBackgroundInfo Target`, JSON.stringify(X)), X.img.length > 0 ? m == null || m._setBackgroundImg(X.img) : X.color.length > 0 && (m == null || m._setBackgroundColor(X.color));
     }, "MainViewBackgroundInfo"))), (Z = (j = m.appManager) == null ? void 0 : j.refresher) == null || Z.add(Ke.AllBoxStatusInfo, () => (console.log(`${on} AllBoxStatusInfo Register Listener`), Ed(() => {
       var Y, ae;
-      const X = zt(m.appManager.attributes, Ke.AllBoxStatusInfo);
+      const X = _t(m.appManager.attributes, Ke.AllBoxStatusInfo);
       (ae = (Y = m == null ? void 0 : m.boxManager) == null ? void 0 : Y.teleBoxManager) == null || ae.setAllBoxStatusInfo(X, !0), console.log(`${on} AllBoxStatusInfo Target`, JSON.stringify(X));
     }, "AllBoxStatusInfo"))), (pe = (F = m.appManager) == null ? void 0 : F.refresher) == null || pe.add(Ke.LastNotMinimizedBoxsStatus, () => (console.log(`${on} LastNotMinimizedBoxsStatus Register Listener`), Ed(() => {
       var Y, ae;
-      const X = zt(m.appManager.attributes, Ke.LastNotMinimizedBoxsStatus);
+      const X = _t(m.appManager.attributes, Ke.LastNotMinimizedBoxsStatus);
       (ae = (Y = m == null ? void 0 : m.boxManager) == null ? void 0 : Y.teleBoxManager) == null || ae.setLastLastNotMinimizedBoxsStatus(X, !0), console.log(`${on} LastNotMinimizedBoxsStatus Target`, JSON.stringify(X));
     }, "AllBoxStatusInfo"))), qe.on("playgroundSizeChange", () => {
       m == null || m._updateMainViewWrapperSize(m.getAttributesValue(Ke.Scale)[Kh], !0);
@@ -25558,7 +25571,7 @@ const sB = new iP({ emitter: qe }), Kh = "mainView", on = "[TeleBox] WindowManag
     else if (Me.params) {
       const w = Me.params, v = Me.initContainer(this, r, w);
       this.boxManager && this.boxManager.destroy();
-      const b = c_(this, _t, qe, mo, {
+      const b = c_(this, Pt, qe, mo, {
         collectorContainer: w.collectorContainer,
         collectorStyles: w.collectorStyles,
         prefersColorScheme: w.prefersColorScheme
@@ -25710,7 +25723,7 @@ const sB = new iP({ emitter: qe }), Kh = "mainView", on = "[TeleBox] WindowManag
   }
   setFullscreen(r) {
     var n;
-    this._fullscreen !== r && (this._fullscreen = r, (n = Me.sizer) == null || n.classList.toggle("netless-window-manager-fullscreen", r), _t.emit("fullscreenChange", r));
+    this._fullscreen !== r && (this._fullscreen = r, (n = Me.sizer) == null || n.classList.toggle("netless-window-manager-fullscreen", r), Pt.emit("fullscreenChange", r));
   }
   get cursorUIDs() {
     return this._cursorUIDs;
@@ -26035,10 +26048,12 @@ const sB = new iP({ emitter: qe }), Kh = "mainView", on = "[TeleBox] WindowManag
     return this.getAttributesValue([Ke.Scale]);
   }
   setTeacherInfo(r) {
-    this.safeSetAttributes({ teacher: r });
+    var n, a;
+    (a = (n = this.appManager) == null ? void 0 : n.store) == null || a.setTeacherInfo(r);
   }
   get teacherInfo() {
-    return this.getAttributesValue(["teacher"]) || {};
+    var r, n;
+    return ((n = (r = this.appManager) == null ? void 0 : r.store) == null ? void 0 : n.getTeacherInfo()) || {};
   }
   setLaserPointer(r) {
     var n;

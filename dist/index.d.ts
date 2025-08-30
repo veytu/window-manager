@@ -697,6 +697,14 @@ declare class AttributesDelegate {
     getAppAttributes(id: string): AppSyncAttributes;
     getAppState(id: string): any;
     getMaximized(): string[];
+    setTeacherInfo(teacherInfo: {
+        uid?: string;
+        name?: string;
+    }): void;
+    getTeacherInfo(): {
+        uid?: string;
+        name?: string;
+    } | undefined;
     getMinimized(): string[];
     setAllBoxStatusInfo(allBoxStatusInfo: Record<string, TELE_BOX_STATE> | undefined): void;
     getAllBoxStatusInfo(): Record<string, TELE_BOX_STATE> | undefined;

@@ -1314,11 +1314,11 @@ export class WindowManager
     }
 
     public setTeacherInfo(data: { uid?: string; name?: string }) {
-        this.safeSetAttributes({ teacher: data });
+        this.appManager?.store?.setTeacherInfo(data);
     }
 
     private get teacherInfo() {
-        return this.getAttributesValue(["teacher"]) || {};
+        return this.appManager?.store?.getTeacherInfo() || {};
     }
 
     public setLaserPointer(active: boolean) {

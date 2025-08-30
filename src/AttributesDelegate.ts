@@ -28,6 +28,7 @@ export enum Fields {
     ViewScrollChange = 'viewScrollChange',//视图移动
     MainViewBackgroundInfo = 'mainViewBackgroundInfo',//背景信息，分为图片和颜色{img:url,color:string}
     Scale = 'Scale',//缩放调整
+    TeacherInfo = 'teacher',//老师信息
 }
 
 export type Apps = {
@@ -86,6 +87,12 @@ export class AttributesDelegate {
         return Object.entries(allBoxStatusInfo)
             .filter(([_, state]) => state === TELE_BOX_STATE.Maximized)
             .map(([boxId, _]) => boxId)
+    }
+    public setTeacherInfo(teacherInfo: { uid?: string; name?: string }) {
+        this.context.safeSetAttributes({ [Fields.TeacherInfo]: teacherInfo });
+    }
+    public getTeacherInfo(): { uid?: string; name?: string } | undefined {
+        return get(this.attributes, [Fields.TeacherInfo]);
     }
 
     public getMinimized(): string[] {

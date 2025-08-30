@@ -22,7 +22,6 @@ export class LaserPointerManager {
     private _room?: Room;
     private _displayer?: Displayer;
     private _appManager?: any;
-    private _teacherInfo?: any;
     private _currentUserId?: string;
     private _instanceId: string; // 实例唯一标识
     private _manager: WindowManager;
@@ -33,7 +32,6 @@ export class LaserPointerManager {
         room: Room,
         displayer: Displayer,
         appManager: any,
-        teacherInfo?: any,
         currentUserId?: string
     ) {
         this._manager = manager;
@@ -41,7 +39,6 @@ export class LaserPointerManager {
         this._room = room;
         this._displayer = displayer;
         this._appManager = appManager;
-        this._teacherInfo = teacherInfo;
         this._currentUserId = currentUserId;
         
         // 生成实例唯一标识
@@ -67,8 +64,9 @@ export class LaserPointerManager {
             this._lastTeacherPosition = undefined;
         } else {
             // 只有当前用户是激活用户时才设置监听器
-            console.log(`${logFirstTag} [${this._instanceId}] LastPointActive Chagne`, JSON.stringify(this._teacherInfo), this._currentUserId);
-            if (this._teacherInfo?.uid === this._currentUserId) {
+            const teacherInfo = this._manager.appManager?.store.getTeacherInfo();
+            console.log(`${logFirstTag} [${this._instanceId}] LastPointActive Chagne`, JSON.stringify(teacherInfo), this._currentUserId);
+            if (teacherInfo?.uid === this._currentUserId) {
                 this._setupTeacherMoveListener();
             }
         }
@@ -201,7 +199,8 @@ export class LaserPointerManager {
     public updateLaserPointerIconVisibility() {
         const laserPointerData = this._appManager?.attributes?.[Fields.LaserPointerActive];
         // 如果激光笔未激活或当前用户是激活用户，隐藏图标
-        if (!laserPointerData?.active || this._teacherInfo?.uid === this._currentUserId) {
+        const teacherInfo = this._manager.appManager?.store.getTeacherInfo();
+        if (!laserPointerData?.active || teacherInfo?.uid === this._currentUserId) {
             this._hideLaserPointerIcon();
         } else {
             // 如果激光笔激活且当前用户不是激活用户，确保图标已创建
@@ -255,7 +254,8 @@ export class LaserPointerManager {
         // 监听老师激光笔移动事件
         this._displayer?.addMagixEventListener('teacherLaserPointerMove', (event: any) => {
             // 跳过自己发送的事件
-            if (this._teacherInfo?.uid === this._currentUserId) {
+            const teacherInfo = this._manager.appManager?.store.getTeacherInfo();
+            if (teacherInfo?.uid === this._currentUserId) {
                 return;
             }
             
@@ -271,7 +271,8 @@ export class LaserPointerManager {
     private _showLaserPointerIcon(position: LaserPointerPosition) {
         // 检查激光笔是否激活且不是当前用户
         const laserPointerData = this._appManager?.attributes?.[Fields.LaserPointerActive];
-        if (!laserPointerData?.active || this._teacherInfo?.uid === this._currentUserId) {
+        const teacherInfo = this._manager.appManager?.store.getTeacherInfo();
+        if (!laserPointerData?.active || teacherInfo?.uid === this._currentUserId) {
             this._hideLaserPointerIcon(); // 激光笔未激活或当前用户是激活用户，隐藏图标
             return;
         }
