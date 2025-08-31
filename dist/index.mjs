@@ -25332,9 +25332,12 @@ class aB {
     this.updateLaserPointerIconVisibility();
   }
   _setupTeacherMoveListener() {
-    console.log(`${Ci} [${this._instanceId}] Setting up teacher move listener`), this._teacherMoveThrottle || (this._teacherMoveThrottle = rD((n) => {
-      this._sendTeacherPosition(n);
-    }, 150)), this._boundHandleTeacherMouseMove || (this._boundHandleTeacherMouseMove = this._handleTeacherMouseMove.bind(this)), this._boundHandleTeacherMouseEnter || (this._boundHandleTeacherMouseEnter = this._handleTeacherMouseEnter.bind(this)), this._boundHandleTeacherMouseLeave || (this._boundHandleTeacherMouseLeave = this._handleTeacherMouseLeave.bind(this)), this._container && (this._boundHandleTeacherMouseMove && this._container.removeEventListener("mousemove", this._boundHandleTeacherMouseMove), this._boundHandleTeacherMouseEnter && this._container.removeEventListener("mouseenter", this._boundHandleTeacherMouseEnter), this._boundHandleTeacherMouseLeave && this._container.removeEventListener("mouseleave", this._boundHandleTeacherMouseLeave), this._container.addEventListener("mousemove", this._boundHandleTeacherMouseMove), this._container.addEventListener("mouseenter", this._boundHandleTeacherMouseEnter), this._container.addEventListener("mouseleave", this._boundHandleTeacherMouseLeave), console.log(`${Ci} [${this._instanceId}] Added mouse listeners`));
+    var a;
+    console.log(`${Ci} [${this._instanceId}] Setting up teacher move listener`), this._teacherMoveThrottle || (this._teacherMoveThrottle = rD((l) => {
+      this._sendTeacherPosition(l);
+    }, 150)), this._boundHandleTeacherMouseMove || (this._boundHandleTeacherMouseMove = this._handleTeacherMouseMove.bind(this)), this._boundHandleTeacherMouseEnter || (this._boundHandleTeacherMouseEnter = this._handleTeacherMouseEnter.bind(this)), this._boundHandleTeacherMouseLeave || (this._boundHandleTeacherMouseLeave = this._handleTeacherMouseLeave.bind(this));
+    const n = (a = this._container) == null ? void 0 : a.querySelector(".netless-window-manager-wrapper");
+    this._container && (this._boundHandleTeacherMouseMove && n.removeEventListener("mousemove", this._boundHandleTeacherMouseMove), this._boundHandleTeacherMouseEnter && n.removeEventListener("mouseenter", this._boundHandleTeacherMouseEnter), this._boundHandleTeacherMouseLeave && n.removeEventListener("mouseleave", this._boundHandleTeacherMouseLeave), n.addEventListener("mousemove", this._boundHandleTeacherMouseMove), n.addEventListener("mouseenter", this._boundHandleTeacherMouseEnter), n.addEventListener("mouseleave", this._boundHandleTeacherMouseLeave), console.log(`${Ci} [${this._instanceId}] Added mouse listeners`));
   }
   _handleTeacherMouseMove(n) {
     var l, f, m, w;

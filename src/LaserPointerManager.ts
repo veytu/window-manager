@@ -97,22 +97,23 @@ export class LaserPointerManager {
             this._boundHandleTeacherMouseLeave = this._handleTeacherMouseLeave.bind(this);
         }
 
+        const viewWrapper = this._container?.querySelector('.netless-window-manager-wrapper') as HTMLElement; 
         // 监听老师的鼠标移动和边界事件
         if (this._container) {
             // 先移除可能存在的监听器，避免重复添加
             if (this._boundHandleTeacherMouseMove) {
-                this._container.removeEventListener('mousemove', this._boundHandleTeacherMouseMove);
+                viewWrapper.removeEventListener('mousemove', this._boundHandleTeacherMouseMove);
             }
             if (this._boundHandleTeacherMouseEnter) {
-                this._container.removeEventListener('mouseenter', this._boundHandleTeacherMouseEnter);
+                viewWrapper.removeEventListener('mouseenter', this._boundHandleTeacherMouseEnter);
             }
             if (this._boundHandleTeacherMouseLeave) {
-                this._container.removeEventListener('mouseleave', this._boundHandleTeacherMouseLeave);
+                viewWrapper.removeEventListener('mouseleave', this._boundHandleTeacherMouseLeave);
             }
             
-            this._container.addEventListener('mousemove', this._boundHandleTeacherMouseMove);
-            this._container.addEventListener('mouseenter', this._boundHandleTeacherMouseEnter);
-            this._container.addEventListener('mouseleave', this._boundHandleTeacherMouseLeave);
+            viewWrapper.addEventListener('mousemove', this._boundHandleTeacherMouseMove);
+            viewWrapper.addEventListener('mouseenter', this._boundHandleTeacherMouseEnter);
+            viewWrapper.addEventListener('mouseleave', this._boundHandleTeacherMouseLeave);
             console.log(`${logFirstTag} [${this._instanceId}] Added mouse listeners`);
         }
     }
