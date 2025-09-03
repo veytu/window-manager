@@ -13,7 +13,7 @@ importers:
         version: 3.4.0
       '@netless/app-plyr':
         specifier: github:veytu/app-plyr
-        version: https://codeload.github.com/veytu/app-plyr/tar.gz/311e82324bec49b5cb3e22754c1e6bde230138c0
+        version: https://codeload.github.com/veytu/app-plyr/tar.gz/b4768d8c52397c5cbed5fb59bd945037c51dc0bd
       '@netless/telebox-insider':
         specifier: github:veytu/telebox-insider
         version: https://codeload.github.com/veytu/telebox-insider/tar.gz/300eec24297b3314593da9b6769abb127755811b
@@ -377,9 +377,9 @@ packages:
   '@netless/app-media-player@0.1.4':
     resolution: {integrity: sha512-CsiLtd3LWGsQrHRZYB3Zl6tj5Q0LDJIevHY60LdYcUgUBR57FfC4fhaD0FP/bn4D82ki7HgKgeG2oflUlPfl3g==}
 
-  '@netless/app-plyr@https://codeload.github.com/veytu/app-plyr/tar.gz/311e82324bec49b5cb3e22754c1e6bde230138c0':
-    resolution: {tarball: https://codeload.github.com/veytu/app-plyr/tar.gz/311e82324bec49b5cb3e22754c1e6bde230138c0}
-    version: 0.1.29
+  '@netless/app-plyr@https://codeload.github.com/veytu/app-plyr/tar.gz/b4768d8c52397c5cbed5fb59bd945037c51dc0bd':
+    resolution: {tarball: https://codeload.github.com/veytu/app-plyr/tar.gz/b4768d8c52397c5cbed5fb59bd945037c51dc0bd}
+    version: 0.1.30
 
   '@netless/canvas-polyfill@0.0.4':
     resolution: {integrity: sha512-7NzsJrba0R/mq/l10SkIZQwbrNVJyPxZYrjK6xL3Ts732iWAVuS2UB0u3s6iGeUVcqV39A679yva8APWRl4M0A==}
@@ -3714,7 +3714,7 @@ snapshots:
 
   '@netless/app-media-player@0.1.4': {}
 
-  '@netless/app-plyr@https://codeload.github.com/veytu/app-plyr/tar.gz/311e82324bec49b5cb3e22754c1e6bde230138c0': {}
+  '@netless/app-plyr@https://codeload.github.com/veytu/app-plyr/tar.gz/b4768d8c52397c5cbed5fb59bd945037c51dc0bd': {}
 
   '@netless/canvas-polyfill@0.0.4': {}
 
