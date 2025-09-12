@@ -97,9 +97,9 @@ export class LaserPointerManager {
             this._boundHandleTeacherMouseLeave = this._handleTeacherMouseLeave.bind(this);
         }
 
-        const viewWrapper = this._container?.querySelector('.netless-window-manager-wrapper') as HTMLElement; 
+        const viewWrapper = ((this._manager?.mainView.divElement?.children?.length ?? 0) > 0) ? (this._manager?.mainView.divElement?.children[0] as HTMLElement) : null; 
         // 监听老师的鼠标移动和边界事件
-        if (this._container) {
+        if (this._container && viewWrapper) {
             // 先移除可能存在的监听器，避免重复添加
             if (this._boundHandleTeacherMouseMove) {
                 viewWrapper.removeEventListener('mousemove', this._boundHandleTeacherMouseMove);
@@ -140,16 +140,8 @@ export class LaserPointerManager {
                 this._teacherMoveThrottle?.({ x: -1, y: -1 }); // 使用特殊值表示隐藏
                 return;
             }
-            const memberState = this._manager.appManager?.getMemberState();
-            let offsetX = 8;
-            let offsetY = 8;
-            console.log(`${logFirstTag} [${this._instanceId}] Current Member State`, memberState);
-            if (ApplianceNames.pencil === memberState?.currentApplianceName) {
-                offsetX = 18;
-                offsetY = 18;
-            }
             
-            const position = this._manager.mainView.convertToPointInWorld({ x: event.offsetX - offsetX, y: event.offsetY - offsetY})
+            const position = this._manager.mainView.convertToPointInWorld({ x: event.offsetX, y: event.offsetY })
             console.log(`${logFirstTag} [${this._instanceId}] Mouse move handler called, position:`, position, event.offsetX, event.offsetY);
             // 检查是否是重新进入容器（之前在外面，现在在里面）
             const wasOutside = this._lastTeacherPosition && 
@@ -234,20 +226,9 @@ export class LaserPointerManager {
         // 创建新的激光笔图标
         this._laserPointerIcon = document.createElement('div');
         this._laserPointerIcon.className = 'teacher-laser-pointer';
-        this._laserPointerIcon.style.cssText = `
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMjgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGZpbHRlciB4PSItMTIwJSIgeT0iLTEyMCUiIHdpZHRoPSIzNDAlIiBoZWlnaHQ9IjM0MCUiIGZpbHRlclVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgaWQ9ImEiPjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjQiIGluPSJTb3VyY2VHcmFwaGljIi8+PC9maWx0ZXI+PC9kZWZzPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDkgOSkiIGZpbGw9IiNGRjAxMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PGNpcmNsZSBmaWx0ZXI9InVybCgjYSkiIGN4PSI1IiBjeT0iNSIgcj0iNSIvPjxwYXRoIGQ9Ik01IDhhMyAzIDAgMSAwIDAtNiAzIDMgMCAwIDAgMCA2em0wLTEuNzE0YTEuMjg2IDEuMjg2IDAgMSAxIDAtMi41NzIgMS4yODYgMS4yODYgMCAwIDEgMCAyLjU3MnoiIGZpbGwtcnVsZT0ibm9uemVybyIvPjwvZz48L3N2Zz4=');
-            background-size: contain;
-            background-repeat: no-repeat;
-            pointer-events: none;
-            z-index: 10000;
-            display: none;
-        `;
         
-        if (this._container) {
-            this._container?.querySelector('.netless-window-manager-wrapper')?.appendChild(this._laserPointerIcon);
+        if (this._manager?.mainView.divElement) {
+            this._manager?.mainView.divElement?.appendChild(this._laserPointerIcon);
         }
     }
 
@@ -300,7 +281,6 @@ export class LaserPointerManager {
         if (this._laserPointerIcon && this._container) {
             const containerRect = this._container.getBoundingClientRect();
             const point = this._manager.mainView.convertToPointOnScreen(position.x, position.y)
-            
             // 使用 transform 设置位置，性能更好且更流畅
             this._laserPointerIcon.style.left = `${point.x}px`;
             this._laserPointerIcon.style.top = `${point.y}px`;

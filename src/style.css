@@ -227,7 +227,12 @@
 .netless-window-manager-fullscreen .telebox-max-titlebar-maximized,
 .netless-window-manager-fullscreen .netless-app-slide-footer,
 .netless-window-manager-fullscreen .telebox-footer-wrap,
-.netless-window-manager-fullscreen .telebox-titlebar-wrap {
+.netless-window-manager-fullscreen .telebox-titlebar-wrap,
+.telebox-maximized .telebox-titlebar,
+.telebox-maximized .telebox-max-titlebar-maximized,
+.telebox-maximized .netless-app-slide-footer,
+.telebox-maximized .telebox-footer-wrap,
+.telebox-maximized .telebox-titlebar-wrap {
     display: none;
 }
 
@@ -281,4 +286,17 @@
 }
 .force-none {
     display: none;
+}
+
+.teacher-laser-pointer {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-image: url('./image/cursor-clicker.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    z-index: 10000;
+    display: none;
+    transform: translate(-50%, -50%);
 }
