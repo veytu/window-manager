@@ -1,0 +1,2 @@
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const e=require("./index.js");require("p-retry");require("emittery");require("lodash");require("white-web-sdk");require("uuid");require("@juggle/resize-observer");require("video.js");require("@netless/app-plyr");require("value-enhancer");exports.LaserPointerManager=e.LaserPointerManager;exports.LaserPointerMultiManager=e.LaserPointerMultiManager;
+//# sourceMappingURL=index.83e020e5.js.map

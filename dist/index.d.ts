@@ -708,6 +708,11 @@ declare class AttributesDelegate {
     getMinimized(): string[];
     setAllBoxStatusInfo(allBoxStatusInfo: Record<string, TELE_BOX_STATE> | undefined): void;
     getAllBoxStatusInfo(): Record<string, TELE_BOX_STATE> | undefined;
+    getLaserPointerActive(): {
+        active: boolean;
+        uid: string;
+    } | undefined;
+    setLaserPointerActive(active: boolean, uid: string): void;
     setBoxStatusInfo(id: string, status: TELE_BOX_STATE | undefined): void;
     getBoxStatusInfo(id: string): TELE_BOX_STATE | undefined;
     getLastNotMinimizedBoxsStatus(): Record<string, TELE_BOX_STATE> | undefined;
@@ -1250,6 +1255,152 @@ declare const BuiltinApps: {
     Plyr: string;
 };
 
+/**
+ * 激光笔位置接口
+ * 定义激光笔在屏幕上的坐标位置
+ */
+interface LaserPointerPosition {
+    x: number;
+    y: number;
+}
+/**
+ * 激光笔管理器类
+ * 负责管理单个视图的激光笔功能，包括老师端的位置发送和学生端的位置显示
+ */
+declare class LaserPointerManager {
+    private _laserPointerIcon?;
+    private _teacherMoveThrottle?;
+    private _lastTeacherPosition?;
+    private _currentPointActive;
+    private _boundHandleTeacherMouseMove?;
+    private _boundHandleTeacherMouseEnter?;
+    private _boundHandleTeacherMouseLeave?;
+    private _room?;
+    private _displayer?;
+    private _appManager?;
+    private _currentUserId?;
+    private _instanceId;
+    private _manager;
+    private _view?;
+    /**
+     * 激光笔管理器构造函数
+     * 初始化激光笔管理器的所有必要组件和事件监听器
+     * @param manager 窗口管理器实例，用于获取主视图和应用视图
+     * @param room 白板房间实例，用于发送激光笔位置事件
+     * @param displayer 白板显示器实例，用于接收激光笔位置事件
+     * @param appManager 应用管理器，用于获取应用信息和用户信息
+     * @param currentUserId 当前用户ID，用于判断是否为老师
+     * @param viewId 视图ID，用于标识主视图('main')或应用视图('app_xxx')
+     */
+    constructor(manager: WindowManager, room: Room, displayer: Displayer, appManager: any, currentUserId?: string, viewId?: string);
+    /**
+     * 获取当前显示视图的DOM容器元素
+     * 根据实例ID类型返回对应的DOM容器，用于激光笔图标的显示和鼠标事件的监听
+     * @returns 主视图返回mainView.divElement.children[0]，应用视图返回view.divElement
+     */
+    private _getShowViewDivElement;
+    /**
+     * 初始化缓存的视图对象
+     * 根据instanceId确定是主视图还是应用视图，并缓存对应的view对象
+     * 缓存视图对象可以避免频繁查找，提高性能
+     */
+    private _initView;
+    /**
+     * 设置激光笔激活状态
+     * 控制激光笔功能的开启和关闭，包括鼠标事件监听器的添加和移除
+     * @param active 是否激活激光笔功能，true为激活，false为停用
+     */
+    setLaserPointer(active: boolean): void;
+    /**
+     * 设置老师端激光笔显示样式
+     * @param show 是否显示老师端激光笔样式
+     */
+    setTeacherMySelfPointerShow(show: boolean): void;
+    /**
+     * 设置老师端鼠标移动监听器
+     * 创建节流函数和绑定事件处理器，并添加鼠标事件监听
+     * 包括鼠标移动、进入和离开事件的统一处理
+     */
+    private _setupTeacherMoveListener;
+    /**
+     * 统一处理老师端鼠标事件（移动、进入、离开）
+     * 根据事件类型和鼠标位置进行相应的处理
+     * 包括位置计算、边界检查、节流发送等功能
+     */
+    private _handleTeacherMouseEvent;
+    private _sendTeacherPosition;
+    updateLaserPointerIconVisibility(): void;
+    private _setupLaserPointerIcon;
+    private _hideLaserPointerIcon;
+    private _setupMagixListener;
+    private _showLaserPointerIcon;
+    destroy(): void;
+    /**
+     * 测试应用视图的鼠标事件（调试用）
+     */
+    testAppViewMouseEvents(): void;
+}
+
+/**
+ * 多实例激光笔管理器
+ * 负责管理多个 LaserPointerManager 实例，处理不同视图的激光笔功能
+ */
+declare class LaserPointerMultiManager {
+    private _laserPointerManagers;
+    private _windowManager;
+    private _room?;
+    private _displayer?;
+    private _appManager?;
+    private _currentUserId?;
+    private _isDestroyed;
+    constructor(windowManager: WindowManager);
+    /**
+     * 设置事件监听器
+     */
+    setupEventListeners(): void;
+    /**
+     * 为特定视图创建激光笔管理器
+     */
+    createLaserPointerManagerForView(viewId: string): LaserPointerManager | undefined;
+    /**
+     * 销毁特定视图的激光笔管理器
+     */
+    destroyLaserPointerManagerForView(viewId: string): void;
+    /**
+     * 设置所有激光笔管理器的激活状态
+     */
+    setLaserPointerActive(active: boolean): void;
+    /**
+     * 设置老师端激光笔显示样式
+     * @param show 是否显示老师端激光笔样式
+     */
+    setTeacherMySelfPointerShow(show: boolean): void;
+    /**
+     * 销毁所有激光笔管理器
+     */
+    destroy(): void;
+    /**
+     * 获取当前用户ID
+     */
+    private _getCurrentUserId;
+    /**
+     * 检查当前用户是否是老师
+     */
+    private _isCurrentUserTeacher;
+    /**
+     * 确保主视图管理器存在
+     */
+    private _ensureMainViewManager;
+    /**
+     * 获取主视图容器
+     */
+    private _getMainViewContainer;
+    /**
+     * 获取应用的 boxview
+     */
+    private _getAppBoxView;
+}
+
 type WindowMangerAttributes = {
     modelValue?: string;
     boxState: TELE_BOX_STATE;
@@ -1546,11 +1697,12 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     private get teacherInfo();
     setLaserPointer(active: boolean): void;
     private _setLaserPointer;
-    private _laserPointerManager?;
+    private _laserPointerMultiManager?;
     private _initLaserPointerManager;
     private _getCurrentUserId;
     private _destroyLaserPointerManager;
     get isLaserPointerActive(): any;
+    get container(): HTMLElement | undefined;
     getAppScale(appId: string): number;
     private isDynamicPPT;
     private ensureAttributes;
@@ -1565,7 +1717,12 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     private _setBackgroundColor;
     private _setBackgroundImg;
     private _initAttribute;
+    /**
+     * 设置老师端激光笔显示样式
+     * @param show 是否显示老师端激光笔样式
+     */
+    setTeacherMySelfPointerShow(show: boolean): void;
 }
 
-export { AppContext, AppCreateError, AppManagerNotInitError, AppNotRegisterError, BindContainerRoomPhaseInvalidError, BoxManagerNotFoundError, BoxNotCreatedError, BuiltinApps, DomEvents, IframeBridge, IframeEvents, InvalidScenePath, ParamsInvalidError, Storage, WhiteWebSDKInvalidError, WindowManager, calculateNextIndex, logFirstTag, mainViewField, reconnectRefresher };
-export type { AddAppOptions, AddAppParams, AddPageParams, AppEmitterEvent, AppInitState, AppListenerKeys, AppPayload, AppSyncAttributes, ApplianceIcons, BaseInsertParams, CursorMovePayload, CursorOptions, IframeBridgeAttributes, IframeBridgeEvents, IframeSize, InsertOptions, MountParams, NetlessApp, OnCreateInsertOption, PageController, PageRemoveService, PageState, PublicEvent, RegisterEventData, RegisterEvents, RegisterParams, StorageStateChangedEvent, StorageStateChangedListener, WindowMangerAttributes, apps, setAppOptions };
+export { AppContext, AppCreateError, AppManagerNotInitError, AppNotRegisterError, BindContainerRoomPhaseInvalidError, BoxManagerNotFoundError, BoxNotCreatedError, BuiltinApps, DomEvents, IframeBridge, IframeEvents, InvalidScenePath, LaserPointerManager, LaserPointerMultiManager, ParamsInvalidError, Storage, WhiteWebSDKInvalidError, WindowManager, calculateNextIndex, logFirstTag, mainViewField, reconnectRefresher };
+export type { AddAppOptions, AddAppParams, AddPageParams, AppEmitterEvent, AppInitState, AppListenerKeys, AppPayload, AppSyncAttributes, ApplianceIcons, BaseInsertParams, CursorMovePayload, CursorOptions, IframeBridgeAttributes, IframeBridgeEvents, IframeSize, InsertOptions, LaserPointerPosition, MountParams, NetlessApp, OnCreateInsertOption, PageController, PageRemoveService, PageState, PublicEvent, RegisterEventData, RegisterEvents, RegisterParams, StorageStateChangedEvent, StorageStateChangedListener, WindowMangerAttributes, apps, setAppOptions };

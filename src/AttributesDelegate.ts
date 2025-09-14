@@ -110,6 +110,12 @@ export class AttributesDelegate {
     public getAllBoxStatusInfo(): Record<string, TELE_BOX_STATE> | undefined {
         return get(this.attributes, [Fields.AllBoxStatusInfo]);
     }
+    public getLaserPointerActive(): { active: boolean, uid: string } | undefined {
+        return get(this.attributes, [Fields.LaserPointerActive]);
+    }
+    public setLaserPointerActive(active: boolean, uid: string) {
+        this.context.safeSetAttributes({ [Fields.LaserPointerActive]: { active, uid } });
+    }
 
     public setBoxStatusInfo(id: string, status: TELE_BOX_STATE | undefined) {
         this.context.safeUpdateAttributes([Fields.AllBoxStatusInfo, id], status);

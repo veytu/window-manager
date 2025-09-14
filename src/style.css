@@ -300,3 +300,8 @@
     display: none;
     transform: translate(-50%, -50%);
 }
+
+.teacher-current-pointer {
+    cursor: url('./image/cursor-clicker.png') 20 20, auto !important;
+    pointer-events: auto;
+}

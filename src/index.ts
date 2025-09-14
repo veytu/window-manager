@@ -68,7 +68,7 @@ import { IframeBridge } from "./View/IframeBridge";
 import { setOptions } from "@netless/app-media-player";
 import { ScrollerManager, ScrollerScrollEventType } from "./ScrollerManager";
 import { isAndroid, isIOS } from "./Utils/environment";
-import { LaserPointerManager } from "./LaserPointerManager";
+import { LaserPointerMultiManager } from "./LaserPointer";
 export * from "./View/IframeBridge";
 
 // 防循环工具函数
@@ -356,13 +356,14 @@ export class WindowManager
             return createAntiLoopAutorun(() => {
                 const data = get(manager!.appManager!.attributes, Fields.LaserPointerActive);
                 console.log(`${logFirstTag} LaserPointerActive Target`, JSON.stringify(data))
-                manager?._setLaserPointer(data);
-                // 根据权限更新激光笔管理器状态（参照原来的逻辑）
-                if (manager?.teacherInfo?.uid === manager?._getCurrentUserId()) {
-                    manager?._laserPointerManager?.setLaserPointer(data?.active);
-                } else {
-                    manager?._laserPointerManager?.setLaserPointer(false);
-                }
+                manager?._setLaserPointer(data).catch(console.error);
+                // 根据权限更新所有激光笔管理器状态（参照原来的逻辑）
+                const isTeacher = manager?.teacherInfo?.uid === manager?._getCurrentUserId();
+                const isActive = data?.active || false;
+                
+                // 更新多实例激光笔管理器
+                manager?._laserPointerMultiManager?.setLaserPointerActive(isActive);
+                
             }, 'LaserPointerActive');
         });
         manager.appManager?.refresher?.add(Fields.ViewScrollChange, () => {
@@ -412,6 +413,8 @@ export class WindowManager
         setTimeout(() => {
             manager?._initAttribute();
         });
+
+
         return manager;
     }
 
@@ -1120,6 +1123,10 @@ export class WindowManager
         this.containerResizeObserver?.disconnect();
         this.appManager?.destroy();
         this.cursorManager?.destroy();
+        
+        // 销毁激光笔管理器
+        this._destroyLaserPointerManager();
+        
         WindowManager.container = undefined;
         WindowManager.wrapper = undefined;
         WindowManager.sizer = undefined;
@@ -1325,15 +1332,15 @@ export class WindowManager
         this.safeUpdateAttributes([Fields.LaserPointerActive], {active,uid: this.appManager?.uid});
     }
 
-    private _setLaserPointer(active: boolean) {
+    private async _setLaserPointer(active: boolean) {
         // WindowManager.playground?.classList.toggle("is-cursor-laserPointer", active);
         if (!active) {
             // 清理激光笔相关资源
             this.mutationObserver?.disconnect();
             this.mutationObserver = null;
             
-            // 清理激光笔相关资源
-            this._laserPointerManager?.setLaserPointer(false);
+            // 清理多实例激光笔管理器
+            this._laserPointerMultiManager?.setLaserPointerActive(false);
             
             const cursorNode = document.querySelectorAll(
                 ".netless-window-manager-cursor-mid"
@@ -1343,36 +1350,42 @@ export class WindowManager
             });
             return;
         }
-        // 确保只有一个激光笔管理器实例
-        if (!this._laserPointerManager) {
-            this._initLaserPointerManager()
+        
+        // 确保多实例激光笔管理器存在
+        if (!this._laserPointerMultiManager) {
+            await this._initLaserPointerManager();
         }
         
         // 只有当前用户是老师时才激活（参照原来的逻辑）
         if (this.teacherInfo?.uid === this._getCurrentUserId()) {
-            this._laserPointerManager?.setLaserPointer(true);
+            // 激活多实例激光笔管理器
+            this._laserPointerMultiManager?.setLaserPointerActive(true);
         }
-       
     }
 
-    // 激光笔管理器
-    private _laserPointerManager?: LaserPointerManager;
+    // 多实例激光笔管理器
+    private _laserPointerMultiManager?: LaserPointerMultiManager;
 
     // 初始化激光笔管理器
-    private _initLaserPointerManager() {
-        console.log(`${logFirstTag} Initializing LaserPointerManager, existing:`, !!this._laserPointerManager);
-        if (WindowManager.container && this.room && this.displayer && this.appManager) {
-            this._laserPointerManager = new LaserPointerManager(
-                this,
-                WindowManager.container,
-                this.room,
-                this.displayer,
-                this.appManager,
-                this._getCurrentUserId()
-            );
-            console.log(`${logFirstTag} LaserPointerManager created successfully`);
+    private async _initLaserPointerManager() {
+        console.log(`${logFirstTag} Initializing LaserPointerMultiManager, existing:`, !!this._laserPointerMultiManager);
+        if (this._laserPointerMultiManager) {
+            console.log(`${logFirstTag} LaserPointerMultiManager already exists, skipping initialization`);
+            return;
+        }
+        
+        if (this.room && this.displayer && this.appManager) {
+            // 动态导入 LaserPointerMultiManager
+            const { LaserPointerMultiManager } = await import("./LaserPointer");
+            
+            this._laserPointerMultiManager = new LaserPointerMultiManager(this);
+            this._laserPointerMultiManager.setupEventListeners();
+            console.log(`${logFirstTag} LaserPointerMultiManager created successfully`);
+        } else {
+            console.warn(`${logFirstTag} Cannot initialize LaserPointerMultiManager - missing dependencies`);
         }
     }
+
 
     // 获取当前用户ID
     private _getCurrentUserId(): string | undefined {
@@ -1381,12 +1394,19 @@ export class WindowManager
 
     // 销毁激光笔管理器
     private _destroyLaserPointerManager() {
-        this._laserPointerManager?.destroy();
-        this._laserPointerManager = undefined;
+        // 销毁多实例激光笔管理器
+        this._laserPointerMultiManager?.destroy();
+        this._laserPointerMultiManager = undefined;
     }
+
 
     public get isLaserPointerActive() {
         return this.getAttributesValue([Fields.LaserPointerActive]).active || false;
+    }
+
+    // 为 LaserPointerMultiManager 提供的公共方法
+    public get container(): HTMLElement | undefined {
+        return WindowManager.container;
     }
 
     public getAppScale(appId: string): number {
@@ -1499,8 +1519,16 @@ export class WindowManager
 
         if (!!this.attributes[Fields.LaserPointerActive]) {
             const { active } = this.attributes[Fields.LaserPointerActive];
-            this._setLaserPointer(active);
+            this._setLaserPointer(active).catch(console.error);
         }
+    }
+
+    /**
+     * 设置老师端激光笔显示样式
+     * @param show 是否显示老师端激光笔样式
+     */
+    public setTeacherMySelfPointerShow(show: boolean): void {
+        this._laserPointerMultiManager?.setTeacherMySelfPointerShow(show);
     }
 }
 
@@ -1510,4 +1538,7 @@ export * from "./typings";
 
 export { BuiltinApps } from "./BuiltinApps";
 export type { PublicEvent } from "./callback";
+
+// 导出激光笔相关模块
+export { LaserPointerManager, LaserPointerMultiManager, type LaserPointerPosition } from "./LaserPointer";
 
