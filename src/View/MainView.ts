@@ -38,9 +38,10 @@ export class MainViewProxy {
         this.sideEffectManager.add(() => {
             return internalEmitter.on("playgroundSizeChange", playgroundSizeChangeListener);
         });
-        this.sideEffectManager.add(() => {
-            return internalEmitter.on("wrapperSizeChange", playgroundSizeChangeListener);
-        });
+	// todo 同步可能需确认
+        // this.sideEffectManager.add(() => {
+        //     return internalEmitter.on("wrapperSizeChange", playgroundSizeChangeListener);
+        // });
         this.sideEffectManager.add(() => {
             return internalEmitter.on("containerSizeRatioUpdate", this.onUpdateContainerSizeRatio);
         });
@@ -294,8 +295,7 @@ export class MainViewProxy {
         if (!isEmpty(camera)) {
             if (isEqual(camera, this.view.camera)) return;
             const { centerX, centerY, scale } = camera;
-            const needScale = scale * (this.scale || 1)
-            console.log('window manager scale', needScale)
+            const needScale = scale * (this.scale || 1);
             this.view.moveCamera({
                 centerX: centerX,
                 centerY: centerY,

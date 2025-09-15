@@ -1,9 +1,10 @@
-import { createSideEffectBinder, withValueEnhancer, Val } from "value-enhancer";
+import type { Val } from "value-enhancer";
+import { createSideEffectBinder, withValueEnhancer } from "value-enhancer";
 import { SideEffectManager } from "side-effect-manager";
 import { logFirstTag, WindowManager } from "..";
-import { type CallbackManager, createCallbackManager } from "../Utils/callbacks";
+import type { CallbackManager} from "../Utils/callbacks";
+import { createCallbackManager } from "../Utils/callbacks";
 import { debounce, isNumber } from "lodash";
-import { Fields } from "../AttributesDelegate";
 
 type ValConfig = {
     $crood: Val<InternalCoord>;
@@ -38,12 +39,12 @@ class ViewScroller {
     private readonly manager: WindowManager;
     private crood: Val<InternalCoord>;
     protected _sideEffect: SideEffectManager;
-    private baseScrollTop: number = 0;
-    private baseScrollLeft: number = 0;
+    private baseScrollTop = 0;
+    private baseScrollLeft = 0;
     protected sizeObserver: ResizeObserver
     protected callbackManager: CallbackManager
-    private _isInternalUpdate: boolean = false;
-    private _isRemoteSync: boolean = false; // 添加远端同步标志位
+    private _isInternalUpdate = false;
+    private _isRemoteSync = false; // 添加远端同步标志位
 
     constructor(config: ViewScrollerConfig) {
         this._sideEffect = new SideEffectManager();

@@ -3,7 +3,7 @@ import { AppCreateQueue } from "./Utils/AppCreateQueue";
 import { AppListeners } from "./AppListener";
 import { AppProxy } from "./App";
 import { appRegister } from "./Register";
-import { autorun, isPlayer, isRoom, ScenePathType } from "white-web-sdk";
+import { autorun, isPlayer, isRoom, ScenePathType, UpdateEventKind } from "white-web-sdk";
 import { boxEmitter } from "./BoxEmitter";
 import { calculateNextIndex } from "./Page";
 import { callbacks } from "./callback";
@@ -66,6 +66,8 @@ export class AppManager {
     private _prevFocused: string | undefined;
     private callbacksNode: ScenesCallbacksNode | null = null;
     private appCreateQueue = new AppCreateQueue();
+
+    private _focusAppCreatedResolve?: (appProxy: AppProxy) => void;
 
     private sideEffectManager = new SideEffectManager();
 
@@ -331,7 +333,15 @@ export class AppManager {
     }
 
     private async onCreated() {
+        if (Object.keys(this.attributes.apps).length && this.store.focus) {
+            await new Promise<AppProxy>(resolve => {
+                this._focusAppCreatedResolve = resolve;
+            }).then(() => {
+                this.focusByAttributes(this.attributes.apps);
+            });
+        }
         await this.attributesUpdateCallback(this.attributes.apps);
+        this.focusByAttributes(this.attributes.apps);
         internalEmitter.emit("updateManagerRect");
         boxEmitter.on("move", this.onBoxMove);
         boxEmitter.on("resize", this.onBoxResize);
@@ -341,6 +351,18 @@ export class AppManager {
 
         this.addAppsChangeListener();
         this.addAppCloseListener();
+        // this.refresher.add("maximized", () => {
+        //     return autorun(() => {
+        //         const maximized = this.attributes.maximized;
+        //         this.boxManager?.setMaximized(Boolean(maximized));
+        //     });
+        // });
+        // this.refresher.add("minimized", () => {
+        //     return autorun(() => {
+        //         const minimized = this.attributes.minimized;
+        //         this.onMinimized(minimized);
+        //     });
+        // });
         this.refresher.add("mainViewIndex", () => {
             return autorun(() => {
                 const mainSceneIndex = get(this.attributes, "_mainSceneIndex");
@@ -428,10 +450,20 @@ export class AppManager {
     };
 
     public addAppCloseListener = () => {
+        // this.refresher.add("appsClose", () => {
+        //     return onObjectRemoved(this.attributes.apps, () => {
+        //         this.onAppDelete(this.attributes.apps);
+        //     });
+        // });
         this.refresher.add("appsClose", () => {
-            return onObjectRemoved(this.attributes.apps, () => {
-                this.onAppDelete(this.attributes.apps);
-            });
+            return safeListenPropsUpdated(
+                () => this.attributes.apps,
+                events => {
+                    if (events.some(e => e.kind === UpdateEventKind.Removed)) {
+                        this.onAppDelete(this.attributes.apps);
+                    }
+                }
+            );
         });
     };
 
@@ -546,12 +578,13 @@ export class AppManager {
         });
     };
 
-    private onMinimized = (minimized: string | undefined) => {
-        if (!isString(minimized) || !minimized) return
-
-        if (!this.boxManager?.minimized || JSON.stringify(this.boxManager?.minimized || []) != minimized) {
+    private onMinimized = (minimized: boolean | undefined) => {
+        if (this.boxManager?.minimized !== minimized) {
+            if (minimized === true) {
+                this.boxManager?.blurAllBox();
+            }
             setTimeout(() => {
-                this.boxManager?.setMinimized(minimized);
+                this.boxManager?.setMinimized(Boolean(minimized));
             }, 0);
         }
     };
@@ -654,7 +687,7 @@ export class AppManager {
             this.store.updateAppState(appProxy.id, AppAttributes.ZIndex, box.zIndex);
         }
         if (this.boxManager?.minimized) {
-            // this.boxManager?.setMinimized(false, false);
+            this.boxManager?.setMinimized(false, false);
         }
     }
 
@@ -852,5 +885,6 @@ export class AppManager {
         this.sideEffectManager.flushAll();
         this._prevFocused = undefined;
         this._prevSceneIndex = undefined;
+        this._focusAppCreatedResolve = undefined;
     }
 }

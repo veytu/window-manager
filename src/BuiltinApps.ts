@@ -17,18 +17,9 @@ export const setupBuiltin = () => {
         kind: AppMediaPlayer.kind,
         src: AppMediaPlayer as any,
     });
-    WindowManager.register({
-        kind: 'video',
-        src: Plyr
-    })
-    WindowManager.register({
-        kind: 'audio',
-        src: Plyr
-    })
 };
 
 export const BuiltinApps = {
     DocsViewer: AppDocsViewer.kind as string,
     MediaPlayer: AppMediaPlayer.kind as string,
-    Plyr: Plyr.kind as string,
 };

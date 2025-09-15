@@ -169,6 +169,7 @@ type StorageStateChangedListenerDisposer = () => void;
 
 declare class Storage<TState extends Record<string, any> = any> implements Storage<TState> {
     readonly id: string | null;
+    readonly maxIllusionQueueSize = 500;
     private readonly _context;
     private readonly _sideEffect;
     private _state;
@@ -656,8 +657,8 @@ declare class BoxManager {
     setBoxTitle(params: SetBoxTitleParams): void;
     blurAllBox(): void;
     updateAll(config: TeleBoxManagerUpdateConfig): void;
-    setMaximized(maximized?: string, skipUpdate?: boolean): void;
-    setMinimized(minimized?: string, skipUpdate?: boolean): void;
+    setMaximized(maximized: boolean, skipUpdate?: boolean): void;
+    setMinimized(minimized: boolean, skipUpdate?: boolean): void;
     focusTopBox(): void;
     updateBox(id: string, payload: TeleBoxConfig, skipUpdate?: boolean): void;
     setReadonly(readonly: boolean): void;
@@ -878,6 +879,7 @@ declare class AppManager {
     private _prevFocused;
     private callbacksNode;
     private appCreateQueue;
+    private _focusAppCreatedResolve?;
     private sideEffectManager;
     sceneState: SceneState | null;
     rootDirRemoving: boolean;
@@ -1128,6 +1130,35 @@ declare class IframeBridge {
     private get isDisableInput();
 }
 
+interface ExtendContext {
+    readonly manager: ExtendPluginManager;
+    readonly windowManager: WindowManager;
+    readonly internalEmitter: EmitterType;
+    windowManagerContainer?: HTMLElement;
+}
+declare abstract class ExtendPlugin extends Emittery {
+    context: ExtendContext;
+    abstract readonly kind: string;
+    protected _inject(context: ExtendContext): void;
+    abstract onCreate(): void;
+    abstract onDestroy(): void;
+}
+type ExtendPluginInstance<T extends ExtendPlugin> = T;
+interface ExtendManagerOptions {
+    readonly windowManager: WindowManager;
+    readonly internalEmitter: EmitterType;
+    readonly container?: HTMLElement;
+}
+declare class ExtendPluginManager {
+    private extends;
+    private context;
+    constructor(props: ExtendManagerOptions);
+    refreshContainer(container: HTMLElement): void;
+    hasRegister(kind: string): boolean;
+    use(extend: ExtendPluginInstance<any>): void;
+    destroy(): void;
+}
+
 declare type SideEffectDisposer = () => void;
 declare class SideEffectManager {
     /**
@@ -1252,7 +1283,6 @@ declare class ScrollerManager {
 declare const BuiltinApps: {
     DocsViewer: string;
     MediaPlayer: string;
-    Plyr: string;
 };
 
 /**
@@ -1494,21 +1524,17 @@ declare const logFirstTag = "[TeleBox] WindowManager";
 declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any> implements PageController {
     static kind: string;
     static displayer: Displayer;
-    static originWrapper?: HTMLElement;
     static wrapper?: HTMLElement;
     static mainViewWrapper?: HTMLElement;
-    static mainViewWrapperShadow?: HTMLElement;
     static sizer?: HTMLElement;
     static playground?: HTMLElement;
     static container?: HTMLElement;
     static debug: boolean;
     static containerSizeRatio: number;
     static supportAppliancePlugin?: boolean;
-    static isCreated: boolean;
+    private static isCreated;
     static appReadonly: boolean;
     private static _resolve;
-    private mutationObserver;
-    private observerPencil;
     private static extendWrapper?;
     private static mainViewScrollWrapper?;
     version: string;
@@ -1529,6 +1555,7 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     private static params?;
     private containerResizeObserver?;
     containerSizeRatio: number;
+    private extendPluginManager?;
     constructor(context: InvisiblePluginContext);
     static onCreate(manager: WindowManager): void;
     static mount(params: MountParams): Promise<WindowManager>;
@@ -1605,8 +1632,8 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
      */
     setViewMode(mode: ViewMode): void;
     setBoxState(boxState: TeleBoxState): void;
-    setMaximized(maximized: any): void;
-    setMinimized(minimized: any): void;
+    setMaximized(maximized: boolean): void;
+    setMinimized(minimized: boolean): void;
     setFullscreen(fullscreen: boolean): void;
     get cursorUIDs(): string[];
     setCursorUIDs(cursorUIDs?: string[] | null): void;
@@ -1708,6 +1735,7 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     private ensureAttributes;
     private _iframeBridge?;
     getIframeBridge(): IframeBridge;
+    useExtendPlugin(extend: ExtendPluginInstance<any>): void;
     getBackground(): {
         type: "img" | "color";
         value: string | undefined;
@@ -1724,5 +1752,5 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     setTeacherMySelfPointerShow(show: boolean): void;
 }
 
-export { AppContext, AppCreateError, AppManagerNotInitError, AppNotRegisterError, BindContainerRoomPhaseInvalidError, BoxManagerNotFoundError, BoxNotCreatedError, BuiltinApps, DomEvents, IframeBridge, IframeEvents, InvalidScenePath, LaserPointerManager, LaserPointerMultiManager, ParamsInvalidError, Storage, WhiteWebSDKInvalidError, WindowManager, calculateNextIndex, logFirstTag, mainViewField, reconnectRefresher };
-export type { AddAppOptions, AddAppParams, AddPageParams, AppEmitterEvent, AppInitState, AppListenerKeys, AppPayload, AppSyncAttributes, ApplianceIcons, BaseInsertParams, CursorMovePayload, CursorOptions, IframeBridgeAttributes, IframeBridgeEvents, IframeSize, InsertOptions, LaserPointerPosition, MountParams, NetlessApp, OnCreateInsertOption, PageController, PageRemoveService, PageState, PublicEvent, RegisterEventData, RegisterEvents, RegisterParams, StorageStateChangedEvent, StorageStateChangedListener, WindowMangerAttributes, apps, setAppOptions };
+export { AppContext, AppCreateError, AppManagerNotInitError, AppNotRegisterError, BindContainerRoomPhaseInvalidError, BoxManagerNotFoundError, BoxNotCreatedError, BuiltinApps, DomEvents, ExtendPlugin, ExtendPluginManager, IframeBridge, IframeEvents, InvalidScenePath, LaserPointerManager, LaserPointerMultiManager, ParamsInvalidError, Storage, WhiteWebSDKInvalidError, WindowManager, calculateNextIndex, logFirstTag, mainViewField, reconnectRefresher };
+export type { AddAppOptions, AddAppParams, AddPageParams, AppEmitterEvent, AppInitState, AppListenerKeys, AppPayload, AppSyncAttributes, ApplianceIcons, BaseInsertParams, CursorMovePayload, CursorOptions, ExtendContext, ExtendManagerOptions, ExtendPluginInstance, IframeBridgeAttributes, IframeBridgeEvents, IframeSize, InsertOptions, LaserPointerPosition, MountParams, NetlessApp, OnCreateInsertOption, PageController, PageRemoveService, PageState, PublicEvent, RegisterEventData, RegisterEvents, RegisterParams, StorageStateChangedEvent, StorageStateChangedListener, WindowMangerAttributes, apps, setAppOptions };

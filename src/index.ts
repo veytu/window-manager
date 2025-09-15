@@ -40,7 +40,7 @@ import {
 import type { TELE_BOX_STATE, BoxManager } from "./BoxManager";
 import * as Errors from "./Utils/error";
 import type { Apps, Position } from "./AttributesDelegate";
-import {
+import type {
     Displayer,
     SceneDefinition,
     View,
@@ -66,11 +66,12 @@ import type { PageController, AddPageParams, PageState } from "./Page";
 import { boxEmitter } from "./BoxEmitter";
 import { IframeBridge } from "./View/IframeBridge";
 import { setOptions } from "@netless/app-media-player";
+import type { ExtendPluginInstance } from "./ExtendPluginManager";
+import { ExtendPluginManager } from "./ExtendPluginManager";
 import { ScrollerManager, ScrollerScrollEventType } from "./ScrollerManager";
 import { isAndroid, isIOS } from "./Utils/environment";
 import { LaserPointerMultiManager } from "./LaserPointer";
 export * from "./View/IframeBridge";
-
 // 防循环工具函数
 function createAntiLoopAutorun(fn: () => void, name?: string) {
     let isUpdating = false;
@@ -199,21 +200,18 @@ export class WindowManager
 {
     public static kind = "WindowManager";
     public static displayer: Displayer;
-    public static originWrapper?: HTMLElement;
     public static wrapper?: HTMLElement;
     public static mainViewWrapper?: HTMLElement;
-    public static mainViewWrapperShadow?: HTMLElement;
+    // public static mainViewWrapperShadow?: HTMLElement;
     public static sizer?: HTMLElement;
     public static playground?: HTMLElement;
     public static container?: HTMLElement;
     public static debug = false;
     public static containerSizeRatio = DEFAULT_CONTAINER_RATIO;
     public static supportAppliancePlugin?: boolean;
-    public static isCreated = false;
+    private static isCreated = false;
     public static appReadonly: boolean = isAndroid() || isIOS();
     private static _resolve = (_manager: WindowManager) => void 0;
-    private mutationObserver: MutationObserver | null = null;
-    private observerPencil: MutationObserver | null = null
 
     private static extendWrapper?: HTMLElement;
     private static mainViewScrollWrapper?: HTMLElement;
@@ -239,6 +237,8 @@ export class WindowManager
 
     private containerResizeObserver?: ContainerResizeObserver;
     public containerSizeRatio = WindowManager.containerSizeRatio;
+
+    private extendPluginManager?: ExtendPluginManager;
 
     constructor(context: InvisiblePluginContext) {
         super(context);
@@ -320,6 +320,10 @@ export class WindowManager
             params.applianceIcons
         );
         manager.scrollerManager = new ScrollerManager({ manager });
+     	manager.extendPluginManager = new ExtendPluginManager({
+            internalEmitter: internalEmitter,
+            windowManager: manager,
+        });
         if (containerSizeRatio) {
             manager.containerSizeRatio = containerSizeRatio;
         }
@@ -440,7 +444,7 @@ export class WindowManager
             wrapper,
             sizer,
             mainViewElement,
-            mainViewWrapperShadow,
+            // mainViewWrapperShadow,
             mainViewWrapper,
             extendWrapper,
             mainViewScrollWrapper,
@@ -463,13 +467,12 @@ export class WindowManager
             wrapper,
             internalEmitter
         );
-        WindowManager.originWrapper = wrapper;
         WindowManager.wrapper = wrapper;
         WindowManager.sizer = sizer;
         WindowManager.mainViewWrapper = mainViewWrapper;
         WindowManager.extendWrapper = extendWrapper;
         WindowManager.mainViewScrollWrapper = mainViewScrollWrapper;
-        WindowManager.mainViewWrapperShadow = mainViewWrapperShadow;
+        // WindowManager.mainViewWrapperShadow = mainViewWrapperShadow;
 
         WindowManager.mainViewScrollWrapper?.classList.toggle(
             "netless-window-manager-fancy-scrollbar-readonly",
@@ -519,10 +522,11 @@ export class WindowManager
         }
         internalEmitter.emit("updateManagerRect");
         this.appManager?.refresh();
-        // this.appManager?.resetMaximized();
-        // this.appManager?.resetMinimized();
+        this.appManager?.resetMaximized();
+        this.appManager?.resetMinimized();
         this.appManager?.displayerWritableListener(!this.room.isWritable);
         WindowManager.container = container;
+        this.extendPluginManager?.refreshContainer(container);
     }
 
     public bindCollectorContainer(container: HTMLElement) {
@@ -825,14 +829,13 @@ export class WindowManager
         // }
     }
 
-    public setMaximized(maximized: any): void {
+    public setMaximized(maximized: boolean): void {
         if (!this.canOperate) return;
         this.boxManager?.setMaximized(maximized, false);
     }
 
-    public setMinimized(minimized: any): void {
+    public setMinimized(minimized: boolean): void {
         if (!this.canOperate) return;
-        
         this.boxManager?.setMinimized(minimized, false);
     }
 
@@ -1123,7 +1126,7 @@ export class WindowManager
         this.containerResizeObserver?.disconnect();
         this.appManager?.destroy();
         this.cursorManager?.destroy();
-        
+        this.extendPluginManager?.destroy();
         // 销毁激光笔管理器
         this._destroyLaserPointerManager();
         
@@ -1279,18 +1282,20 @@ export class WindowManager
     }
 
     private _updateMainViewWrapperSize(scale?: number, skipEmit?: boolean) {
-        const size = WindowManager.originWrapper?.getBoundingClientRect();
+        const size = WindowManager.wrapper?.getBoundingClientRect();
 
         if (!size) return false;
         const currentScale = scale ?? this.getAttributesValue(Fields.Scale)[mainViewField];
-        if (!WindowManager.mainViewWrapper || !WindowManager.mainViewWrapperShadow) return;
+        if (!WindowManager.mainViewWrapper) return;
+        // if (!WindowManager.mainViewWrapper || !WindowManager.mainViewWrapperShadow) return;
 
-        if (!WindowManager.mainViewWrapper || !WindowManager.mainViewWrapperShadow) return;
+        if (!WindowManager.mainViewWrapper) return;
+        // if (!WindowManager.mainViewWrapper || !WindowManager.mainViewWrapperShadow) return;
 
         WindowManager.mainViewWrapper.style.width = `${size?.width * currentScale}px`;
         WindowManager.mainViewWrapper.style.height = `${size?.height * currentScale}px`;
-        WindowManager.mainViewWrapperShadow.style.width = `${size?.width * currentScale}px`;
-        WindowManager.mainViewWrapperShadow.style.height = `${size?.height * currentScale}px`;
+        // WindowManager.mainViewWrapperShadow.style.width = `${size?.width * currentScale}px`;
+        // WindowManager.mainViewWrapperShadow.style.height = `${size?.height * currentScale}px`;
 
         const skipUpdate = skipEmit || this.readonly || isIOS() || isAndroid();
 
@@ -1465,6 +1470,10 @@ export class WindowManager
         this._iframeBridge || (this._iframeBridge = new IframeBridge(this, this.appManager));
         return this._iframeBridge;
     }
+    
+    public useExtendPlugin(extend: ExtendPluginInstance<any>) {
+        this.extendPluginManager?.use(extend);
+    }
 
     public getBackground(): { type: "img" | "color"; value: string | undefined } | undefined {
         if (!!this.attributes[Fields.MainViewBackgroundInfo]) {
@@ -1538,7 +1547,7 @@ export * from "./typings";
 
 export { BuiltinApps } from "./BuiltinApps";
 export type { PublicEvent } from "./callback";
-
+export * from "./ExtendPluginManager";
 // 导出激光笔相关模块
 export { LaserPointerManager, LaserPointerMultiManager, type LaserPointerPosition } from "./LaserPointer";
 

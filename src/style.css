@@ -290,8 +290,8 @@
 
 .teacher-laser-pointer {
     position: absolute;
-    width: 40px;
-    height: 40px;
+    width: 80px;
+    height: 80px;
     background-image: url('./image/cursor-clicker.png');
     background-size: contain;
     background-repeat: no-repeat;
@@ -302,6 +302,6 @@
 }
 
 .teacher-current-pointer {
-    cursor: url('./image/cursor-clicker.png') 20 20, auto !important;
+    cursor: url('./image/cursor-clicker.png') 40 40, auto !important;
     pointer-events: auto;
 }
