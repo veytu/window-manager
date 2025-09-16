@@ -1027,6 +1027,9 @@ class AppContext {
     this.getIsWritable = () => {
       return this.manager.canOperate;
     };
+    this.getAllBoxStatusInfoManager = () => {
+      return this.manager.windowManger.allBoxStatusInfoManager;
+    };
     this.getBox = () => {
       const box = this.boxManager.getBox(this.appId);
       if (box) {
@@ -6730,6 +6733,7 @@ class AppManager {
     });
     this.mainViewProxy = new MainViewProxy(this);
     this.viewManager = new ViewManager(this.displayer);
+    this.allBoxStatusInfoManager = new AllBoxStatusInfoManager();
     this.appListeners = new AppListeners(this);
     this.displayer.callbacks.on(this.eventName, this.displayerStateListener);
     this.appListeners.addListeners();
@@ -19337,8 +19341,8 @@ class ViewScroller {
   }
   onScroll() {
     var _a3, _b;
-    console.log("window manager scroll readonly", this.manager.readonly || true !== ((_a3 = this.manager.wukongRoleManager) == null ? void 0 : _a3.wukongCanOperate()));
-    if (this.manager.readonly || true !== ((_b = this.manager.wukongRoleManager) == null ? void 0 : _b.wukongCanOperate()))
+    console.log("window manager scroll readonly", this.manager.readonly || !((_a3 = WindowManager.wukongRoleManager) == null ? void 0 : _a3.wukongCanOperate()));
+    if (this.manager.readonly || !((_b = WindowManager.wukongRoleManager) == null ? void 0 : _b.wukongCanOperate()))
       return;
     if (this._isInternalUpdate)
       return;
@@ -19517,59 +19521,6 @@ class WukongRoleManager {
   }
   wukongGetOperableRoles() {
     return Array.from(this.wukongOperableRoles);
-  }
-}
-class AllBoxStatusInfoManager {
-  constructor(initial) {
-    this.info = { ...initial || {} };
-  }
-  getAll() {
-    return { ...this.info };
-  }
-  setAll(next, existingBoxIds) {
-    const normalized = this.normalize(next);
-    const cleaned = existingBoxIds ? this.clean(normalized, existingBoxIds) : normalized;
-    this.info = { ...cleaned };
-    return this.getAll();
-  }
-  normalize(data) {
-    return { ...data || {} };
-  }
-  pruneRemovedBoxes(existingBoxIds) {
-    const cleaned = this.clean(this.info, existingBoxIds);
-    this.info = { ...cleaned };
-    return this.getAll();
-  }
-  getMinimized() {
-    return Object.entries(this.info).filter(([_2, state]) => state === TELE_BOX_STATE.Minimized).map(([boxId]) => boxId);
-  }
-  getMaximized() {
-    return Object.entries(this.info).filter(([_2, state]) => state === TELE_BOX_STATE.Maximized).map(([boxId]) => boxId);
-  }
-  setBoxState(boxId, state) {
-    const next = { ...this.info };
-    next[boxId] = state;
-    this.info = next;
-    return this.getAll();
-  }
-  clearState(targetState) {
-    const next = { ...this.info };
-    Object.keys(next).forEach((boxId) => {
-      if (next[boxId] === targetState)
-        next[boxId] = TELE_BOX_STATE.Normal;
-    });
-    this.info = next;
-    return this.getAll();
-  }
-  clean(data, existingBoxIds) {
-    const info = data || {};
-    const existingSet = new Set(existingBoxIds || []);
-    const cleaned = {};
-    Object.keys(info).forEach((boxId) => {
-      if (existingSet.has(boxId))
-        cleaned[boxId] = info[boxId];
-    });
-    return cleaned;
   }
 }
 const logFirstTag$2 = "[LaserPointer]";
@@ -20068,6 +20019,59 @@ class LaserPointerMultiManager {
     return null;
   }
 }
+class AllBoxStatusInfoManager {
+  constructor(initial) {
+    this.info = { ...initial || {} };
+  }
+  getAll() {
+    return { ...this.info };
+  }
+  setAll(next, existingBoxIds) {
+    const normalized = this.normalize(next);
+    const cleaned = existingBoxIds ? this.clean(normalized, existingBoxIds) : normalized;
+    this.info = { ...cleaned };
+    return this.getAll();
+  }
+  normalize(data) {
+    return { ...data || {} };
+  }
+  pruneRemovedBoxes(existingBoxIds) {
+    const cleaned = this.clean(this.info, existingBoxIds);
+    this.info = { ...cleaned };
+    return this.getAll();
+  }
+  getMinimized() {
+    return Object.entries(this.info).filter(([_2, state]) => state === TELE_BOX_STATE.Minimized).map(([boxId]) => boxId);
+  }
+  getMaximized() {
+    return Object.entries(this.info).filter(([_2, state]) => state === TELE_BOX_STATE.Maximized).map(([boxId]) => boxId);
+  }
+  setBoxState(boxId, state) {
+    const next = { ...this.info };
+    next[boxId] = state;
+    this.info = next;
+    return this.getAll();
+  }
+  clearState(targetState) {
+    const next = { ...this.info };
+    Object.keys(next).forEach((boxId) => {
+      if (next[boxId] === targetState)
+        next[boxId] = TELE_BOX_STATE.Normal;
+    });
+    this.info = next;
+    return this.getAll();
+  }
+  clean(data, existingBoxIds) {
+    const info = data || {};
+    const existingSet = new Set(existingBoxIds || []);
+    const cleaned = {};
+    Object.keys(info).forEach((boxId) => {
+      if (existingSet.has(boxId))
+        cleaned[boxId] = info[boxId];
+    });
+    return cleaned;
+  }
+}
 function createAntiLoopAutorun(fn, name) {
   let isUpdating = false;
   return autorun(() => {
@@ -20171,8 +20175,6 @@ const _WindowManager = class extends InvisiblePlugin {
       internalEmitter,
       windowManager: manager
     });
-    manager.wukongRoleManager = new WukongRoleManager();
-    manager.allBoxStatusInfoManager = new AllBoxStatusInfoManager();
     if (containerSizeRatio) {
       manager.containerSizeRatio = containerSizeRatio;
     }
@@ -20265,7 +20267,7 @@ const _WindowManager = class extends InvisiblePlugin {
     return createInvisiblePlugin(room);
   }
   static initContainer(manager, container, params) {
-    var _a3, _b;
+    var _a3;
     const { chessboard, overwriteStyles, fullscreen } = params;
     if (!_WindowManager.container) {
       _WindowManager.container = container;
@@ -20302,7 +20304,7 @@ const _WindowManager = class extends InvisiblePlugin {
     _WindowManager.mainViewWrapper = mainViewWrapper;
     _WindowManager.extendWrapper = extendWrapper;
     _WindowManager.mainViewScrollWrapper = mainViewScrollWrapper;
-    (_b = _WindowManager.mainViewScrollWrapper) == null ? void 0 : _b.classList.toggle("netless-window-manager-fancy-scrollbar-readonly", true !== ((_a3 = manager.wukongRoleManager) == null ? void 0 : _a3.wukongCanOperate()));
+    (_a3 = _WindowManager.mainViewScrollWrapper) == null ? void 0 : _a3.classList.toggle("netless-window-manager-fancy-scrollbar-readonly", !_WindowManager.wukongRoleManager.wukongCanOperate());
     return mainViewElement;
   }
   static get registered() {
@@ -21078,7 +21080,6 @@ const _WindowManager = class extends InvisiblePlugin {
     return sceneSrc == null ? void 0 : sceneSrc.startsWith("pptx://");
   }
   async ensureAttributes() {
-    var _a3;
     if (isNull(this.attributes)) {
       await wait(50);
     }
@@ -21105,7 +21106,7 @@ const _WindowManager = class extends InvisiblePlugin {
         this.safeSetAttributes({ [Fields.MainViewBackgroundInfo]: { img: "", color: "" } });
       }
       if (!this.attributes[Fields.Scale]) {
-        if (!((_a3 = this.wukongRoleManager) == null ? void 0 : _a3.wukongCanOperate()) || this.readonly) {
+        if (!_WindowManager.wukongRoleManager.wukongCanOperate() || this.readonly) {
           return;
         }
         this.safeSetAttributes({ [Fields.Scale]: { [mainViewField]: 1 } });
@@ -21184,6 +21185,7 @@ let WindowManager = _WindowManager;
 WindowManager.kind = "WindowManager";
 WindowManager.debug = false;
 WindowManager.containerSizeRatio = DEFAULT_CONTAINER_RATIO;
+WindowManager.wukongRoleManager = new WukongRoleManager();
 WindowManager.isCreated = false;
 WindowManager._resolve = (_manager) => void 0;
 setupBuiltin();

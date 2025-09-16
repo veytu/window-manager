@@ -297,8 +297,6 @@ export class BoxManager {
             },
             fence: false,
             prefersColorScheme: createTeleBoxManagerConfig?.prefersColorScheme,
-            // allBoxStatusInfoManager: this.manager.allBoxStatusInfoManager,
-            // wukongRoleManager: this.manager.wukongRoleManager,
         };
 
         const manager = new TeleBoxManager(initManagerState);

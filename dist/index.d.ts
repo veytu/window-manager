@@ -285,6 +285,7 @@ declare class AppContext<TAttributes extends {} = any, TMagixEventPayloads = any
     getInitScenePath: () => string | undefined;
     /** Get App writable status. */
     getIsWritable: () => boolean;
+    getAllBoxStatusInfoManager: () => AllBoxStatusInfoManager;
     /** Get the App Window UI box. */
     getBox: () => ReadonlyTeleBox;
     getRoom: () => Room | undefined;
@@ -865,6 +866,7 @@ declare class AppManager {
     windowManger: WindowManager;
     displayer: Displayer;
     viewManager: ViewManager;
+    allBoxStatusInfoManager?: AllBoxStatusInfoManager;
     appProxies: Map<string, AppProxy>;
     appStatus: Map<string, AppStatus>;
     store: AttributesDelegate;
@@ -1340,36 +1342,6 @@ declare class WukongRoleManager {
     wukongGetOperableRoles(): WukongUserRoleType[];
 }
 
-/** allBoxStatusInfo 结构：记录每个 box 的状态 */
-type AllBoxStatusInfo = Record<string, TELE_BOX_STATE>;
-/**
- * 统一的 AllBoxStatusInfo 管理器
- * - 内部维护一份不可变思维的快照，所有变更返回新对象并同步到内部
- * - 提供清理/查询/设置等常用能力
- */
-declare class AllBoxStatusInfoManager {
-    private info;
-    constructor(initial?: AllBoxStatusInfo);
-    /** 获取当前快照（返回拷贝） */
-    getAll(): AllBoxStatusInfo;
-    /** 全量设置（可选传入 existingBoxIds 做一次清理后再设置） */
-    setAll(next: AllBoxStatusInfo | undefined, existingBoxIds?: string[]): AllBoxStatusInfo;
-    /** 归一化 undefined → {} */
-    normalize(data: AllBoxStatusInfo | undefined): AllBoxStatusInfo;
-    /** 根据现存 boxes 清理多余项（返回拷贝并同步内部状态） */
-    pruneRemovedBoxes(existingBoxIds: string[]): AllBoxStatusInfo;
-    /** 获取所有最小化的 boxId 列表 */
-    getMinimized(): string[];
-    /** 获取所有最大化的 boxId 列表 */
-    getMaximized(): string[];
-    /** 设置指定 box 的状态（返回新对象并同步内部） */
-    setBoxState(boxId: string, state: TELE_BOX_STATE): AllBoxStatusInfo;
-    /** 批量清除指定状态，将其置为 Normal（返回新对象并同步内部） */
-    clearState(targetState: TELE_BOX_STATE): AllBoxStatusInfo;
-    /** 仅保留现存 boxes 的状态（纯函数，不修改内部，仅工具） */
-    clean(data: AllBoxStatusInfo | undefined, existingBoxIds: string[]): AllBoxStatusInfo;
-}
-
 declare const BuiltinApps: {
     DocsViewer: string;
     MediaPlayer: string;
@@ -1511,6 +1483,36 @@ declare class LaserPointerMultiManager {
     private _getAppBoxView;
 }
 
+/** allBoxStatusInfo 结构：记录每个 box 的状态 */
+type AllBoxStatusInfo = Record<string, TELE_BOX_STATE>;
+/**
+ * 统一的 AllBoxStatusInfo 管理器
+ * - 内部维护一份不可变思维的快照，所有变更返回新对象并同步到内部
+ * - 提供清理/查询/设置等常用能力
+ */
+declare class AllBoxStatusInfoManager {
+    private info;
+    constructor(initial?: AllBoxStatusInfo);
+    /** 获取当前快照（返回拷贝） */
+    getAll(): AllBoxStatusInfo;
+    /** 全量设置（可选传入 existingBoxIds 做一次清理后再设置） */
+    setAll(next: AllBoxStatusInfo | undefined, existingBoxIds?: string[]): AllBoxStatusInfo;
+    /** 归一化 undefined → {} */
+    normalize(data: AllBoxStatusInfo | undefined): AllBoxStatusInfo;
+    /** 根据现存 boxes 清理多余项（返回拷贝并同步内部状态） */
+    pruneRemovedBoxes(existingBoxIds: string[]): AllBoxStatusInfo;
+    /** 获取所有最小化的 boxId 列表 */
+    getMinimized(): string[];
+    /** 获取所有最大化的 boxId 列表 */
+    getMaximized(): string[];
+    /** 设置指定 box 的状态（返回新对象并同步内部） */
+    setBoxState(boxId: string, state: TELE_BOX_STATE): AllBoxStatusInfo;
+    /** 批量清除指定状态，将其置为 Normal（返回新对象并同步内部） */
+    clearState(targetState: TELE_BOX_STATE): AllBoxStatusInfo;
+    /** 仅保留现存 boxes 的状态（纯函数，不修改内部，仅工具） */
+    clean(data: AllBoxStatusInfo | undefined, existingBoxIds: string[]): AllBoxStatusInfo;
+}
+
 type WindowMangerAttributes = {
     modelValue?: string;
     boxState: TELE_BOX_STATE;
@@ -1612,6 +1614,7 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     static debug: boolean;
     static containerSizeRatio: number;
     static supportAppliancePlugin?: boolean;
+    static wukongRoleManager: WukongRoleManager;
     private static isCreated;
     private static _resolve;
     private static extendWrapper?;
@@ -1624,8 +1627,6 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     appManager?: AppManager;
     cursorManager?: CursorManager;
     scrollerManager?: ScrollerManager;
-    wukongRoleManager?: WukongRoleManager;
-    allBoxStatusInfoManager?: AllBoxStatusInfoManager;
     viewMode: ViewMode;
     isReplay: boolean;
     private _pageState?;

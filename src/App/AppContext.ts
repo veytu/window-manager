@@ -19,7 +19,7 @@ import type {
 import type { ReadonlyTeleBox } from "@netless/telebox-insider";
 import type Emittery from "emittery";
 import type { BoxManager } from "../BoxManager";
-import type { AppEmitterEvent } from "../index";
+import type { AllBoxStatusInfoManager, AppEmitterEvent, WindowManager } from "../index";
 import type { AppManager } from "../AppManager";
 import type { AppProxy } from "./AppProxy";
 import type {
@@ -104,6 +104,10 @@ export class AppContext<TAttributes extends {} = any, TMagixEventPayloads = any,
     public getIsWritable = (): boolean => {
         return this.manager.canOperate;
     };
+
+    public getAllBoxStatusInfoManager = (): AllBoxStatusInfoManager =>{
+        return (this.manager.windowManger as WindowManager).allBoxStatusInfoManager;
+    }
 
     /** Get the App Window UI box. */
     public getBox = (): ReadonlyTeleBox => {

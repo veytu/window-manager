@@ -211,6 +211,7 @@ export class WindowManager
     public static debug = false;
     public static containerSizeRatio = DEFAULT_CONTAINER_RATIO;
     public static supportAppliancePlugin?: boolean;
+    public static wukongRoleManager = new WukongRoleManager();//悟空相关角色管理
     private static isCreated = false;
     private static _resolve = (_manager: WindowManager) => void 0;
 
@@ -226,8 +227,6 @@ export class WindowManager
     public appManager?: AppManager;
     public cursorManager?: CursorManager;
     public scrollerManager?: ScrollerManager;
-    public wukongRoleManager?: WukongRoleManager;//悟空相关角色管理
-    public allBoxStatusInfoManager?: AllBoxStatusInfoManager;//悟空相关所有box状态管理
     public viewMode = ViewMode.Broadcaster;
     public isReplay = isPlayer(this.displayer);
     private _pageState?: PageStateImpl;
@@ -327,8 +326,6 @@ export class WindowManager
             internalEmitter: internalEmitter,
             windowManager: manager,
         });
-        manager.wukongRoleManager = new WukongRoleManager();
-        manager.allBoxStatusInfoManager = new AllBoxStatusInfoManager();
         if (containerSizeRatio) {
             manager.containerSizeRatio = containerSizeRatio;
         }
@@ -479,7 +476,7 @@ export class WindowManager
         WindowManager.mainViewScrollWrapper = mainViewScrollWrapper;
         // WindowManager.mainViewWrapperShadow = mainViewWrapperShadow;
 
-        WindowManager.mainViewScrollWrapper?.classList.toggle("netless-window-manager-fancy-scrollbar-readonly",true !== manager.wukongRoleManager?.wukongCanOperate());
+        WindowManager.mainViewScrollWrapper?.classList.toggle("netless-window-manager-fancy-scrollbar-readonly",!WindowManager.wukongRoleManager.wukongCanOperate());
         return mainViewElement;
     }
 
@@ -1445,7 +1442,7 @@ export class WindowManager
                 this.safeSetAttributes({ [Fields.MainViewBackgroundInfo]: {img:'',color:''} });
             }
             if (!this.attributes[Fields.Scale]) {
-                if (!this.wukongRoleManager?.wukongCanOperate() || this.readonly) {
+                if (!WindowManager.wukongRoleManager.wukongCanOperate() || this.readonly) {
                     return;
                 }
                 this.safeSetAttributes({[Fields.Scale]: {[mainViewField]: 1}});

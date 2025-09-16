@@ -39,7 +39,7 @@ import type {
     RoomState,
     MemberState,
 } from "white-web-sdk";
-import type { AddAppParams, BaseInsertParams, TeleBoxRect } from "./index";
+import { AddAppParams, AllBoxStatusInfoManager, BaseInsertParams, TeleBoxRect } from "./index";
 import type {
     BoxClosePayload,
     BoxFocusPayload,
@@ -51,6 +51,7 @@ import type {
 export class AppManager {
     public displayer: Displayer;
     public viewManager: ViewManager;
+    public allBoxStatusInfoManager?: AllBoxStatusInfoManager;//悟空相关所有box状态管理
     public appProxies: Map<string, AppProxy> = new Map();
     public appStatus: Map<string, AppStatus> = new Map();
     public store = store;
@@ -85,6 +86,7 @@ export class AppManager {
 
         this.mainViewProxy = new MainViewProxy(this);
         this.viewManager = new ViewManager(this.displayer);
+        this.allBoxStatusInfoManager = new AllBoxStatusInfoManager();
         this.appListeners = new AppListeners(this);
         this.displayer.callbacks.on(this.eventName, this.displayerStateListener);
         this.appListeners.addListeners();
