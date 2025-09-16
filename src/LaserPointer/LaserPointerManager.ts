@@ -125,10 +125,10 @@ export class LaserPointerManager {
                 console.log(`${logFirstTag} [${this._instanceId}] 无法移除监听器 - 容器:`, !!showView, '绑定处理器:', !!this._boundHandleTeacherMouseMove);
             }
             
-            // 移除teacher-current-pointer类名
-            if (showView) {
-                this.setTeacherMySelfPointerShow(false);
-            }
+            // // 移除teacher-current-pointer类名
+            // if (showView) {
+            //     this.setTeacherMySelfPointerShow(false);
+            // }
             
             this._lastTeacherPosition = undefined;
         } else {
