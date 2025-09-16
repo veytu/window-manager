@@ -19494,6 +19494,7 @@ class LaserPointerManager {
     this._appManager = appManager;
     this._currentUserId = currentUserId;
     this._instanceId = viewId || `LP_${Math.random().toString(36).substr(2, 6)}`;
+    console.log(`${logFirstTag$2} [${this._instanceId}] \u6FC0\u5149\u7B14\u7BA1\u7406\u5668\u6784\u9020\u51FD\u6570`, manager, room, displayer, appManager, currentUserId, viewId);
     this._initView();
     this._setupMagixListener();
   }
@@ -19529,7 +19530,7 @@ class LaserPointerManager {
     console.log(`${logFirstTag$2} [${this._instanceId}] \u521D\u59CB\u5316\u89C6\u56FE\u5B8C\u6210: \u662F\u5426\u4E3B\u89C6\u56FE=${isMainView}, \u662F\u5426\u5E94\u7528\u89C6\u56FE=${isAppView}, \u6709\u89C6\u56FE=${!!this._view}, \u89C6\u56FE\u7C7B\u578B=${isMainView ? "\u4E3B\u89C6\u56FE" : "\u5E94\u7528\u89C6\u56FE"}`);
   }
   setLaserPointer(active) {
-    var _a3;
+    var _a3, _b, _c;
     console.log(`${logFirstTag$2} [${this._instanceId}] \u8BBE\u7F6E\u6FC0\u5149\u7B14\u72B6\u6001:`, active);
     this._currentPointActive = active;
     if (!active) {
@@ -19550,29 +19551,20 @@ class LaserPointerManager {
       if ((teacherInfo == null ? void 0 : teacherInfo.uid) === this._currentUserId) {
         console.log(`${logFirstTag$2} [${this._instanceId}] \u5F53\u524D\u7528\u6237\u662F\u8001\u5E08\uFF0C\u5F00\u59CB\u8BBE\u7F6E\u76D1\u542C\u5668`);
         this._setupTeacherMoveListener();
+        const showView = this._getShowViewDivElement();
         if (this._instanceId !== "main") {
-          const showView = this._getShowViewDivElement();
           if (showView) {
-            showView.style.pointerEvents = "auto";
+            (_b = showView.parentElement) == null ? void 0 : _b.classList.add("teacher-current-pointer-enevnt-auto");
+            console.log(`${logFirstTag$2} [${this._instanceId}] \u8001\u5E08\u7AEF\u8BFE\u4EF6\u5DF2\u6DFB\u52A0pint\u4E8B\u4EF6`, showView);
           }
+        } else {
+          (_c = showView == null ? void 0 : showView.classList) == null ? void 0 : _c.remove("teacher-current-pointer-enevnt-auto");
         }
       } else {
         console.log(`${logFirstTag$2} [${this._instanceId}] \u5F53\u524D\u7528\u6237\u4E0D\u662F\u8001\u5E08\uFF0C\u8DF3\u8FC7\u76D1\u542C\u5668\u8BBE\u7F6E`);
       }
     }
     this.updateLaserPointerIconVisibility();
-  }
-  setTeacherMySelfPointerShow(show) {
-    const showView = this._getShowViewDivElement();
-    if (showView) {
-      if (show) {
-        showView.classList.add("teacher-current-pointer");
-        console.log(`${logFirstTag$2} [${this._instanceId}] teacher-current-pointer\u7C7B\u540D`);
-      } else {
-        showView.classList.remove("teacher-current-pointer");
-        console.log(`${logFirstTag$2} [${this._instanceId}] \u79FB\u9664teacher-current-pointer\u7C7B\u540D`);
-      }
-    }
   }
   _setupTeacherMoveListener() {
     if (!this._teacherMoveThrottle) {
@@ -19616,17 +19608,26 @@ class LaserPointerManager {
     }
   }
   _handleTeacherMouseEvent(event) {
-    var _a3, _b, _c;
+    var _a3, _b, _c, _d, _e;
     const eventType = event.type;
     console.log(`${logFirstTag$2} [${this._instanceId}] \u9F20\u6807${eventType}\u4E8B\u4EF6\u5904\u7406, \u6FC0\u5149\u7B14\u6FC0\u6D3B\u72B6\u6001:`, this._currentPointActive);
     if (!this._currentPointActive) {
       console.log(`${logFirstTag$2} [${this._instanceId}] \u6FC0\u5149\u7B14\u672A\u6FC0\u6D3B\uFF0C\u63D0\u524D\u8FD4\u56DE`);
       return;
     }
+    const teacherTool = (_a3 = this._room) == null ? void 0 : _a3.state.memberState.currentApplianceName;
+    if (ApplianceNames.laserPointer === teacherTool) {
+      if (this._lastTeacherPosition == null || this._lastTeacherPosition.x !== -1 && this._lastTeacherPosition.y !== -1) {
+        this._lastTeacherPosition = { x: -1, y: -1 };
+        (_b = this._teacherMoveThrottle) == null ? void 0 : _b.call(this, { x: -1, y: -1 });
+      }
+      console.log(`${logFirstTag$2} [${this._instanceId}] \u8001\u5E08\u6559\u5177\u4E3A\u6FC0\u5149\u7B14\uFF0C\u63D0\u524D\u8FD4\u56DE\u5E76\u901A\u77E5\u5B66\u751F\u7AEF\u9690\u85CF`);
+      return;
+    }
     if (eventType === "mouseleave") {
       console.log(`${logFirstTag$2} [${this._instanceId}] \u9F20\u6807\u79BB\u5F00\u5BB9\u5668`);
       this._lastTeacherPosition = { x: -1, y: -1 };
-      (_a3 = this._teacherMoveThrottle) == null ? void 0 : _a3.call(this, { x: -1, y: -1 });
+      (_c = this._teacherMoveThrottle) == null ? void 0 : _c.call(this, { x: -1, y: -1 });
       return;
     }
     if (eventType === "mouseenter") {
@@ -19639,14 +19640,14 @@ class LaserPointerManager {
       const wasOutside = this._lastTeacherPosition && (this._lastTeacherPosition.x === -1 && this._lastTeacherPosition.y === -1);
       if (!isInsideContainer) {
         console.log(`${logFirstTag$2} [${this._instanceId}] \u9F20\u6807\u5728\u5BB9\u5668\u5916\uFF0C\u9690\u85CF\u6FC0\u5149\u7B14`);
-        (_b = this._teacherMoveThrottle) == null ? void 0 : _b.call(this, { x: -1, y: -1 });
+        (_d = this._teacherMoveThrottle) == null ? void 0 : _d.call(this, { x: -1, y: -1 });
         return;
       }
       const position = this._view.convertToPointInWorld({ x: event.offsetX, y: event.offsetY });
       console.log(`${logFirstTag$2} [${this._instanceId}] \u9F20\u6807\u79FB\u52A8\u5904\u7406, \u504F\u79FB\u91CF:`, event.offsetX, event.offsetY, "\u8F6C\u6362\u540E\u4F4D\u7F6E:", JSON.stringify(position));
       if (wasOutside || !this._lastTeacherPosition || Math.abs(position.x - this._lastTeacherPosition.x) > 0.01 || Math.abs(position.y - this._lastTeacherPosition.y) > 0.01) {
         this._lastTeacherPosition = position;
-        (_c = this._teacherMoveThrottle) == null ? void 0 : _c.call(this, position);
+        (_e = this._teacherMoveThrottle) == null ? void 0 : _e.call(this, position);
       }
     }
   }
@@ -19834,7 +19835,7 @@ class LaserPointerMultiManager {
   }
   setupEventListeners() {
     console.log(`${logFirstTag$1} Setting up event listeners`);
-    callbacks$1.on("onMainViewMounted", (_view) => {
+    this._windowManager.emitter.on("onMainViewMounted", (_view) => {
       console.log(`${logFirstTag$1} onMainViewMounted event received`);
       setTimeout(() => {
         const mainViewContainer = this._getMainViewContainer();
@@ -19846,7 +19847,7 @@ class LaserPointerMultiManager {
         }
       }, 100);
     });
-    callbacks$1.on("onMainViewRebind", (_view) => {
+    this._windowManager.emitter.on("onMainViewRebind", (_view) => {
       console.log(`${logFirstTag$1} onMainViewRebind event received`);
       this.destroyLaserPointerManagerForView("main");
       const mainViewContainer = this._getMainViewContainer();
@@ -19854,12 +19855,12 @@ class LaserPointerMultiManager {
         this.createLaserPointerManagerForView("main");
       }
     });
-    callbacks$1.on("onAppViewMounted", (payload) => {
-      console.log(`${logFirstTag$1} onAppViewMounted event received for app:`, payload.appId);
+    this._windowManager.emitter.on("onAppViewMounted", (payload) => {
+      console.log(`${logFirstTag$1} onAppViewMounted event received for app:`, payload);
       const appBoxView = this._getAppBoxView(payload.appId);
       console.log(`${logFirstTag$1} App box view for ${payload.appId}:`, !!appBoxView);
       if (appBoxView) {
-        console.log(`${logFirstTag$1} Creating laser pointer manager for app:`, payload.appId);
+        console.log(`${logFirstTag$1} Creating laser pointer manager for app:`, payload);
         this.createLaserPointerManagerForView(`app_${payload.appId}`);
       } else {
         console.warn(`${logFirstTag$1} Failed to get app box view for:`, payload.appId);
@@ -19919,11 +19920,6 @@ class LaserPointerMultiManager {
       } else {
         manager.setLaserPointer(false);
       }
-    });
-  }
-  setTeacherMySelfPointerShow(show) {
-    this._laserPointerManagers.forEach((manager, _2) => {
-      manager.setTeacherMySelfPointerShow(show);
     });
   }
   destroy() {
@@ -20010,7 +20006,7 @@ const logFirstTag = "[TeleBox] WindowManager";
 const _WindowManager = class extends InvisiblePlugin {
   constructor(context) {
     super(context);
-    this.version = "1.0.6-wukong.0";
+    this.version = "1.0.6-wukong.1";
     this.dependencies = { "dependencies": { "@juggle/resize-observer": "^3.4.0", "@netless/telebox-insider": "github:veytu/telebox-insider", "emittery": "^0.9.2", "lodash": "^4.17.21", "p-retry": "^4.6.2", "uuid": "^7.0.3", "value-enhancer": "0.0.8", "video.js": "^8.23.4" }, "peerDependencies": { "jspdf": "2.5.1", "white-web-sdk": "^2.16.52" }, "devDependencies": { "@hyrious/dts": "^0.2.11", "@netless/app-docs-viewer": "github:veytu/app-docs-viewer", "@netless/app-media-player": "0.1.4", "@rollup/plugin-commonjs": "^20.0.0", "@rollup/plugin-node-resolve": "^13.3.0", "@rollup/plugin-url": "^6.1.0", "@sveltejs/vite-plugin-svelte": "1.0.0-next.40", "@tsconfig/svelte": "^2.0.1", "@types/debug": "^4.1.12", "@types/lodash": "^4.17.20", "@types/lodash-es": "^4.17.12", "@types/uuid": "^8.3.4", "@typescript-eslint/eslint-plugin": "^4.33.0", "@typescript-eslint/parser": "^4.33.0", "@vitest/ui": "^0.14.2", "cypress": "^8.7.0", "dotenv": "^10.0.0", "eslint": "^7.32.0", "eslint-config-prettier": "^8.10.2", "eslint-plugin-svelte3": "^3.4.1", "jsdom": "^19.0.0", "jspdf": "^2.5.2", "less": "^4.4.1", "prettier": "^2.8.8", "prettier-plugin-svelte": "^2.10.1", "rollup-plugin-analyzer": "^4.0.0", "rollup-plugin-styles": "^3.14.1", "side-effect-manager": "0.1.5", "svelte": "^3.59.2", "typescript": "^4.9.5", "vite": "^2.9.18", "vitest": "^0.14.2", "white-web-sdk": "^2.16.53" } };
     this.emitter = callbacks$1;
     this.viewMode = ViewMode.Broadcaster;
@@ -21103,10 +21099,6 @@ const _WindowManager = class extends InvisiblePlugin {
       const { active } = this.attributes[Fields.LaserPointerActive];
       this._setLaserPointer(active).catch(console.error);
     }
-  }
-  setTeacherMySelfPointerShow(show) {
-    var _a3;
-    (_a3 = this._laserPointerMultiManager) == null ? void 0 : _a3.setTeacherMySelfPointerShow(show);
   }
 };
 let WindowManager = _WindowManager;

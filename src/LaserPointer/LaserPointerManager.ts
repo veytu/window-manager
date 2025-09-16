@@ -143,7 +143,7 @@ export class LaserPointerManager {
                 const showView = this._getShowViewDivElement();
                 if (this._instanceId !== 'main') {
                     if (showView) {
-                        showView.classList.add('teacher-current-pointer-enevnt-auto');
+                        showView.parentElement?.classList.add('teacher-current-pointer-enevnt-auto');
                         console.log(`${logFirstTag} [${this._instanceId}] 老师端课件已添加pint事件`,showView);
                     }
                 }else{
@@ -156,23 +156,6 @@ export class LaserPointerManager {
         
         // 更新激光笔图标显示状态
         this.updateLaserPointerIconVisibility();
-    }
-
-    /**
-     * 设置老师端激光笔显示样式
-     * @param show 是否显示老师端激光笔样式
-     */
-    public setTeacherMySelfPointerShow(show: boolean) {
-        const showView = this._getShowViewDivElement();
-        if (showView) {
-            if (show) {
-                showView.classList.add('teacher-current-pointer');
-                console.log(`${logFirstTag} [${this._instanceId}] teacher-current-pointer类名`,showView);
-            } else {
-                showView.classList.remove('teacher-current-pointer');
-                console.log(`${logFirstTag} [${this._instanceId}] 移除teacher-current-pointer类名`,showView);
-            }
-        }
     }
 
     /**
@@ -240,6 +223,16 @@ export class LaserPointerManager {
         
         if (!this._currentPointActive) {
             console.log(`${logFirstTag} [${this._instanceId}] 激光笔未激活，提前返回`);
+            return;
+        }
+        //获取老师教具
+        const teacherTool = this._room?.state.memberState.currentApplianceName
+        if ((ApplianceNames.laserPointer === teacherTool)) {
+            if (this._lastTeacherPosition == null || this._lastTeacherPosition.x !== -1 && this._lastTeacherPosition.y !== -1) {
+                this._lastTeacherPosition = { x: -1, y: -1 };
+                this._teacherMoveThrottle?.({ x: -1, y: -1 });
+            }
+            console.log(`${logFirstTag} [${this._instanceId}] 老师教具为激光笔，提前返回并通知学生端隐藏`);
             return;
         }
         

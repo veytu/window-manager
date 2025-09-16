@@ -154,16 +154,6 @@ export class LaserPointerMultiManager {
     }
 
     /**
-     * 设置老师端激光笔显示样式
-     * @param show 是否显示老师端激光笔样式
-     */
-    public setTeacherMySelfPointerShow(show: boolean): void {
-        this._laserPointerManagers.forEach((manager, _) => {
-            manager.setTeacherMySelfPointerShow(show);
-        });
-    }
-
-    /**
      * 销毁所有激光笔管理器
      */
     public destroy(): void {

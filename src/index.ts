@@ -1531,14 +1531,6 @@ export class WindowManager
             this._setLaserPointer(active).catch(console.error);
         }
     }
-
-    /**
-     * 设置老师端激光笔显示样式
-     * @param show 是否显示老师端激光笔样式
-     */
-    public setTeacherMySelfPointerShow(show: boolean): void {
-        this._laserPointerMultiManager?.setTeacherMySelfPointerShow(show);
-    }
 }
 
 setupBuiltin();

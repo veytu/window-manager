@@ -1342,11 +1342,6 @@ declare class LaserPointerManager {
      */
     setLaserPointer(active: boolean): void;
     /**
-     * 设置老师端激光笔显示样式
-     * @param show 是否显示老师端激光笔样式
-     */
-    setTeacherMySelfPointerShow(show: boolean): void;
-    /**
      * 设置老师端鼠标移动监听器
      * 创建节流函数和绑定事件处理器，并添加鼠标事件监听
      * 包括鼠标移动、进入和离开事件的统一处理
@@ -1400,11 +1395,6 @@ declare class LaserPointerMultiManager {
      * 设置所有激光笔管理器的激活状态
      */
     setLaserPointerActive(active: boolean): void;
-    /**
-     * 设置老师端激光笔显示样式
-     * @param show 是否显示老师端激光笔样式
-     */
-    setTeacherMySelfPointerShow(show: boolean): void;
     /**
      * 销毁所有激光笔管理器
      */
@@ -1745,11 +1735,6 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     private _setBackgroundColor;
     private _setBackgroundImg;
     private _initAttribute;
-    /**
-     * 设置老师端激光笔显示样式
-     * @param show 是否显示老师端激光笔样式
-     */
-    setTeacherMySelfPointerShow(show: boolean): void;
 }
 
 export { AppContext, AppCreateError, AppManagerNotInitError, AppNotRegisterError, BindContainerRoomPhaseInvalidError, BoxManagerNotFoundError, BoxNotCreatedError, BuiltinApps, DomEvents, ExtendPlugin, ExtendPluginManager, IframeBridge, IframeEvents, InvalidScenePath, LaserPointerManager, LaserPointerMultiManager, ParamsInvalidError, Storage, WhiteWebSDKInvalidError, WindowManager, calculateNextIndex, logFirstTag, mainViewField, reconnectRefresher };

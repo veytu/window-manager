@@ -306,5 +306,5 @@
     pointer-events: auto;
 }
 .teacher-current-pointer-enevnt-auto {
-    pointer-events: auto;
+    pointer-events: auto !important;
 }
