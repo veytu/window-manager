@@ -285,7 +285,6 @@ declare class AppContext<TAttributes extends {} = any, TMagixEventPayloads = any
     getInitScenePath: () => string | undefined;
     /** Get App writable status. */
     getIsWritable: () => boolean;
-    getIsAppReadonly: () => boolean;
     /** Get the App Window UI box. */
     getBox: () => ReadonlyTeleBox;
     getRoom: () => Room | undefined;
@@ -903,7 +902,6 @@ declare class AppManager {
     private get eventName();
     get attributes(): WindowMangerAttributes;
     get canOperate(): boolean;
-    get appReadonly(): boolean;
     get room(): Room | undefined;
     get isLaserPointerActive(): any;
     get mainView(): white_web_sdk.View;
@@ -1280,6 +1278,98 @@ declare class ScrollerManager {
     destroy(): void;
 }
 
+/**
+ * 悟空用户角色类型
+ */
+declare enum WukongUserRoleType {
+    /** 老师 */
+    teacher = 0,
+    /** 助教 */
+    assistant = 1,
+    /** 巡课 */
+    inspector = 2,
+    /** 学生 */
+    student = 3,
+    /** 工单管理员 */
+    admin = 4,
+    /** 旁听生 */
+    auditor = 5,
+    /** 磨课机器人 */
+    course_root = 6,
+    /** 视频录制机器人 */
+    recording_robot = 7
+}
+/**
+ * 悟空角色别名类型
+ */
+type Role = WukongUserRoleType;
+
+/**
+ * 悟空角色管理器：
+ * - 维护当前角色与是否为演讲者标记
+ * - 动态判断是否具备操作权限（可配置“默认有权限的角色”）
+ */
+declare class WukongRoleManager {
+    private wukongCurrentRole;
+    private wukongPresenter;
+    /** 默认具备操作权限的角色集合（不含演讲者，演讲者单独由 wukongPresenter 控制） */
+    private wukongOperableRoles;
+    constructor();
+    /** 获取当前角色 */
+    getRole(): WukongUserRoleType;
+    /** 设置当前角色 */
+    setRole(nextRole: WukongUserRoleType): void;
+    /**
+     * 是否具备操作权限（悟空）
+     * 规则：演讲者 或 属于“默认有权限角色集合” => true，其余 => false
+     */
+    wukongCanOperate(): boolean;
+    /**
+     * 是否为演讲者权限
+     */
+    /** 是否为演讲者（悟空） */
+    wukongIsPresenter(): boolean;
+    /** 设置是否为演讲者（悟空） */
+    wukongSetPresenter(isPresenter: boolean): void;
+    /**
+     * 设置“默认有操作权限”的角色集合（完全覆盖）
+     * 例如：传入 [teacher, assistant, admin]
+     */
+    wukongSetOperableRoles(roles: WukongUserRoleType[]): void;
+    /** 获取“默认有操作权限”的角色集合（快照） */
+    wukongGetOperableRoles(): WukongUserRoleType[];
+}
+
+/** allBoxStatusInfo 结构：记录每个 box 的状态 */
+type AllBoxStatusInfo = Record<string, TELE_BOX_STATE>;
+/**
+ * 统一的 AllBoxStatusInfo 管理器
+ * - 内部维护一份不可变思维的快照，所有变更返回新对象并同步到内部
+ * - 提供清理/查询/设置等常用能力
+ */
+declare class AllBoxStatusInfoManager {
+    private info;
+    constructor(initial?: AllBoxStatusInfo);
+    /** 获取当前快照（返回拷贝） */
+    getAll(): AllBoxStatusInfo;
+    /** 全量设置（可选传入 existingBoxIds 做一次清理后再设置） */
+    setAll(next: AllBoxStatusInfo | undefined, existingBoxIds?: string[]): AllBoxStatusInfo;
+    /** 归一化 undefined → {} */
+    normalize(data: AllBoxStatusInfo | undefined): AllBoxStatusInfo;
+    /** 根据现存 boxes 清理多余项（返回拷贝并同步内部状态） */
+    pruneRemovedBoxes(existingBoxIds: string[]): AllBoxStatusInfo;
+    /** 获取所有最小化的 boxId 列表 */
+    getMinimized(): string[];
+    /** 获取所有最大化的 boxId 列表 */
+    getMaximized(): string[];
+    /** 设置指定 box 的状态（返回新对象并同步内部） */
+    setBoxState(boxId: string, state: TELE_BOX_STATE): AllBoxStatusInfo;
+    /** 批量清除指定状态，将其置为 Normal（返回新对象并同步内部） */
+    clearState(targetState: TELE_BOX_STATE): AllBoxStatusInfo;
+    /** 仅保留现存 boxes 的状态（纯函数，不修改内部，仅工具） */
+    clean(data: AllBoxStatusInfo | undefined, existingBoxIds: string[]): AllBoxStatusInfo;
+}
+
 declare const BuiltinApps: {
     DocsViewer: string;
     MediaPlayer: string;
@@ -1523,7 +1613,6 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     static containerSizeRatio: number;
     static supportAppliancePlugin?: boolean;
     private static isCreated;
-    static appReadonly: boolean;
     private static _resolve;
     private static extendWrapper?;
     private static mainViewScrollWrapper?;
@@ -1535,6 +1624,8 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     appManager?: AppManager;
     cursorManager?: CursorManager;
     scrollerManager?: ScrollerManager;
+    wukongRoleManager?: WukongRoleManager;
+    allBoxStatusInfoManager?: AllBoxStatusInfoManager;
     viewMode: ViewMode;
     isReplay: boolean;
     private _pageState?;
@@ -1684,8 +1775,6 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     private bindMainView;
     get canOperate(): boolean;
     get room(): Room;
-    get appReadonly(): boolean;
-    setAppReadonly(readonly: boolean): void;
     safeSetAttributes(attributes: any): void;
     safeUpdateAttributes(keys: string[], value: any): void;
     setPrefersColorScheme(scheme: TeleBoxColorScheme): void;
@@ -1737,5 +1826,5 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     private _initAttribute;
 }
 
-export { AppContext, AppCreateError, AppManagerNotInitError, AppNotRegisterError, BindContainerRoomPhaseInvalidError, BoxManagerNotFoundError, BoxNotCreatedError, BuiltinApps, DomEvents, ExtendPlugin, ExtendPluginManager, IframeBridge, IframeEvents, InvalidScenePath, LaserPointerManager, LaserPointerMultiManager, ParamsInvalidError, Storage, WhiteWebSDKInvalidError, WindowManager, calculateNextIndex, logFirstTag, mainViewField, reconnectRefresher };
-export type { AddAppOptions, AddAppParams, AddPageParams, AppEmitterEvent, AppInitState, AppListenerKeys, AppPayload, AppSyncAttributes, ApplianceIcons, BaseInsertParams, CursorMovePayload, CursorOptions, ExtendContext, ExtendManagerOptions, ExtendPluginInstance, IframeBridgeAttributes, IframeBridgeEvents, IframeSize, InsertOptions, LaserPointerPosition, MountParams, NetlessApp, OnCreateInsertOption, PageController, PageRemoveService, PageState, PublicEvent, RegisterEventData, RegisterEvents, RegisterParams, StorageStateChangedEvent, StorageStateChangedListener, WindowMangerAttributes, apps, setAppOptions };
+export { AllBoxStatusInfoManager, AppContext, AppCreateError, AppManagerNotInitError, AppNotRegisterError, BindContainerRoomPhaseInvalidError, BoxManagerNotFoundError, BoxNotCreatedError, BuiltinApps, DomEvents, ExtendPlugin, ExtendPluginManager, IframeBridge, IframeEvents, InvalidScenePath, LaserPointerManager, LaserPointerMultiManager, ParamsInvalidError, Storage, WhiteWebSDKInvalidError, WindowManager, WukongRoleManager, WukongUserRoleType, calculateNextIndex, logFirstTag, mainViewField, reconnectRefresher };
+export type { AddAppOptions, AddAppParams, AddPageParams, AllBoxStatusInfo, AppEmitterEvent, AppInitState, AppListenerKeys, AppPayload, AppSyncAttributes, ApplianceIcons, BaseInsertParams, CursorMovePayload, CursorOptions, ExtendContext, ExtendManagerOptions, ExtendPluginInstance, IframeBridgeAttributes, IframeBridgeEvents, IframeSize, InsertOptions, LaserPointerPosition, MountParams, NetlessApp, OnCreateInsertOption, PageController, PageRemoveService, PageState, PublicEvent, RegisterEventData, RegisterEvents, RegisterParams, Role, StorageStateChangedEvent, StorageStateChangedListener, WindowMangerAttributes, apps, setAppOptions };

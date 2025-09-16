@@ -1538,3 +1538,6 @@ export * from "./ExtendPluginManager";
 // 导出激光笔相关模块
 export { LaserPointerManager, LaserPointerMultiManager, type LaserPointerPosition } from "./LaserPointer";
 
+// 导出 Manager 下的所有内容
+export * from "./Manager";
+
