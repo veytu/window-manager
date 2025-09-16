@@ -1027,6 +1027,9 @@ class AppContext {
     this.getIsWritable = () => {
       return this.manager.canOperate;
     };
+    this.getIsAppReadonly = () => {
+      return this.manager.appReadonly;
+    };
     this.getBox = () => {
       const box = this.boxManager.getBox(this.appId);
       if (box) {
@@ -5197,7 +5200,8 @@ class BoxManager {
         height: rect.height
       },
       fence: false,
-      prefersColorScheme: createTeleBoxManagerConfig == null ? void 0 : createTeleBoxManagerConfig.prefersColorScheme
+      prefersColorScheme: createTeleBoxManagerConfig == null ? void 0 : createTeleBoxManagerConfig.prefersColorScheme,
+      appReadonly: WindowManager.appReadonly
     };
     const manager = new TeleBoxManager(initManagerState);
     if (this.teleBoxManager) {
@@ -6782,6 +6786,9 @@ class AppManager {
   }
   get canOperate() {
     return this.windowManger.canOperate;
+  }
+  get appReadonly() {
+    return this.windowManger.appReadonly;
   }
   get room() {
     return isRoom(this.displayer) ? this.displayer : void 0;
@@ -19336,9 +19343,8 @@ class ViewScroller {
     });
   }
   onScroll() {
-    var _a3, _b;
-    console.log("window manager scroll readonly", this.manager.readonly || true !== ((_a3 = this.manager.wukongRoleManager) == null ? void 0 : _a3.wukongCanOperate()));
-    if (this.manager.readonly || true !== ((_b = this.manager.wukongRoleManager) == null ? void 0 : _b.wukongCanOperate()))
+    console.log("window manager scroll readonly", this.manager.readonly || WindowManager.appReadonly);
+    if (this.manager.readonly || WindowManager.appReadonly)
       return;
     if (this._isInternalUpdate)
       return;
@@ -19476,100 +19482,6 @@ class ScrollerManager {
       scroller.destroy();
     });
     this.scrollers = [];
-  }
-}
-var WukongUserRoleType = /* @__PURE__ */ ((WukongUserRoleType2) => {
-  WukongUserRoleType2[WukongUserRoleType2["teacher"] = 0] = "teacher";
-  WukongUserRoleType2[WukongUserRoleType2["assistant"] = 1] = "assistant";
-  WukongUserRoleType2[WukongUserRoleType2["inspector"] = 2] = "inspector";
-  WukongUserRoleType2[WukongUserRoleType2["student"] = 3] = "student";
-  WukongUserRoleType2[WukongUserRoleType2["admin"] = 4] = "admin";
-  WukongUserRoleType2[WukongUserRoleType2["auditor"] = 5] = "auditor";
-  WukongUserRoleType2[WukongUserRoleType2["course_root"] = 6] = "course_root";
-  WukongUserRoleType2[WukongUserRoleType2["recording_robot"] = 7] = "recording_robot";
-  return WukongUserRoleType2;
-})(WukongUserRoleType || {});
-class WukongRoleManager {
-  constructor() {
-    this.wukongCurrentRole = WukongUserRoleType.student;
-    this.wukongPresenter = false;
-    this.wukongOperableRoles = /* @__PURE__ */ new Set();
-  }
-  getRole() {
-    return this.wukongCurrentRole;
-  }
-  setRole(nextRole) {
-    this.wukongCurrentRole = nextRole;
-  }
-  wukongCanOperate() {
-    if (this.wukongPresenter)
-      return true;
-    return this.wukongOperableRoles.has(this.wukongCurrentRole);
-  }
-  wukongIsPresenter() {
-    return this.wukongPresenter;
-  }
-  wukongSetPresenter(isPresenter) {
-    this.wukongPresenter = isPresenter;
-  }
-  wukongSetOperableRoles(roles) {
-    this.wukongOperableRoles = new Set(roles);
-  }
-  wukongGetOperableRoles() {
-    return Array.from(this.wukongOperableRoles);
-  }
-}
-class AllBoxStatusInfoManager {
-  constructor(initial) {
-    this.info = { ...initial || {} };
-  }
-  getAll() {
-    return { ...this.info };
-  }
-  setAll(next, existingBoxIds) {
-    const normalized = this.normalize(next);
-    const cleaned = existingBoxIds ? this.clean(normalized, existingBoxIds) : normalized;
-    this.info = { ...cleaned };
-    return this.getAll();
-  }
-  normalize(data) {
-    return { ...data || {} };
-  }
-  pruneRemovedBoxes(existingBoxIds) {
-    const cleaned = this.clean(this.info, existingBoxIds);
-    this.info = { ...cleaned };
-    return this.getAll();
-  }
-  getMinimized() {
-    return Object.entries(this.info).filter(([_2, state]) => state === TELE_BOX_STATE.Minimized).map(([boxId]) => boxId);
-  }
-  getMaximized() {
-    return Object.entries(this.info).filter(([_2, state]) => state === TELE_BOX_STATE.Maximized).map(([boxId]) => boxId);
-  }
-  setBoxState(boxId, state) {
-    const next = { ...this.info };
-    next[boxId] = state;
-    this.info = next;
-    return this.getAll();
-  }
-  clearState(targetState) {
-    const next = { ...this.info };
-    Object.keys(next).forEach((boxId) => {
-      if (next[boxId] === targetState)
-        next[boxId] = TELE_BOX_STATE.Normal;
-    });
-    this.info = next;
-    return this.getAll();
-  }
-  clean(data, existingBoxIds) {
-    const info = data || {};
-    const existingSet = new Set(existingBoxIds || []);
-    const cleaned = {};
-    Object.keys(info).forEach((boxId) => {
-      if (existingSet.has(boxId))
-        cleaned[boxId] = info[boxId];
-    });
-    return cleaned;
   }
 }
 const logFirstTag$2 = "[LaserPointer]";
@@ -20091,7 +20003,7 @@ const logFirstTag = "[TeleBox] WindowManager";
 const _WindowManager = class extends InvisiblePlugin {
   constructor(context) {
     super(context);
-    this.version = "1.0.6-wukongBetaT.1";
+    this.version = "1.0.6-wukongBeta.0";
     this.dependencies = { "dependencies": { "@juggle/resize-observer": "^3.4.0", "@netless/telebox-insider": "github:veytu/telebox-insider", "emittery": "^0.9.2", "lodash": "^4.17.21", "p-retry": "^4.6.2", "uuid": "^7.0.3", "value-enhancer": "0.0.8", "video.js": "^8.23.4" }, "peerDependencies": { "jspdf": "2.5.1", "white-web-sdk": "^2.16.52" }, "devDependencies": { "@hyrious/dts": "^0.2.11", "@netless/app-docs-viewer": "github:veytu/app-docs-viewer", "@netless/app-media-player": "0.1.4", "@rollup/plugin-commonjs": "^20.0.0", "@rollup/plugin-node-resolve": "^13.3.0", "@rollup/plugin-url": "^6.1.0", "@sveltejs/vite-plugin-svelte": "1.0.0-next.40", "@tsconfig/svelte": "^2.0.1", "@types/debug": "^4.1.12", "@types/lodash": "^4.17.20", "@types/lodash-es": "^4.17.12", "@types/uuid": "^8.3.4", "@typescript-eslint/eslint-plugin": "^4.33.0", "@typescript-eslint/parser": "^4.33.0", "@vitest/ui": "^0.14.2", "cypress": "^8.7.0", "dotenv": "^10.0.0", "eslint": "^7.32.0", "eslint-config-prettier": "^8.10.2", "eslint-plugin-svelte3": "^3.4.1", "jsdom": "^19.0.0", "jspdf": "^2.5.2", "less": "^4.4.1", "prettier": "^2.8.8", "prettier-plugin-svelte": "^2.10.1", "rollup-plugin-analyzer": "^4.0.0", "rollup-plugin-styles": "^3.14.1", "side-effect-manager": "0.1.5", "svelte": "^3.59.2", "typescript": "^4.9.5", "vite": "^2.9.18", "vitest": "^0.14.2", "white-web-sdk": "^2.16.53" } };
     this.emitter = callbacks$1;
     this.viewMode = ViewMode.Broadcaster;
@@ -20171,8 +20083,6 @@ const _WindowManager = class extends InvisiblePlugin {
       internalEmitter,
       windowManager: manager
     });
-    manager.wukongRoleManager = new WukongRoleManager();
-    manager.allBoxStatusInfoManager = new AllBoxStatusInfoManager();
     if (containerSizeRatio) {
       manager.containerSizeRatio = containerSizeRatio;
     }
@@ -20265,7 +20175,7 @@ const _WindowManager = class extends InvisiblePlugin {
     return createInvisiblePlugin(room);
   }
   static initContainer(manager, container, params) {
-    var _a3, _b;
+    var _a3;
     const { chessboard, overwriteStyles, fullscreen } = params;
     if (!_WindowManager.container) {
       _WindowManager.container = container;
@@ -20302,7 +20212,10 @@ const _WindowManager = class extends InvisiblePlugin {
     _WindowManager.mainViewWrapper = mainViewWrapper;
     _WindowManager.extendWrapper = extendWrapper;
     _WindowManager.mainViewScrollWrapper = mainViewScrollWrapper;
-    (_b = _WindowManager.mainViewScrollWrapper) == null ? void 0 : _b.classList.toggle("netless-window-manager-fancy-scrollbar-readonly", true !== ((_a3 = manager.wukongRoleManager) == null ? void 0 : _a3.wukongCanOperate()));
+    (_a3 = _WindowManager.mainViewScrollWrapper) == null ? void 0 : _a3.classList.toggle(
+      "netless-window-manager-fancy-scrollbar-readonly",
+      _WindowManager.appReadonly
+    );
     return mainViewElement;
   }
   static get registered() {
@@ -20873,6 +20786,12 @@ const _WindowManager = class extends InvisiblePlugin {
   get room() {
     return this.displayer;
   }
+  get appReadonly() {
+    return _WindowManager.appReadonly;
+  }
+  setAppReadonly(readonly) {
+    _WindowManager.appReadonly = readonly;
+  }
   safeSetAttributes(attributes) {
     if (this.canOperate) {
       this.setAttributes(attributes);
@@ -21078,7 +20997,6 @@ const _WindowManager = class extends InvisiblePlugin {
     return sceneSrc == null ? void 0 : sceneSrc.startsWith("pptx://");
   }
   async ensureAttributes() {
-    var _a3;
     if (isNull(this.attributes)) {
       await wait(50);
     }
@@ -21105,7 +21023,7 @@ const _WindowManager = class extends InvisiblePlugin {
         this.safeSetAttributes({ [Fields.MainViewBackgroundInfo]: { img: "", color: "" } });
       }
       if (!this.attributes[Fields.Scale]) {
-        if (!((_a3 = this.wukongRoleManager) == null ? void 0 : _a3.wukongCanOperate()) || this.readonly) {
+        if (_WindowManager.appReadonly || this.readonly) {
           return;
         }
         this.safeSetAttributes({ [Fields.Scale]: { [mainViewField]: 1 } });
@@ -21185,6 +21103,7 @@ WindowManager.kind = "WindowManager";
 WindowManager.debug = false;
 WindowManager.containerSizeRatio = DEFAULT_CONTAINER_RATIO;
 WindowManager.isCreated = false;
+WindowManager.appReadonly = isAndroid$1() || isIOS$1();
 WindowManager._resolve = (_manager) => void 0;
 setupBuiltin();
 export { AppCreateError, AppManagerNotInitError, AppNotRegisterError, BindContainerRoomPhaseInvalidError, BoxManagerNotFoundError, BoxNotCreatedError, BuiltinApps, DomEvents, ExtendPlugin, ExtendPluginManager, IframeBridge, IframeEvents, InvalidScenePath, LaserPointerManager, LaserPointerMultiManager, ParamsInvalidError, WhiteWebSDKInvalidError, WindowManager, calculateNextIndex, logFirstTag, mainViewField, reconnectRefresher };
