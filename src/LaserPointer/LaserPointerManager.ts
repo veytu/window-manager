@@ -52,7 +52,8 @@ export class LaserPointerManager {
         this._appManager = appManager;
         this._currentUserId = currentUserId;
         this._instanceId = viewId || `LP_${Math.random().toString(36).substr(2, 6)}`;
-        
+        console.log(`${logFirstTag} [${this._instanceId}] 激光笔管理器构造函数`, manager, room, displayer, appManager, currentUserId, viewId);
+
         this._initView();
         this._setupMagixListener();
     }
@@ -139,11 +140,14 @@ export class LaserPointerManager {
                 this._setupTeacherMoveListener();
                 
                 // 如果是非主白板，添加teacher-current-pointer类名
+                const showView = this._getShowViewDivElement();
                 if (this._instanceId !== 'main') {
-                    const showView = this._getShowViewDivElement();
                     if (showView) {
-                        showView.style.pointerEvents = 'auto';
+                        showView.classList.add('teacher-current-pointer-enevnt-auto');
+                        console.log(`${logFirstTag} [${this._instanceId}] 老师端课件已添加pint事件`,showView);
                     }
+                }else{
+                    showView?.classList?.remove('teacher-current-pointer-enevnt-auto');
                 }
             } else {
                 console.log(`${logFirstTag} [${this._instanceId}] 当前用户不是老师，跳过监听器设置`);
@@ -163,10 +167,10 @@ export class LaserPointerManager {
         if (showView) {
             if (show) {
                 showView.classList.add('teacher-current-pointer');
-                console.log(`${logFirstTag} [${this._instanceId}] teacher-current-pointer类名`);
+                console.log(`${logFirstTag} [${this._instanceId}] teacher-current-pointer类名`,showView);
             } else {
                 showView.classList.remove('teacher-current-pointer');
-                console.log(`${logFirstTag} [${this._instanceId}] 移除teacher-current-pointer类名`);
+                console.log(`${logFirstTag} [${this._instanceId}] 移除teacher-current-pointer类名`,showView);
             }
         }
     }

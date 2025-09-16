@@ -305,3 +305,6 @@
     cursor: url('./image/cursor-clicker.png') 40 40, auto !important;
     pointer-events: auto;
 }
+.teacher-current-pointer-enevnt-auto {
+    pointer-events: auto;
+}

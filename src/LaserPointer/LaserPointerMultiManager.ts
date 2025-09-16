@@ -1,9 +1,7 @@
 import { LaserPointerManager } from "./LaserPointerManager";
-import { WindowManager } from "../index";
-import { callbacks } from "../callback";
-import { Displayer, Room } from "white-web-sdk";
-import { AppManager } from "../AppManager";
-import { Fields } from "../AttributesDelegate";
+import type { WindowManager } from "../index";
+import type { Displayer, Room } from "white-web-sdk";
+import type { AppManager } from "../AppManager";
 
 const logFirstTag = "[LaserPointer]";
 
@@ -38,7 +36,7 @@ export class LaserPointerMultiManager {
         console.log(`${logFirstTag} Setting up event listeners`);
         
         // 监听主视图挂载事件
-        callbacks.on("onMainViewMounted", (_view) => {
+        this._windowManager.emitter.on("onMainViewMounted", (_view) => {
             console.log(`${logFirstTag} onMainViewMounted event received`);
             // 延迟获取容器，确保 DOM 已更新
             setTimeout(() => {
@@ -53,7 +51,7 @@ export class LaserPointerMultiManager {
         });
 
         // 监听主视图重新绑定事件
-        callbacks.on("onMainViewRebind", (_view) => {
+        this._windowManager.emitter.on("onMainViewRebind", (_view) => {
             console.log(`${logFirstTag} onMainViewRebind event received`);
             // 主视图重新绑定时，重新创建激光笔管理器
             this.destroyLaserPointerManagerForView("main");
@@ -64,13 +62,13 @@ export class LaserPointerMultiManager {
         });
 
         // 监听应用视图挂载事件
-        callbacks.on("onAppViewMounted", (payload) => {
-            console.log(`${logFirstTag} onAppViewMounted event received for app:`, payload.appId);
+        this._windowManager.emitter.on("onAppViewMounted", (payload) => {
+            console.log(`${logFirstTag} onAppViewMounted event received for app:`, payload);
             // 为应用视图创建激光笔管理器，使用 boxview
             const appBoxView = this._getAppBoxView(payload.appId);
             console.log(`${logFirstTag} App box view for ${payload.appId}:`, !!appBoxView);
             if (appBoxView) {
-                console.log(`${logFirstTag} Creating laser pointer manager for app:`, payload.appId);
+                console.log(`${logFirstTag} Creating laser pointer manager for app:`, payload);
                 this.createLaserPointerManagerForView(`app_${payload.appId}`);
             } else {
                 console.warn(`${logFirstTag} Failed to get app box view for:`, payload.appId);
