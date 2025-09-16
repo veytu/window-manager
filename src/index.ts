@@ -71,6 +71,8 @@ import { ExtendPluginManager } from "./ExtendPluginManager";
 import { ScrollerManager, ScrollerScrollEventType } from "./ScrollerManager";
 import { isAndroid, isIOS } from "./Utils/environment";
 import { LaserPointerMultiManager } from "./LaserPointer";
+import { WukongRoleManager } from "./Manager/roleManager";
+import { AllBoxStatusInfoManager } from "./Manager/allBoxStatusManager";
 export * from "./View/IframeBridge";
 // 防循环工具函数
 function createAntiLoopAutorun(fn: () => void, name?: string) {
@@ -210,7 +212,6 @@ export class WindowManager
     public static containerSizeRatio = DEFAULT_CONTAINER_RATIO;
     public static supportAppliancePlugin?: boolean;
     private static isCreated = false;
-    public static appReadonly: boolean = isAndroid() || isIOS();
     private static _resolve = (_manager: WindowManager) => void 0;
 
     private static extendWrapper?: HTMLElement;
@@ -225,6 +226,8 @@ export class WindowManager
     public appManager?: AppManager;
     public cursorManager?: CursorManager;
     public scrollerManager?: ScrollerManager;
+    public wukongRoleManager?: WukongRoleManager;//悟空相关角色管理
+    public allBoxStatusInfoManager?: AllBoxStatusInfoManager;//悟空相关所有box状态管理
     public viewMode = ViewMode.Broadcaster;
     public isReplay = isPlayer(this.displayer);
     private _pageState?: PageStateImpl;
@@ -324,6 +327,8 @@ export class WindowManager
             internalEmitter: internalEmitter,
             windowManager: manager,
         });
+        manager.wukongRoleManager = new WukongRoleManager();
+        manager.allBoxStatusInfoManager = new AllBoxStatusInfoManager();
         if (containerSizeRatio) {
             manager.containerSizeRatio = containerSizeRatio;
         }
@@ -474,10 +479,7 @@ export class WindowManager
         WindowManager.mainViewScrollWrapper = mainViewScrollWrapper;
         // WindowManager.mainViewWrapperShadow = mainViewWrapperShadow;
 
-        WindowManager.mainViewScrollWrapper?.classList.toggle(
-            "netless-window-manager-fancy-scrollbar-readonly",
-            WindowManager.appReadonly
-        );
+        WindowManager.mainViewScrollWrapper?.classList.toggle("netless-window-manager-fancy-scrollbar-readonly",true !== manager.wukongRoleManager?.wukongCanOperate());
         return mainViewElement;
     }
 
@@ -1165,13 +1167,6 @@ export class WindowManager
         return this.displayer as Room;
     }
 
-    public get appReadonly() {
-        return WindowManager.appReadonly;
-    }
-
-    public setAppReadonly(readonly: boolean): void {
-        WindowManager.appReadonly = readonly;
-    }
 
     public safeSetAttributes(attributes: any): void {
         if (this.canOperate) {
@@ -1450,7 +1445,7 @@ export class WindowManager
                 this.safeSetAttributes({ [Fields.MainViewBackgroundInfo]: {img:'',color:''} });
             }
             if (!this.attributes[Fields.Scale]) {
-                if (WindowManager.appReadonly || this.readonly) {
+                if (!this.wukongRoleManager?.wukongCanOperate() || this.readonly) {
                     return;
                 }
                 this.safeSetAttributes({[Fields.Scale]: {[mainViewField]: 1}});

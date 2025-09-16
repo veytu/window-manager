@@ -285,10 +285,6 @@ export class AppManager {
         return this.windowManger.canOperate;
     }
 
-    public get appReadonly () {
-        return this.windowManger.appReadonly;
-    }
-
     public get room() {
         return isRoom(this.displayer) ? (this.displayer as Room) : undefined;
     }

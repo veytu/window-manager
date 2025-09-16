@@ -105,11 +105,6 @@ export class AppContext<TAttributes extends {} = any, TMagixEventPayloads = any,
         return this.manager.canOperate;
     };
 
-    // special user set
-    public getIsAppReadonly = (): boolean => {
-        return this.manager.appReadonly;
-    }
-
     /** Get the App Window UI box. */
     public getBox = (): ReadonlyTeleBox => {
         const box = this.boxManager.getBox(this.appId);

@@ -93,8 +93,8 @@ class ViewScroller {
     }
 
     private onScroll() {
-        console.log('window manager scroll readonly', this.manager.readonly || WindowManager.appReadonly)
-        if (this.manager.readonly || WindowManager.appReadonly) return
+        console.log('window manager scroll readonly', this.manager.readonly || true !== this.manager.wukongRoleManager?.wukongCanOperate())
+        if (this.manager.readonly || true !== this.manager.wukongRoleManager?.wukongCanOperate()) return
         
         // 如果是内部更新触发的滚动，不处理
         if (this._isInternalUpdate) return;
