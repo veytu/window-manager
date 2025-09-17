@@ -105,11 +105,11 @@ export class BoxManager {
         this.manager = manager;
         this.teleBoxManager = this.setupBoxManager(createTeleBoxManagerConfig);
 
-        // 使用 _xxx$.reaction 订阅修改的值, 不管有没有 skipUpdate, 修改值都会触发回调
-        this.teleBoxManager._state$.reaction(state => {
-            callbacks.emit("boxStateChange", state);
-            emitter.emit("boxStateChange", state);
-        });
+        // // 使用 _xxx$.reaction 订阅修改的值, 不管有没有 skipUpdate, 修改值都会触发回调
+        // this.teleBoxManager._state$.reaction(state => {
+        //     callbacks.emit("boxStateChange", state);
+        //     emitter.emit("boxStateChange", state);
+        // });
 
         this.teleBoxManager._darkMode$.reaction(darkMode => {
             callbacks.emit("darkModeChange", darkMode);

@@ -37,7 +37,7 @@ import {
     putScenes,
     wait,
 } from "./Utils/Common";
-import type { TELE_BOX_STATE, BoxManager } from "./BoxManager";
+import { TELE_BOX_STATE, BoxManager } from "./BoxManager";
 import * as Errors from "./Utils/error";
 import type { Apps, Position } from "./AttributesDelegate";
 import type {
@@ -347,7 +347,7 @@ export class WindowManager
         manager.appManager?.refresher?.add(Fields.Scale, () => {
             console.log(`${logFirstTag} Scale Register Listener`)
             return createAntiLoopAutorun(() => {
-                const data = get(manager!.appManager!.attributes, Fields.Scale);
+                const data = get(manager!.appManager!.attributes, Fields.Scale) || {};
                 const keys = Object.keys(data)
                 if(keys.length > 0){
                     const appId = keys[0]
@@ -399,7 +399,7 @@ export class WindowManager
             console.log(`${logFirstTag} AllBoxStatusInfo Register Listener`)
             return createAntiLoopAutorun(() => {
                 const data = get(manager!.appManager!.attributes, Fields.AllBoxStatusInfo);
-                manager?.boxManager?.teleBoxManager?.setAllBoxStatusInfo(data,true)
+                manager?.appManager?.allBoxStatusInfoManager?.setCurrentAllBoxStatusInfo(data)
                 console.log(`${logFirstTag} AllBoxStatusInfo Target`, JSON.stringify(data))
             }, 'AllBoxStatusInfo');
         });
@@ -407,13 +407,15 @@ export class WindowManager
             console.log(`${logFirstTag} LastNotMinimizedBoxsStatus Register Listener`)
             return createAntiLoopAutorun(() => {
                 const data = get(manager!.appManager!.attributes, Fields.LastNotMinimizedBoxsStatus);
-                manager?.boxManager?.teleBoxManager?.setLastLastNotMinimizedBoxsStatus(data,true)
+                manager?.appManager?.allBoxStatusInfoManager?.setLastNotMinimizedBoxsStatus(data)
                 console.log(`${logFirstTag} LastNotMinimizedBoxsStatus Target`, JSON.stringify(data))
             }, 'AllBoxStatusInfo');
         });
 
         internalEmitter.on("playgroundSizeChange", () => {
-            manager?._updateMainViewWrapperSize(manager.getAttributesValue(Fields.Scale)[mainViewField],true);
+            if (mainViewField){
+                manager?._updateMainViewWrapperSize((manager.getAttributesValue(Fields.Scale) || {})[mainViewField], true);
+            }
         });
 
         setTimeout(() => {
@@ -904,8 +906,10 @@ export class WindowManager
     }
 
     public getTopMaxBoxId() {
-        const boxes = this.appManager?.boxManager?.teleBoxManager.getMaximizedBoxes().filter(
-            box => !this.appManager?.boxManager?.teleBoxManager.getMinimizedBoxes().includes(box)
+        const allBoxStatusInfo = this.appManager?.allBoxStatusInfoManager?.getBoxesList(TELE_BOX_STATE.Maximized);
+        const minimizedBoxes = this.appManager?.allBoxStatusInfoManager?.getBoxesList(TELE_BOX_STATE.Minimized);
+        const boxes = allBoxStatusInfo?.filter(
+            box => !minimizedBoxes?.includes(box)
         );
         if (!boxes?.length) return undefined;
         return boxes.reduce((a, b) =>
@@ -1277,7 +1281,7 @@ export class WindowManager
         const size = WindowManager.wrapper?.getBoundingClientRect();
 
         if (!size) return false;
-        const currentScale = scale ?? this.getAttributesValue(Fields.Scale)[mainViewField];
+        const currentScale = scale ?? (this.getAttributesValue(Fields.Scale) || {})[mainViewField];
         if (!WindowManager.mainViewWrapper) return;
         // if (!WindowManager.mainViewWrapper || !WindowManager.mainViewWrapperShadow) return;
 
@@ -1316,7 +1320,7 @@ export class WindowManager
     }
 
     public getScale(): Record<string, number> | undefined {
-        return this.getAttributesValue([Fields.Scale]);
+        return this.getAttributesValue([Fields.Scale]) || {};
     }
 
     public setTeacherInfo(data: { uid?: string; name?: string }) {
@@ -1409,7 +1413,7 @@ export class WindowManager
     }
 
     public getAppScale(appId: string): number {
-        return this.getAttributesValue([Fields.Scale])[appId];
+        return (this.getAttributesValue([Fields.Scale]) || {})[appId];
     }
 
     private isDynamicPPT(scenes: SceneDefinition[]) {

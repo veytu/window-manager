@@ -26,7 +26,7 @@ import type {
 import type { SceneState, View, SceneDefinition } from "white-web-sdk";
 import type { AppManager } from "../AppManager";
 import type { NetlessApp } from "../typings";
-import type { ReadonlyTeleBox } from "@netless/telebox-insider";
+import { TELE_BOX_STATE, type ReadonlyTeleBox } from "@netless/telebox-insider";
 import type { PageRemoveService, PageState } from "../Page";
 import { calculateNextIndex } from "../Page";
 import { boxEmitter } from "../BoxEmitter";
@@ -182,12 +182,12 @@ export class AppProxy implements PageRemoveService {
                 let boxInitState: AppInitState | undefined;
                 if (!skipUpdate) {
                     boxInitState = this.getAppInitState(appId);
-                    const maximized = this.boxManager?.teleBoxManager?.getMaximizedBoxes()?.includes(appId)
-                    const minimized = this.boxManager?.teleBoxManager?.getMinimizedBoxes()?.includes(appId)
+                    const maximized = this.manager.allBoxStatusInfoManager?.getBoxesList(TELE_BOX_STATE.Maximized)?.includes(appId)
+                    const minimized = this.manager.allBoxStatusInfoManager?.getBoxesList(TELE_BOX_STATE.Minimized)?.includes(appId)
                     Object.assign((boxInitState || {}), { maximized, minimized });
                     this.boxManager?.updateBoxState(boxInitState);
 
-                    const boxes = this.boxManager?.teleBoxManager.getMaximizedBoxes().filter(box => !this?.boxManager?.teleBoxManager.getMinimizedBoxes().includes(box))
+                    const boxes = this.manager.allBoxStatusInfoManager?.getBoxesList(TELE_BOX_STATE.Maximized)?.filter(box => !this.manager.allBoxStatusInfoManager?.getBoxesList(TELE_BOX_STATE.Minimized)?.includes(box))
                     if (boxes?.length) {
                         this.boxManager?.teleBoxManager?.makeBoxTopFromMaximized()
                     }

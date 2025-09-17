@@ -599,7 +599,7 @@ export class AppManager {
         const allBoxStatusInfo = this.store.getAllBoxStatusInfo();
         if (allBoxStatusInfo) {
             // 创建新对象，避免传递只读对象
-            this.boxManager?.teleBoxManager?.setAllBoxStatusInfo({ ...allBoxStatusInfo });
+            this.allBoxStatusInfoManager?.setCurrentAllBoxStatusInfo({ ...allBoxStatusInfo });
         }
     }
 
@@ -607,7 +607,7 @@ export class AppManager {
         const allBoxStatusInfo = this.store.getAllBoxStatusInfo();
         if (allBoxStatusInfo) {
             // 创建新对象，避免传递只读对象
-            this.boxManager?.teleBoxManager?.setAllBoxStatusInfo({ ...allBoxStatusInfo });
+            this.allBoxStatusInfoManager?.setCurrentAllBoxStatusInfo({ ...allBoxStatusInfo });
         }
     }
 
