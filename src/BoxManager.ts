@@ -297,6 +297,8 @@ export class BoxManager {
             },
             fence: false,
             prefersColorScheme: createTeleBoxManagerConfig?.prefersColorScheme,
+            allBoxStatusInfoManager: this.manager.appManager?.allBoxStatusInfoManager,
+            wukongRoleManager: WindowManager.wukongRoleManager,
         };
 
         const manager = new TeleBoxManager(initManagerState);
@@ -377,7 +379,8 @@ export class BoxManager {
     }
 
     public updateManagerRect(): void {
-    // todo 需要确认下wrapper
+        // todo 需要确认下wrapper
+        // 是这个节点：netless-window-manager-wrapper，为sizewrapper上一级
         const rect = WindowManager.wrapper?.getBoundingClientRect();
         if (rect && rect.width > 0 && rect.height > 0) {
             const containerRect = { x: 0, y: 0, width: rect.width, height: rect.height };

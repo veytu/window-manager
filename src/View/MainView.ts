@@ -38,10 +38,11 @@ export class MainViewProxy {
         this.sideEffectManager.add(() => {
             return internalEmitter.on("playgroundSizeChange", playgroundSizeChangeListener);
         });
-	// todo 同步可能需确认
-        // this.sideEffectManager.add(() => {
-        //     return internalEmitter.on("wrapperSizeChange", playgroundSizeChangeListener);
-        // });
+	    // todo 同步可能需确认
+        // 放大缩小的同步更新逻辑
+        this.sideEffectManager.add(() => {
+            return internalEmitter.on("wrapperSizeChange", playgroundSizeChangeListener);
+        });
         this.sideEffectManager.add(() => {
             return internalEmitter.on("containerSizeRatioUpdate", this.onUpdateContainerSizeRatio);
         });

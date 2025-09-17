@@ -1,86 +1,187 @@
-import { TELE_BOX_STATE } from "../BoxManager";
-
-/** allBoxStatusInfo 结构：记录每个 box 的状态 */
-export type AllBoxStatusInfo = Record<string, TELE_BOX_STATE>;
+import { TELE_BOX_STATE, TeleBox } from "@netless/telebox-insider";
+import { createSideEffectBinder, Val } from "value-enhancer";
+import { SideEffectManager } from "side-effect-manager";
 
 /**
  * 统一的 AllBoxStatusInfo 管理器
  * - 内部维护一份不可变思维的快照，所有变更返回新对象并同步到内部
  * - 提供清理/查询/设置等常用能力
+ * - 支持 Observable 模式，外部可以监听状态变化
  */
 export class AllBoxStatusInfoManager {
-    private info: AllBoxStatusInfo;
+    /** 当前所有的盒子状态信息 - Observable */
+    private _currentAllBoxStatusInfo$: Val<Record<string, TELE_BOX_STATE>, boolean>;
+    /** 当前所有的盒子最后非最小化状态信息 - Observable */
+    private _lastNotMinimizedBoxsStatus$: Val<Record<string, TELE_BOX_STATE>, boolean>;
+    /** 副作用管理器 */
+    private _sideEffect: SideEffectManager;
 
-    constructor(initial?: AllBoxStatusInfo) {
-        this.info = { ...(initial || {}) };
+    constructor() {
+        this._sideEffect = new SideEffectManager();
+        const { createVal } = createSideEffectBinder(this._sideEffect as any);
+        this._currentAllBoxStatusInfo$ = createVal<Record<string, TELE_BOX_STATE>>({});
+        this._lastNotMinimizedBoxsStatus$ = createVal<Record<string, TELE_BOX_STATE>>({});
     }
 
-    /** 获取当前快照（返回拷贝） */
-    public getAll(): AllBoxStatusInfo {
-        return { ...this.info };
+    /** 获取当前盒子状态信息的 Observable */
+    public get currentAllBoxStatusInfo$(): Val<Record<string, TELE_BOX_STATE>, boolean> {
+        return this._currentAllBoxStatusInfo$;
     }
 
-    /** 全量设置（可选传入 existingBoxIds 做一次清理后再设置） */
-    public setAll(next: AllBoxStatusInfo | undefined, existingBoxIds?: string[]): AllBoxStatusInfo {
-        const normalized = this.normalize(next);
-        const cleaned = existingBoxIds ? this.clean(normalized, existingBoxIds) : normalized;
-        this.info = { ...cleaned };
-        return this.getAll();
+    /** 获取最后非最小化状态信息的 Observable */
+    public get lastNotMinimizedBoxsStatus$(): Val<Record<string, TELE_BOX_STATE>, boolean> {
+        return this._lastNotMinimizedBoxsStatus$;
     }
 
-    /** 归一化 undefined → {} */
-    public normalize(data: AllBoxStatusInfo | undefined): AllBoxStatusInfo {
-        return { ...(data || {}) };
+
+    /** 设置当前所有的盒子状态信息 */
+    public setCurrentAllBoxStatusInfo(info: Record<string, TELE_BOX_STATE>, skipUpdate = false): void {
+        this._currentAllBoxStatusInfo$.setValue({ ...info }, skipUpdate);
     }
 
-    /** 根据现存 boxes 清理多余项（返回拷贝并同步内部状态） */
-    public pruneRemovedBoxes(existingBoxIds: string[]): AllBoxStatusInfo {
-        const cleaned = this.clean(this.info, existingBoxIds);
-        this.info = { ...cleaned };
-        return this.getAll();
+    /** 根据盒子列表清理当前所有的盒子状态信息 */
+    public resetCleanCurrentAllBoxStatusInfoFromBoxes(boxes: TeleBox[], skipUpdate = false): void {
+        const allBoxIds = boxes.map((item) => item.id);
+        const cleanedAllBoxStatusInfo = { ...(this.currentAllBoxStatusInfo$.value || {}) };
+        Object.keys(cleanedAllBoxStatusInfo).forEach((boxId) => {
+            if (!allBoxIds.includes(boxId)) {
+                delete cleanedAllBoxStatusInfo[boxId];
+            }
+        });
+        this._currentAllBoxStatusInfo$.setValue({ ...cleanedAllBoxStatusInfo }, skipUpdate);
+    }
+    /** 根据盒子列表清理当前所有的盒子最后非最小化状态信息 */
+    public resetCleanLastNotMinimizedBoxsStatusFromBoxes(boxes: TeleBox[], skipUpdate = false): void {
+        const allBoxIds = boxes.map((item) => item.id);
+        const cleanedAllBoxStatusInfo = { ...(this.lastNotMinimizedBoxsStatus$.value || {}) };
+        Object.keys(cleanedAllBoxStatusInfo).forEach((boxId) => {
+            if (!allBoxIds.includes(boxId)) {
+                delete cleanedAllBoxStatusInfo[boxId];
+            }
+        });
+        this._currentAllBoxStatusInfo$.setValue({ ...cleanedAllBoxStatusInfo }, skipUpdate);
     }
 
-    /** 获取所有最小化的 boxId 列表 */
-    public getMinimized(): string[] {
-        return Object.entries(this.info)
-            .filter(([_, state]) => state === TELE_BOX_STATE.Minimized)
+    /** 设置当前所有的盒子最后非最小化状态信息 */
+    public setLastNotMinimizedBoxsStatus(info: Record<string, TELE_BOX_STATE>, skipUpdate = false): void {
+        this._lastNotMinimizedBoxsStatus$.setValue({ ...info }, skipUpdate);
+    }
+    /** 设置当前指定的盒子状态信息 */
+    public setCurrentBoxState(boxId: string, state: TELE_BOX_STATE, skipUpdate = false): void {
+        const currentInfo = this._currentAllBoxStatusInfo$.value;
+        this._currentAllBoxStatusInfo$.setValue({ ...currentInfo, [boxId]: state }, skipUpdate);
+    }
+    /** 设置当前指定的盒子最后非最小化状态信息 */
+    public setLastNotMinimizedBoxState(boxId: string, state: TELE_BOX_STATE, skipUpdate = false): void {
+        const currentInfo = this._lastNotMinimizedBoxsStatus$.value;
+        this._lastNotMinimizedBoxsStatus$.setValue({ ...currentInfo, [boxId]: state }, skipUpdate);
+    }
+    /** 删除当前指定的盒子状态信息 */
+    public removeCurrentBoxState(boxId: string, skipUpdate = false): void {
+        const currentInfo = this._currentAllBoxStatusInfo$.value;
+        const newInfo = { ...currentInfo };
+        delete newInfo[boxId];
+        this._currentAllBoxStatusInfo$.setValue(newInfo, skipUpdate);
+    }
+    /** 删除当前指定的盒子最后非最小化状态信息 */
+    public removeLastNotMinimizedBoxState(boxId: string, skipUpdate = false): void {
+        const currentInfo = this._lastNotMinimizedBoxsStatus$.value;
+        const newInfo = { ...currentInfo };
+        delete newInfo[boxId];
+        this._lastNotMinimizedBoxsStatus$.setValue(newInfo, skipUpdate);
+    }
+    /** 清除当前所有的盒子状态信息 */
+    public clearCurrentAllBoxStatusInfo(skipUpdate = false): void {
+        this._currentAllBoxStatusInfo$.setValue({}, skipUpdate);
+    }
+    /** 清除当前所有的盒子最后非最小化状态信息 */
+    public clearLastNotMinimizedBoxsStatus(skipUpdate = false): void {
+        this._lastNotMinimizedBoxsStatus$.setValue({}, skipUpdate);
+    }
+    /** 获取当前所有的盒子状态信息 */
+    public getAllBoxStatusInfo(): Record<string, TELE_BOX_STATE> {
+        return this._currentAllBoxStatusInfo$.value;
+    }
+    /**
+     * 获取指定状态的盒子列表
+     * @param type 状态类型
+     * @returns 
+     */
+    public getBoxesList(type: TELE_BOX_STATE): string[] {
+        return Object.entries(this._currentAllBoxStatusInfo$.value)
+            .filter(([_, state]) => state === type)
             .map(([boxId]) => boxId);
     }
-
-    /** 获取所有最大化的 boxId 列表 */
-    public getMaximized(): string[] {
-        return Object.entries(this.info)
-            .filter(([_, state]) => state === TELE_BOX_STATE.Maximized)
-            .map(([boxId]) => boxId);
+    /**
+     * 是否存在最大化的盒子
+     * @returns 是否存在最大化的盒子
+     */
+    public hasMaximizedBox(): boolean {
+        return this.getBoxesList(TELE_BOX_STATE.Maximized).length > 0;
+    }
+    /**
+     * 是否存在最小化的盒子
+     * @returns 是否存在最小化的盒子
+     */
+    public hasMinimizedBox(): boolean {
+        return this.getBoxesList(TELE_BOX_STATE.Minimized).length > 0;
+    }
+    /**
+     * 是否存在正常的盒子
+     * @returns 是否存在正常的盒子
+     */
+    public hasNormalBox(): boolean {
+        return this.getBoxesList(TELE_BOX_STATE.Normal).length > 0;
+    }
+    /**
+     * 获取最后非最小化状态的盒子列表
+     * @returns 最后非最小化状态的盒子列表
+     */
+    public getLastNotMinimizedBoxsStatus(): Record<string, TELE_BOX_STATE> {
+        return this._lastNotMinimizedBoxsStatus$.value;
+    }
+    /**
+     * 获取TeleBox标题栏状态
+     * @returns TeleBox标题栏状态
+     */
+    public getTeleBoxTitleBarState(): TELE_BOX_STATE {
+        return this.getBoxesList(TELE_BOX_STATE.Maximized).length > 0 ? TELE_BOX_STATE.Maximized : TELE_BOX_STATE.Normal;
     }
 
-    /** 设置指定 box 的状态（返回新对象并同步内部） */
-    public setBoxState(boxId: string, state: TELE_BOX_STATE): AllBoxStatusInfo {
-        const next = { ...this.info };
-        next[boxId] = state;
-        this.info = next;
-        return this.getAll();
-    }
-
-    /** 批量清除指定状态，将其置为 Normal（返回新对象并同步内部） */
-    public clearState(targetState: TELE_BOX_STATE): AllBoxStatusInfo {
-        const next = { ...this.info };
-        Object.keys(next).forEach(boxId => {
-            if (next[boxId] === targetState) next[boxId] = TELE_BOX_STATE.Normal;
+    /**
+     * 根据盒子列表设置当前盒子状态（用于 TeleBoxManager 中的调用）
+     * @param boxes 盒子列表
+     */
+    public setCurrentBoxStateFromBoxes(boxes: any[]): void {
+        const newStatus: Record<string, TELE_BOX_STATE> = {};
+        boxes.forEach((box) => {
+            if (box.id) {
+                // 根据盒子的状态设置对应的状态
+                if (box.isMaximized) {
+                    newStatus[box.id] = TELE_BOX_STATE.Maximized;
+                } else if (box.isMinimized) {
+                    newStatus[box.id] = TELE_BOX_STATE.Minimized;
+                } else {
+                    newStatus[box.id] = TELE_BOX_STATE.Normal;
+                }
+            }
         });
-        this.info = next;
-        return this.getAll();
+        this.setCurrentAllBoxStatusInfo(newStatus);
     }
 
-    /** 仅保留现存 boxes 的状态（纯函数，不修改内部，仅工具） */
-    public clean(data: AllBoxStatusInfo | undefined, existingBoxIds: string[]): AllBoxStatusInfo {
-        const info = data || {};
-        const existingSet = new Set(existingBoxIds || []);
-        const cleaned: AllBoxStatusInfo = {};
-        Object.keys(info).forEach(boxId => {
-            if (existingSet.has(boxId)) cleaned[boxId] = info[boxId];
-        });
-        return cleaned;
+    /**
+     * 获取管理器实例（用于兼容现有代码）
+     * @returns 管理器实例
+     */
+    public get(): AllBoxStatusInfoManager {
+        return this;
+    }
+
+    /**
+     * 销毁管理器，清理所有副作用
+     */
+    public destroy(): void {
+        this._sideEffect.flushAll();
     }
 }
 

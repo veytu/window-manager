@@ -3,9 +3,10 @@ import * as white_web_sdk from 'white-web-sdk';
 import { RoomMember, View, ApplianceNames, Event as Event$1, Scope, EventPhase, MagixEventListenerOptions as MagixEventListenerOptions$1, SceneDefinition, toJS, listenUpdated, unlistenUpdated, listenDisposed, unlistenDisposed, Room, SceneState, DisplayerState, ViewVisionMode, CameraState, Camera, Size, ViewMode, Displayer, MemberState, AnimationMode, InvisiblePlugin, InvisiblePluginContext, Player, Rectangle, Point, CameraBound, ImageInformation } from 'white-web-sdk';
 export { AnimationMode, Displayer, Player, Room, SceneDefinition, SceneState, View } from 'white-web-sdk';
 import * as _netless_telebox_insider from '@netless/telebox-insider';
-import { TELE_BOX_STATE, ReadonlyTeleBox, TeleBoxRect, TeleBoxColorScheme, TeleBoxManager, TeleBoxManagerUpdateConfig, TeleBoxConfig, TeleBoxState } from '@netless/telebox-insider';
+import { TELE_BOX_STATE, ReadonlyTeleBox, TeleBoxRect, TeleBoxColorScheme, TeleBoxManager, TeleBoxManagerUpdateConfig, TeleBoxConfig, TeleBox, TeleBoxState } from '@netless/telebox-insider';
 export { ReadonlyTeleBox, TeleBoxRect } from '@netless/telebox-insider';
 import Emittery from 'emittery';
+import { Val } from 'value-enhancer';
 
 declare enum Events {
     AppMove = "AppMove",
@@ -632,7 +633,7 @@ declare class BoxManager {
     constructor(context: BoxManagerContext, createTeleBoxManagerConfig?: CreateTeleBoxManagerConfig | undefined);
     private get mainView();
     private get canOperate();
-    get boxState(): "minimized" | "maximized" | "normal";
+    get boxState(): any;
     get maximized(): string[];
     get minimized(): string[];
     get darkMode(): boolean;
@@ -1483,34 +1484,91 @@ declare class LaserPointerMultiManager {
     private _getAppBoxView;
 }
 
-/** allBoxStatusInfo 结构：记录每个 box 的状态 */
-type AllBoxStatusInfo = Record<string, TELE_BOX_STATE>;
 /**
  * 统一的 AllBoxStatusInfo 管理器
  * - 内部维护一份不可变思维的快照，所有变更返回新对象并同步到内部
  * - 提供清理/查询/设置等常用能力
+ * - 支持 Observable 模式，外部可以监听状态变化
  */
 declare class AllBoxStatusInfoManager {
-    private info;
-    constructor(initial?: AllBoxStatusInfo);
-    /** 获取当前快照（返回拷贝） */
-    getAll(): AllBoxStatusInfo;
-    /** 全量设置（可选传入 existingBoxIds 做一次清理后再设置） */
-    setAll(next: AllBoxStatusInfo | undefined, existingBoxIds?: string[]): AllBoxStatusInfo;
-    /** 归一化 undefined → {} */
-    normalize(data: AllBoxStatusInfo | undefined): AllBoxStatusInfo;
-    /** 根据现存 boxes 清理多余项（返回拷贝并同步内部状态） */
-    pruneRemovedBoxes(existingBoxIds: string[]): AllBoxStatusInfo;
-    /** 获取所有最小化的 boxId 列表 */
-    getMinimized(): string[];
-    /** 获取所有最大化的 boxId 列表 */
-    getMaximized(): string[];
-    /** 设置指定 box 的状态（返回新对象并同步内部） */
-    setBoxState(boxId: string, state: TELE_BOX_STATE): AllBoxStatusInfo;
-    /** 批量清除指定状态，将其置为 Normal（返回新对象并同步内部） */
-    clearState(targetState: TELE_BOX_STATE): AllBoxStatusInfo;
-    /** 仅保留现存 boxes 的状态（纯函数，不修改内部，仅工具） */
-    clean(data: AllBoxStatusInfo | undefined, existingBoxIds: string[]): AllBoxStatusInfo;
+    /** 当前所有的盒子状态信息 - Observable */
+    private _currentAllBoxStatusInfo$;
+    /** 当前所有的盒子最后非最小化状态信息 - Observable */
+    private _lastNotMinimizedBoxsStatus$;
+    /** 副作用管理器 */
+    private _sideEffect;
+    constructor();
+    /** 获取当前盒子状态信息的 Observable */
+    get currentAllBoxStatusInfo$(): Val<Record<string, TELE_BOX_STATE>, boolean>;
+    /** 获取最后非最小化状态信息的 Observable */
+    get lastNotMinimizedBoxsStatus$(): Val<Record<string, TELE_BOX_STATE>, boolean>;
+    /** 设置当前所有的盒子状态信息 */
+    setCurrentAllBoxStatusInfo(info: Record<string, TELE_BOX_STATE>, skipUpdate?: boolean): void;
+    /** 根据盒子列表清理当前所有的盒子状态信息 */
+    resetCleanCurrentAllBoxStatusInfoFromBoxes(boxes: TeleBox[], skipUpdate?: boolean): void;
+    /** 根据盒子列表清理当前所有的盒子最后非最小化状态信息 */
+    resetCleanLastNotMinimizedBoxsStatusFromBoxes(boxes: TeleBox[], skipUpdate?: boolean): void;
+    /** 设置当前所有的盒子最后非最小化状态信息 */
+    setLastNotMinimizedBoxsStatus(info: Record<string, TELE_BOX_STATE>, skipUpdate?: boolean): void;
+    /** 设置当前指定的盒子状态信息 */
+    setCurrentBoxState(boxId: string, state: TELE_BOX_STATE, skipUpdate?: boolean): void;
+    /** 设置当前指定的盒子最后非最小化状态信息 */
+    setLastNotMinimizedBoxState(boxId: string, state: TELE_BOX_STATE, skipUpdate?: boolean): void;
+    /** 删除当前指定的盒子状态信息 */
+    removeCurrentBoxState(boxId: string, skipUpdate?: boolean): void;
+    /** 删除当前指定的盒子最后非最小化状态信息 */
+    removeLastNotMinimizedBoxState(boxId: string, skipUpdate?: boolean): void;
+    /** 清除当前所有的盒子状态信息 */
+    clearCurrentAllBoxStatusInfo(skipUpdate?: boolean): void;
+    /** 清除当前所有的盒子最后非最小化状态信息 */
+    clearLastNotMinimizedBoxsStatus(skipUpdate?: boolean): void;
+    /** 获取当前所有的盒子状态信息 */
+    getAllBoxStatusInfo(): Record<string, TELE_BOX_STATE>;
+    /**
+     * 获取指定状态的盒子列表
+     * @param type 状态类型
+     * @returns
+     */
+    getBoxesList(type: TELE_BOX_STATE): string[];
+    /**
+     * 是否存在最大化的盒子
+     * @returns 是否存在最大化的盒子
+     */
+    hasMaximizedBox(): boolean;
+    /**
+     * 是否存在最小化的盒子
+     * @returns 是否存在最小化的盒子
+     */
+    hasMinimizedBox(): boolean;
+    /**
+     * 是否存在正常的盒子
+     * @returns 是否存在正常的盒子
+     */
+    hasNormalBox(): boolean;
+    /**
+     * 获取最后非最小化状态的盒子列表
+     * @returns 最后非最小化状态的盒子列表
+     */
+    getLastNotMinimizedBoxsStatus(): Record<string, TELE_BOX_STATE>;
+    /**
+     * 获取TeleBox标题栏状态
+     * @returns TeleBox标题栏状态
+     */
+    getTeleBoxTitleBarState(): TELE_BOX_STATE;
+    /**
+     * 根据盒子列表设置当前盒子状态（用于 TeleBoxManager 中的调用）
+     * @param boxes 盒子列表
+     */
+    setCurrentBoxStateFromBoxes(boxes: any[]): void;
+    /**
+     * 获取管理器实例（用于兼容现有代码）
+     * @returns 管理器实例
+     */
+    get(): AllBoxStatusInfoManager;
+    /**
+     * 销毁管理器，清理所有副作用
+     */
+    destroy(): void;
 }
 
 type WindowMangerAttributes = {
@@ -1722,7 +1780,7 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     maximizedBoxNextPage(): false | Promise<boolean> | undefined;
     maximizedBoxPrevPage(): false | Promise<boolean> | undefined;
     getMaximizedBoxPageState(): PageState | undefined;
-    getTopMaxBoxId(): string | undefined;
+    getTopMaxBoxId(): any;
     get mainView(): View;
     get camera(): Camera;
     get cameraState(): CameraState;
@@ -1828,4 +1886,4 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
 }
 
 export { AllBoxStatusInfoManager, AppContext, AppCreateError, AppManagerNotInitError, AppNotRegisterError, BindContainerRoomPhaseInvalidError, BoxManagerNotFoundError, BoxNotCreatedError, BuiltinApps, DomEvents, ExtendPlugin, ExtendPluginManager, IframeBridge, IframeEvents, InvalidScenePath, LaserPointerManager, LaserPointerMultiManager, ParamsInvalidError, Storage, WhiteWebSDKInvalidError, WindowManager, WukongRoleManager, WukongUserRoleType, calculateNextIndex, logFirstTag, mainViewField, reconnectRefresher };
-export type { AddAppOptions, AddAppParams, AddPageParams, AllBoxStatusInfo, AppEmitterEvent, AppInitState, AppListenerKeys, AppPayload, AppSyncAttributes, ApplianceIcons, BaseInsertParams, CursorMovePayload, CursorOptions, ExtendContext, ExtendManagerOptions, ExtendPluginInstance, IframeBridgeAttributes, IframeBridgeEvents, IframeSize, InsertOptions, LaserPointerPosition, MountParams, NetlessApp, OnCreateInsertOption, PageController, PageRemoveService, PageState, PublicEvent, RegisterEventData, RegisterEvents, RegisterParams, Role, StorageStateChangedEvent, StorageStateChangedListener, WindowMangerAttributes, apps, setAppOptions };
+export type { AddAppOptions, AddAppParams, AddPageParams, AppEmitterEvent, AppInitState, AppListenerKeys, AppPayload, AppSyncAttributes, ApplianceIcons, BaseInsertParams, CursorMovePayload, CursorOptions, ExtendContext, ExtendManagerOptions, ExtendPluginInstance, IframeBridgeAttributes, IframeBridgeEvents, IframeSize, InsertOptions, LaserPointerPosition, MountParams, NetlessApp, OnCreateInsertOption, PageController, PageRemoveService, PageState, PublicEvent, RegisterEventData, RegisterEvents, RegisterParams, Role, StorageStateChangedEvent, StorageStateChangedListener, WindowMangerAttributes, apps, setAppOptions };

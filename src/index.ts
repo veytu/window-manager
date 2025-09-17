@@ -1289,7 +1289,7 @@ export class WindowManager
         // WindowManager.mainViewWrapperShadow.style.width = `${size?.width * currentScale}px`;
         // WindowManager.mainViewWrapperShadow.style.height = `${size?.height * currentScale}px`;
 
-        const skipUpdate = skipEmit || this.readonly || isIOS() || isAndroid();
+        // const skipUpdate = skipEmit || this.readonly || isIOS() || isAndroid();
 
         this.room.disableCameraTransform = true;
 
