@@ -21193,10 +21193,12 @@ const _WindowManager = class extends InvisiblePlugin {
     _WindowManager.mainViewWrapper.style.width = `${(size2 == null ? void 0 : size2.width) * currentScale}px`;
     _WindowManager.mainViewWrapper.style.height = `${(size2 == null ? void 0 : size2.height) * currentScale}px`;
     this.room.disableCameraTransform = true;
-    internalEmitter.emit(
-      "wrapperSizeChange",
-      _WindowManager.mainViewWrapper.getBoundingClientRect()
-    );
+    if (this.teacherInfo.uid === this._getCurrentUserId()) {
+      internalEmitter.emit(
+        "wrapperSizeChange",
+        _WindowManager.mainViewWrapper.getBoundingClientRect()
+      );
+    }
   }
   _setScale(data, skipEmit) {
     var _a3;

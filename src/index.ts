@@ -1293,10 +1293,12 @@ export class WindowManager
 
         this.room.disableCameraTransform = true;
 
-        internalEmitter.emit(
-            "wrapperSizeChange",
-            WindowManager.mainViewWrapper.getBoundingClientRect()
-        );
+        if (this.teacherInfo.uid === this._getCurrentUserId()) {
+            internalEmitter.emit(
+                "wrapperSizeChange",
+                WindowManager.mainViewWrapper.getBoundingClientRect()
+            );
+        }
     }
 
     private _setScale(data: { appId: string; scale: number }, skipEmit?: boolean): boolean {

@@ -39,7 +39,7 @@ export class MainViewProxy {
             return internalEmitter.on("playgroundSizeChange", playgroundSizeChangeListener);
         });
 	    // todo 同步可能需确认
-        // 放大缩小的同步更新逻辑
+        // 监听到远端放大缩小的同步更新逻辑，当前修改为仅老师会触发这个事件
         this.sideEffectManager.add(() => {
             return internalEmitter.on("wrapperSizeChange", playgroundSizeChangeListener);
         });
