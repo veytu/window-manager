@@ -460,6 +460,10 @@ type AppEmitterEvent<T = any> = {
     seek: number;
     pageStateChange: PageState;
     togglePreview: boolean;
+    boxStatusChange: {
+        appId: string;
+        status: TELE_BOX_STATE;
+    };
 };
 type RegisterEventData = {
     appId: string;

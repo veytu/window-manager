@@ -11,7 +11,7 @@ import type {
     View,
 } from "white-web-sdk";
 import type { AppContext } from "./App";
-import type { ReadonlyTeleBox, TeleBoxRect } from "@netless/telebox-insider";
+import type { ReadonlyTeleBox, TELE_BOX_STATE, TeleBoxRect } from "@netless/telebox-insider";
 import type { PageState } from "./Page";
 
 export interface NetlessApp<
@@ -59,6 +59,7 @@ export type AppEmitterEvent<T = any> = {
     seek: number;
     pageStateChange: PageState;
     togglePreview: boolean;
+    boxStatusChange: { appId: string; status: TELE_BOX_STATE };
 };
 
 export type RegisterEventData = {
