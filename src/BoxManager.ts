@@ -3,7 +3,7 @@ import { debounce, isString } from "lodash";
 import { TELE_BOX_STATE, TeleBoxCollector, TeleBoxManager } from "@netless/telebox-insider";
 import { WindowManager } from "./index";
 import type { BoxEmitterType } from "./BoxEmitter";
-import type { AddAppOptions, AppInitState } from "./index";
+import type { AddAppOptions, AllBoxStatusInfoManager, AppInitState, WukongRoleManager } from "./index";
 import type {
     TeleBoxManagerUpdateConfig,
     TeleBoxManagerCreateConfig,
@@ -12,6 +12,7 @@ import type {
     TeleBoxColorScheme,
     TeleBoxRect,
     TeleBoxConfig,
+    TeleBox,
 } from "@netless/telebox-insider";
 import type Emittery from "emittery";
 import type { NetlessApp } from "./typings";
@@ -318,6 +319,8 @@ export class BoxManager {
         const collector = new TeleBoxCollector({
             styles: this.createTeleBoxManagerConfig?.collectorStyles,
             readonly: this.teleBoxManager.readonly,
+            allBoxStatusInfoManager: this.manager.appManager!.allBoxStatusInfoManager! as any,
+            wukongRoleManager: WindowManager.wukongRoleManager as any,
         }).mount(container);
         this.teleBoxManager.setCollector(collector);
     }

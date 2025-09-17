@@ -5364,7 +5364,9 @@ class BoxManager {
     var _a3;
     const collector = new TeleBoxCollector({
       styles: (_a3 = this.createTeleBoxManagerConfig) == null ? void 0 : _a3.collectorStyles,
-      readonly: this.teleBoxManager.readonly
+      readonly: this.teleBoxManager.readonly,
+      allBoxStatusInfoManager: this.manager.appManager.allBoxStatusInfoManager,
+      wukongRoleManager: WindowManager.wukongRoleManager
     }).mount(container);
     this.teleBoxManager.setCollector(collector);
   }
