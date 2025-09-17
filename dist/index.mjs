@@ -4014,7 +4014,6 @@ class MaxTitleBar extends DefaultTitleBar {
     this.allBoxStatusInfoManager.currentAllBoxStatusInfo$.reaction((allBoxStatusInfo) => {
       console.log("[TeleBox] MaxTitleBar - AllBoxStatusInfo Reaction Triggered", allBoxStatusInfo);
       if (this.$titleBar) {
-        console.log("xxxxxx111111", this.state === TELE_BOX_STATE.Maximized, this.allBoxStatusInfoManager.hasMaximizedBox());
         this.$titleBar.classList.toggle(
           this.wrapClassName("max-titlebar-maximized"),
           this.state === TELE_BOX_STATE.Maximized && this.allBoxStatusInfoManager.hasMaximizedBox()
@@ -4034,7 +4033,6 @@ class MaxTitleBar extends DefaultTitleBar {
       (_a3 = this.focusedBox) == null ? void 0 : _a3.id,
       this.state
     );
-    console.log("xxxxxx222222", this.state === TELE_BOX_STATE.Maximized, this.allBoxStatusInfoManager.hasMaximizedBox());
     if (this.$titles && (this.state === TELE_BOX_STATE.Maximized || this.allBoxStatusInfoManager.hasMaximizedBox())) {
       const { children: children2 } = this.$titles.firstElementChild;
       for (let i2 = children2.length - 1; i2 >= 0; i2 -= 1) {
@@ -4068,7 +4066,6 @@ class MaxTitleBar extends DefaultTitleBar {
   setBoxes(boxes) {
     this.boxes = boxes;
     if (this.$titleBar) {
-      console.log("xxxxxx333333", this.state === TELE_BOX_STATE.Maximized, this.allBoxStatusInfoManager.hasMaximizedBox());
       this.$titleBar.classList.toggle(
         this.wrapClassName("max-titlebar-maximized"),
         this.state === TELE_BOX_STATE.Maximized && this.allBoxStatusInfoManager.hasMaximizedBox()
@@ -4079,7 +4076,6 @@ class MaxTitleBar extends DefaultTitleBar {
   setState(state) {
     super.setState(state);
     if (this.$titleBar) {
-      console.log("xxxxxx444444", state === TELE_BOX_STATE.Maximized, this.allBoxStatusInfoManager.hasMaximizedBox());
       this.$titleBar.classList.toggle(
         this.wrapClassName("max-titlebar-maximized"),
         state === TELE_BOX_STATE.Maximized && this.allBoxStatusInfoManager.hasMaximizedBox()
@@ -4149,12 +4145,6 @@ class MaxTitleBar extends DefaultTitleBar {
   }
   updateTitles() {
     var _a3;
-    console.log(
-      "xxxxxx555555",
-      this.allBoxStatusInfoManager.hasMaximizedBox(),
-      this.boxes.length > 0,
-      this.allBoxStatusInfoManager.getBoxesList(TELE_BOX_STATE.Maximized).filter((boxId) => !this.allBoxStatusInfoManager.getBoxesList(TELE_BOX_STATE.Maximized).includes(boxId)).length > 0
-    );
     (_a3 = this.$titleBar) == null ? void 0 : _a3.classList.toggle(
       this.wrapClassName("max-titlebar-active"),
       this.allBoxStatusInfoManager.hasMaximizedBox() && this.boxes.length > 0
