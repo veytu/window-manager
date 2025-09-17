@@ -4014,6 +4014,7 @@ class MaxTitleBar extends DefaultTitleBar {
     this.allBoxStatusInfoManager.currentAllBoxStatusInfo$.reaction((allBoxStatusInfo) => {
       console.log("[TeleBox] MaxTitleBar - AllBoxStatusInfo Reaction Triggered", allBoxStatusInfo);
       if (this.$titleBar) {
+        console.log("xxxxxx111111", this.state === TELE_BOX_STATE.Maximized, this.allBoxStatusInfoManager.hasMaximizedBox());
         this.$titleBar.classList.toggle(
           this.wrapClassName("max-titlebar-maximized"),
           this.state === TELE_BOX_STATE.Maximized && this.allBoxStatusInfoManager.hasMaximizedBox()
@@ -4033,6 +4034,7 @@ class MaxTitleBar extends DefaultTitleBar {
       (_a3 = this.focusedBox) == null ? void 0 : _a3.id,
       this.state
     );
+    console.log("xxxxxx222222", this.state === TELE_BOX_STATE.Maximized, this.allBoxStatusInfoManager.hasMaximizedBox());
     if (this.$titles && (this.state === TELE_BOX_STATE.Maximized || this.allBoxStatusInfoManager.hasMaximizedBox())) {
       const { children: children2 } = this.$titles.firstElementChild;
       for (let i2 = children2.length - 1; i2 >= 0; i2 -= 1) {
@@ -4066,6 +4068,7 @@ class MaxTitleBar extends DefaultTitleBar {
   setBoxes(boxes) {
     this.boxes = boxes;
     if (this.$titleBar) {
+      console.log("xxxxxx333333", this.state === TELE_BOX_STATE.Maximized, this.allBoxStatusInfoManager.hasMaximizedBox());
       this.$titleBar.classList.toggle(
         this.wrapClassName("max-titlebar-maximized"),
         this.state === TELE_BOX_STATE.Maximized && this.allBoxStatusInfoManager.hasMaximizedBox()
@@ -4076,6 +4079,7 @@ class MaxTitleBar extends DefaultTitleBar {
   setState(state) {
     super.setState(state);
     if (this.$titleBar) {
+      console.log("xxxxxx444444", state === TELE_BOX_STATE.Maximized, this.allBoxStatusInfoManager.hasMaximizedBox());
       this.$titleBar.classList.toggle(
         this.wrapClassName("max-titlebar-maximized"),
         state === TELE_BOX_STATE.Maximized && this.allBoxStatusInfoManager.hasMaximizedBox()
@@ -4145,13 +4149,17 @@ class MaxTitleBar extends DefaultTitleBar {
   }
   updateTitles() {
     var _a3;
+    console.log(
+      "xxxxxx555555",
+      this.allBoxStatusInfoManager.hasMaximizedBox(),
+      this.boxes.length > 0,
+      this.allBoxStatusInfoManager.getBoxesList(TELE_BOX_STATE.Maximized).filter((boxId) => !this.allBoxStatusInfoManager.getBoxesList(TELE_BOX_STATE.Maximized).includes(boxId)).length > 0
+    );
     (_a3 = this.$titleBar) == null ? void 0 : _a3.classList.toggle(
       this.wrapClassName("max-titlebar-active"),
-      this.allBoxStatusInfoManager.hasMaximizedBox() && this.boxes.length > 0 && this.allBoxStatusInfoManager.getBoxesList(TELE_BOX_STATE.Minimized).filter(
-        (boxId) => !this.allBoxStatusInfoManager.getBoxesList(TELE_BOX_STATE.Minimized).includes(boxId)
-      ).length > 0
+      this.allBoxStatusInfoManager.hasMaximizedBox() && this.boxes.length > 0
     );
-    if (this.$titleBar && this.allBoxStatusInfoManager.hasMaximizedBox() && this.boxes.length > 0 && this.allBoxStatusInfoManager.getBoxesList(TELE_BOX_STATE.Minimized).filter((boxId) => !this.allBoxStatusInfoManager.getBoxesList(TELE_BOX_STATE.Minimized).includes(boxId)).length > 0) {
+    if (this.$titleBar && this.allBoxStatusInfoManager.hasMaximizedBox() && this.boxes.length > 0) {
       this.$titleBar.classList.toggle(
         this.wrapClassName("max-titlebar-single-title"),
         this.boxes.length === 1
@@ -4598,13 +4606,15 @@ class TeleBoxManager {
   }
   create(config, smartPosition = true) {
     const id2 = config.id || r$1$1();
+    const state = this.allBoxStatusInfoManager.getAllBoxStatusInfo()[id2];
+    console.log("[TeleBox] Create Box State", id2, state);
     const box = new TeleBox({
       zIndex: this.topBox ? this.topBox.zIndex + 1 : 100,
       ...smartPosition ? this.smartPosition(config) : config,
       darkMode: this.darkMode,
       prefersColorScheme: this.prefersColorScheme,
-      maximized: false,
-      minimized: false,
+      maximized: TELE_BOX_STATE.Maximized === state,
+      minimized: TELE_BOX_STATE.Minimized === state,
       fence: this.fence,
       namespace: this.namespace,
       containerRect: this.containerRect,
@@ -4624,19 +4634,22 @@ class TeleBoxManager {
       }
     }
     this.boxes$.setValue([...this.boxes, box]);
-    this.allBoxStatusInfoManager.setCurrentBoxState(id2, TELE_BOX_STATE.Normal, false);
+    if (!state) {
+      this.allBoxStatusInfoManager.setCurrentAllBoxStatusInfo({ ...this.allBoxStatusInfoManager.getAllBoxStatusInfo(), [id2]: state || TELE_BOX_STATE.Normal }, false);
+    }
+    console.log("[TeleBox] Create Box AllBoxStatusInfo UpdateFinish", this.allBoxStatusInfoManager.getAllBoxStatusInfo());
     box._delegateEvents.on(TELE_BOX_DELEGATE_EVENT.Maximize, () => {
       console.log("[TeleBox] TitleBar Maximize From Box Event", {
         boxId: box.id
       });
       const allBoxStatusInfo = this.allBoxStatusInfoManager.getAllBoxStatusInfo();
-      Object.entries(allBoxStatusInfo).forEach(([boxId, state]) => {
-        if (state !== TELE_BOX_STATE.Minimized) {
+      Object.entries(allBoxStatusInfo).forEach(([boxId, state2]) => {
+        if (state2 !== TELE_BOX_STATE.Minimized) {
           allBoxStatusInfo[boxId] = TELE_BOX_STATE.Maximized;
         }
       });
       this.allBoxStatusInfoManager.setCurrentAllBoxStatusInfo(allBoxStatusInfo, false);
-      this.events.emit(TELE_BOX_MANAGER_EVENT.BoxToNormal, {
+      this.events.emit(TELE_BOX_MANAGER_EVENT.BoxToMaximized, {
         boxId: box.id,
         allBoxStatusInfo: this.allBoxStatusInfoManager.getAllBoxStatusInfo()
       });
@@ -4657,10 +4670,6 @@ class TeleBoxManager {
       });
       this.remove(box.id, false);
       this.events.emit(TELE_BOX_MANAGER_EVENT.Removed, [box]);
-      this.events.emit(TELE_BOX_MANAGER_EVENT.BoxToNormal, {
-        boxId: box.id,
-        allBoxStatusInfo: this.allBoxStatusInfoManager.getAllBoxStatusInfo()
-      });
     });
     box._coord$.reaction((_2, __, skipUpdate) => {
       if (!skipUpdate) {
@@ -5175,10 +5184,6 @@ class BoxManager {
     const { emitter, callbacks: callbacks2, boxEmitter: boxEmitter2, manager } = context;
     this.manager = manager;
     this.teleBoxManager = this.setupBoxManager(createTeleBoxManagerConfig);
-    this.teleBoxManager._state$.reaction((state) => {
-      callbacks2.emit("boxStateChange", state);
-      emitter.emit("boxStateChange", state);
-    });
     this.teleBoxManager._darkMode$.reaction((darkMode) => {
       callbacks2.emit("darkModeChange", darkMode);
     });
@@ -5936,20 +5941,20 @@ class AppProxy {
     this.appContext = context;
     try {
       internalEmitter.once(`${appId}${Events.WindowCreated}`).then(async () => {
-        var _a4, _b2, _c2, _d, _e, _f, _g, _h, _i, _j;
+        var _a4, _b2, _c2, _d, _e, _f, _g, _h, _i;
         let boxInitState;
         if (!skipUpdate) {
           boxInitState = this.getAppInitState(appId);
-          const maximized = (_c2 = (_b2 = (_a4 = this.boxManager) == null ? void 0 : _a4.teleBoxManager) == null ? void 0 : _b2.getMaximizedBoxes()) == null ? void 0 : _c2.includes(appId);
-          const minimized = (_f = (_e = (_d = this.boxManager) == null ? void 0 : _d.teleBoxManager) == null ? void 0 : _e.getMinimizedBoxes()) == null ? void 0 : _f.includes(appId);
+          const maximized = (_b2 = (_a4 = this.manager.allBoxStatusInfoManager) == null ? void 0 : _a4.getBoxesList(TELE_BOX_STATE.Maximized)) == null ? void 0 : _b2.includes(appId);
+          const minimized = (_d = (_c2 = this.manager.allBoxStatusInfoManager) == null ? void 0 : _c2.getBoxesList(TELE_BOX_STATE.Minimized)) == null ? void 0 : _d.includes(appId);
           Object.assign(boxInitState || {}, { maximized, minimized });
-          (_g = this.boxManager) == null ? void 0 : _g.updateBoxState(boxInitState);
-          const boxes = (_h = this.boxManager) == null ? void 0 : _h.teleBoxManager.getMaximizedBoxes().filter((box) => {
-            var _a5;
-            return !((_a5 = this == null ? void 0 : this.boxManager) == null ? void 0 : _a5.teleBoxManager.getMinimizedBoxes().includes(box));
+          (_e = this.boxManager) == null ? void 0 : _e.updateBoxState(boxInitState);
+          const boxes = (_g = (_f = this.manager.allBoxStatusInfoManager) == null ? void 0 : _f.getBoxesList(TELE_BOX_STATE.Maximized)) == null ? void 0 : _g.filter((box) => {
+            var _a5, _b3;
+            return !((_b3 = (_a5 = this.manager.allBoxStatusInfoManager) == null ? void 0 : _a5.getBoxesList(TELE_BOX_STATE.Minimized)) == null ? void 0 : _b3.includes(box));
           });
           if (boxes == null ? void 0 : boxes.length) {
-            (_j = (_i = this.boxManager) == null ? void 0 : _i.teleBoxManager) == null ? void 0 : _j.makeBoxTopFromMaximized();
+            (_i = (_h = this.boxManager) == null ? void 0 : _h.teleBoxManager) == null ? void 0 : _i.makeBoxTopFromMaximized();
           }
         }
         this.appEmitter.onAny(this.appListener);
@@ -7088,17 +7093,17 @@ class AppManager {
     this.boxManager = boxManager;
   }
   resetMaximized() {
-    var _a3, _b;
+    var _a3;
     const allBoxStatusInfo = this.store.getAllBoxStatusInfo();
     if (allBoxStatusInfo) {
-      (_b = (_a3 = this.boxManager) == null ? void 0 : _a3.teleBoxManager) == null ? void 0 : _b.setAllBoxStatusInfo({ ...allBoxStatusInfo });
+      (_a3 = this.allBoxStatusInfoManager) == null ? void 0 : _a3.setCurrentAllBoxStatusInfo({ ...allBoxStatusInfo });
     }
   }
   resetMinimized() {
-    var _a3, _b;
+    var _a3;
     const allBoxStatusInfo = this.store.getAllBoxStatusInfo();
     if (allBoxStatusInfo) {
-      (_b = (_a3 = this.boxManager) == null ? void 0 : _a3.teleBoxManager) == null ? void 0 : _b.setAllBoxStatusInfo({ ...allBoxStatusInfo });
+      (_a3 = this.allBoxStatusInfoManager) == null ? void 0 : _a3.setCurrentAllBoxStatusInfo({ ...allBoxStatusInfo });
     }
   }
   bindMainView(divElement, disableCameraTransform) {
@@ -20400,7 +20405,7 @@ const _WindowManager = class extends InvisiblePlugin {
     (_b = (_a3 = manager.appManager) == null ? void 0 : _a3.refresher) == null ? void 0 : _b.add(Fields.Scale, () => {
       console.log(`${logFirstTag} Scale Register Listener`);
       return createAntiLoopAutorun(() => {
-        const data = get(manager.appManager.attributes, Fields.Scale);
+        const data = get(manager.appManager.attributes, Fields.Scale) || {};
         const keys = Object.keys(data);
         if (keys.length > 0) {
           const appId = keys[0];
@@ -20449,7 +20454,7 @@ const _WindowManager = class extends InvisiblePlugin {
       return createAntiLoopAutorun(() => {
         var _a4, _b2;
         const data = get(manager.appManager.attributes, Fields.AllBoxStatusInfo);
-        (_b2 = (_a4 = manager == null ? void 0 : manager.boxManager) == null ? void 0 : _a4.teleBoxManager) == null ? void 0 : _b2.setAllBoxStatusInfo(data, true);
+        (_b2 = (_a4 = manager == null ? void 0 : manager.appManager) == null ? void 0 : _a4.allBoxStatusInfoManager) == null ? void 0 : _b2.setCurrentAllBoxStatusInfo(data);
         console.log(`${logFirstTag} AllBoxStatusInfo Target`, JSON.stringify(data));
       }, "AllBoxStatusInfo");
     });
@@ -20458,12 +20463,14 @@ const _WindowManager = class extends InvisiblePlugin {
       return createAntiLoopAutorun(() => {
         var _a4, _b2;
         const data = get(manager.appManager.attributes, Fields.LastNotMinimizedBoxsStatus);
-        (_b2 = (_a4 = manager == null ? void 0 : manager.boxManager) == null ? void 0 : _a4.teleBoxManager) == null ? void 0 : _b2.setLastLastNotMinimizedBoxsStatus(data, true);
+        (_b2 = (_a4 = manager == null ? void 0 : manager.appManager) == null ? void 0 : _a4.allBoxStatusInfoManager) == null ? void 0 : _b2.setLastNotMinimizedBoxsStatus(data);
         console.log(`${logFirstTag} LastNotMinimizedBoxsStatus Target`, JSON.stringify(data));
       }, "AllBoxStatusInfo");
     });
     internalEmitter.on("playgroundSizeChange", () => {
-      manager == null ? void 0 : manager._updateMainViewWrapperSize(manager.getAttributesValue(Fields.Scale)[mainViewField], true);
+      {
+        manager == null ? void 0 : manager._updateMainViewWrapperSize((manager.getAttributesValue(Fields.Scale) || {})[mainViewField], true);
+      }
     });
     setTimeout(() => {
       manager == null ? void 0 : manager._initAttribute();
@@ -20857,19 +20864,18 @@ const _WindowManager = class extends InvisiblePlugin {
     return (_b = box == null ? void 0 : box.appContext) == null ? void 0 : _b.pageState;
   }
   getTopMaxBoxId() {
-    var _a3, _b;
-    const boxes = (_b = (_a3 = this.appManager) == null ? void 0 : _a3.boxManager) == null ? void 0 : _b.teleBoxManager.getMaximizedBoxes().filter(
-      (box) => {
-        var _a4, _b2;
-        return !((_b2 = (_a4 = this.appManager) == null ? void 0 : _a4.boxManager) == null ? void 0 : _b2.teleBoxManager.getMinimizedBoxes().includes(box));
-      }
+    var _a3, _b, _c, _d;
+    const allBoxStatusInfo = (_b = (_a3 = this.appManager) == null ? void 0 : _a3.allBoxStatusInfoManager) == null ? void 0 : _b.getBoxesList(TELE_BOX_STATE.Maximized);
+    const minimizedBoxes = (_d = (_c = this.appManager) == null ? void 0 : _c.allBoxStatusInfoManager) == null ? void 0 : _d.getBoxesList(TELE_BOX_STATE.Minimized);
+    const boxes = allBoxStatusInfo == null ? void 0 : allBoxStatusInfo.filter(
+      (box) => !(minimizedBoxes == null ? void 0 : minimizedBoxes.includes(box))
     );
     if (!(boxes == null ? void 0 : boxes.length))
       return void 0;
     return boxes.reduce(
       (a2, b2) => {
-        var _a4, _b2, _c, _d, _e, _f, _g, _h;
-        return Number((_d = (_c = (_b2 = (_a4 = this.appManager) == null ? void 0 : _a4.boxManager) == null ? void 0 : _b2.getBox(a2)) == null ? void 0 : _c._zIndex$) == null ? void 0 : _d.value) > Number((_h = (_g = (_f = (_e = this.appManager) == null ? void 0 : _e.boxManager) == null ? void 0 : _f.getBox(b2)) == null ? void 0 : _g._zIndex$) == null ? void 0 : _h.value) ? a2 : b2;
+        var _a4, _b2, _c2, _d2, _e, _f, _g, _h;
+        return Number((_d2 = (_c2 = (_b2 = (_a4 = this.appManager) == null ? void 0 : _a4.boxManager) == null ? void 0 : _b2.getBox(a2)) == null ? void 0 : _c2._zIndex$) == null ? void 0 : _d2.value) > Number((_h = (_g = (_f = (_e = this.appManager) == null ? void 0 : _e.boxManager) == null ? void 0 : _f.getBox(b2)) == null ? void 0 : _g._zIndex$) == null ? void 0 : _h.value) ? a2 : b2;
       }
     );
   }
@@ -21187,7 +21193,7 @@ const _WindowManager = class extends InvisiblePlugin {
     const size2 = (_a3 = _WindowManager.wrapper) == null ? void 0 : _a3.getBoundingClientRect();
     if (!size2)
       return false;
-    const currentScale = scale2 != null ? scale2 : this.getAttributesValue(Fields.Scale)[mainViewField];
+    const currentScale = scale2 != null ? scale2 : (this.getAttributesValue(Fields.Scale) || {})[mainViewField];
     if (!_WindowManager.mainViewWrapper)
       return;
     if (!_WindowManager.mainViewWrapper)
@@ -21214,7 +21220,7 @@ const _WindowManager = class extends InvisiblePlugin {
     return true;
   }
   getScale() {
-    return this.getAttributesValue([Fields.Scale]);
+    return this.getAttributesValue([Fields.Scale]) || {};
   }
   setTeacherInfo(data) {
     var _a3, _b;
@@ -21280,7 +21286,7 @@ const _WindowManager = class extends InvisiblePlugin {
     return _WindowManager.container;
   }
   getAppScale(appId) {
-    return this.getAttributesValue([Fields.Scale])[appId];
+    return (this.getAttributesValue([Fields.Scale]) || {})[appId];
   }
   isDynamicPPT(scenes) {
     var _a3, _b;

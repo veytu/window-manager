@@ -1780,7 +1780,7 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     maximizedBoxNextPage(): false | Promise<boolean> | undefined;
     maximizedBoxPrevPage(): false | Promise<boolean> | undefined;
     getMaximizedBoxPageState(): PageState | undefined;
-    getTopMaxBoxId(): any;
+    getTopMaxBoxId(): string | undefined;
     get mainView(): View;
     get camera(): Camera;
     get cameraState(): CameraState;
