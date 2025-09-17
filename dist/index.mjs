@@ -4752,6 +4752,8 @@ class TeleBoxManager {
     const id2 = config.id || r$1$1();
     const currentMaximizedBoxes = this.getMaximizedBoxes();
     const currentMinimizedBoxes = this.getMinimizedBoxes();
+    const isMaximized = currentMaximizedBoxes.includes(id2);
+    const isMinimized = currentMinimizedBoxes.includes(id2);
     const managerMaximized$ = currentMaximizedBoxes.includes(id2) || currentMaximizedBoxes.length > 0 && config.maximized !== false;
     const managerMinimized$ = currentMinimizedBoxes.includes(id2) || config.minimized === true;
     const box = new TeleBox({
@@ -4759,8 +4761,8 @@ class TeleBoxManager {
       ...smartPosition ? this.smartPosition(config) : config,
       darkMode: this.darkMode,
       prefersColorScheme: this.prefersColorScheme,
-      maximized: managerMaximized$,
-      minimized: managerMinimized$,
+      maximized: isMaximized,
+      minimized: isMinimized,
       fence: this.fence,
       namespace: this.namespace,
       containerRect: this.containerRect,
@@ -5188,6 +5190,8 @@ class TeleBoxManager {
         if (vx > this.containerRect.width - width * this.containerRect.width) {
           vx = 20;
         }
+      } else {
+        vx = this.containerRect.width * (0.5 - width / 2);
       }
       x2 = vx / this.containerRect.width;
     }
@@ -5198,6 +5202,8 @@ class TeleBoxManager {
         if (vy > this.containerRect.height - height * this.containerRect.height) {
           vy = 20;
         }
+      } else {
+        vy = this.containerRect.height * (0.5 - height / 2);
       }
       y2 = vy / this.containerRect.height;
     }
@@ -20350,7 +20356,7 @@ const logFirstTag = "[TeleBox] WindowManager";
 const _WindowManager = class extends InvisiblePlugin {
   constructor(context) {
     super(context);
-    this.version = "1.0.6-wukongBeta.0";
+    this.version = "1.0.6-wukongBeta.1";
     this.dependencies = { "dependencies": { "@juggle/resize-observer": "^3.4.0", "@netless/telebox-insider": "github:veytu/telebox-insider", "emittery": "^0.9.2", "lodash": "^4.17.21", "p-retry": "^4.6.2", "uuid": "^7.0.3", "value-enhancer": "0.0.8", "video.js": "^8.23.4" }, "peerDependencies": { "jspdf": "2.5.1", "white-web-sdk": "^2.16.52" }, "devDependencies": { "@hyrious/dts": "^0.2.11", "@netless/app-docs-viewer": "github:veytu/app-docs-viewer", "@netless/app-media-player": "0.1.4", "@rollup/plugin-commonjs": "^20.0.0", "@rollup/plugin-node-resolve": "^13.3.0", "@rollup/plugin-url": "^6.1.0", "@sveltejs/vite-plugin-svelte": "1.0.0-next.40", "@tsconfig/svelte": "^2.0.1", "@types/debug": "^4.1.12", "@types/lodash": "^4.17.20", "@types/lodash-es": "^4.17.12", "@types/uuid": "^8.3.4", "@typescript-eslint/eslint-plugin": "^4.33.0", "@typescript-eslint/parser": "^4.33.0", "@vitest/ui": "^0.14.2", "cypress": "^8.7.0", "dotenv": "^10.0.0", "eslint": "^7.32.0", "eslint-config-prettier": "^8.10.2", "eslint-plugin-svelte3": "^3.4.1", "jsdom": "^19.0.0", "jspdf": "^2.5.2", "less": "^4.4.1", "prettier": "^2.8.8", "prettier-plugin-svelte": "^2.10.1", "rollup-plugin-analyzer": "^4.0.0", "rollup-plugin-styles": "^3.14.1", "side-effect-manager": "0.1.5", "svelte": "^3.59.2", "typescript": "^4.9.5", "vite": "^2.9.18", "vitest": "^0.14.2", "white-web-sdk": "^2.16.53" } };
     this.emitter = callbacks$1;
     this.viewMode = ViewMode.Broadcaster;
@@ -20499,6 +20505,13 @@ const _WindowManager = class extends InvisiblePlugin {
         const data = get(manager.appManager.attributes, Fields.AllBoxStatusInfo);
         (_b2 = (_a4 = manager == null ? void 0 : manager.boxManager) == null ? void 0 : _a4.teleBoxManager) == null ? void 0 : _b2.setAllBoxStatusInfo(data, true);
         console.log(`${logFirstTag} AllBoxStatusInfo Target`, JSON.stringify(data));
+        Object.entries(data).forEach(([boxId, status]) => {
+          var _a5;
+          if (boxId.includes("Plyr")) {
+            const app = (_a5 = manager == null ? void 0 : manager.appManager) == null ? void 0 : _a5.appProxies.get(boxId);
+            app == null ? void 0 : app.appEmitter.emit("boxStatusChange", { appId: boxId, status });
+          }
+        });
       }, "AllBoxStatusInfo");
     });
     (_l = (_k = manager.appManager) == null ? void 0 : _k.refresher) == null ? void 0 : _l.add(Fields.LastNotMinimizedBoxsStatus, () => {
@@ -20508,7 +20521,7 @@ const _WindowManager = class extends InvisiblePlugin {
         const data = get(manager.appManager.attributes, Fields.LastNotMinimizedBoxsStatus);
         (_b2 = (_a4 = manager == null ? void 0 : manager.boxManager) == null ? void 0 : _a4.teleBoxManager) == null ? void 0 : _b2.setLastLastNotMinimizedBoxsStatus(data, true);
         console.log(`${logFirstTag} LastNotMinimizedBoxsStatus Target`, JSON.stringify(data));
-      }, "AllBoxStatusInfo");
+      }, "LastNotMinimizedBoxsStatus");
     });
     internalEmitter.on("playgroundSizeChange", () => {
       manager == null ? void 0 : manager._updateMainViewWrapperSize(manager.getAttributesValue(Fields.Scale)[mainViewField], true);
