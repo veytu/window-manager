@@ -401,6 +401,13 @@ export class WindowManager
                 const data = get(manager!.appManager!.attributes, Fields.AllBoxStatusInfo);
                 manager?.appManager?.allBoxStatusInfoManager?.setCurrentAllBoxStatusInfo(data)
                 console.log(`${logFirstTag} AllBoxStatusInfo Target`, JSON.stringify(data))
+                // 发送事件让播放器状态更新
+                Object.entries(data).forEach(([boxId, status]) => {
+                    if (boxId.includes('Plyr')) {
+                        const app = manager?.appManager?.appProxies.get(boxId)
+                        app?.appEmitter.emit("boxStatusChange", { appId: boxId, status: status as TELE_BOX_STATE })
+                    }
+                });
             }, 'AllBoxStatusInfo');
         });
         manager.appManager?.refresher?.add(Fields.LastNotMinimizedBoxsStatus, () => {

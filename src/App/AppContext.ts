@@ -106,7 +106,7 @@ export class AppContext<TAttributes extends {} = any, TMagixEventPayloads = any,
     };
 
     public getAllBoxStatusInfoManager = (): AllBoxStatusInfoManager =>{
-        return (this.manager.windowManger as WindowManager).allBoxStatusInfoManager;
+        return this.manager.allBoxStatusInfoManager;
     }
 
     /** Get the App Window UI box. */

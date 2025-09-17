@@ -1028,7 +1028,7 @@ class AppContext {
       return this.manager.canOperate;
     };
     this.getAllBoxStatusInfoManager = () => {
-      return this.manager.windowManger.allBoxStatusInfoManager;
+      return this.manager.allBoxStatusInfoManager;
     };
     this.getBox = () => {
       const box = this.boxManager.getBox(this.appId);
@@ -4980,6 +4980,8 @@ class TeleBoxManager {
         if (vx > this.containerRect.width - width * this.containerRect.width) {
           vx = 20;
         }
+      } else {
+        vx = this.containerRect.width * (0.5 - width / 2);
       }
       x2 = vx / this.containerRect.width;
     }
@@ -4990,6 +4992,8 @@ class TeleBoxManager {
         if (vy > this.containerRect.height - height * this.containerRect.height) {
           vy = 20;
         }
+      } else {
+        vy = this.containerRect.height * (0.5 - height / 2);
       }
       y2 = vy / this.containerRect.height;
     }
@@ -20446,6 +20450,13 @@ const _WindowManager = class extends InvisiblePlugin {
         const data = get(manager.appManager.attributes, Fields.AllBoxStatusInfo);
         (_b2 = (_a4 = manager == null ? void 0 : manager.appManager) == null ? void 0 : _a4.allBoxStatusInfoManager) == null ? void 0 : _b2.setCurrentAllBoxStatusInfo(data);
         console.log(`${logFirstTag} AllBoxStatusInfo Target`, JSON.stringify(data));
+        Object.entries(data).forEach(([boxId, status]) => {
+          var _a5;
+          if (boxId.includes("Plyr")) {
+            const app = (_a5 = manager == null ? void 0 : manager.appManager) == null ? void 0 : _a5.appProxies.get(boxId);
+            app == null ? void 0 : app.appEmitter.emit("boxStatusChange", { appId: boxId, status });
+          }
+        });
       }, "AllBoxStatusInfo");
     });
     (_l = (_k = manager.appManager) == null ? void 0 : _k.refresher) == null ? void 0 : _l.add(Fields.LastNotMinimizedBoxsStatus, () => {
