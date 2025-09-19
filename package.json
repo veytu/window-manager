@@ -1,6 +1,6 @@
 {
   "name": "@netless/window-manager",
-  "version": "1.0.6-wukongBeta.5",
+  "version": "1.0.6-wukongBeta.6",
   "description": "Multi-window mode for Netless Whiteboard",
   "author": "l1shen <lishen1635@gmail.com> (https://github.com/l1shen)",
   "license": "MIT",
@@ -13,6 +13,9 @@
     "docs",
     "src"
   ],
+  "publishConfig": {
+    "registry": "https://packages.aliyun.com/68cbe28edec569489f6d65a5/npm/veytu/"
+  },
   "scripts": {
     "build": "vite build && npm run type-gen",
     "lint": "eslint --ext .ts,.tsx,.svelte . && prettier --check .",
@@ -32,7 +35,7 @@
   },
   "dependencies": {
     "@juggle/resize-observer": "^3.4.0",
-    "@netless/telebox-insider": "github:veytu/telebox-insider",
+    "@netless/telebox-insider": "0.2.32-wukongBeta.8",
     "emittery": "^0.9.2",
     "lodash": "^4.17.21",
     "p-retry": "^4.6.2",
@@ -42,7 +45,7 @@
   },
   "devDependencies": {
     "@hyrious/dts": "^0.2.11",
-    "@netless/app-docs-viewer": "github:veytu/app-docs-viewer",
+    "@netless/app-docs-viewer": "0.2.23.wukongBeta.1",
     "@netless/app-media-player": "0.1.4",
     "@rollup/plugin-commonjs": "^20.0.0",
     "@rollup/plugin-node-resolve": "^13.3.0",

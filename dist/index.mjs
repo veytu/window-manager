@@ -430,8 +430,8 @@ const ensureValidScenePath = (scenePath) => {
     return scenePath;
   }
 };
-const getVersionNumber = (version) => {
-  const versionString = version.split(".").map((s2) => s2.padStart(2, "0")).join("");
+const getVersionNumber = (version2) => {
+  const versionString = version2.split(".").map((s2) => s2.padStart(2, "0")).join("");
   return parseInt(versionString);
 };
 const wait = (time2) => new Promise((resolve) => setTimeout(resolve, time2));
@@ -576,8 +576,8 @@ class AppManagerNotInitError extends Error {
   }
 }
 class WhiteWebSDKInvalidError extends Error {
-  constructor(version) {
-    super(`[WindowManager]: white-web-sdk version must large than ${version}`);
+  constructor(version2) {
+    super(`[WindowManager]: white-web-sdk version must large than ${version2}`);
   }
 }
 class ParamsInvalidError extends Error {
@@ -2727,6 +2727,10 @@ class TeleBox {
     );
     prefersColorScheme$.reaction((prefersColorScheme2, _2, skipUpdate) => {
       if (!skipUpdate) {
+        console.log("[TeleBox] Emit PrefersColorScheme Event", {
+          boxId: this.id,
+          prefersColorScheme: prefersColorScheme2
+        });
         this.events.emit(
           TELE_BOX_EVENT.PrefersColorScheme,
           prefersColorScheme2
@@ -2768,6 +2772,10 @@ class TeleBox {
     }
     darkMode$.reaction((darkMode2, _2, skipUpdate) => {
       if (!skipUpdate) {
+        console.log("[TeleBox] Emit DarkMode Event", {
+          boxId: this.id,
+          darkMode: darkMode2
+        });
         this.events.emit(TELE_BOX_EVENT.DarkMode, darkMode2);
       }
     });
@@ -2782,12 +2790,19 @@ class TeleBox {
     const visible$ = createVal(visible);
     visible$.reaction((visible2, _2, skipUpdate) => {
       if (!skipUpdate && !visible2) {
+        console.log("[TeleBox] Emit Close Event", {
+          boxId: this.id
+        });
         this.events.emit(TELE_BOX_EVENT.Close);
       }
     });
     const readonly$ = createVal(readonly);
     readonly$.reaction((readonly2, _2, skipUpdate) => {
       if (!skipUpdate) {
+        console.log("[TeleBox] Emit Readonly Event", {
+          boxId: this.id,
+          readonly: readonly2
+        });
         this.events.emit(TELE_BOX_EVENT.Readonly, readonly2);
       }
     });
@@ -2798,12 +2813,21 @@ class TeleBox {
     const zIndex$ = createVal(zIndex);
     zIndex$.reaction((zIndex2, _2, skipUpdate) => {
       if (!skipUpdate) {
+        console.log("[TeleBox] Emit ZIndex Event", {
+          boxId: this.id,
+          zIndex: zIndex2
+        });
         this.events.emit(TELE_BOX_EVENT.ZIndex, zIndex2);
       }
     });
     const focus$ = createVal(focus);
     focus$.reaction((focus2, _2, skipUpdate) => {
       if (!skipUpdate) {
+        console.log("[TeleBox] Emit Focus/Blur Event", {
+          boxId: this.id,
+          focus: focus2,
+          event: focus2 ? "Focus" : "Blur"
+        });
         this.events.emit(
           focus2 ? TELE_BOX_EVENT.Focus : TELE_BOX_EVENT.Blur
         );
@@ -2812,12 +2836,20 @@ class TeleBox {
     const minimized$ = createVal(minimized);
     minimized$.reaction((minimized2, _2, skipUpdate) => {
       if (!skipUpdate) {
+        console.log("[TeleBox] Emit Minimized Event", {
+          boxId: this.id,
+          minimized: minimized2
+        });
         this.events.emit(TELE_BOX_EVENT.Minimized, minimized2);
       }
     });
     const maximized$ = createVal(maximized);
     maximized$.reaction((maximized2, _2, skipUpdate) => {
       if (!skipUpdate) {
+        console.log("[TeleBox] Emit Maximized Event", {
+          boxId: this.id,
+          maximized: maximized2
+        });
         this.events.emit(TELE_BOX_EVENT.Maximized, maximized2);
       }
     });
@@ -2830,6 +2862,10 @@ class TeleBox {
     );
     state$.reaction((state, _2, skipUpdate) => {
       if (!skipUpdate) {
+        console.log("[TeleBox] Emit State Event", {
+          boxId: this.id,
+          state
+        });
         this.events.emit(TELE_BOX_EVENT.State, state);
       }
     });
@@ -2858,6 +2894,10 @@ class TeleBox {
     });
     intrinsicSize$.reaction((size2, _2, skipUpdate) => {
       if (!skipUpdate) {
+        console.log("[TeleBox] Emit IntrinsicResize Event", {
+          boxId: this.id,
+          size: size2
+        });
         this.events.emit(TELE_BOX_EVENT.IntrinsicResize, size2);
       }
     });
@@ -2873,6 +2913,10 @@ class TeleBox {
     );
     size$.reaction((size2, _2, skipUpdate) => {
       if (!skipUpdate) {
+        console.log("[TeleBox] Emit Resize Event", {
+          boxId: this.id,
+          size: size2
+        });
         this.events.emit(TELE_BOX_EVENT.Resize, size2);
       }
     });
@@ -2891,6 +2935,10 @@ class TeleBox {
     );
     visualSize$.reaction((size2, _2, skipUpdate) => {
       if (!skipUpdate) {
+        console.log("[TeleBox] Emit VisualResize Event", {
+          boxId: this.id,
+          size: size2
+        });
         this.events.emit(TELE_BOX_EVENT.VisualResize, size2);
       }
     });
@@ -2900,6 +2948,10 @@ class TeleBox {
     );
     intrinsicCoord$.reaction((coord, _2, skipUpdate) => {
       if (!skipUpdate) {
+        console.log("[TeleBox] Emit IntrinsicMove Event", {
+          boxId: this.id,
+          coord
+        });
         this.events.emit(TELE_BOX_EVENT.IntrinsicMove, coord);
       }
     });
@@ -2941,6 +2993,10 @@ class TeleBox {
     );
     coord$.reaction((coord, _2, skipUpdate) => {
       if (!skipUpdate) {
+        console.log("[TeleBox] Emit Move Event", {
+          boxId: this.id,
+          coord
+        });
         this.events.emit(TELE_BOX_EVENT.Move, coord);
       }
     });
@@ -2955,6 +3011,10 @@ class TeleBox {
       },
       onEvent: (event) => {
         if (this._delegateEvents.listeners.length > 0) {
+          console.log("[TeleBox] Emit Delegate Event", {
+            boxId: this.id,
+            eventType: event.type
+          });
           this._delegateEvents.emit(event.type);
         } else {
           switch (event.type) {
@@ -3601,6 +3661,9 @@ class TeleBox {
   }
   destroy() {
     this.$box.remove();
+    console.log("[TeleBox] Emit Destroyed Event", {
+      boxId: this.id
+    });
     this.events.emit(TELE_BOX_EVENT.Destroyed);
     this._sideEffect.flushAll();
     this._renderSideEffect.flushAll();
@@ -4291,6 +4354,9 @@ class TeleBoxManager {
         (box) => box.setPrefersColorScheme(prefersColorScheme2, skipUpdate)
       );
       if (!skipUpdate) {
+        console.log("[TeleBox] Emit PrefersColorScheme Event", {
+          prefersColorScheme: prefersColorScheme2
+        });
         this.events.emit(
           TELE_BOX_MANAGER_EVENT.PrefersColorScheme,
           prefersColorScheme2
@@ -4306,6 +4372,9 @@ class TeleBoxManager {
         (box) => box.setDarkMode(darkMode, skipUpdate)
       );
       if (!skipUpdate) {
+        console.log("[TeleBox] Emit DarkMode Event", {
+          darkMode
+        });
         this.events.emit(TELE_BOX_MANAGER_EVENT.DarkMode, darkMode);
       }
     });
@@ -4357,6 +4426,9 @@ class TeleBoxManager {
       }
       this.makeBoxTopFromNotMinimized();
       if (!skipUpdate) {
+        console.log("[TeleBox] Emit AllBoxStatusInfo Event", {
+          allBoxStatusInfo: allBoxStatusInfo2
+        });
         this.events.emit(
           TELE_BOX_MANAGER_EVENT.AllBoxStatusInfo,
           allBoxStatusInfo2
@@ -4366,6 +4438,9 @@ class TeleBoxManager {
     this.lastLastNotMinimizedBoxsStatus$.reaction(
       (lastLastNotMinimizedBoxsStatus2, _2, skipUpdate) => {
         if (!skipUpdate) {
+          console.log("[TeleBox] Emit LastLastNotMinimizedBoxsStatus Event", {
+            lastLastNotMinimizedBoxsStatus: lastLastNotMinimizedBoxsStatus2
+          });
           this.events.emit(
             TELE_BOX_MANAGER_EVENT.LastLastNotMinimizedBoxsStatus,
             lastLastNotMinimizedBoxsStatus2
@@ -4384,6 +4459,9 @@ class TeleBoxManager {
     state$.reaction((state, _2, skipUpdate) => {
       this.maxTitleBar.setState(state);
       if (!skipUpdate) {
+        console.log("[TeleBox] Emit State Event", {
+          state
+        });
         this.events.emit(TELE_BOX_MANAGER_EVENT.State, state);
       }
     });
@@ -4440,16 +4518,28 @@ class TeleBoxManager {
                 false
               );
               if (lastLastNotMinimizedBoxsStatusBox === TELE_BOX_STATE.Minimized) {
+                console.log("[TeleBox] Emit BoxToMinimized Event", {
+                  boxId,
+                  allBoxStatusInfo: allBoxStatusInfo2
+                });
                 this.events.emit(
                   TELE_BOX_MANAGER_EVENT.BoxToMinimized,
                   { boxId, allBoxStatusInfo: allBoxStatusInfo2 }
                 );
               } else if (lastLastNotMinimizedBoxsStatusBox === TELE_BOX_STATE.Maximized) {
+                console.log("[TeleBox] Emit BoxToMaximized Event", {
+                  boxId,
+                  allBoxStatusInfo: allBoxStatusInfo2
+                });
                 this.events.emit(
                   TELE_BOX_MANAGER_EVENT.BoxToMaximized,
                   { boxId, allBoxStatusInfo: allBoxStatusInfo2 }
                 );
               } else if (lastLastNotMinimizedBoxsStatusBox === TELE_BOX_STATE.Normal) {
+                console.log("[TeleBox] Emit BoxToNormal Event", {
+                  boxId,
+                  allBoxStatusInfo: allBoxStatusInfo2
+                });
                 this.events.emit(
                   TELE_BOX_MANAGER_EVENT.BoxToNormal,
                   { boxId, allBoxStatusInfo: allBoxStatusInfo2 }
@@ -4575,6 +4665,10 @@ class TeleBoxManager {
                 box._zIndex$.setValue(((_d = this.topBox) == null ? void 0 : _d.zIndex) + 1, false);
               }
             }
+            console.log("[TeleBox] Emit BoxToMaximized Event", {
+              boxId: currentOptionBox.boxId,
+              allBoxStatusInfo: this.allBoxStatusInfo$.value || {}
+            });
             this.events.emit(
               TELE_BOX_MANAGER_EVENT.BoxToMaximized,
               {
@@ -4602,6 +4696,10 @@ class TeleBoxManager {
               });
               this.setAllBoxStatusInfo(allBoxStatusInfo2, false);
             }
+            console.log("[TeleBox] Emit BoxToMinimized Event", {
+              boxId: currentOptionBox.boxId,
+              allBoxStatusInfo: this.allBoxStatusInfo$.value || {}
+            });
             this.events.emit(
               TELE_BOX_MANAGER_EVENT.BoxToMinimized,
               {
@@ -4617,10 +4715,14 @@ class TeleBoxManager {
               currentOptionBox
             );
             this.changeBoxToClose(currentOptionBox.boxId);
-            this.events.emit(TELE_BOX_MANAGER_EVENT.Removed, {
-              boxId: currentOptionBox.boxId,
-              allBoxStatusInfo: this.allBoxStatusInfo$.value || {}
-            });
+            const removedBox = this.getBox(currentOptionBox.boxId);
+            if (removedBox) {
+              console.log("[TeleBox] Emit Removed Event", {
+                boxId: currentOptionBox.boxId,
+                allBoxStatusInfo: this.allBoxStatusInfo$.value || {}
+              });
+              this.events.emit(TELE_BOX_MANAGER_EVENT.Removed, [removedBox]);
+            }
             break;
           }
         }
@@ -4797,7 +4899,7 @@ class TeleBoxManager {
       this.setAllBoxStatusInfo({
         ...this.allBoxStatusInfo$.value,
         [box.id]: TELE_BOX_STATE.Normal
-      });
+      }, this.appReadonly);
     }
     box._delegateEvents.on(TELE_BOX_DELEGATE_EVENT.Maximize, () => {
       console.log("[TeleBox] TitleBar Maximize From Box Event", {
@@ -4812,6 +4914,10 @@ class TeleBoxManager {
         }
       });
       this.setAllBoxStatusInfo(allBoxStatusInfo, false);
+      console.log("[TeleBox] Emit BoxToNormal Event", {
+        boxId: box.id,
+        allBoxStatusInfo: this.allBoxStatusInfo$.value || {}
+      });
       this.events.emit(TELE_BOX_MANAGER_EVENT.BoxToNormal, {
         boxId: box.id,
         allBoxStatusInfo: this.allBoxStatusInfo$.value || {}
@@ -4822,6 +4928,10 @@ class TeleBoxManager {
         boxId: box.id
       });
       this.changeBoxToMinimized(box.id);
+      console.log("[TeleBox] Emit BoxToMinimized Event", {
+        boxId: box.id,
+        allBoxStatusInfo: this.allBoxStatusInfo$.value || {}
+      });
       this.events.emit(TELE_BOX_MANAGER_EVENT.BoxToMinimized, {
         boxId: box.id,
         allBoxStatusInfo: this.allBoxStatusInfo$.value || {}
@@ -4833,6 +4943,10 @@ class TeleBoxManager {
       });
       this.changeBoxToClose(box.id);
       this.events.emit(TELE_BOX_MANAGER_EVENT.Removed, [box]);
+      console.log("[TeleBox] Emit BoxToNormal Event", {
+        boxId: box.id,
+        allBoxStatusInfo: this.allBoxStatusInfo$.value || {}
+      });
       this.events.emit(TELE_BOX_MANAGER_EVENT.BoxToNormal, {
         boxId: box.id,
         allBoxStatusInfo: this.allBoxStatusInfo$.value || {}
@@ -4840,26 +4954,31 @@ class TeleBoxManager {
     });
     box._coord$.reaction((_2, __, skipUpdate) => {
       if (!skipUpdate) {
+        console.log("[TeleBox] Emit Move Event", { boxId: box.id });
         this.events.emit(TELE_BOX_MANAGER_EVENT.Move, box);
       }
     });
     box._size$.reaction((_2, __, skipUpdate) => {
       if (!skipUpdate) {
+        console.log("[TeleBox] Emit Resize Event", { boxId: box.id });
         this.events.emit(TELE_BOX_MANAGER_EVENT.Resize, box);
       }
     });
     box._intrinsicCoord$.reaction((_2, __, skipUpdate) => {
       if (!skipUpdate) {
+        console.log("[TeleBox] Emit IntrinsicMove Event", { boxId: box.id });
         this.events.emit(TELE_BOX_MANAGER_EVENT.IntrinsicMove, box);
       }
     });
     box._intrinsicSize$.reaction((_2, __, skipUpdate) => {
       if (!skipUpdate) {
+        console.log("[TeleBox] Emit IntrinsicResize Event", { boxId: box.id });
         this.events.emit(TELE_BOX_MANAGER_EVENT.IntrinsicResize, box);
       }
     });
     box._visualSize$.reaction((_2, __, skipUpdate) => {
       if (!skipUpdate) {
+        console.log("[TeleBox] Emit VisualResize Event", { boxId: box.id });
         this.events.emit(TELE_BOX_MANAGER_EVENT.VisualResize, box);
       }
     });
@@ -4878,6 +4997,7 @@ class TeleBoxManager {
         this.topBox$.setValue(topBox);
       }
       if (!skipUpdate) {
+        console.log("[TeleBox] Emit ZIndex Event", { boxId: box.id, zIndex: box.zIndex });
         this.events.emit(TELE_BOX_MANAGER_EVENT.ZIndex, box);
       }
       const list = this.boxes$.value.filter((item) => this.getMaximizedBoxes().includes(item.id)).sort((a2, b2) => b2.zIndex - a2.zIndex);
@@ -4885,6 +5005,7 @@ class TeleBoxManager {
         this.maxTitleBar.setIndexZ(list[0].zIndex + 1);
       }
     });
+    console.log("[TeleBox] Emit Created Event", { boxId: box.id });
     this.events.emit(TELE_BOX_MANAGER_EVENT.Created, box);
     return box;
   }
@@ -4902,6 +5023,8 @@ class TeleBoxManager {
     );
   }
   changeBoxToClose(boxId) {
+    var _a3;
+    (_a3 = this.getBox(boxId)) == null ? void 0 : _a3._zIndex$.setValue(0, false);
     this.remove(boxId, false);
     const lastLastNotMinimizedBoxsStatus = {
       ...this.lastLastNotMinimizedBoxsStatus$.value
@@ -4957,6 +5080,7 @@ class TeleBoxManager {
         if (this.boxes.length <= 0) {
           this.setAllBoxStatusInfo({}, skipUpdate);
         }
+        console.log("[TeleBox] Emit Removed Event", { deletedBoxes: deletedBoxes.map((box) => box.id) });
         this.events.emit(TELE_BOX_MANAGER_EVENT.Removed, deletedBoxes);
       }
       return deletedBoxes[0];
@@ -4991,6 +5115,7 @@ class TeleBoxManager {
         "[TeleBox] RemoveAll - Emitting Removed Event",
         deletedBoxes
       );
+      console.log("[TeleBox] Emit Removed Event", { deletedBoxes: deletedBoxes.map((box) => box.id) });
       this.events.emit(TELE_BOX_MANAGER_EVENT.Removed, deletedBoxes);
     }
     return deletedBoxes;
@@ -5023,6 +5148,7 @@ class TeleBoxManager {
             targetBox.setFocus(true, skipUpdate);
           }
           if (focusChanged && !skipUpdate) {
+            console.log("[TeleBox] Emit Focused Event", { boxId: targetBox.id });
             this.events.emit(
               TELE_BOX_MANAGER_EVENT.Focused,
               targetBox
@@ -5068,6 +5194,7 @@ class TeleBoxManager {
       if (targetBox.focus) {
         targetBox.setFocus(false, skipUpdate);
         if (!skipUpdate) {
+          console.log("[TeleBox] Emit Blurred Event", { boxId: targetBox.id });
           this.events.emit(TELE_BOX_MANAGER_EVENT.Blurred, targetBox);
         }
       }
@@ -5081,6 +5208,7 @@ class TeleBoxManager {
       if (box.focus) {
         box.setFocus(false, skipUpdate);
         if (!skipUpdate) {
+          console.log("[TeleBox] Emit Blurred Event", { boxId: box.id });
           this.events.emit(TELE_BOX_MANAGER_EVENT.Blurred, box);
         }
       }
@@ -5277,6 +5405,7 @@ class TeleBoxManager {
       }
     }
     if (!skipUpdate) {
+      console.log("[TeleBox] Emit ZIndex Event", { boxId: topFocusBox.id, zIndex: topFocusBox.zIndex });
       this.events.emit(TELE_BOX_MANAGER_EVENT.ZIndex, topFocusBox);
     }
     const list = this.boxes$.value.filter((item) => this.getMaximizedBoxes().includes(item.id)).sort((a2, b2) => b2.zIndex - a2.zIndex);
@@ -7532,8 +7661,8 @@ const setupWrapper = (root) => {
   return { playground, wrapper, sizer, mainViewElement, mainViewWrapper, extendWrapper, mainViewScrollWrapper };
 };
 const checkVersion = () => {
-  const version = getVersionNumber(WhiteVersion);
-  if (version < getVersionNumber(REQUIRE_VERSION)) {
+  const version2 = getVersionNumber(WhiteVersion);
+  if (version2 < getVersionNumber(REQUIRE_VERSION)) {
     throw new WhiteWebSDKInvalidError(REQUIRE_VERSION);
   }
 };
@@ -11793,9 +11922,20 @@ class DynamicDocsViewer {
   }
 }
 const kind = "DocsViewer";
+const version = "0.2.23.wukongBeta.1";
 const NetlessAppDocsViewer = {
   kind,
   setup(context) {
+    console.log("SDK \u7248\u672C\u4FE1\u606F-App App Docs Viewer ", version);
+    const versionElement = document.createElement("div");
+    versionElement.style.position = "absolute";
+    versionElement.style.top = "290px";
+    versionElement.style.left = "0";
+    versionElement.style.color = "red";
+    versionElement.style.fontSize = "12px";
+    versionElement.style.zIndex = "99999";
+    versionElement.innerHTML = `SDK \u7248\u672C\u4FE1\u606F-App App Docs Viewer ${version}`;
+    document.body.appendChild(versionElement);
     const box = context.getBox();
     const scenes = context.getScenes();
     if (!scenes) {
@@ -20356,15 +20496,15 @@ const logFirstTag = "[TeleBox] WindowManager";
 const _WindowManager = class extends InvisiblePlugin {
   constructor(context) {
     super(context);
-    this.version = "1.0.6-wukongBeta.5";
-    this.dependencies = { "dependencies": { "@juggle/resize-observer": "^3.4.0", "@netless/telebox-insider": "github:veytu/telebox-insider", "emittery": "^0.9.2", "lodash": "^4.17.21", "p-retry": "^4.6.2", "uuid": "^7.0.3", "value-enhancer": "0.0.8", "video.js": "^8.23.4" }, "peerDependencies": { "jspdf": "2.5.1", "white-web-sdk": "^2.16.52" }, "devDependencies": { "@hyrious/dts": "^0.2.11", "@netless/app-docs-viewer": "github:veytu/app-docs-viewer", "@netless/app-media-player": "0.1.4", "@rollup/plugin-commonjs": "^20.0.0", "@rollup/plugin-node-resolve": "^13.3.0", "@rollup/plugin-url": "^6.1.0", "@sveltejs/vite-plugin-svelte": "1.0.0-next.40", "@tsconfig/svelte": "^2.0.1", "@types/debug": "^4.1.12", "@types/lodash": "^4.17.20", "@types/lodash-es": "^4.17.12", "@types/uuid": "^8.3.4", "@typescript-eslint/eslint-plugin": "^4.33.0", "@typescript-eslint/parser": "^4.33.0", "@vitest/ui": "^0.14.2", "cypress": "^8.7.0", "dotenv": "^10.0.0", "eslint": "^7.32.0", "eslint-config-prettier": "^8.10.2", "eslint-plugin-svelte3": "^3.4.1", "jsdom": "^19.0.0", "jspdf": "^2.5.2", "less": "^4.4.1", "prettier": "^2.8.8", "prettier-plugin-svelte": "^2.10.1", "rollup-plugin-analyzer": "^4.0.0", "rollup-plugin-styles": "^3.14.1", "side-effect-manager": "0.1.5", "svelte": "^3.59.2", "typescript": "^4.9.5", "vite": "^2.9.18", "vitest": "^0.14.2", "white-web-sdk": "^2.16.53" } };
+    this.version = "1.0.6-wukongBeta.6";
+    this.dependencies = { "dependencies": { "@juggle/resize-observer": "^3.4.0", "@netless/telebox-insider": "0.2.32-wukongBeta.8", "emittery": "^0.9.2", "lodash": "^4.17.21", "p-retry": "^4.6.2", "uuid": "^7.0.3", "value-enhancer": "0.0.8", "video.js": "^8.23.4" }, "peerDependencies": { "jspdf": "2.5.1", "white-web-sdk": "^2.16.52" }, "devDependencies": { "@hyrious/dts": "^0.2.11", "@netless/app-docs-viewer": "0.2.2-3.wukongBeta.1", "@netless/app-media-player": "0.1.4", "@rollup/plugin-commonjs": "^20.0.0", "@rollup/plugin-node-resolve": "^13.3.0", "@rollup/plugin-url": "^6.1.0", "@sveltejs/vite-plugin-svelte": "1.0.0-next.40", "@tsconfig/svelte": "^2.0.1", "@types/debug": "^4.1.12", "@types/lodash": "^4.17.20", "@types/lodash-es": "^4.17.12", "@types/uuid": "^8.3.4", "@typescript-eslint/eslint-plugin": "^4.33.0", "@typescript-eslint/parser": "^4.33.0", "@vitest/ui": "^0.14.2", "cypress": "^8.7.0", "dotenv": "^10.0.0", "eslint": "^7.32.0", "eslint-config-prettier": "^8.10.2", "eslint-plugin-svelte3": "^3.4.1", "jsdom": "^19.0.0", "jspdf": "^2.5.2", "less": "^4.4.1", "prettier": "^2.8.8", "prettier-plugin-svelte": "^2.10.1", "rollup-plugin-analyzer": "^4.0.0", "rollup-plugin-styles": "^3.14.1", "side-effect-manager": "0.1.5", "svelte": "^3.59.2", "typescript": "^4.9.5", "vite": "^2.9.18", "vitest": "^0.14.2", "white-web-sdk": "^2.16.53" } };
     this.emitter = callbacks$1;
     this.viewMode = ViewMode.Broadcaster;
     this.isReplay = isPlayer(this.displayer);
     this._cursorUIDs = [];
     this.containerSizeRatio = _WindowManager.containerSizeRatio;
     _WindowManager.displayer = context.displayer;
-    window.NETLESS_DEPS = { "dependencies": { "@juggle/resize-observer": "^3.4.0", "@netless/telebox-insider": "github:veytu/telebox-insider", "emittery": "^0.9.2", "lodash": "^4.17.21", "p-retry": "^4.6.2", "uuid": "^7.0.3", "value-enhancer": "0.0.8", "video.js": "^8.23.4" }, "peerDependencies": { "jspdf": "2.5.1", "white-web-sdk": "^2.16.52" }, "devDependencies": { "@hyrious/dts": "^0.2.11", "@netless/app-docs-viewer": "github:veytu/app-docs-viewer", "@netless/app-media-player": "0.1.4", "@rollup/plugin-commonjs": "^20.0.0", "@rollup/plugin-node-resolve": "^13.3.0", "@rollup/plugin-url": "^6.1.0", "@sveltejs/vite-plugin-svelte": "1.0.0-next.40", "@tsconfig/svelte": "^2.0.1", "@types/debug": "^4.1.12", "@types/lodash": "^4.17.20", "@types/lodash-es": "^4.17.12", "@types/uuid": "^8.3.4", "@typescript-eslint/eslint-plugin": "^4.33.0", "@typescript-eslint/parser": "^4.33.0", "@vitest/ui": "^0.14.2", "cypress": "^8.7.0", "dotenv": "^10.0.0", "eslint": "^7.32.0", "eslint-config-prettier": "^8.10.2", "eslint-plugin-svelte3": "^3.4.1", "jsdom": "^19.0.0", "jspdf": "^2.5.2", "less": "^4.4.1", "prettier": "^2.8.8", "prettier-plugin-svelte": "^2.10.1", "rollup-plugin-analyzer": "^4.0.0", "rollup-plugin-styles": "^3.14.1", "side-effect-manager": "0.1.5", "svelte": "^3.59.2", "typescript": "^4.9.5", "vite": "^2.9.18", "vitest": "^0.14.2", "white-web-sdk": "^2.16.53" } };
+    window.NETLESS_DEPS = { "dependencies": { "@juggle/resize-observer": "^3.4.0", "@netless/telebox-insider": "0.2.32-wukongBeta.8", "emittery": "^0.9.2", "lodash": "^4.17.21", "p-retry": "^4.6.2", "uuid": "^7.0.3", "value-enhancer": "0.0.8", "video.js": "^8.23.4" }, "peerDependencies": { "jspdf": "2.5.1", "white-web-sdk": "^2.16.52" }, "devDependencies": { "@hyrious/dts": "^0.2.11", "@netless/app-docs-viewer": "0.2.2-3.wukongBeta.1", "@netless/app-media-player": "0.1.4", "@rollup/plugin-commonjs": "^20.0.0", "@rollup/plugin-node-resolve": "^13.3.0", "@rollup/plugin-url": "^6.1.0", "@sveltejs/vite-plugin-svelte": "1.0.0-next.40", "@tsconfig/svelte": "^2.0.1", "@types/debug": "^4.1.12", "@types/lodash": "^4.17.20", "@types/lodash-es": "^4.17.12", "@types/uuid": "^8.3.4", "@typescript-eslint/eslint-plugin": "^4.33.0", "@typescript-eslint/parser": "^4.33.0", "@vitest/ui": "^0.14.2", "cypress": "^8.7.0", "dotenv": "^10.0.0", "eslint": "^7.32.0", "eslint-config-prettier": "^8.10.2", "eslint-plugin-svelte3": "^3.4.1", "jsdom": "^19.0.0", "jspdf": "^2.5.2", "less": "^4.4.1", "prettier": "^2.8.8", "prettier-plugin-svelte": "^2.10.1", "rollup-plugin-analyzer": "^4.0.0", "rollup-plugin-styles": "^3.14.1", "side-effect-manager": "0.1.5", "svelte": "^3.59.2", "typescript": "^4.9.5", "vite": "^2.9.18", "vitest": "^0.14.2", "white-web-sdk": "^2.16.53" } };
   }
   static onCreate(manager) {
     _WindowManager._resolve(manager);
