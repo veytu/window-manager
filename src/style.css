@@ -302,6 +302,6 @@
 }
 
 .teacher-current-pointer {
-    cursor: -webkit-image-set(url('./assets/WhiteBoard/cursor-clicker.png') 2x) 20 20, auto !important;
+    cursor: -webkit-image-set(url('./image/cursor-clicker.png') 2x) 20 20, auto !important;
     pointer-events: auto;
 }
