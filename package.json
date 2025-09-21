@@ -1,6 +1,6 @@
 {
   "name": "@netless/window-manager",
-  "version": "1.0.6-wukongBeta.6",
+  "version": "1.0.6-wukongBeta.8",
   "description": "Multi-window mode for Netless Whiteboard",
   "author": "l1shen <lishen1635@gmail.com> (https://github.com/l1shen)",
   "license": "MIT",
@@ -31,6 +31,17 @@
   "peerDependenciesMeta": {
     "jspdf": {
       "optional": true
+    }
+  },
+  "resolutions": {
+    "@netless/slide": "1.4.39"
+  },
+  "overrides": {
+    "@netless/slide": "1.4.39"
+  },
+  "pnpm": {
+    "overrides": {
+      "@netless/slide": "1.4.39"
     }
   },
   "dependencies": {

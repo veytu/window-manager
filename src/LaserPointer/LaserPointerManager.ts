@@ -1,8 +1,8 @@
-import { throttle } from "lodash";
-import { ApplianceNames, Displayer, Room } from "white-web-sdk";
+import { isNumber, throttle } from "lodash";
+import type { View } from "white-web-sdk";
+import type { WindowManager } from "../index";
+import type { AppProxy } from "../App";
 import { Fields } from "../AttributesDelegate";
-import { WindowManager } from "../index";
-import { AppManager } from "../AppManager";
 
 const logFirstTag = "[LaserPointer]";
 
@@ -20,90 +20,161 @@ export interface LaserPointerPosition {
  * 负责管理单个视图的激光笔功能，包括老师端的位置发送和学生端的位置显示
  */
 export class LaserPointerManager {
-    private _laserPointerIcon?: HTMLElement;                    // 激光笔图标DOM元素
-    private _teacherMoveThrottle?: (position: LaserPointerPosition) => void; // 老师端位置发送节流函数
-    private _lastTeacherPosition?: LaserPointerPosition;        // 上次老师端位置，用于位置变化检测
-    private _currentPointActive = false;                        // 当前激光笔是否激活
     private _boundHandleTeacherMouseMove?: (event: MouseEvent) => void;   // 绑定的鼠标移动事件处理器
-    private _boundHandleTeacherMouseEnter?: (event: MouseEvent) => void;  // 绑定的鼠标进入事件处理器
-    private _boundHandleTeacherMouseLeave?: (event: MouseEvent) => void;  // 绑定的鼠标离开事件处理器
-    private _room?: Room;                    // 白板房间实例，用于发送激光笔位置事件
-    private _displayer?: Displayer;          // 白板显示器实例，用于接收激光笔位置事件
-    private _appManager?: AppManager;               // 应用管理器，用于获取应用信息和用户信息
-    private _currentUserId?: string;         // 当前用户ID，用于判断是否为老师
-    private _instanceId: string;             // 激光笔实例唯一标识，区分主视图和应用视图
     private _manager: WindowManager;         // 窗口管理器，用于获取主视图和应用视图
-    private _view?: any;                     // 缓存的视图对象，避免频繁获取，提高性能
+    private _listenerViewMap: Record<string, AppProxy | null | undefined> = {}; // 监听的视图列表
+    private _pointMap: Record<string, HTMLElement | null> = {}; // 记录的坐标点
+    private _teacherMoveThrottle?: (position: LaserPointerPosition, viewId: string) => void; // 老师端位置发送节流函数
+    private _mainViewId = 'mainViewId';// 主视图ID
+    private _currentPointActive = false; // 当前激光笔是否激活
 
     /**
-     * 激光笔管理器构造函数
-     * 初始化激光笔管理器的所有必要组件和事件监听器
-     * @param manager 窗口管理器实例，用于获取主视图和应用视图
-     * @param room 白板房间实例，用于发送激光笔位置事件
-     * @param displayer 白板显示器实例，用于接收激光笔位置事件
-     * @param appManager 应用管理器，用于获取应用信息和用户信息
-     * @param currentUserId 当前用户ID，用于判断是否为老师
-     * @param viewId 视图ID，用于标识主视图('main')或应用视图('app_xxx')
-     */
-    constructor(manager: WindowManager,room: Room,displayer: Displayer,appManager: any,currentUserId?: string,viewId?: string) {
+  * 激光笔管理器构造函数
+  * 初始化激光笔管理器的所有必要组件和事件监听器
+  * @param manager 窗口管理器实例，用于获取主视图和应用视图
+  * @param room 白板房间实例，用于发送激光笔位置事件
+  * @param displayer 白板显示器实例，用于接收激光笔位置事件
+  * @param appManager 应用管理器，用于获取应用信息和用户信息
+  * @param currentUserId 当前用户ID，用于判断是否为老师
+  * @param viewId 视图ID，用于标识主视图('main')或应用视图('app_xxx')
+  */
+    constructor(manager: WindowManager) {
         this._manager = manager;
-        this._room = room;
-        this._displayer = displayer;
-        this._appManager = appManager;
-        this._currentUserId = currentUserId;
-        this._instanceId = viewId || `LP_${Math.random().toString(36).substr(2, 6)}`;
-        console.log(`${logFirstTag} [${this._instanceId}] 激光笔管理器构造函数`, manager, room, displayer, appManager, currentUserId, viewId);
-
-        this._initView();
-        this._setupMagixListener();
+        this.addWindowManagerListeners();
+        this.addEventListeners();
     }
 
     /**
-     * 获取当前显示视图的DOM容器元素
-     * 根据实例ID类型返回对应的DOM容器，用于激光笔图标的显示和鼠标事件的监听
-     * @returns 主视图返回mainView.divElement.children[0]，应用视图返回view.divElement
+     * 添加窗口管理器事件监听
      */
-    private _getShowViewDivElement(): HTMLElement | null {
-        if (!this._view) {
-            console.warn(`${logFirstTag} [${this._instanceId}] 视图对象未初始化`);
-            return null;
-        }
-        
-        if (this._instanceId === 'main') {
-            // 主视图使用mainView.divElement的第一个子元素作为容器
-            const mainViewContainer = this._view.divElement?.children?.[0] as HTMLElement;
-            console.log(`${logFirstTag} [${this._instanceId}] 主视图容器检查: 容器=${mainViewContainer}`);
-            return mainViewContainer || null;
-        } else {
-            // 应用视图直接使用view.divElement作为容器
-            const appContainer = this._view.divElement?.children?.[0] || null;
-            console.log(`${logFirstTag} [${this._instanceId}] 应用视图容器检查: 容器=${appContainer}`);
-            return appContainer;
-        }
+    private addWindowManagerListeners() {
+        // 监听应用视图挂载事件
+        this._manager.emitter.on("onAppViewMounted", (payload) => {
+            console.log(`${logFirstTag} onAppViewMounted event received for app:`, payload);
+            // 为应用视图创建激光笔管理器，使用 boxview
+            const appBox = this._manager?.appManager?.appProxies?.get(payload.appId);
+            console.log(`${logFirstTag} App box view for ${payload.appId}:`, !!appBox);
+            if (appBox) {
+                console.log(`${logFirstTag} Creating laser pointer manager for app:`, appBox);
+                this._listenerViewMap[payload.appId] = appBox;
+            } else {
+                console.warn(`${logFirstTag} Failed to get app box view for:`, payload.appId);
+            }
+        });
+
+        this._manager.emitter.on("onBoxClose", (payload) => {
+            console.log(`${logFirstTag} onAppViewUnmounted event received for app:`, payload);
+            const appBox = this._manager?.appManager?.appProxies?.get(payload.appId);
+            if (appBox) {
+                this._listenerViewMap[payload.appId] = null;
+                this._pointMap[payload.appId] = null;
+            }
+        });
+        // 监听老师激光笔移动事件
+        this._manager.displayer?.addMagixEventListener('teacherLaserPointerMove', (event: any) => {
+            console.info(`${logFirstTag} 收到老师激光笔移动事件:`, event);
+            const teacherInfo = this._manager.appManager?.store.getTeacherInfo();
+            if (event.payload.sendUserId === teacherInfo?.uid) {
+                console.info(`${logFirstTag} 跳过自己的事件`);
+                return;
+            }
+            let view = this._manager.appManager?.appProxies?.get(event.payload.viewId)?.view;
+            if (view == null) {
+                if (this._manager.mainView != null && this._mainViewId === event.payload.viewId) {
+                    view = this._manager.mainView;
+                }
+            }
+            let point = null
+            if (view == null) {
+                console.info(`${logFirstTag} 找不到视图ID:`, event.payload.viewId);
+            } else {
+                if (this._mainViewId !== event.payload.viewId) {
+                    view.divElement?.classList.add('teacher-current-pointer-enevnt-auto');
+                }
+                //接收到坐标信息进行转换
+                point = view.convertToPointOnScreen(event.payload.position.x, event.payload.position.y);
+                if (point == null) {
+                    console.info(`${logFirstTag} 转换失败:`, event.payload.position);
+                } else {
+                    console.info(`${logFirstTag} 转换成功:`, event.payload.viewId, point);
+                }
+            }
+            this._showPointIcon(event.payload.viewId, view, point);
+        });
     }
 
     /**
-     * 初始化缓存的视图对象
-     * 根据instanceId确定是主视图还是应用视图，并缓存对应的view对象
-     * 缓存视图对象可以避免频繁查找，提高性能
+     * 将事件挂载的document上
      */
-    private _initView(): void {
-        const isMainView = this._instanceId === 'main';
-        const isAppView = this._instanceId.startsWith('app_');
-        
-        if (isMainView) {
-            // 主视图直接使用mainView
-            this._view = this._manager.mainView;
-            console.log(`${logFirstTag} [${this._instanceId}] 主视图初始化: mainView存在=${!!this._manager.mainView}, divElement存在=${!!this._manager.mainView?.divElement}`);
-        } else if (isAppView) {
-            // 应用视图从appProxies中获取对应的view
-            const appId = this._instanceId.replace('app_', '');
-            const appProxy = this._appManager?.appProxies?.get(appId);
-            this._view = appProxy?.view;
-            console.log(`${logFirstTag} [${this._instanceId}] 应用视图初始化: appId=${appId}, appProxy存在=${!!appProxy}, view存在=${!!appProxy?.view}, divElement存在=${!!appProxy?.view?.divElement}`);
+    private addEventListeners() {
+        const teacherInfo = this._manager.appManager?.store.getTeacherInfo();
+        if (this._manager.room.uid === teacherInfo?.uid) {
+            if (!this._teacherMoveThrottle) {
+                this._teacherMoveThrottle = throttle((position: LaserPointerPosition, viewId: string) => {
+                    console.log(`${logFirstTag} 发送老师位置: 位置=${JSON.stringify(position)}`);
+                    const teacherInfo = this._manager.appManager?.store.getTeacherInfo();
+                    this._manager.room?.dispatchMagixEvent('teacherLaserPointerMove', { position, viewId: viewId, sendUserId: teacherInfo?.uid, timestamp: Date.now() });
+                }, 150);
+            }
+            //判断是否需要初始化三个监听，没有初始化的话初始化，最后在添加
+            if (!this._boundHandleTeacherMouseMove) {
+                this._boundHandleTeacherMouseMove = (event: MouseEvent) => {
+                    if (!this._currentPointActive) {
+                        return;
+                    }
+                    // 对 this._listenerViewMap 的 value 进行排序，zIndex 最大的放在前面
+                    const sortedViewMap = Object.entries(this._listenerViewMap)
+                        .sort((a, b) => {
+                            const zIndexA = a[1]?.box?.zIndex ?? 0;
+                            const zIndexB = b[1]?.box?.zIndex ?? 0;
+                            return zIndexB - zIndexA;
+                        })
+                        .map(item => ({ key: item[0], value: item[1] }));
+                    let position: { x: number; y: number } | null = null;
+                    let viewId: string | null = null;
+                    let currentView: any = null;
+                    for (const item of sortedViewMap) {
+                        const id = item.key;
+                        const view = item.value;
+                        if (view?.view) {
+                            const offset = this._getViewOffset(view?.view, event);
+                            if (offset) {
+                                viewId = id;
+                                position = offset;
+                                currentView = view.view;
+                                break;
+                            }
+                        }
+                    }
+                    if (!position) {
+                        const offset = this._getViewOffset(this._manager.mainView, event);
+                        if (offset) {
+                            viewId = this._mainViewId;
+                            position = offset;
+                            currentView = this._manager.mainView;
+                        }
+                    }
+                    if (position && viewId) {
+                        const point = currentView.convertToPointInWorld({ x: position.x, y: position.y });
+                        console.log(`${logFirstTag} [${viewId}] 鼠标移动处理,当前窗口偏移：${JSON.stringify(position)} 转换至view偏移:`, JSON.stringify(point));
+                        this._teacherMoveThrottle?.(point, viewId);
+                    } else {
+                        console.log(`${logFirstTag} 找不到视图ID:`, viewId);
+                        this._teacherMoveThrottle?.({ x: -1, y: -1 }, '');
+
+                    }
+                }
+            }
+            document.addEventListener('mousemove', this._boundHandleTeacherMouseMove);
         }
-        
-        console.log(`${logFirstTag} [${this._instanceId}] 初始化视图完成: 是否主视图=${isMainView}, 是否应用视图=${isAppView}, 有视图=${!!this._view}, 视图类型=${isMainView ? '主视图' : '应用视图'}`);
+    }
+    /**
+     * 移除事件监听
+     */
+    private removeEventListeners() {
+        if (this._boundHandleTeacherMouseMove) {
+            document.removeEventListener('mousemove', this._boundHandleTeacherMouseMove);
+        }
     }
 
     /**
@@ -112,398 +183,238 @@ export class LaserPointerManager {
      * @param active 是否激活激光笔功能，true为激活，false为停用
      */
     public setLaserPointer(active: boolean): void {
-        console.log(`${logFirstTag} [${this._instanceId}] 设置激光笔状态:`, active);
+        console.log(`${logFirstTag} 设置激光笔状态:`, active);
         this._currentPointActive = active;
-        
-        if (!active) {
-            // 停用激光笔时，移除鼠标监听器并重置位置
-            const showView = this._getShowViewDivElement();
-            if (showView && this._boundHandleTeacherMouseMove) {
-                console.log(`${logFirstTag} [${this._instanceId}] 移除鼠标移动监听器`);
-                showView.removeEventListener('mousemove', this._boundHandleTeacherMouseMove);
-            } else {
-                console.log(`${logFirstTag} [${this._instanceId}] 无法移除监听器 - 容器:`, !!showView, '绑定处理器:', !!this._boundHandleTeacherMouseMove);
-            }
-            
-            // // 移除teacher-current-pointer类名
-            // if (showView) {
-            //     this.setTeacherMySelfPointerShow(false);
-            // }
-            
-            this._lastTeacherPosition = undefined;
-        } else {
-            // 激活激光笔时，只有当前用户是老师才设置监听器
-            const teacherInfo = this._manager.appManager?.store.getTeacherInfo();
-            console.log(`${logFirstTag} [${this._instanceId}] 激光笔状态变更`, JSON.stringify(teacherInfo), this._currentUserId);
-            if (teacherInfo?.uid === this._currentUserId) {
-                console.log(`${logFirstTag} [${this._instanceId}] 当前用户是老师，开始设置监听器`);
-                this._setupTeacherMoveListener();
-                
-                // 如果是非主白板，添加teacher-current-pointer类名
-                const showView = this._getShowViewDivElement();
-                if (this._instanceId !== 'main') {
-                    if (showView) {
-                        showView.parentElement?.classList.add('teacher-current-pointer-enevnt-auto');
-                        console.log(`${logFirstTag} [${this._instanceId}] 老师端课件已添加pint事件`,showView);
-                    }
-                }else{
-                    showView?.classList?.remove('teacher-current-pointer-enevnt-auto');
-                }
-            } else {
-                console.log(`${logFirstTag} [${this._instanceId}] 当前用户不是老师，跳过监听器设置`);
-            }
-        }
-        
-        // 更新激光笔图标显示状态
-        this.updateLaserPointerIconVisibility();
     }
 
-    /**
-     * 设置老师端鼠标移动监听器
-     * 创建节流函数和绑定事件处理器，并添加鼠标事件监听
-     * 包括鼠标移动、进入和离开事件的统一处理
-     */
-    private _setupTeacherMoveListener() {
-        if (!this._teacherMoveThrottle) {
-            this._teacherMoveThrottle = throttle((position: LaserPointerPosition) => {
-                console.log(`${logFirstTag} [${this._instanceId}] 节流函数触发，发送位置:`, JSON.stringify(position));
-                this._sendTeacherPosition(position);
-            }, 150);
-        }
-        const showView = this._getShowViewDivElement();
-        console.log(`${logFirstTag} [${this._instanceId}] 开始设置老师端激光笔监听器，showView:`, showView != null,"激光笔状态:",this._currentPointActive);
-        if (showView) {
-
-            if (!this._boundHandleTeacherMouseMove) {
-                this._boundHandleTeacherMouseMove = this._handleTeacherMouseEvent.bind(this);
-            }
-            if (!this._boundHandleTeacherMouseEnter) {
-                this._boundHandleTeacherMouseEnter = this._handleTeacherMouseEvent.bind(this);
-            }
-            if (!this._boundHandleTeacherMouseLeave) {
-                this._boundHandleTeacherMouseLeave = this._handleTeacherMouseEvent.bind(this);
-            }
-
-            // 先移除可能存在的监听器，避免重复添加
-            if (this._boundHandleTeacherMouseMove) {
-                showView.removeEventListener('mousemove', this._boundHandleTeacherMouseMove);
-            }
-            if (this._boundHandleTeacherMouseEnter) {
-                showView.removeEventListener('mouseenter', this._boundHandleTeacherMouseEnter);
-            }
-            if (this._boundHandleTeacherMouseLeave) {
-                showView.removeEventListener('mouseleave', this._boundHandleTeacherMouseLeave);
-            }
-            
-            showView.addEventListener('mousemove', this._boundHandleTeacherMouseMove);
-            showView.addEventListener('mouseenter', this._boundHandleTeacherMouseEnter);
-            showView.addEventListener('mouseleave', this._boundHandleTeacherMouseLeave);
-            
-            console.log(`${logFirstTag} [${this._instanceId}] 事件监听器添加完成: mousemove=${!!this._boundHandleTeacherMouseMove}, mouseenter=${!!this._boundHandleTeacherMouseEnter}, mouseleave=${!!this._boundHandleTeacherMouseLeave}`);
-            console.log(`${logFirstTag} [${this._instanceId}] 容器信息: tagName=${showView.tagName}, className=${showView.className}, id=${showView.id}, style.pointerEvents=${showView.style.pointerEvents}`);
-            console.log(`${logFirstTag} [${this._instanceId}] 容器尺寸: width=${showView.offsetWidth}, height=${showView.offsetHeight}, visible=${showView.offsetWidth > 0 && showView.offsetHeight > 0}`);
-            console.log(`${logFirstTag} [${this._instanceId}] 容器位置: left=${showView.offsetLeft}, top=${showView.offsetTop}, rect=${JSON.stringify(showView.getBoundingClientRect())}`);
-            
-            // 检查容器的父元素
-            const parent = showView.parentElement;
-            if (parent) {
-                console.log(`${logFirstTag} [${this._instanceId}] 父元素信息: tagName=${parent.tagName}, className=${parent.className}, style.pointerEvents=${parent.style.pointerEvents}`);
-            }
-        }
-    }
-
-    /**
-     * 统一处理老师端鼠标事件（移动、进入、离开）
-     * 根据事件类型和鼠标位置进行相应的处理
-     * 包括位置计算、边界检查、节流发送等功能
-     */
-    private _handleTeacherMouseEvent(event: MouseEvent) {
-        const eventType = event.type;
-        console.log(`${logFirstTag} [${this._instanceId}] 鼠标${eventType}事件处理, 激光笔激活状态:`, this._currentPointActive);
-        
-        if (!this._currentPointActive) {
-            console.log(`${logFirstTag} [${this._instanceId}] 激光笔未激活，提前返回`);
-            return;
-        }
-        //获取老师教具
-        const teacherTool = this._room?.state.memberState.currentApplianceName
-        if ((ApplianceNames.laserPointer === teacherTool)) {
-            if (this._lastTeacherPosition == null || this._lastTeacherPosition.x !== -1 && this._lastTeacherPosition.y !== -1) {
-                this._lastTeacherPosition = { x: -1, y: -1 };
-                this._teacherMoveThrottle?.({ x: -1, y: -1 });
-            }
-            console.log(`${logFirstTag} [${this._instanceId}] 老师教具为激光笔，提前返回并通知学生端隐藏`);
-            return;
-        }
-        
-        // 处理鼠标离开事件
-        if (eventType === 'mouseleave') {
-            console.log(`${logFirstTag} [${this._instanceId}] 鼠标离开容器`);
-            this._lastTeacherPosition = { x: -1, y: -1 };
-            this._teacherMoveThrottle?.({ x: -1, y: -1 });
-            return;
-        }
-        
-        // 处理鼠标进入和移动事件
-        if (eventType === 'mouseenter') {
-            console.log(`${logFirstTag} [${this._instanceId}] 鼠标进入容器`);
-        }
-        
-        const showView = this._getShowViewDivElement();
-        const containerRect = showView?.getBoundingClientRect();
-        if (containerRect) {
-            const isInsideContainer = event.clientX >= containerRect.left && event.clientX <= containerRect.right && event.clientY >= containerRect.top && event.clientY <= containerRect.bottom;
-            const wasOutside = this._lastTeacherPosition && (this._lastTeacherPosition.x === -1 && this._lastTeacherPosition.y === -1);
-            
-            if (!isInsideContainer) {
-                console.log(`${logFirstTag} [${this._instanceId}] 鼠标在容器外，隐藏激光笔`);
-                this._teacherMoveThrottle?.({ x: -1, y: -1 });
-                return;
-            }
-            
-            const position = this._view.convertToPointInWorld({ x: event.offsetX, y: event.offsetY });
-            console.log(`${logFirstTag} [${this._instanceId}] 鼠标移动处理, 偏移量:`, event.offsetX, event.offsetY, '转换后位置:', JSON.stringify(position));
-            
-            if (wasOutside || !this._lastTeacherPosition || Math.abs(position.x - this._lastTeacherPosition.x) > 0.01 || Math.abs(position.y - this._lastTeacherPosition.y) > 0.01) {
-                this._lastTeacherPosition = position;
-                this._teacherMoveThrottle?.(position);
-            }
-        }
-    }
-
-    // 发送老师位置（老师端）
-    private _sendTeacherPosition(position: LaserPointerPosition) {
-        if (this._room) {
-            // 确定当前视图的类型和ID
-            const isMainView = this._instanceId === 'main';
-            const isAppView = this._instanceId.startsWith('app_');
-            
-            let instanceId = undefined;
-            
-            if (isMainView) {
-                instanceId = 'main';
-            } else if (isAppView) {
-                instanceId = this._instanceId; // boxId 就是 viewId
-            } else {
-                // 对于其他情况，使用实例ID作为 boxId
-                instanceId = this._instanceId;
-            }
-            
-            console.log(`${logFirstTag} [${this._instanceId}] 发送老师位置: 位置=${JSON.stringify(position)}, 视图ID=${instanceId}`);
-            this._room.dispatchMagixEvent('teacherLaserPointerMove', { position, instanceId, timestamp: Date.now() });
-        }
-    }
-
-    // 检查并更新激光笔图标显示状态
-    public updateLaserPointerIconVisibility() {
-        const laserPointerData = this._appManager?.attributes?.[Fields.LaserPointerActive];
-        // 如果激光笔未激活或当前用户是激活用户，隐藏图标
-        const teacherInfo = this._manager.appManager?.store.getTeacherInfo();
-        if (!laserPointerData?.active || teacherInfo?.uid === this._currentUserId) {
-            this._hideLaserPointerIcon();
-        } else {
-            // 如果激光笔激活且当前用户不是激活用户，确保图标已创建
-            this._setupLaserPointerIcon();
-        }
-    }
-
-    // 设置激光笔图标（学生端）- 每个视图使用自己的图标
-    private _setupLaserPointerIcon() {
-        // 检查是否已经存在激光笔图标
-        if (this._laserPointerIcon) {
-            return; // 已经存在，直接返回
-        }
-        
-        // 检查 DOM 中是否已经存在 teacher-laser-pointer 元素
-        const showView = this._getShowViewDivElement();
-        const existingIcon = showView?.querySelector('.teacher-laser-pointer');
-        if (existingIcon) {
-            this._laserPointerIcon = existingIcon as HTMLElement;
-            return; // 使用已存在的元素
-        }
-        
-        // 创建本地激光笔图标
-        console.log(`${logFirstTag} [${this._instanceId}] 为视图创建本地激光笔图标`);
-        this._laserPointerIcon = document.createElement('div');
-        this._laserPointerIcon.className = 'teacher-laser-pointer';
-        this._laserPointerIcon.style.display = 'none';
-        
-        // 添加到当前视图容器
-        if (showView) {
-            showView.appendChild(this._laserPointerIcon);
-            console.log(`${logFirstTag} [${this._instanceId}] 激光笔图标已添加到视图容器`);
-        }
-    }
-
-    // 隐藏激光笔图标（学生端）- 处理本地图标
-    private _hideLaserPointerIcon() {
-        if (this._laserPointerIcon) {
-            this._laserPointerIcon.style.display = 'none';
-            console.log(`${logFirstTag} [${this._instanceId}] 隐藏本地激光笔图标`);
-        }
-    }
-
-    // 设置激光笔 Magix 事件监听器（学生端）
-    private _setupMagixListener() {
-        console.log(`${logFirstTag} [${this._instanceId}] 设置激光笔移动事件监听器`);
-        console.log(`${logFirstTag} [${this._instanceId}] 显示器可用:`, !!this._displayer);
-        
-        // 监听老师激光笔移动事件
-        this._displayer?.addMagixEventListener('teacherLaserPointerMove', (event: any) => {
-            console.log(`${logFirstTag} [${this._instanceId}] 收到原始事件:`, event);
-            console.log(`${logFirstTag} [${this._instanceId}] 事件payload:`, event.payload);
-
-            // 跳过自己发送的事件
-            const teacherInfo = this._manager.appManager?.store.getTeacherInfo();
-            console.log(`${logFirstTag} [${this._instanceId}] 老师信息: ${JSON.stringify(teacherInfo)}, 当前用户ID: ${this._currentUserId}`);
-            
-            if (teacherInfo?.uid === this._currentUserId) {
-                console.log(`${logFirstTag} [${this._instanceId}] 跳过自己的事件`);
-                return;
-            }
-            
-            const { position, instanceId } = event.payload;
-            console.log(`${logFirstTag} [${this._instanceId}] 收到老师激光笔移动: 位置=${JSON.stringify(position)}, 实例ID=${instanceId}, 当前实例ID=${this._instanceId}`);
-            
-            // 检查是否是当前实例的事件
-            if (instanceId !== this._instanceId) {
-                console.log(`${logFirstTag} [${this._instanceId}] 不是当前实例的事件，跳过: 期望=${this._instanceId}, 实际=${instanceId}`);
-                return;
-            }
-            
-            // 显示激光笔图标
-            this._showLaserPointerIcon(position, instanceId);
-        });
-    }
-
-    // 显示激光笔图标（学生端）
-    private _showLaserPointerIcon(position: LaserPointerPosition, instanceId?: string) {
-        // 检查激光笔是否激活且不是当前用户
-        const laserPointerData = this._appManager?.attributes?.[Fields.LaserPointerActive];
-        const teacherInfo = this._manager.appManager?.store.getTeacherInfo();
-        if (!laserPointerData?.active || teacherInfo?.uid === this._currentUserId) {
-            // 隐藏本地图标
-            this._hideLaserPointerIcon();
-            return;
-        }
-        
-        // 检查是否是特殊位置（鼠标在屏幕外）
-        if (position.x === -1 && position.y === -1) {
-            console.log(`${logFirstTag} [${this._instanceId}] 收到隐藏信号，隐藏激光笔`);
-            this._hideLaserPointerIcon();
-            return;
-        }
-        
-        // 检查实例ID是否匹配
-        if (instanceId !== this._instanceId) {
-            // 不是当前实例的激光笔，隐藏图标
-            console.log(`${logFirstTag} [${this._instanceId}] 不是当前实例的激光笔，隐藏图标. 期望: ${this._instanceId}, 实际: ${instanceId}`);
-            this._hideLaserPointerIcon();
-            return;
-        }
-        
-        console.log(`${logFirstTag} [${this._instanceId}] 为当前视图显示激光笔`);
-        
-        // 使用本地图标显示激光笔
-        this._setupLaserPointerIcon();
-        const showView = this._getShowViewDivElement();
-        if (this._laserPointerIcon && showView && this._view) {
-            // 统一使用缓存的视图对象进行坐标转换
-
-            const point = this._view.convertToPointOnScreen(position.x, position.y);
-            console.log(`${logFirstTag} [${this._instanceId}] 开始设置位置转换位置: ${JSON.stringify(position)}, 目标位置: ${JSON.stringify(point)}`);
-
-            if (point && typeof point.x === 'number' && typeof point.y === 'number') {
-                this._laserPointerIcon.style.left = `${point.x}px`;
-                this._laserPointerIcon.style.top = `${point.y}px`;
-                this._laserPointerIcon.style.display = 'block';
-                const isMainView = this._instanceId === 'main';
-                console.log(`${logFirstTag} [${this._instanceId}] 显示本地激光笔位置: ${JSON.stringify(point)} (视图类型: ${isMainView ? '主视图' : '应用视图'})`);
-            } else {
-                console.warn(`${logFirstTag} [${this._instanceId}] 坐标转换返回无效点: ${JSON.stringify(point)}, 原始位置: ${JSON.stringify(position)}`);
-            }
-        } else if (!this._view) {
-            console.warn(`${logFirstTag} [${this._instanceId}] 没有可用的视图进行坐标转换`);
-        }
-    }
 
     // 销毁激光笔管理器
     public destroy() {
-        // 清理激光笔相关资源
-        this._hideLaserPointerIcon();
-        
-        // 清理 box 事件监听器（如果存在相关方法）
-        const isAppView = this._instanceId.startsWith('app_');
-        if (isAppView) {
-            const appId = this._instanceId.replace('app_', '');
-            const appProxy = this._appManager?.appProxies?.get(appId);
-            if (appProxy?.box?.element) {
-                // 移除可能存在的teacher-laser-pointer类名
-                const boxElement = appProxy.box.element as HTMLElement;
-                boxElement.classList.remove('teacher-laser-pointer');
+        this.removeEventListeners();
+        this._pointMap = {};
+        this._listenerViewMap = {};
+        this._teacherMoveThrottle = undefined;
+        this._boundHandleTeacherMouseMove = undefined;
+        this._currentPointActive = false;
+        this._mainViewId = 'mainViewId';
+        this._manager.displayer?.removeMagixEventListener('teacherLaserPointerMove');
+        this._manager.appManager?.refresher?.remove(Fields.LaserPointerActive);
+        this._manager.appManager?.refresher?.remove(Fields.Scale);
+    }
+
+
+
+
+    /**
+     * 获取视图的偏移量
+     * @param view 视图
+     * @param event 鼠标事件
+     * @returns 偏移量
+     */
+    private _getViewOffset(view: View, event: MouseEvent): LaserPointerPosition | null {
+        const divElement = this._getViewDivElement(view);
+        if (divElement && divElement instanceof HTMLDivElement) {
+            const targetPoint = PointerTranslation.getTargetPoint(event, document.documentElement as HTMLDivElement, divElement);
+            const rect = divElement.getBoundingClientRect()
+            if (targetPoint && targetPoint[0] >= 0 && targetPoint[1] >= 0 && targetPoint[0] <= rect.width && targetPoint[1] <= rect.height) {
+                return { x: targetPoint[0], y: targetPoint[1] };
             }
         }
-        
-        // 移除鼠标移动监听器
-        const showView = this._getShowViewDivElement();
-        if (showView && this._boundHandleTeacherMouseMove) {
-            showView.removeEventListener('mousemove', this._boundHandleTeacherMouseMove);
-        }
-        if (showView && this._boundHandleTeacherMouseEnter) {
-            showView.removeEventListener('mouseenter', this._boundHandleTeacherMouseEnter);
-        }
-        if (showView && this._boundHandleTeacherMouseLeave) {
-            showView.removeEventListener('mouseleave', this._boundHandleTeacherMouseLeave);
-        }
-        
-        // 移除所有激光笔图标（防止重复元素）
-        const allLaserPointers = showView?.querySelectorAll('.teacher-laser-pointer');
-        if (allLaserPointers) {
-            allLaserPointers.forEach(icon => {
-                if (icon.parentNode) {
-                    icon.parentNode.removeChild(icon);
-                }
-            });
-        }
-        
-        // 清理引用
-        this._laserPointerIcon = undefined;
-        this._teacherMoveThrottle = undefined;
-        this._lastTeacherPosition = undefined;
-        this._currentPointActive = false;
-        this._boundHandleTeacherMouseMove = undefined;
-        this._boundHandleTeacherMouseEnter = undefined;
-        this._boundHandleTeacherMouseLeave = undefined;
+        return null;
     }
 
     /**
-     * 测试应用视图的鼠标事件（调试用）
+     * 获取视图的div元素
+     * @param view 视图
+     * @returns div元素
      */
-    public testAppViewMouseEvents(): void {
-        const showView = this._getShowViewDivElement();
-        if (!showView) {
-            console.warn(`${logFirstTag} [${this._instanceId}] 无法测试：showView为空`);
-            return;
+    private _getViewDivElement(view: View): HTMLElement | null {
+        const children = view.divElement?.children;
+        if (children && children.length > 0) {
+            return children[0] as HTMLElement;
         }
-        
-        console.log(`${logFirstTag} [${this._instanceId}] 开始测试应用视图鼠标事件`);
-        console.log(`${logFirstTag} [${this._instanceId}] 容器信息: tagName=${showView.tagName}, className=${showView.className}, id=${showView.id}`);
-        console.log(`${logFirstTag} [${this._instanceId}] 容器尺寸: width=${showView.offsetWidth}, height=${showView.offsetHeight}`);
-        console.log(`${logFirstTag} [${this._instanceId}] 容器位置: left=${showView.offsetLeft}, top=${showView.offsetTop}`);
-        console.log(`${logFirstTag} [${this._instanceId}] 容器样式: pointerEvents=${showView.style.pointerEvents}, position=${showView.style.position}`);
-        
-        // 模拟鼠标事件
-        const testEvent = new MouseEvent('mousemove', {
-            clientX: 100,
-            clientY: 100
-        });
-        
-        // 手动设置offsetX和offsetY
-        Object.defineProperty(testEvent, 'offsetX', { value: 50 });
-        Object.defineProperty(testEvent, 'offsetY', { value: 50 });
-        
-        console.log(`${logFirstTag} [${this._instanceId}] 模拟鼠标移动事件`);
-        showView.dispatchEvent(testEvent);
+        return null;
     }
 
+    /**
+     * 显示坐标点
+     * @param view 视图
+     * @param point 坐标点
+     */
+    private _showPointIcon(viewId: string, view: View | undefined, point: Point | null) {
+        let icon = this._pointMap[viewId]
+        if (!icon) {
+            icon = document.createElement('div');
+            icon.className = 'teacher-laser-pointer';
+            icon.style.display = 'none';
+            // 添加到当前视图容器
+            if (view) {
+                this._getViewDivElement(view)?.appendChild(icon);
+                console.log(`${logFirstTag} [${viewId}] 激光笔图标已添加到视图容器`);
+                this._pointMap[viewId] = icon;
+            }
+        }
+
+        Object.entries(this._pointMap).forEach(([key, value]) => {
+            if (key !== viewId && value) {
+                console.log(`${logFirstTag} [${key}] 激光笔图标已隐藏`);
+                value.style.display = 'none';
+            }
+        });
+        if (point) {
+            console.log(`${logFirstTag} [${viewId}] 激光笔图标已显示`);
+            icon.style.left = `${point.x}px`;
+            icon.style.top = `${point.y}px`;
+            icon.style.display = 'block';
+        } else {
+            icon.style.display = 'none';
+        }
+    }
+
+}
+
+
+/**
+ * 坐标点接口
+ */
+interface Point {
+    x: number;
+    y: number;
+}
+
+/**
+ * 指针转换工具类
+ * 用于处理鼠标事件坐标与DOM元素坐标之间的转换
+ */
+class PointerTranslation {
+    /**
+     * 获取鼠标事件在目标元素中的相对坐标
+     * @param event 鼠标事件
+     * @param listener 监听器元素
+     * @param target 目标元素
+     * @returns 相对坐标 [x, y] 或 null
+     */
+    public static getTargetPoint(
+        event: MouseEvent,
+        listener: HTMLDivElement,
+        target: HTMLDivElement
+    ): [number, number] | null {
+        const targetOffset = this.getContainerOffset(target, { x: 0, y: 0 });
+        const listenerOffset = this.getContainerOffset(listener, { x: 0, y: 0 });
+
+        const offset = {
+            x: targetOffset.x - listenerOffset.x,
+            y: targetOffset.y - listenerOffset.y,
+        };
+
+        const point = this.getPosition(event);
+        if (point && isNumber(point.x) && isNumber(point.y)) {
+            return [
+                point.x - offset.x,
+                point.y - offset.y, // 修复了原来的错误：应该是 offset.y 而不是 offset.x
+            ];
+        }
+
+        return null;
+    }
+
+    /**
+     * 获取鼠标事件的页面坐标
+     * @param event 鼠标事件
+     * @returns 页面坐标点
+     */
+    private static getPosition(event: MouseEvent): Point {
+        return {
+            x: event.pageX,
+            y: event.pageY,
+        };
+    }
+
+    /**
+     * 获取元素的transform变换值
+     * @param element DOM元素
+     * @returns [translateX, translateY]
+     */
+    private static getTranslate(element: HTMLElement): [number, number] {
+        const transformMatrix =
+            (element.style as any)["WebkitTransform"] ||
+            getComputedStyle(element, "").getPropertyValue("-webkit-transform") ||
+            (element.style as any)["transform"] ||
+            getComputedStyle(element, "").getPropertyValue("transform");
+
+        const matrix = transformMatrix.match(/-?[0-9]+\.?[0-9]*/g);
+        const x = (matrix && parseInt(matrix[0])) || 0; // translate x
+        const y = (matrix && parseInt(matrix[1])) || 0; // translate y
+        return [x, y];
+    }
+
+    /**
+     * 递归计算容器元素的偏移量
+     * @param eventTarget 目标元素
+     * @param offset 初始偏移量
+     * @returns 计算后的偏移量
+     */
+    private static getContainerOffset(
+        eventTarget: HTMLDivElement,
+        offset: Point
+    ): Point {
+        const translate = this.getTranslate(eventTarget);
+        let newOffset: Point = {
+            x: offset.x + eventTarget.offsetLeft - eventTarget.scrollLeft + translate[0],
+            y: offset.y + eventTarget.offsetTop - eventTarget.scrollTop + translate[1],
+        };
+
+        if (
+            eventTarget.offsetParent?.nodeName &&
+            eventTarget.offsetParent.nodeName !== "BODY"
+        ) {
+            newOffset = this.getContainerOffset(
+                eventTarget.offsetParent as HTMLDivElement,
+                newOffset
+            );
+        }
+
+        return newOffset;
+    }
+
+    /**
+     * 获取元素相对于视口的坐标
+     * @param element DOM元素
+     * @returns 视口坐标点
+     */
+    public static getElementViewportPosition(element: HTMLElement): Point {
+        const rect = element.getBoundingClientRect();
+        return {
+            x: rect.left,
+            y: rect.top,
+        };
+    }
+
+    /**
+     * 将页面坐标转换为元素相对坐标
+     * @param pagePoint 页面坐标点
+     * @param element 目标元素
+     * @returns 元素相对坐标点
+     */
+    public static pageToElementCoordinates(pagePoint: Point, element: HTMLElement): Point {
+        const elementOffset = this.getContainerOffset(element as HTMLDivElement, { x: 0, y: 0 });
+        return {
+            x: pagePoint.x - elementOffset.x,
+            y: pagePoint.y - elementOffset.y,
+        };
+    }
+
+    /**
+     * 将元素相对坐标转换为页面坐标
+     * @param elementPoint 元素相对坐标点
+     * @param element 目标元素
+     * @returns 页面坐标点
+     */
+    public static elementToPageCoordinates(elementPoint: Point, element: HTMLElement): Point {
+        const elementOffset = this.getContainerOffset(element as HTMLDivElement, { x: 0, y: 0 });
+        return {
+            x: elementPoint.x + elementOffset.x,
+            y: elementPoint.y + elementOffset.y,
+        };
+    }
 }

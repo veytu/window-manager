@@ -70,7 +70,7 @@ import type { ExtendPluginInstance } from "./ExtendPluginManager";
 import { ExtendPluginManager } from "./ExtendPluginManager";
 import { ScrollerManager, ScrollerScrollEventType } from "./ScrollerManager";
 import { isAndroid, isIOS } from "./Utils/environment";
-import { LaserPointerMultiManager } from "./LaserPointer";
+import { LaserPointerManager } from "./LaserPointer";
 export * from "./View/IframeBridge";
 // 防循环工具函数
 function createAntiLoopAutorun(fn: () => void, name?: string) {
@@ -362,11 +362,10 @@ export class WindowManager
                 console.log(`${logFirstTag} LaserPointerActive Target`, JSON.stringify(data))
                 manager?._setLaserPointer(data).catch(console.error);
                 // 根据权限更新所有激光笔管理器状态（参照原来的逻辑）
-                const isTeacher = manager?.teacherInfo?.uid === manager?._getCurrentUserId();
                 const isActive = data?.active || false;
                 
                 // 更新多实例激光笔管理器
-                manager?._laserPointerMultiManager?.setLaserPointerActive(isActive);
+                manager?._laserPointerManager?.setLaserPointer(isActive);
                 
             }, 'LaserPointerActive');
         });
@@ -1347,12 +1346,9 @@ export class WindowManager
     private async _setLaserPointer(active: boolean) {
         // WindowManager.playground?.classList.toggle("is-cursor-laserPointer", active);
         if (!active) {
-            // 清理激光笔相关资源
-            this.mutationObserver?.disconnect();
-            this.mutationObserver = null;
             
             // 清理多实例激光笔管理器
-            this._laserPointerMultiManager?.setLaserPointerActive(false);
+            this._laserPointerManager?.setLaserPointer(false);
             
             const cursorNode = document.querySelectorAll(
                 ".netless-window-manager-cursor-mid"
@@ -1364,34 +1360,33 @@ export class WindowManager
         }
         
         // 确保多实例激光笔管理器存在
-        if (!this._laserPointerMultiManager) {
+        if (!this._laserPointerManager) {
             await this._initLaserPointerManager();
         }
         
         // 只有当前用户是老师时才激活（参照原来的逻辑）
         if (this.teacherInfo?.uid === this._getCurrentUserId()) {
             // 激活多实例激光笔管理器
-            this._laserPointerMultiManager?.setLaserPointerActive(true);
+            this._laserPointerManager?.setLaserPointer(true);
         }
     }
 
-    // 多实例激光笔管理器
-    private _laserPointerMultiManager?: LaserPointerMultiManager;
+    // 激光笔管理器
+    private _laserPointerManager?: LaserPointerManager;
 
     // 初始化激光笔管理器
     private async _initLaserPointerManager() {
-        console.log(`${logFirstTag} Initializing LaserPointerMultiManager, existing:`, !!this._laserPointerMultiManager);
-        if (this._laserPointerMultiManager) {
+        console.log(`${logFirstTag} Initializing LaserPointerMultiManager, existing:`, !!this._laserPointerManager);
+        if (this._laserPointerManager) {
             console.log(`${logFirstTag} LaserPointerMultiManager already exists, skipping initialization`);
             return;
         }
         
         if (this.room && this.displayer && this.appManager) {
             // 动态导入 LaserPointerMultiManager
-            const { LaserPointerMultiManager } = await import("./LaserPointer");
+            const { LaserPointerManager } = await import("./LaserPointer");
             
-            this._laserPointerMultiManager = new LaserPointerMultiManager(this);
-            this._laserPointerMultiManager.setupEventListeners();
+            this._laserPointerManager = new LaserPointerManager(this);
             console.log(`${logFirstTag} LaserPointerMultiManager created successfully`);
         } else {
             console.warn(`${logFirstTag} Cannot initialize LaserPointerMultiManager - missing dependencies`);
@@ -1407,8 +1402,8 @@ export class WindowManager
     // 销毁激光笔管理器
     private _destroyLaserPointerManager() {
         // 销毁多实例激光笔管理器
-        this._laserPointerMultiManager?.destroy();
-        this._laserPointerMultiManager = undefined;
+        this._laserPointerManager?.destroy();
+        this._laserPointerManager = undefined;
     }
 
 
@@ -1548,5 +1543,5 @@ export { BuiltinApps } from "./BuiltinApps";
 export type { PublicEvent } from "./callback";
 export * from "./ExtendPluginManager";
 // 导出激光笔相关模块
-export { LaserPointerManager, LaserPointerMultiManager, type LaserPointerPosition } from "./LaserPointer";
+export { LaserPointerManager, type LaserPointerPosition } from "./LaserPointer";
 

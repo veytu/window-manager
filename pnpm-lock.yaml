@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@netless/slide': 1.4.39
+
 importers:
 
   .:
@@ -37,7 +40,7 @@ importers:
         specifier: ^0.2.11
         version: 0.2.11
       '@netless/app-docs-viewer':
-        specifier: 0.2.2-3.wukongBeta.1
+        specifier: 0.2.23.wukongBeta.1
         version: 0.2.2-3.wukongBeta.1(jspdf@2.5.2)
       '@netless/app-media-player':
         specifier: 0.1.4
