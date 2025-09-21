@@ -204,10 +204,10 @@ export class LaserPointerManager {
      * 重置视图添加点
      */
     private _resetViewAddPoint(show: boolean) {
-        if (this._manager.room.uid === this._manager.appManager?.store.getTeacherInfo()?.uid && !this._haveOtherTools) {
+        if (this._manager.room.uid === this._manager.appManager?.store.getTeacherInfo()?.uid ) {
             Object.entries(this._listenerViewMap).forEach(([_, value]) => {
                 if (value?.view) {
-                    this._getViewDivElement(value.view)?.classList.toggle('teacher-current-pointer', show);
+                    this._getViewDivElement(value.view)?.classList.toggle('teacher-current-pointer', show && !this._haveOtherTools);
                 }
             });
         }
