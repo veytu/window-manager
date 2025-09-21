@@ -1420,6 +1420,11 @@ export class WindowManager
         return this.getAttributesValue([Fields.Scale])[appId];
     }
 
+    // 设置激光笔老师显示图标
+    public setLaserPointerTeacherShowIcon(show: boolean) {
+        this._laserPointerManager?.resetViewAddPoint(show);
+    }
+
     private isDynamicPPT(scenes: SceneDefinition[]) {
         const sceneSrc = scenes[0]?.ppt?.src;
         return sceneSrc?.startsWith("pptx://");

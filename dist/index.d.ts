@@ -1338,6 +1338,10 @@ declare class LaserPointerManager {
      * @param active 是否激活激光笔功能，true为激活，false为停用
      */
     setLaserPointer(active: boolean): void;
+    /**
+     * 重置视图添加点
+     */
+    resetViewAddPoint(show: boolean): void;
     destroy(): void;
     /**
      * 获取视图的偏移量
@@ -1660,6 +1664,7 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     get isLaserPointerActive(): any;
     get container(): HTMLElement | undefined;
     getAppScale(appId: string): number;
+    setLaserPointerTeacherShowIcon(show: boolean): void;
     private isDynamicPPT;
     private ensureAttributes;
     private _iframeBridge?;

@@ -19998,6 +19998,7 @@ class LaserPointerManager {
       if (appBox) {
         console.log(`${logFirstTag$1} Creating laser pointer manager for app:`, appBox);
         this._listenerViewMap[payload.appId] = appBox;
+        this.resetViewAddPoint(this._currentPointActive);
       } else {
         console.warn(`${logFirstTag$1} Failed to get app box view for:`, payload.appId);
       }
@@ -20012,7 +20013,7 @@ class LaserPointerManager {
       }
     });
     (_a3 = this._manager.displayer) == null ? void 0 : _a3.addMagixEventListener("teacherLaserPointerMove", (event) => {
-      var _a4, _b, _c, _d;
+      var _a4, _b, _c;
       console.info(`${logFirstTag$1} \u6536\u5230\u8001\u5E08\u6FC0\u5149\u7B14\u79FB\u52A8\u4E8B\u4EF6:`, event);
       if (event.payload.sendUserId === this._manager.room.uid) {
         console.info(`${logFirstTag$1} \u8DF3\u8FC7\u81EA\u5DF1\u7684\u4E8B\u4EF6`);
@@ -20028,9 +20029,6 @@ class LaserPointerManager {
       if (view == null) {
         console.info(`${logFirstTag$1} \u627E\u4E0D\u5230\u89C6\u56FEID:`, event.payload.viewId);
       } else {
-        if (this._mainViewId !== event.payload.viewId) {
-          (_d = view.divElement) == null ? void 0 : _d.classList.add("teacher-current-pointer-enevnt-auto");
-        }
         point = view.convertToPointOnScreen(event.payload.position.x, event.payload.position.y);
         if (point == null) {
           console.info(`${logFirstTag$1} \u8F6C\u6362\u5931\u8D25:`, event.payload.position);
@@ -20110,6 +20108,19 @@ class LaserPointerManager {
   setLaserPointer(active) {
     console.log(`${logFirstTag$1} \u8BBE\u7F6E\u6FC0\u5149\u7B14\u72B6\u6001:`, active);
     this._currentPointActive = active;
+    this.resetViewAddPoint(active);
+    this._showPointIcon("", void 0, null);
+  }
+  resetViewAddPoint(show) {
+    var _a3, _b;
+    if (this._manager.room.uid === ((_b = (_a3 = this._manager.appManager) == null ? void 0 : _a3.store.getTeacherInfo()) == null ? void 0 : _b.uid)) {
+      Object.entries(this._listenerViewMap).forEach(([_2, value]) => {
+        var _a4;
+        if (value == null ? void 0 : value.view) {
+          (_a4 = this._getViewDivElement(value.view)) == null ? void 0 : _a4.classList.toggle("teacher-current-pointer", show);
+        }
+      });
+    }
   }
   destroy() {
     var _a3, _b, _c, _d, _e;
@@ -20144,17 +20155,23 @@ class LaserPointerManager {
     return null;
   }
   _showPointIcon(viewId, view, point) {
-    var _a3;
     let icon = this._pointMap[viewId];
-    if (!icon) {
-      icon = document.createElement("div");
-      icon.className = "teacher-laser-pointer";
-      icon.style.display = "none";
-      if (view) {
-        (_a3 = this._getViewDivElement(view)) == null ? void 0 : _a3.appendChild(icon);
-        console.log(`${logFirstTag$1} [${viewId}] \u6FC0\u5149\u7B14\u56FE\u6807\u5DF2\u6DFB\u52A0\u5230\u89C6\u56FE\u5BB9\u5668`);
+    if (view) {
+      const viewDivElement = this._getViewDivElement(view);
+      if (viewDivElement) {
+        icon = viewDivElement.querySelector(".teacher-laser-pointer");
+        if (!icon) {
+          icon = document.createElement("div");
+          icon.className = "teacher-laser-pointer";
+          icon.style.display = "none";
+          viewDivElement.appendChild(icon);
+          console.log(`${logFirstTag$1} [${viewId}] \u6FC0\u5149\u7B14\u56FE\u6807\u5DF2\u6DFB\u52A0\u5230\u89C6\u56FE\u5BB9\u5668`);
+        }
         this._pointMap[viewId] = icon;
       }
+    }
+    if (!icon) {
+      return;
     }
     Object.entries(this._pointMap).forEach(([key, value]) => {
       if (key !== viewId && value) {
@@ -20262,7 +20279,7 @@ const logFirstTag = "[TeleBox] WindowManager";
 const _WindowManager = class extends InvisiblePlugin {
   constructor(context) {
     super(context);
-    this.version = "1.0.6-wukongBeta.9";
+    this.version = "1.0.6-wukongBeta.10";
     this.dependencies = { "dependencies": { "@juggle/resize-observer": "^3.4.0", "@netless/telebox-insider": "0.2.32-wukongBeta.8", "emittery": "^0.9.2", "lodash": "^4.17.21", "p-retry": "^4.6.2", "uuid": "^7.0.3", "value-enhancer": "0.0.8", "video.js": "^8.23.4" }, "peerDependencies": { "jspdf": "2.5.1", "white-web-sdk": "^2.16.52" }, "devDependencies": { "@hyrious/dts": "^0.2.11", "@netless/app-docs-viewer": "0.2.23.wukongBeta.1", "@netless/app-media-player": "0.1.4", "@rollup/plugin-commonjs": "^20.0.0", "@rollup/plugin-node-resolve": "^13.3.0", "@rollup/plugin-url": "^6.1.0", "@sveltejs/vite-plugin-svelte": "1.0.0-next.40", "@tsconfig/svelte": "^2.0.1", "@types/debug": "^4.1.12", "@types/lodash": "^4.17.20", "@types/lodash-es": "^4.17.12", "@types/uuid": "^8.3.4", "@typescript-eslint/eslint-plugin": "^4.33.0", "@typescript-eslint/parser": "^4.33.0", "@vitest/ui": "^0.14.2", "cypress": "^8.7.0", "dotenv": "^10.0.0", "eslint": "^7.32.0", "eslint-config-prettier": "^8.10.2", "eslint-plugin-svelte3": "^3.4.1", "jsdom": "^19.0.0", "jspdf": "^2.5.2", "less": "^4.4.1", "prettier": "^2.8.8", "prettier-plugin-svelte": "^2.10.1", "rollup-plugin-analyzer": "^4.0.0", "rollup-plugin-styles": "^3.14.1", "side-effect-manager": "0.1.5", "svelte": "^3.59.2", "typescript": "^4.9.5", "vite": "^2.9.18", "vitest": "^0.14.2", "white-web-sdk": "^2.16.53" } };
     this.emitter = callbacks$1;
     this.viewMode = ViewMode.Broadcaster;
@@ -21252,6 +21269,10 @@ const _WindowManager = class extends InvisiblePlugin {
   }
   getAppScale(appId) {
     return this.getAttributesValue([Fields.Scale])[appId];
+  }
+  setLaserPointerTeacherShowIcon(show) {
+    var _a3;
+    (_a3 = this._laserPointerManager) == null ? void 0 : _a3.resetViewAddPoint(show);
   }
   isDynamicPPT(scenes) {
     var _a3, _b;

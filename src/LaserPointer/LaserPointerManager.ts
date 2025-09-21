@@ -1,5 +1,5 @@
 import { isNumber, throttle } from "lodash";
-import type { View } from "white-web-sdk";
+import type { RoomState, View } from "white-web-sdk";
 import type { WindowManager } from "../index";
 import type { AppProxy } from "../App";
 import { Fields } from "../AttributesDelegate";
@@ -57,6 +57,7 @@ export class LaserPointerManager {
             if (appBox) {
                 console.log(`${logFirstTag} Creating laser pointer manager for app:`, appBox);
                 this._listenerViewMap[payload.appId] = appBox;
+                this.resetViewAddPoint(this._currentPointActive);
             } else {
                 console.warn(`${logFirstTag} Failed to get app box view for:`, payload.appId);
             }
@@ -87,9 +88,6 @@ export class LaserPointerManager {
             if (view == null) {
                 console.info(`${logFirstTag} 找不到视图ID:`, event.payload.viewId);
             } else {
-                if (this._mainViewId !== event.payload.viewId) {
-                    view.divElement?.classList.add('teacher-current-pointer-enevnt-auto');
-                }
                 //接收到坐标信息进行转换
                 point = view.convertToPointOnScreen(event.payload.position.x, event.payload.position.y);
                 if (point == null) {
@@ -184,6 +182,21 @@ export class LaserPointerManager {
     public setLaserPointer(active: boolean): void {
         console.log(`${logFirstTag} 设置激光笔状态:`, active);
         this._currentPointActive = active;
+        this.resetViewAddPoint(active);
+        this._showPointIcon('', undefined, null);
+    }
+
+    /**
+     * 重置视图添加点
+     */
+    public resetViewAddPoint(show: boolean) {
+        if (this._manager.room.uid === this._manager.appManager?.store.getTeacherInfo()?.uid) {
+            Object.entries(this._listenerViewMap).forEach(([_, value]) => {
+                if (value?.view) {
+                    this._getViewDivElement(value.view)?.classList.toggle('teacher-current-pointer', show);
+                }
+            });
+        }
     }
 
 
@@ -242,16 +255,22 @@ export class LaserPointerManager {
      */
     private _showPointIcon(viewId: string, view: View | undefined, point: Point | null) {
         let icon = this._pointMap[viewId]
-        if (!icon) {
-            icon = document.createElement('div');
-            icon.className = 'teacher-laser-pointer';
-            icon.style.display = 'none';
-            // 添加到当前视图容器
-            if (view) {
-                this._getViewDivElement(view)?.appendChild(icon);
-                console.log(`${logFirstTag} [${viewId}] 激光笔图标已添加到视图容器`);
+        if(view){
+            const viewDivElement = this._getViewDivElement(view);
+            if(viewDivElement   ){
+                icon = viewDivElement.querySelector('.teacher-laser-pointer');
+                if(!icon){
+                    icon = document.createElement('div');
+                    icon.className = 'teacher-laser-pointer';
+                    icon.style.display = 'none';
+                    viewDivElement.appendChild(icon);
+                    console.log(`${logFirstTag} [${viewId}] 激光笔图标已添加到视图容器`);
+                }
                 this._pointMap[viewId] = icon;
             }
+        }
+        if(!icon){
+            return;
         }
 
         Object.entries(this._pointMap).forEach(([key, value]) => {
