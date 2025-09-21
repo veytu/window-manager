@@ -73,8 +73,7 @@ export class LaserPointerManager {
         // 监听老师激光笔移动事件
         this._manager.displayer?.addMagixEventListener('teacherLaserPointerMove', (event: any) => {
             console.info(`${logFirstTag} 收到老师激光笔移动事件:`, event);
-            const teacherInfo = this._manager.appManager?.store.getTeacherInfo();
-            if (event.payload.sendUserId === teacherInfo?.uid) {
+            if (event.payload.sendUserId === this._manager.room.uid) {
                 console.info(`${logFirstTag} 跳过自己的事件`);
                 return;
             }
