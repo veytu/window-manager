@@ -198,6 +198,7 @@ export class LaserPointerManager {
     public setHaveOtherTools(haveOtherTools: boolean) {
         this._haveOtherTools = haveOtherTools;
         this._resetViewAddPoint(this._currentPointActive);
+        this._showPointIcon('', undefined, null);
     }
 
     /**
@@ -283,17 +284,16 @@ export class LaserPointerManager {
                 this._pointMap[viewId] = icon;
             }
         }
-        if(!icon){
-            return;
-        }
-
         Object.entries(this._pointMap).forEach(([key, value]) => {
             if (key !== viewId && value) {
                 console.log(`${logFirstTag} [${key}] 激光笔图标已隐藏`);
                 value.style.display = 'none';
             }
         });
-        if (point) {
+        if (!icon) {
+            return;
+        }
+        if (point && point.x >= 0 && point.y >= 0) {
             console.log(`${logFirstTag} [${viewId}] 激光笔图标已显示`);
             icon.style.left = `${point.x}px`;
             icon.style.top = `${point.y}px`;
