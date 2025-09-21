@@ -1333,15 +1333,24 @@ declare class LaserPointerManager {
      */
     private removeEventListeners;
     /**
+     * 是否有其他工具
+     */
+    private _haveOtherTools;
+    /**
      * 设置激光笔激活状态
      * 控制激光笔功能的开启和关闭，包括鼠标事件监听器的添加和移除
      * @param active 是否激活激光笔功能，true为激活，false为停用
      */
     setLaserPointer(active: boolean): void;
     /**
+     * 设置是否有其他工具
+     * @param haveOtherTools 是否有其他工具
+     */
+    setHaveOtherTools(haveOtherTools: boolean): void;
+    /**
      * 重置视图添加点
      */
-    resetViewAddPoint(show: boolean): void;
+    private _resetViewAddPoint;
     destroy(): void;
     /**
      * 获取视图的偏移量
@@ -1664,7 +1673,7 @@ declare class WindowManager extends InvisiblePlugin<WindowMangerAttributes, any>
     get isLaserPointerActive(): any;
     get container(): HTMLElement | undefined;
     getAppScale(appId: string): number;
-    setLaserPointerTeacherShowIcon(show: boolean): void;
+    setHaveOtherEduTools(have: boolean): void;
     private isDynamicPPT;
     private ensureAttributes;
     private _iframeBridge?;

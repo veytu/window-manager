@@ -57,7 +57,7 @@ export class LaserPointerManager {
             if (appBox) {
                 console.log(`${logFirstTag} Creating laser pointer manager for app:`, appBox);
                 this._listenerViewMap[payload.appId] = appBox;
-                this.resetViewAddPoint(this._currentPointActive);
+                this._resetViewAddPoint(this._currentPointActive);
             } else {
                 console.warn(`${logFirstTag} Failed to get app box view for:`, payload.appId);
             }
@@ -175,6 +175,11 @@ export class LaserPointerManager {
     }
 
     /**
+     * 是否有其他工具
+     */
+    private _haveOtherTools = true;
+
+    /**
      * 设置激光笔激活状态
      * 控制激光笔功能的开启和关闭，包括鼠标事件监听器的添加和移除
      * @param active 是否激活激光笔功能，true为激活，false为停用
@@ -182,15 +187,24 @@ export class LaserPointerManager {
     public setLaserPointer(active: boolean): void {
         console.log(`${logFirstTag} 设置激光笔状态:`, active);
         this._currentPointActive = active;
-        this.resetViewAddPoint(active);
+        this._resetViewAddPoint(active);
         this._showPointIcon('', undefined, null);
+    }
+
+    /**
+     * 设置是否有其他工具
+     * @param haveOtherTools 是否有其他工具
+     */
+    public setHaveOtherTools(haveOtherTools: boolean) {
+        this._haveOtherTools = haveOtherTools;
+        this._resetViewAddPoint(this._currentPointActive);
     }
 
     /**
      * 重置视图添加点
      */
-    public resetViewAddPoint(show: boolean) {
-        if (this._manager.room.uid === this._manager.appManager?.store.getTeacherInfo()?.uid) {
+    private _resetViewAddPoint(show: boolean) {
+        if (this._manager.room.uid === this._manager.appManager?.store.getTeacherInfo()?.uid && !this._haveOtherTools) {
             Object.entries(this._listenerViewMap).forEach(([_, value]) => {
                 if (value?.view) {
                     this._getViewDivElement(value.view)?.classList.toggle('teacher-current-pointer', show);
