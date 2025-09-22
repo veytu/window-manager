@@ -20285,7 +20285,7 @@ const logFirstTag = "[TeleBox] WindowManager";
 const _WindowManager = class extends InvisiblePlugin {
   constructor(context) {
     super(context);
-    this.version = "1.0.6-wukongBeta.15";
+    this.version = "1.0.6-wukongBeta.16";
     this.dependencies = { "dependencies": { "@juggle/resize-observer": "^3.4.0", "@netless/telebox-insider": "0.2.32-wukongBeta.8", "emittery": "^0.9.2", "lodash": "^4.17.21", "p-retry": "^4.6.2", "uuid": "^7.0.3", "value-enhancer": "0.0.8", "video.js": "^8.23.4" }, "peerDependencies": { "jspdf": "2.5.1", "white-web-sdk": "^2.16.52" }, "devDependencies": { "@hyrious/dts": "^0.2.11", "@netless/app-docs-viewer": "0.2.23.wukongBeta.1", "@netless/app-media-player": "0.1.4", "@rollup/plugin-commonjs": "^20.0.0", "@rollup/plugin-node-resolve": "^13.3.0", "@rollup/plugin-url": "^6.1.0", "@sveltejs/vite-plugin-svelte": "1.0.0-next.40", "@tsconfig/svelte": "^2.0.1", "@types/debug": "^4.1.12", "@types/lodash": "^4.17.20", "@types/lodash-es": "^4.17.12", "@types/uuid": "^8.3.4", "@typescript-eslint/eslint-plugin": "^4.33.0", "@typescript-eslint/parser": "^4.33.0", "@vitest/ui": "^0.14.2", "cypress": "^8.7.0", "dotenv": "^10.0.0", "eslint": "^7.32.0", "eslint-config-prettier": "^8.10.2", "eslint-plugin-svelte3": "^3.4.1", "jsdom": "^19.0.0", "jspdf": "^2.5.2", "less": "^4.4.1", "prettier": "^2.8.8", "prettier-plugin-svelte": "^2.10.1", "rollup-plugin-analyzer": "^4.0.0", "rollup-plugin-styles": "^3.14.1", "side-effect-manager": "0.1.5", "svelte": "^3.59.2", "typescript": "^4.9.5", "vite": "^2.9.18", "vitest": "^0.14.2", "white-web-sdk": "^2.16.53" } };
     this.emitter = callbacks$1;
     this.viewMode = ViewMode.Broadcaster;
@@ -20430,7 +20430,7 @@ const _WindowManager = class extends InvisiblePlugin {
       console.log(`${logFirstTag} AllBoxStatusInfo Register Listener`);
       return createAntiLoopAutorun(() => {
         var _a4, _b2;
-        const data = get(manager.appManager.attributes, Fields.AllBoxStatusInfo);
+        const data = get(manager.appManager.attributes, Fields.AllBoxStatusInfo) || {};
         (_b2 = (_a4 = manager == null ? void 0 : manager.boxManager) == null ? void 0 : _a4.teleBoxManager) == null ? void 0 : _b2.setAllBoxStatusInfo(data, true);
         console.log(`${logFirstTag} AllBoxStatusInfo Target`, JSON.stringify(data));
         Object.entries(data).forEach(([boxId, status]) => {
@@ -20446,7 +20446,7 @@ const _WindowManager = class extends InvisiblePlugin {
       console.log(`${logFirstTag} LastNotMinimizedBoxsStatus Register Listener`);
       return createAntiLoopAutorun(() => {
         var _a4, _b2;
-        const data = get(manager.appManager.attributes, Fields.LastNotMinimizedBoxsStatus);
+        const data = get(manager.appManager.attributes, Fields.LastNotMinimizedBoxsStatus) || {};
         (_b2 = (_a4 = manager == null ? void 0 : manager.boxManager) == null ? void 0 : _a4.teleBoxManager) == null ? void 0 : _b2.setLastLastNotMinimizedBoxsStatus(data, true);
         console.log(`${logFirstTag} LastNotMinimizedBoxsStatus Target`, JSON.stringify(data));
       }, "LastNotMinimizedBoxsStatus");

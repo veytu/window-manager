@@ -395,10 +395,9 @@ export class WindowManager
         manager.appManager?.refresher?.add(Fields.AllBoxStatusInfo, () => {
             console.log(`${logFirstTag} AllBoxStatusInfo Register Listener`)
             return createAntiLoopAutorun(() => {
-                const data = get(manager!.appManager!.attributes, Fields.AllBoxStatusInfo);
-                manager?.boxManager?.teleBoxManager?.setAllBoxStatusInfo(data,true)
+                const data = get(manager!.appManager!.attributes, Fields.AllBoxStatusInfo) || {};
+                manager?.boxManager?.teleBoxManager?.setAllBoxStatusInfo(data, true)
                 console.log(`${logFirstTag} AllBoxStatusInfo Target`, JSON.stringify(data))
-                // 发送事件让播放器状态更新
                 Object.entries(data).forEach(([boxId, status]) => {
                     if (boxId.includes('Plyr')) {
                         const app = manager?.appManager?.appProxies.get(boxId)
@@ -410,7 +409,7 @@ export class WindowManager
         manager.appManager?.refresher?.add(Fields.LastNotMinimizedBoxsStatus, () => {
             console.log(`${logFirstTag} LastNotMinimizedBoxsStatus Register Listener`)
             return createAntiLoopAutorun(() => {
-                const data = get(manager!.appManager!.attributes, Fields.LastNotMinimizedBoxsStatus);
+                const data = get(manager!.appManager!.attributes, Fields.LastNotMinimizedBoxsStatus) || {};
                 manager?.boxManager?.teleBoxManager?.setLastLastNotMinimizedBoxsStatus(data,true)
                 console.log(`${logFirstTag} LastNotMinimizedBoxsStatus Target`, JSON.stringify(data))
             }, 'LastNotMinimizedBoxsStatus');
